@@ -1,5 +1,5 @@
 // pages/listing-detail/components/Badges.js
-function Badges({ listing, userType }) {
+function Badges({ listing }) {
   const badges = [];
   
   // Property type badge
@@ -12,20 +12,23 @@ function Badges({ listing, userType }) {
     );
   }
   
-  // ===== UPDATED: Role badge - shows Landlord or Agent based on userType =====
-  // Only show for landlords and agents (not regular users)
-  if (userType && userType !== 'user') {
-    const badgeStyles = userType === 'landlord' ?
-      'bg-green-100 text-green-700 border-green-200' :
-      'bg-gray-700 text-white border-gray-800';
-    
-    const badgeLabel = userType === 'landlord' ? 'Landlord' : 'Agent';
-    
+  // ===== UPDATED: Role badge using listingRole =====
+  // Shows Landlord or Agent badge based on listing.listingRole
+  const listingRole = listing.listingRole;
+  
+  if (listingRole === 'landlord') {
     badges.push(
       React.createElement('span', {
-        key: 'role',
-        className: `inline-flex items-center px-3 py-1 rounded-full text-sm ${badgeStyles}`
-      }, badgeLabel)
+        key: 'landlord',
+        className: 'inline-flex items-center bg-green-100 text-green-700 border border-green-200 px-3 py-1 rounded-full text-sm'
+      }, 'Landlord')
+    );
+  } else if (listingRole === 'agent') {
+    badges.push(
+      React.createElement('span', {
+        key: 'agent',
+        className: 'inline-flex items-center bg-gray-700 text-white border border-gray-800 px-3 py-1 rounded-full text-sm'
+      }, 'Agent')
     );
   }
   
