@@ -1,4 +1,4 @@
-/* pages/home/components/LoginForm.js - DIRECT DATABASE CHECK */
+/* pages/home/components/LoginForm.js - CHECK ONLY AUTH */
 
 function LoginForm({ onSuccess, setIsLoading, initialEmail = '' }) {
   const [currentStep, setCurrentStep] = React.useState(1);
@@ -26,46 +26,29 @@ function LoginForm({ onSuccess, setIsLoading, initialEmail = '' }) {
     return null;
   };
 
-  // ===== FIXED: Check if email exists by trying to get auth methods AND checking Firestore =====
+  // ===== CHECK ONLY FIREBASE AUTH =====
   const checkEmailExists = async (email) => {
     if (!email || validateEmail(email)) return false;
     
     setCheckingEmail(true);
     setEmailExists(null);
+    setError('');
     
     try {
-      // Method 1: Check Firebase Auth sign-in methods
-      let authExists = false;
-      try {
-        const methods = await auth.fetchSignInMethodsForEmail(email);
-        authExists = methods && methods.length > 0;
-        console.log('📧 Auth methods for', email, ':', methods);
-      } catch (authErr) {
-        console.log('Auth method check failed, trying Firestore...', authErr);
-      }
+      // ONLY check Firebase Auth sign-in methods
+      const methods = await auth.fetchSignInMethodsForEmail(email);
+      const exists = methods && methods.length > 0;
       
-      // Method 2: Directly check Firestore users collection
-      let firestoreExists = false;
-      try {
-        const usersRef = db.collection('users');
-        const snapshot = await usersRef.where('email', '==', email).limit(1).get();
-        firestoreExists = !snapshot.empty;
-        console.log('📧 Firestore check for', email, ':', firestoreExists ? 'found' : 'not found');
-      } catch (dbErr) {
-        console.log('Firestore check failed', dbErr);
-      }
-      
-      // If either method says exists, consider it exists
-      const exists = authExists || firestoreExists;
       setEmailExists(exists);
       
       if (!exists) {
-        setError('No account found with this email. Would you like to sign up?');
+        setError('❌ No account found with this email. Please sign up first.');
       } else {
-        setError(''); // Clear error if exists
+        setError('');
       }
       
       return exists;
+      
     } catch (err) {
       console.error('Error checking email:', err);
       
@@ -79,11 +62,13 @@ function LoginForm({ onSuccess, setIsLoading, initialEmail = '' }) {
       
       setEmailExists(null);
       return false;
+      
     } finally {
       setCheckingEmail(false);
     }
   };
 
+  // ===== STEP 1: Email submission - BLOCK if email doesn't exist =====
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
     
@@ -98,24 +83,24 @@ function LoginForm({ onSuccess, setIsLoading, initialEmail = '' }) {
     setLoading(true);
     
     try {
+      // Check if email exists in Firebase Auth
       const exists = await checkEmailExists(email);
       
       if (exists) {
         // Email exists - proceed to password step
         setCurrentStep(2);
       } else {
-        // Email doesn't exist - stay on step 1, error already set
-        console.log('Email not found, staying on step 1');
+        // Email does NOT exist - stay on step 1
+        // error already set in checkEmailExists
       }
     } catch (err) {
-      console.error('Email check error:', err);
       setError('Error checking email. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  // ===== FIXED: Direct login with better error handling =====
+  // ===== STEP 2: Password submission =====
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     
@@ -131,9 +116,7 @@ function LoginForm({ onSuccess, setIsLoading, initialEmail = '' }) {
     setIsLoading(true);
 
     try {
-      // DIRECT LOGIN - let Firebase handle it
       const userCredential = await auth.signInWithEmailAndPassword(email, password);
-      console.log('✅ Login successful:', userCredential.user.email);
       
       // Update lastActive in Firestore
       try {
@@ -142,28 +125,22 @@ function LoginForm({ onSuccess, setIsLoading, initialEmail = '' }) {
           isOnline: true
         });
       } catch (updateErr) {
-        console.log('Could not update lastActive, but login successful');
+        // Non-critical
       }
       
       if (onSuccess) {
         onSuccess();
       }
     } catch (err) {
-      console.error('Login error:', err);
-      
-      // ===== FIXED: More accurate error messages =====
       if (err.code === 'auth/wrong-password') {
         setError('Incorrect password. Please try again.');
       } else if (err.code === 'auth/user-not-found') {
         setError('No account found with this email.');
-        setCurrentStep(1); // Go back to email step
+        setCurrentStep(1);
       } else if (err.code === 'auth/too-many-requests') {
         setError('Too many failed attempts. Please try again later.');
       } else if (err.code === 'auth/network-request-failed') {
         setError('Network error. Please check your connection.');
-      } else if (err.code === 'auth/invalid-email') {
-        setError('Invalid email address format.');
-        setCurrentStep(1);
       } else if (err.code === 'auth/user-disabled') {
         setError('This account has been disabled. Contact support.');
       } else {
@@ -190,12 +167,10 @@ function LoginForm({ onSuccess, setIsLoading, initialEmail = '' }) {
 
       try {
         const result = await auth.signInWithPopup(provider);
-        console.log('✅ Google login successful:', result.user.email);
         
         // Check if user document exists, create if not
         const userDoc = await db.collection('users').doc(result.user.uid).get();
         if (!userDoc.exists) {
-          // Create user document for Google sign-in
           let base = (result.user.displayName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '');
           if (base.length < 3) base = 'user' + base;
           const username = base.substring(0, 14) + Math.random().toString(36).substring(2, 6);
@@ -213,7 +188,6 @@ function LoginForm({ onSuccess, setIsLoading, initialEmail = '' }) {
             isOnline: true
           });
         } else {
-          // Update existing user
           await db.collection('users').doc(result.user.uid).update({
             lastActive: firebase.firestore.FieldValue.serverTimestamp(),
             isOnline: true
@@ -232,8 +206,6 @@ function LoginForm({ onSuccess, setIsLoading, initialEmail = '' }) {
         }
       }
     } catch (err) {
-      console.error('Google sign-in error:', err);
-      
       if (err.code === 'auth/popup-closed-by-user') {
         setError('Sign-in was cancelled. Please try again.');
       } else if (err.code === 'auth/network-request-failed') {
@@ -255,11 +227,10 @@ function LoginForm({ onSuccess, setIsLoading, initialEmail = '' }) {
       try {
         const result = await auth.getRedirectResult();
         if (result.user) {
-          console.log('✅ Redirect login successful:', result.user.email);
           onSuccess();
         }
       } catch (err) {
-        console.error('Redirect sign-in error:', err);
+        // Silent fail
       }
     };
     checkRedirectResult();
@@ -354,7 +325,7 @@ function LoginForm({ onSuccess, setIsLoading, initialEmail = '' }) {
             setEmail(e.target.value);
             setError('');
             setTouched({ ...touched, email: true });
-            setEmailExists(null); // Reset on change
+            setEmailExists(null);
           },
           onBlur: () => setTouched({ ...touched, email: true }),
           placeholder: 'you@example.com',
@@ -365,17 +336,19 @@ function LoginForm({ onSuccess, setIsLoading, initialEmail = '' }) {
         
         checkingEmail && React.createElement('p', { className: 'text-xs text-gray-500 mt-1 flex items-center gap-1' },
           React.createElement('div', { className: 'w-3 h-3 border-2 border-gray-500 border-t-transparent rounded-full animate-spin' }),
-          'Checking email...'
+          'Checking...'
         ),
         
-        // Show sign up link if email doesn't exist
-        emailExists === false && !checkingEmail && React.createElement('p', { className: 'text-xs text-amber-600 mt-1' },
-          'No account found. ', 
+        // Show sign up link if email doesn't exist in Auth
+        emailExists === false && !checkingEmail && React.createElement('div', { className: 'mt-2' },
+          React.createElement('p', { className: 'text-xs text-amber-600 mb-1' },
+            'No account found with this email.'
+          ),
           React.createElement('button', {
             type: 'button',
             onClick: switchToSignup,
-            className: 'text-green-950 hover:underline font-medium'
-          }, 'Sign up instead')
+            className: 'text-sm text-green-950 hover:underline font-medium'
+          }, 'Create a new account →')
         )
       ),
 
@@ -391,10 +364,10 @@ function LoginForm({ onSuccess, setIsLoading, initialEmail = '' }) {
       onSubmit: handlePasswordSubmit
     },
       // Email display with edit option
-      React.createElement('div', { className: 'mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between' },
+      React.createElement('div', { className: 'mb-4 p-3 bg-green-50 rounded-lg border border-green-200 flex items-center justify-between' },
         React.createElement('div', { className: 'flex items-center gap-2' },
-          React.createElement('svg', { className: 'w-4 h-4 text-gray-500', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
-            React.createElement('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' })
+          React.createElement('svg', { className: 'w-4 h-4 text-green-600', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+            React.createElement('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M5 13l4 4L19 7' })
           ),
           React.createElement('span', { className: 'text-sm font-medium text-gray-700' }, email)
         ),
@@ -429,7 +402,7 @@ function LoginForm({ onSuccess, setIsLoading, initialEmail = '' }) {
             onClick: () => {
               if (window.__navigate) {
                 window.__navigate('/forgot-password');
-                closeModal?.();
+                if (typeof closeModal === 'function') closeModal();
               }
             },
             className: 'text-xs text-green-950 hover:underline'
