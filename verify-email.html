@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification - UnaDomot</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0fdf4;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 32px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #052e16;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        h1 { font-size: 24px; color: #052e16; margin-bottom: 12px; }
+        p { color: #4b5563; margin-bottom: 16px; line-height: 1.6; }
+        .success { color: #059669; font-size: 48px; margin-bottom: 16px; }
+        .error { color: #dc2626; font-size: 48px; margin-bottom: 16px; }
+        .warning { color: #d97706; font-size: 48px; margin-bottom: 16px; }
+        .info { color: #3b82f6; font-size: 48px; margin-bottom: 16px; }
+        .btn {
+            background: #052e16;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 8px 0;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #166534; }
+        .btn-outline {
+            background: white;
+            color: #052e16;
+            border: 2px solid #052e16;
+        }
+        .btn-outline:hover {
+            background: #f0fdf4;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .link {
+            color: #052e16;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 16px;
+            display: inline-block;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+        .email-display {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 12px;
+            margin: 16px 0;
+            font-weight: 500;
+            word-break: break-all;
+        }
+        .small {
+            font-size: 14px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="card" id="app">
+        <!-- Loading State -->
+        <div id="loading">
+            <div class="spinner"></div>
+            <h1>Loading...</h1>
+            <p>Please wait while we check your verification status.</p>
+        </div>
+        
+        <!-- Verifying State (with verification link) -->
+        <div id="verifying" style="display: none;">
+            <div class="spinner"></div>
+            <h1>Verifying your email...</h1>
+            <p>Please wait while we verify your email address.</p>
+        </div>
+        
+        <!-- Logged Out State -->
+        <div id="logged-out" style="display: none;">
+            <div class="info">🔐</div>
+            <h1>Sign in to Verify</h1>
+            <p>You need to be logged in to verify your email address.</p>
+            <button class="btn" id="login-btn">Back to home</button>
+        </div>
+        
+        <!-- Unverified State (logged in but not verified) -->
+        <div id="unverified" style="display: none;">
+            <div class="warning">⚠️</div>
+            <h1>Email Not Verified</h1>
+            <p>Your email address has not been verified yet.</p>
+            <div class="email-display" id="user-email"></div>
+            <button class="btn" id="resend-btn">Resend Verification Email</button>
+            <button class="btn btn-outline" id="logout-btn">Sign Out</button>
+            <a href="/" class="link">← Back to Home</a>
+        </div>
+        
+        <!-- Verification Success State -->
+        <div id="success" style="display: none;">
+            <div class="success">✅</div>
+            <h1>Email Verified!</h1>
+            <p>Your email has been successfully verified.</p>
+            <a href="/" class="btn">Go to Home</a>
+        </div>
+        
+        <!-- Already Verified State -->
+        <div id="already-verified" style="display: none;">
+            <div class="success">✨</div>
+            <h1>Already Verified</h1>
+            <p>Your email is already verified. You're all set!</p>
+            <a href="/" class="btn">Go to Home</a>
+        </div>
+        
+        <!-- Verification Failed State -->
+        <div id="failed" style="display: none;">
+            <div class="error">❌</div>
+            <h1>Verification Failed</h1>
+            <p id="error-message">Invalid or expired verification link.</p>
+            <button class="btn" id="resend-from-failed">Resend Verification</button>
+            <a href="/" class="link">← Back to Home</a>
+        </div>
+        
+        <!-- Resend Success Message (temporary) -->
+        <div id="resend-success" style="display: none; background: #d1fae5; color: #065f46; padding: 12px; border-radius: 12px; margin-top: 16px;">
+            Verification email sent! Check your inbox.
+        </div>
+        
+        <!-- Resend Error Message (temporary) -->
+        <div id="resend-error" style="display: none; background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 12px; margin-top: 16px;">
+            Failed to send verification email. Please try again.
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBx3kx5iU1H4oYhLAAwK1E6qeWvLpltsAE",
+            authDomain: "unadomot.firebaseapp.com",
+            projectId: "unadomot",
+            storageBucket: "unadomot.firebasestorage.app",
+            messagingSenderId: "664216160325",
+            appId: "1:664216160325:web:dc214e21b24d506f85fb2c"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // DOM elements
+        const loadingDiv = document.getElementById('loading');
+        const verifyingDiv = document.getElementById('verifying');
+        const loggedOutDiv = document.getElementById('logged-out');
+        const unverifiedDiv = document.getElementById('unverified');
+        const successDiv = document.getElementById('success');
+        const alreadyVerifiedDiv = document.getElementById('already-verified');
+        const failedDiv = document.getElementById('failed');
+        const resendSuccessDiv = document.getElementById('resend-success');
+        const resendErrorDiv = document.getElementById('resend-error');
+        const userEmailSpan = document.getElementById('user-email');
+        const errorMessageSpan = document.getElementById('error-message');
+        
+        // Buttons
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const resendBtn = document.getElementById('resend-btn');
+        const resendFromFailedBtn = document.getElementById('resend-from-failed');
+        
+        // Helper to show only one div
+        function showDiv(div) {
+            const allDivs = [
+                loadingDiv, verifyingDiv, loggedOutDiv, unverifiedDiv, 
+                successDiv, alreadyVerifiedDiv, failedDiv
+            ];
+            allDivs.forEach(d => { if (d) d.style.display = 'none'; });
+            if (div) div.style.display = 'block';
+        }
+        
+        // Show temporary message
+        function showTempMessage(div, duration = 3000) {
+            div.style.display = 'block';
+            setTimeout(() => {
+                div.style.display = 'none';
+            }, duration);
+        }
+        
+        // Check if URL contains a Firebase email-verification action code
+        function hasVerificationLink() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('mode') === 'verifyEmail' && !!params.get('oobCode');
+        }
+
+        // Apply the action code to verify the user's email address
+        async function handleVerificationLink() {
+            showDiv(verifyingDiv);
+
+            const params = new URLSearchParams(window.location.search);
+            const oobCode = params.get('oobCode');
+
+            try {
+                // Consume the action code — marks the email as verified in Firebase Auth
+                await auth.applyActionCode(oobCode);
+
+                // If the user is already signed in, reload their token so that
+                // emailVerified reflects the change, then sync to Firestore.
+                const user = auth.currentUser;
+                if (user) {
+                    await user.reload();
+                    try {
+                        await db.collection('users').doc(user.uid).set({
+                            emailVerified: true,
+                            verifiedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            lastActive: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true });
+                    } catch (_fsErr) {
+                        // Firestore sync is best-effort; Firebase Auth is the source of truth.
+                    }
+                }
+
+                showDiv(successDiv);
+
+            } catch (err) {
+                errorMessageSpan.textContent = err.message || 'Verification failed. The link may have expired.';
+                showDiv(failedDiv);
+            }
+        }
+        
+        // Check auth state
+        function checkAuthState() {
+            showDiv(loadingDiv);
+            
+            const unsubscribe = auth.onAuthStateChanged((user) => {
+                unsubscribe();
+                
+                if (!user) {
+                    showDiv(loggedOutDiv);
+                    return;
+                }
+                
+                if (user.emailVerified) {
+                    showDiv(alreadyVerifiedDiv);
+                } else {
+                    userEmailSpan.textContent = user.email;
+                    showDiv(unverifiedDiv);
+                }
+            }, (_error) => {
+                showDiv(loggedOutDiv);
+            });
+        }
+        
+        // Resend verification email
+        async function resendVerification() {
+            const user = auth.currentUser;
+            if (!user) {
+                showDiv(loggedOutDiv);
+                return;
+            }
+            
+            if (resendBtn) resendBtn.disabled = true;
+            if (resendFromFailedBtn) resendFromFailedBtn.disabled = true;
+            
+            try {
+                await user.sendEmailVerification({
+                    url: window.location.origin + '/verify-email.html',
+                    handleCodeInApp: true
+                });
+                
+                showTempMessage(resendSuccessDiv);
+                
+            } catch (_err) {
+                showTempMessage(resendErrorDiv);
+            } finally {
+                if (resendBtn) resendBtn.disabled = false;
+                if (resendFromFailedBtn) resendFromFailedBtn.disabled = false;
+            }
+        }
+        
+        // Initialize
+        (function() {
+            if (hasVerificationLink()) {
+                handleVerificationLink();
+            } else {
+                checkAuthState();
+            }
+        })();
+        
+        // Event Listeners
+        loginBtn?.addEventListener('click', () => {
+            window.location.href = '/';
+        });
+        
+        logoutBtn?.addEventListener('click', async () => {
+            try {
+                await auth.signOut();
+                showDiv(loggedOutDiv);
+            } catch (_err) {
+                // sign-out failure is non-critical
+            }
+        });
+        
+        resendBtn?.addEventListener('click', resendVerification);
+        resendFromFailedBtn?.addEventListener('click', resendVerification);
+    </script>
+</body>
+</html>

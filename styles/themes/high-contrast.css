@@ -1,0 +1,48 @@
+/* ============================================
+   themes/high-contrast.css - WCAG AAA
+   ONLY activates when body has class "high-contrast"
+   ============================================ */
+
+body.high-contrast {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast button,
+body.high-contrast a,
+body.high-contrast input,
+body.high-contrast select,
+body.high-contrast textarea {
+  background-color: #000000 !important;
+  color: #ffff00 !important;
+  border: 2px solid #ffffff !important;
+}
+
+body.high-contrast img {
+  filter: brightness(0.8) contrast(1.5);
+}
+
+body.high-contrast .fixed.bottom-0,
+body.high-contrast .fixed.top-0 {
+  background-color: #000000 !important;
+  border-top: 2px solid #ffff00 !important;
+  border-bottom: 2px solid #ffff00 !important;
+}
+
+body.high-contrast svg {
+  stroke: #ffff00 !important;
+  fill: none !important;
+}
+
+/* Dark mode + high contrast */
+body.high-contrast.dark-mode {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+body.high-contrast.dark-mode button,
+body.high-contrast.dark-mode a {
+  background-color: #ffffff !important;
+  color: #0000ff !important;
+  border: 2px solid #000000 !important;
+}

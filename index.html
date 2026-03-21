@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>UnaDomot - dey your domot</title>
+
+    <!-- Preconnects for performance -->
+    <link rel="preconnect" href="https://www.gstatic.com">
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    <link rel="preconnect" href="https://unpkg.com">
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://widget.cloudinary.com">
+    <link rel="preconnect" href="https://res.cloudinary.com">
+
+    <link rel="dns-prefetch" href="//www.gstatic.com">
+    <link rel="dns-prefetch" href="//firestore.googleapis.com">
+    <link rel="dns-prefetch" href="//unpkg.com">
+    <link rel="dns-prefetch" href="//widget.cloudinary.com">
+    <link rel="dns-prefetch" href="//res.cloudinary.com">
+
+    <!-- Preload critical assets -->
+    <link rel="preload" href="/vault/img/unadomot.jpg" as="image">
+    <link rel="preload" href="/styles/styles.css" as="style">
+    <link rel="preload" href="/styles/accessibility-base.css" as="style">
+    <link rel="preload" href="/styles/themes/light.css" as="style">
+
+    <!-- CSP Headers -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://unpkg.com https://cdn.tailwindcss.com https://*.firebaseio.com https://*.firebase.com https://*.googleapis.com https://apis.google.com https://*.google.com https://widget.cloudinary.com https://*.cloudinary.com;
+        style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com https://widget.cloudinary.com;
+        img-src 'self' data: https: blob: https://res.cloudinary.com https://*.cloudinary.com;
+        font-src 'self' data: https://fonts.gstatic.com;
+        connect-src 'self' https://*.firebaseio.com https://*.firebase.com https://*.googleapis.com wss://*.firebaseio.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com https://*.firebaseapp.com https://securetoken.googleapis.com https://*.google.com https://*.googleapis.com https://api.cloudinary.com https://*.cloudinary.com;
+        frame-src 'self' https://*.firebase.com https://*.google.com https://accounts.google.com https://apis.google.com https://*.firebaseapp.com https://widget.cloudinary.com https://*.cloudinary.com;
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+
+    <!-- Favicon & Manifest -->
+    <link rel="shortcut icon" href="/vault/img/unadomot.jpg" type="image/x-icon" />
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#C8E9BE" id="theme-color">
+    <meta name="description" content="UnaDomot - Connect directly with landlords, eliminate agent fees">
+    <meta name="robots" content="index, follow">
+
+    <!-- Styles -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <link rel="stylesheet" href="/styles/accessibility-base.css">
+    <link rel="stylesheet" href="/styles/themes/light.css">
+    <link rel="stylesheet" href="/styles/themes/dark.css">
+    <link rel="stylesheet" href="/styles/themes/high-contrast.css">
+
+    <!-- Critical inline styles -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            margin: 0;
+            padding: 0;
+        }
+        #root { 
+            min-height: 100vh; 
+            opacity: 0;
+            transition: opacity 0.3s ease-in;
+        }
+        #root.ready {
+            opacity: 1;
+        }
+        .sticky.top-0 {
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+        .fixed.bottom-0, .fixed.top-0 {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+        /* Smooth page transitions prevent flash */
+        .page-transition {
+            animation: pgFadeIn 0.12s ease-out;
+        }
+        @keyframes pgFadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Splash screen styles */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #f0fdf4;
+            display: flex;
+            flex-direction: column;
+            z-index: 9999;
+            transition: opacity 0.3s ease-out;
+        }
+        .splash-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+     
+        .splash-center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .splash-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(0.8); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Scroll to top button animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        /* Transition for hiding/showing headers */
+        .transition-transform {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* ===== MAP CLUSTER STYLES ===== */
+        .custom-cluster {
+            background: transparent;
+        }
+
+        .cluster-icon {
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .cluster-icon.small {
+            width: 30px;
+            height: 30px;
+            font-size: 12px;
+        }
+
+        .cluster-icon.medium {
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+        }
+
+        .cluster-icon.large {
+            width: 50px;
+            height: 50px;
+            font-size: 16px;
+        }
+
+        /* Pulse animation for user location */
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+                r: 8;
+            }
+            50% {
+                opacity: 0.5;
+                r: 12;
+            }
+            100% {
+                opacity: 1;
+                r: 8;
+            }
+        }
+
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+
+        /* Map popup custom styles */
+        .leaflet-popup-content {
+            margin: 0;
+            min-width: 240px;
+        }
+
+        .leaflet-popup-content-wrapper {
+            padding: 0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* Mobile optimizations for map */
+        @media (max-width: 640px) {
+            .leaflet-popup-content {
+                min-width: 200px;
+            }
+            
+            .cluster-icon.small {
+                width: 24px;
+                height: 24px;
+                font-size: 10px;
+            }
+            
+            .cluster-icon.medium {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+            
+            .cluster-icon.large {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+            
+            .leaflet-control-zoom a {
+                width: 44px !important;
+                height: 44px !important;
+                line-height: 44px !important;
+                font-size: 20px !important;
+            }
+            
+            .leaflet-control-attribution {
+                font-size: 9px !important;
+            }
+        }
+    </style>
+    
+    <!-- Leaflet from local files -->
+    <link rel="stylesheet" href="/vault/css/leaflet.css">
+    <link rel="stylesheet" href="/vault/css/MarkerCluster.css">
+    <link rel="stylesheet" href="/vault/css/MarkerCluster.Default.css">
+    <script src="/vault/js/leaflet.js"></script>
+    <script src="/vault/js/leaflet.markercluster.js"></script>
+    
+    <!-- Dynamic CSS loading based on screen size -->
+    <script>
+        (function() {
+            function loadCSS(href) {
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = href;
+                document.head.appendChild(link);
+            }
+            
+            function loadAppropriateCSS() {
+                var width = window.innerWidth;
+                if (width < 768) {
+                    loadCSS('/styles/mobile.css');
+                } else {
+                    loadCSS('/styles/desktop.css');
+                }
+            }
+            
+            // Load on initial page load
+            loadAppropriateCSS();
+            
+            // Reload on resize (debounced)
+            var resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    // Remove old CSS
+                    var links = document.querySelectorAll('link[rel="stylesheet"][href*="mobile.css"], link[rel="stylesheet"][href*="desktop.css"]');
+                    links.forEach(function(link) { link.remove(); });
+                    
+                    // Load new CSS
+                    loadAppropriateCSS();
+                }, 250);
+            });
+        })();
+    </script>
+</head>
+
+<body>
+    <!-- ===== CRITICAL: DARK MODE - MUST RUN BEFORE ANY RENDERING ===== -->
+    <script>
+        (function() {
+            // Check dark mode preference - runs BEFORE anything renders
+            var isDark = localStorage.getItem('darkMode') === 'true';
+            
+            if (isDark) {
+                // Apply to body immediately
+                document.body.classList.add('dark-mode');
+                
+                // Update theme-color meta tag
+                var themeColor = document.querySelector('meta[name="theme-color"]');
+                if (themeColor) {
+                    themeColor.setAttribute('content', '#0f1722');
+                }
+                
+                // Create style tag that applies dark mode BEFORE any content renders
+                var style = document.createElement('style');
+                style.textContent = 
+                    '.splash-screen { background-color: #0f1722 !important; } ' +
+                    '.splash-logo { filter: brightness(1.1); } ' +
+                    '.typewriter, .typewriter-top, .typewriter-bottom { color: #34d399 !important; } ' +
+                    '.typewriter-cursor { background-color: #34d399 !important; }';
+                document.head.appendChild(style);
+                
+                // Also directly target splash if it exists (double protection)
+                if (document.getElementById('splash-screen')) {
+                    document.getElementById('splash-screen').style.backgroundColor = '#0f1722';
+                }
+            } else {
+                // Ensure light mode theme color
+                var themeColor = document.querySelector('meta[name="theme-color"]');
+                if (themeColor) {
+                    themeColor.setAttribute('content', '#C8E9BE');
+                }
+            }
+        })();
+    </script>
+
+    <div id="root"></div>
+    
+    <!-- Splash Screen - Shows immediately -->
+    <div id="splash-screen" class="splash-screen">
+        <div class="splash-center">
+            <img src="/vault/img/unadomot.jpg" alt="UnaDomot" class="splash-logo">
+        </div>
+    </div>
+
+    <script>
+        // Hide splash screen when app is ready
+        window.hideSplashScreen = function() {
+            const splashScreen = document.getElementById('splash-screen');
+            if (splashScreen) {
+                splashScreen.classList.add('hidden');
+                document.getElementById('root').classList.add('ready');
+                
+                // Remove splash screen from DOM after animation
+                setTimeout(() => {
+                    if (splashScreen.parentNode) {
+                        splashScreen.parentNode.removeChild(splashScreen);
+                    }
+                }, 300);
+            }
+        };
+    </script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+    <!-- React -->
+    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+
+    <!-- Critical data and services (load immediately) -->
+    <script src="/data/nigeria-states.js"></script>
+    <script src="/services/firebase.js"></script>
+
+    <!-- Core utilities (load immediately) -->
+    <script src="/utils/LazyLoad.js"></script>
+    <script src="/utils/sanitize.js"></script>
+    <script src="/utils/validation.js"></script>
+    <script src="/utils/validationPatterns.js"></script>
+    <script src="/utils/validationMessages.js"></script>
+    <script src="/utils/smartValidation.js"></script>
+    <script src="/utils/cache.js"></script>
+    <script src="/utils/idGenerator.js"></script>
+    <script src="/utils/cloudinary.js"></script>
+    <script src="/utils/share.js"></script>
+    <script src="/utils/favorites.js"></script>
+    <script src="/utils/chat.js"></script>
+    <script src="/utils/notifications.js"></script>
+    <script src="/utils/messaging.js"></script>
+    <script src="/utils/firestoreRetry.js"></script>
+    <script src="/utils/router.js"></script>
+    <script src="/utils/preload.js"></script>
+    <script src="/utils/firestoreQueries.js"></script>
+    
+    <!-- Geocoding Utility -->
+    <script src="/utils/geocoding.js"></script>
+
+    <!-- Error Handling System -->
+    <script src="/utils/errors/constants.js"></script>
+    <script src="/utils/errors/ErrorLogger.js"></script>
+    <script src="/utils/errors/ErrorBoundary.js"></script>
+    <script src="/utils/errors/ErrorToast.js"></script>
+    <script src="/utils/errors/ErrorModal.js"></script>
+    <script src="/utils/errors/ErrorFallback.js"></script>
+    <script src="/utils/errors/ErrorProvider.js"></script>
+    <script src="/utils/errors/index.js"></script>
+
+    <!-- ===== NEW: Verification & Toast Utilities ===== -->
+    <script src="/utils/verification.js"></script>
+    <script src="/utils/toast.js"></script>
+
+    <!-- Accessibility -->
+    <script src="/utils/accessibilityContext.js"></script>
+    <script src="/utils/accessibilityLayout.js"></script>
+    <script src="/hooks/useAccessibility.js"></script>
+    <script src="/components/AccessibilityProvider.js"></script>
+    <script src="/components/AccessibilityPanel.js"></script>
+
+    <!-- Scroll hook -->
+    <script src="/hooks/useScrollDirection.js"></script>
+    <script src="/components/ScrollToTopButton.js"></script>
+
+    <!-- Contexts -->
+    <script src="/contexts/AuthModalContext.js"></script>
+    <script src="/contexts/NotificationContext.js"></script>
+    <script src="/contexts/RouteCacheContext.js"></script>
+    <script src="/contexts/FormDraftContext.js"></script>
+
+    <!-- Hooks -->
+    <script src="/hooks/useSmartValidation.js"></script>
+    <script src="/hooks/useCache.js"></script>
+    <script src="/hooks/usePersistentState.js"></script>
+    <script src="/hooks/useRequireAuth.js"></script>
+    
+    <!-- ===== NEW: Verification & Toast Hooks ===== -->
+    <script src="/hooks/useVerification.js"></script>
+    <script src="/hooks/useToast.js"></script>
+    
+    <!-- ===== CHAT HOOKS ===== -->
+    <script src="/hooks/useChatMessages.js"></script>
+
+    <!-- ===== REACTION SYSTEM ===== -->
+    <script src="/utils/reactionHelpers.js"></script>
+    <script src="/hooks/useReactions.js"></script>
+    <script src="/components/ReactionButton.js"></script>
+
+    <!-- ===== NEW SIMILAR LISTINGS HOOK ===== -->
+    <script src="/hooks/useSimilarListings.js"></script>
+
+    <!-- Core components -->
+    <script src="/components/RouteCache.js"></script>
+    <script src="/components/SmartFormField.js"></script>
+    <script src="/components/SmartForm.js"></script>
+    <script src="/components/PasswordStrengthMeter.js"></script>
+    <script src="/components/ValidationIndicator.js"></script>
+    <script src="/components/LoginForm.js"></script>
+    
+    <!-- ===== UPDATED: SignupForm with pre-signup toast ===== -->
+    <script src="/components/SignupForm.js"></script>
+    
+    <script src="/components/AuthModal.js"></script>
+    
+    <!-- ===== UPDATED: PostListingWizard with verification ===== -->
+    <script src="/components/PostListingWizard.js"></script>
+    
+    <script src="/components/VerificationBadge.js"></script>
+    <script src="/components/ReportModal.js"></script>
+    
+    <!-- ===== UPDATED: ListingCard with verification ===== -->
+    <script src="/components/ListingCard.js"></script>
+    
+    <script src="/components/SkeletonLoader.js"></script>
+    <script src="/components/ChatMessage.js"></script>
+    
+    <!-- ===== UPDATED: ChatInterface with verification ===== -->
+    <script src="/components/ChatInterface.js"></script>
+    
+    <script src="/components/ChatList.js"></script>
+    <script src="/components/BackButton.js"></script>
+    <script src="/components/UnreadBadge.js"></script>
+    <script src="/components/NotificationBell.js"></script>
+    <script src="/components/Header.js"></script>
+    <script src="/components/Footer.js"></script>
+    <script src="/components/Layout.js"></script>
+
+    <!-- Global Components -->
+    <script src="/components/RoleBadge.js"></script>
+
+    <!-- ===== NEW COMPONENTS ===== -->
+    <script src="/components/DeleteConfirmationModal.js"></script>
+    <script src="/components/SimilarListings.js"></script>
+    <script src="/components/DetailRightPanel.js"></script>
+    
+    <!-- ===== NEW: VerificationWarning Component ===== -->
+    <script src="/components/VerificationWarning.js"></script>
+
+    <!-- ===== HOME PAGE MODULAR FILES ===== -->
+    <script src="/pages/home/utils/affinity.js"></script>
+    <script src="/pages/home/utils/scoring.js"></script>
+    <script src="/pages/home/utils/constants.js"></script>
+    <script src="/pages/home/hooks/useListings.js"></script>
+    <script src="/pages/home/hooks/useFavorites.js"></script>
+    <script src="/pages/home/hooks/useSearch.js"></script>
+    <script src="/pages/home/hooks/useFilters.js"></script>
+    <script src="/pages/home/hooks/useCarousel.js"></script>
+    <script src="/pages/home/hooks/useOtherLocations.js"></script>
+    <script src="/pages/home/components/SearchBar.js"></script>
+    <script src="/pages/home/components/FilterBar.js"></script>
+    
+    <!-- ===== UPDATED: Carousel with verification ===== -->
+    <script src="/pages/home/components/Carousel.js"></script>
+    
+    <script src="/pages/home/components/ListingGrid.js"></script>
+    <script src="/pages/home/components/AccessibilityModal.js"></script>
+    
+    <!-- Map View Components -->
+    <script src="/pages/home/components/ViewToggle.js"></script>
+    
+    <!-- Map View Modular Files -->
+    <script src="/pages/home/components/map/utils.js"></script>
+    <script src="/pages/home/components/map/MapCore.js"></script>
+    <script src="/pages/home/components/map/useNavigation.js"></script>
+    <script src="/pages/home/components/map/MapLayers.js"></script>
+    
+    <!-- ===== UPDATED: MapPopup with verification ===== -->
+    <script src="/pages/home/components/map/MapPopup.js"></script>
+    
+    <script src="/pages/home/components/map/MapMarkers.js"></script>
+    <script src="/pages/home/components/map/MapGeolocation.js"></script>
+    <script src="/pages/home/components/map/MapControls.js"></script>
+    <script src="/pages/home/components/map/index.js"></script>
+    
+    <!-- Filter Components -->
+    <script src="/pages/home/components/filters/PriceFilter.js"></script>
+    <script src="/pages/home/components/filters/SavedSearches.js"></script>
+    
+    <!-- Additional Map Components -->
+    <script src="/pages/home/components/LocationSearch.js"></script>
+    <script src="/pages/home/components/PriceRangeSlider.js"></script>
+    <script src="/pages/home/components/SavedSearches.js"></script>
+    <script src="/pages/home/components/RecentViews.js"></script>
+    
+    <!-- ===== UPDATED: Home page main entry ===== -->
+    <script src="/pages/home/index.js"></script>
+
+    <!-- ===== PROFILE PAGE MODULAR FILES ===== -->
+    <script src="/pages/profile/utils/constants.js"></script>
+    <script src="/pages/profile/hooks/useProfile.js"></script>
+    <script src="/pages/profile/hooks/useListings.js"></script>
+    <script src="/pages/profile/hooks/useUsername.js"></script>
+    <script src="/pages/profile/hooks/useSettings.js"></script>
+    <script src="/pages/profile/components/ProfileHeader.js"></script>
+    <script src="/pages/profile/components/ProfileTabs.js"></script>
+    <script src="/pages/profile/components/EditProfileModal.js"></script>
+    <script src="/pages/profile/components/ListingsTab.js"></script>
+    <script src="/pages/profile/components/SettingsTab.js"></script>
+    <script src="/pages/profile/components/PopupModal.js"></script>
+    <script src="/pages/profile/index.js"></script>
+
+    <!-- ===== LISTING DETAIL PAGE MODULAR FILES ===== -->
+    <script src="/pages/listing-detail/utils/constants.js"></script>
+    <script src="/pages/listing-detail/utils/commentHelpers.js"></script>
+    <script src="/pages/listing-detail/hooks/useListing.js"></script>
+    <script src="/pages/listing-detail/hooks/useImageGallery.js"></script>
+    <script src="/pages/listing-detail/hooks/useComments.js"></script>
+    <script src="/pages/listing-detail/components/ImageGallery.js"></script>
+    <script src="/pages/listing-detail/components/Lightbox.js"></script>
+    <script src="/pages/listing-detail/components/ListingInfo.js"></script>
+    <script src="/pages/listing-detail/components/LandlordCard.js"></script>
+    <script src="/pages/listing-detail/components/ActionButtons.js"></script>
+    <script src="/pages/listing-detail/components/MessageButton.js"></script>
+    <script src="/pages/listing-detail/components/PropertyDetails.js"></script>
+    <script src="/pages/listing-detail/components/Badges.js"></script>
+    <script src="/pages/listing-detail/components/Description.js"></script>
+    <script src="/pages/listing-detail/components/Amenities.js"></script>
+    
+    <!-- ===== UPDATED: CommentForm with verification ===== -->
+    <script src="/pages/listing-detail/components/CommentForm.js"></script>
+    
+    <script src="/pages/listing-detail/components/CommentItem.js"></script>
+    <script src="/pages/listing-detail/components/CommentsSection.js"></script>
+    <script src="/pages/listing-detail/components/ReportButton.js"></script>
+    <script src="/pages/listing-detail/components/ProfileCard.js"></script>
+    <script src="/pages/listing-detail/index.js"></script>
+
+    <!-- Critical pages -->
+    <script src="/pages/ListingByShortCodePage.js"></script>
+ 
+    <!-- Secondary pages (defer after paint) -->
+    <script src="/pages/PublicProfilePage.js" defer></script>
+    <script src="/pages/ProfileRedirectPage.js" defer></script>
+    <script src="/pages/UserByUsernamePage.js" defer></script>
+    <script src="/pages/ChatPage.js" defer></script>
+    
+    <!-- ===== UPDATED: FavoritesPage with verification ===== -->
+    <script src="/pages/FavoritesPage.js" defer></script>
+    
+    <script src="/pages/CheckoutNoticePage.js" defer></script>
+    <script src="/pages/ForgotPasswordPage.js" defer></script>
+    <script src="/pages/NotFoundPage.js" defer></script>
+    <script src="/pages/PrivacyPage.js" defer></script>
+    <script src="/pages/TermsPage.js" defer></script>
+    <script src="/pages/VerificationPage.js" defer></script>
+    <script src="/pages/AdminPage.js" defer></script>
+
+    <!-- Version and App entry -->
+    <script src="/version.js"></script>
+    <script src="/app.js"></script>
+
+    <!-- Offline detection with proper return -->
+    <script>
+        // Store the last attempted URL
+        let lastAttemptedUrl = '/';
+        
+        // Detect offline status
+        window.addEventListener('offline', function() {
+            // Save current URL before going offline
+            if (window.location.pathname !== '/offline.html') {
+                lastAttemptedUrl = window.location.pathname + window.location.search;
+                sessionStorage.setItem('offline_return_url', lastAttemptedUrl);
+            }
+            
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2 rounded-lg shadow-lg text-white text-sm animate-fade-in-up bg-yellow-600';
+            toast.innerText = '📡 You are offline - showing cached content';
+            toast.id = 'offline-toast';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        });
+        
+        window.addEventListener('online', function() {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2 rounded-lg shadow-lg text-white text-sm animate-fade-in-up bg-green-600';
+            toast.innerText = '✅ Back online!';
+            toast.id = 'online-toast';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+            
+            // If we're on offline page, go back to where we came from
+            if (window.location.pathname === '/offline.html') {
+                const returnUrl = sessionStorage.getItem('offline_return_url') || '/';
+                window.location.href = returnUrl;
+            }
+        });
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/service-worker.js').catch(function(err) {
+                    
+                });
+            });
+        }
+
+        if (window.PreloadHelpers) {
+            window.addEventListener('load', function() {
+                setTimeout(function() {
+                    PreloadHelpers.initHoverPreloading();
+                }, 2000);
+            });
+        }
+
+        console.log('UnaDomot v' + (window.APP_VERSION || '1.0.0') + ' loaded');
+    </script>
+</body>
+
+</html>

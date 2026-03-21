@@ -1,0 +1,20 @@
+{
+  "name": "UnaDomot",
+  "short_name": "UnaDomot",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#3498db",
+  "icons": [
+    {
+      "src": "/vault/img/unadomot.jpg",
+      "sizes": "192x192",
+      "type": "image/jpg"
+    },
+    {
+      "src": "/vault/img/unadomot.jpg",
+      "sizes": "512x512",
+      "type": "image/jpg"
+    }
+  ]
+}
