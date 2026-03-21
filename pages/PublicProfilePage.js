@@ -177,51 +177,49 @@ function PublicProfilePage({ user, navigate }) {
     }
   };
 
-// pages/PublicProfilePage.js - FIND THE handleCardMessageClick FUNCTION AND REPLACE
-
-const handleCardMessageClick = async (listingId, userId, e) => {
-  e.stopPropagation();
+  const handleCardMessageClick = async (listingId, userId, e) => {
+    e.stopPropagation();
+    
+    if (!user) {
+      openModal('login', window.location.pathname);
+      return;
+    }
+    
+    const verificationCheck = window.VerificationHelpers?.checkEmailVerification(user, 'send messages');
+    if (!verificationCheck?.allowed) {
+      const message = verificationCheck?.message || 'Please verify your email to send messages';
+      ToastHelpers?.warning(message);
+      
+      const warningEvent = new CustomEvent('show-verification-warning', {
+        detail: { message }
+      });
+      window.dispatchEvent(warningEvent);
+      
+      return;
+    }
+    
+    if (user.uid === userId) {
+      showToast('You cannot message yourself', 'error');
+      return;
+    }
+    
+    try {
+      showToast('Starting conversation...', 'info');
+      
+      const chatId = await ChatHelpers.getOrCreateListingChat(
+        user.uid,
+        userId,
+        listingId,
+        'Is this still available?'
+      );
+      
+      navigate('/chat?chat=' + chatId);
+      
+    } catch (error) {
+      showToast('Failed to start chat. Please try again.', 'error');
+    }
+  };
   
-  if (!user) {
-    openModal('login', window.location.pathname);
-    return;
-  }
-  
-  // ===== USE CENTRALIZED VERIFICATION CHECK =====
-  const verificationCheck = window.VerificationHelpers?.checkEmailVerification(user, 'send messages');
-  if (!verificationCheck?.allowed) {
-    const message = verificationCheck?.message || 'Please verify your email to send messages';
-    ToastHelpers?.warning(message);
-    
-    const warningEvent = new CustomEvent('show-verification-warning', {
-      detail: { message }
-    });
-    window.dispatchEvent(warningEvent);
-    
-    return;
-  }
-  
-  if (user.uid === userId) {
-    showToast('You cannot message yourself', 'error');
-    return;
-  }
-  
-  try {
-    showToast('Starting conversation...', 'info');
-    
-    const chatId = await ChatHelpers.getOrCreateListingChat(
-      user.uid,
-      userId,
-      listingId,
-      'Is this still available?'
-    );
-    
-    navigate('/chat?chat=' + chatId);
-    
-  } catch (error) {
-    showToast('Failed to start chat. Please try again.', 'error');
-  }
-};
   const handleShare = async (listing, e) => {
     e.stopPropagation();
     
@@ -243,6 +241,37 @@ const handleCardMessageClick = async (listingId, userId, e) => {
 
   const getResponseRate = function() {
     return (profileUser && profileUser.replyRate) ? profileUser.replyRate : 98;
+  };
+
+  // ===== HELPER TO CHECK VERIFICATION STATUS =====
+  const isLandlordVerified = profileUser?.verified?.landlord?.status === 'approved';
+  const isAgentVerified = profileUser?.verified?.agent?.status === 'approved';
+
+  // ===== RENDER ROLE BADGES (can show both) =====
+  const renderRoleBadges = () => {
+    const badges = [];
+    
+    if (isLandlordVerified) {
+      badges.push(
+        React.createElement('span', {
+          key: 'landlord',
+          className: 'inline-flex items-center bg-green-100 text-green-700 border border-green-200 rounded-full font-medium text-sm px-2.5 py-1'
+        }, 'Landlord')
+      );
+    }
+    
+    if (isAgentVerified) {
+      badges.push(
+        React.createElement('span', {
+          key: 'agent',
+          className: 'inline-flex items-center bg-gray-700 text-white border border-gray-800 rounded-full font-medium text-sm px-2.5 py-1'
+        }, 'Agent')
+      );
+    }
+    
+    if (badges.length === 0) return null;
+    
+    return React.createElement('div', { className: 'flex items-center gap-2 mt-1' }, ...badges);
   };
 
   React.useEffect(() => {
@@ -346,20 +375,21 @@ const handleCardMessageClick = async (listingId, userId, e) => {
           React.createElement('div', { className: 'pt-14 p-6' },
             React.createElement('div', { className: 'flex flex-wrap justify-between items-start gap-4' },
               React.createElement('div', null,
-                // ✅ UPDATED: User info with RoleBadge
+                // ===== USER INFO WITH DUAL BADGES =====
                 React.createElement('div', { className: 'flex items-center gap-2 mb-1' },
                   React.createElement('h1', { className: 'text-2xl font-bold text-gray-900' },
                     profileUser.name || 'User'
-                  ),
-                  // Role badge - shows for agents and landlords only
-                  React.createElement(RoleBadge, { user: profileUser, size: 'md' })
+                  )
                 ),
                 
-                React.createElement('p', { className: 'text-sm text-gray-500 mb-2' },
+                // ===== SHOW BOTH BADGES SIDE BY SIDE =====
+                renderRoleBadges(),
+                
+                React.createElement('p', { className: 'text-sm text-gray-500 mt-2' },
                   'Member since ' + joinDate
                 ),
                 
-                React.createElement('div', { className: 'flex items-center gap-4 text-sm text-gray-600' },
+                React.createElement('div', { className: 'flex items-center gap-4 text-sm text-gray-600 mt-2' },
                   React.createElement('span', { className: 'flex items-center gap-1' },
                     React.createElement('svg', { className: 'w-4 h-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
                       React.createElement('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' })
@@ -454,13 +484,16 @@ const handleCardMessageClick = async (listingId, userId, e) => {
                         React.createElement('h3', { className: 'font-bold text-gray-900 mb-0.5 line-clamp-1 text-sm' }, listing.title),
                         React.createElement('p', { className: 'text-gray-600 mb-1 line-clamp-1 text-xs' }, listing.address),
                         
-                        // ===== UPDATED: Role badge - shows Landlord or Agent, no badge for regular users =====
+                        // ===== UPDATED: Show role badge on listing card based on listingRole =====
                         React.createElement('div', { className: 'flex flex-wrap gap-0.5 mb-1' },
-                          listing.userType && listing.userType !== 'user' &&
-                            React.createElement(RoleBadge, { 
-                              user: { userType: listing.userType }, 
-                              size: 'xs' 
-                            }),
+                          listing.listingRole === 'landlord' &&
+                            React.createElement('span', {
+                              className: 'bg-green-100 text-green-700 px-1 py-0.5 rounded text-[10px]'
+                            }, 'Landlord'),
+                          listing.listingRole === 'agent' &&
+                            React.createElement('span', {
+                              className: 'bg-gray-700 text-white px-1 py-0.5 rounded text-[10px]'
+                            }, 'Agent'),
                           listing.propertyType && React.createElement('span', {
                             className: 'bg-gray-100 text-gray-700 px-1 py-0.5 rounded text-[10px]'
                           }, listing.propertyType)
@@ -524,13 +557,30 @@ const handleCardMessageClick = async (listingId, userId, e) => {
           React.createElement('div', { className: 'bg-white rounded-lg shadow-sm p-6' },
             React.createElement('div', { className: 'space-y-4' },
               React.createElement('div', null,
-                React.createElement('h3', { className: 'text-sm font-medium text-gray-500 mb-2' }, 'Account Type'),
-                React.createElement('div', { className: 'flex items-center gap-2' },
-                  profileUser.userType === 'landlord' ?
-                    React.createElement('span', { className: 'text-green-600 font-medium' }, 'Landlord') :
-                  profileUser.userType === 'agent' ?
-                    React.createElement('span', { className: 'text-gray-600 font-medium' }, 'Agent') :
-                    React.createElement('span', { className: 'text-gray-500' }, 'User')
+                React.createElement('h3', { className: 'text-sm font-medium text-gray-500 mb-2' }, 'Verification Status'),
+                React.createElement('div', { className: 'space-y-2' },
+                  React.createElement('div', { className: 'flex items-center justify-between' },
+                    React.createElement('div', { className: 'flex items-center gap-2' },
+                      React.createElement('span', { className: 'text-base' }, '🏠'),
+                      React.createElement('span', { className: 'text-sm text-gray-700' }, 'Landlord')
+                    ),
+                    React.createElement('span', { 
+                      className: `text-xs px-2 py-0.5 rounded-full ${
+                        isLandlordVerified ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                      }`
+                    }, isLandlordVerified ? 'Verified' : 'Not Verified')
+                  ),
+                  React.createElement('div', { className: 'flex items-center justify-between' },
+                    React.createElement('div', { className: 'flex items-center gap-2' },
+                      React.createElement('span', { className: 'text-base' }, '🤝'),
+                      React.createElement('span', { className: 'text-sm text-gray-700' }, 'Agent')
+                    ),
+                    React.createElement('span', { 
+                      className: `text-xs px-2 py-0.5 rounded-full ${
+                        isAgentVerified ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                      }`
+                    }, isAgentVerified ? 'Verified' : 'Not Verified')
+                  )
                 )
               ),
 

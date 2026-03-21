@@ -5,16 +5,17 @@
 // - View all listings with filters
 // - Search across all content
 // - Bulk actions
+// - SEPARATE Landlord & Agent verifications
 
 function AdminPage({ user, navigate }) {
   const [isAdmin, setIsAdmin] = React.useState(null);
-  const [activeTab, setActiveTab] = React.useState('listings'); // Default to listings now
+  const [activeTab, setActiveTab] = React.useState('listings'); // listings, pending, reports, landlord_verifications, agent_verifications
   const [isCreatingAdmin, setIsCreatingAdmin] = React.useState(false);
   
   // ===== ALL LISTINGS STATE (for content moderation) =====
   const [allListings, setAllListings] = React.useState([]);
   const [allListingsLoading, setAllListingsLoading] = React.useState(false);
-  const [allListingsFilter, setAllListingsFilter] = React.useState('all'); // all, active, hidden, deleted
+  const [allListingsFilter, setAllListingsFilter] = React.useState('all');
   const [allListingsSearch, setAllListingsSearch] = React.useState('');
   const [allListingsUsingIndex, setAllListingsUsingIndex] = React.useState(true);
   const [selectedListings, setSelectedListings] = React.useState([]);
@@ -26,12 +27,19 @@ function AdminPage({ user, navigate }) {
   const [reportsFilter, setReportsFilter] = React.useState('pending');
   const [reportsUsingIndex, setReportsUsingIndex] = React.useState(true);
   
-  // User verifications state
-  const [verifications, setVerifications] = React.useState([]);
-  const [verificationsLoading, setVerificationsLoading] = React.useState(false);
-  const [verificationsUsingIndex, setVerificationsUsingIndex] = React.useState(true);
-  const [rejectReason, setRejectReason] = React.useState({});
-  const [rejectOpen, setRejectOpen] = React.useState(null);
+  // ===== LANDLORD VERIFICATIONS STATE =====
+  const [landlordVerifications, setLandlordVerifications] = React.useState([]);
+  const [landlordVerificationsLoading, setLandlordVerificationsLoading] = React.useState(false);
+  const [landlordVerificationsUsingIndex, setLandlordVerificationsUsingIndex] = React.useState(true);
+  const [landlordRejectReason, setLandlordRejectReason] = React.useState({});
+  const [landlordRejectOpen, setLandlordRejectOpen] = React.useState(null);
+  
+  // ===== AGENT VERIFICATIONS STATE =====
+  const [agentVerifications, setAgentVerifications] = React.useState([]);
+  const [agentVerificationsLoading, setAgentVerificationsLoading] = React.useState(false);
+  const [agentVerificationsUsingIndex, setAgentVerificationsUsingIndex] = React.useState(true);
+  const [agentRejectReason, setAgentRejectReason] = React.useState({});
+  const [agentRejectOpen, setAgentRejectOpen] = React.useState(null);
 
   // Pending listings state
   const [pendingListings, setPendingListings] = React.useState([]);
@@ -63,18 +71,13 @@ function AdminPage({ user, navigate }) {
       return;
     }
 
-    // First check if user is the hardcoded admin email
     if (user.email === ADMIN_EMAIL) {
-      
-      
-      // Check if admin document exists, create if it doesn't
       const ensureAdminDocument = async () => {
         setIsCreatingAdmin(true);
         try {
           const adminDoc = await db.collection('admins').doc(user.uid).get();
           
           if (!adminDoc.exists) {
-            
             await db.collection('admins').doc(user.uid).set({
               email: user.email,
               uid: user.uid,
@@ -83,12 +86,9 @@ function AdminPage({ user, navigate }) {
               role: 'super-admin',
               permissions: ['all']
             });
-            
           }
           setIsAdmin(true);
         } catch (err) {
-          
-          // Even if document creation fails, still allow access
           setIsAdmin(true);
         } finally {
           setIsCreatingAdmin(false);
@@ -99,18 +99,16 @@ function AdminPage({ user, navigate }) {
       return;
     }
 
-    // For other users, check the admins collection normally
     db.collection('admins').doc(user.uid).get()
       .then(function(doc) {
         setIsAdmin(doc.exists);
       })
       .catch(function(err) {
-        
         setIsAdmin(false);
       });
   }, [user, navigate, openModal]);
   
-  // ===== FETCH ALL LISTINGS (for content moderation) =====
+  // ===== FETCH ALL LISTINGS =====
   React.useEffect(function() {
     if (!isAdmin || activeTab !== 'listings') return;
     fetchAllListings();
@@ -127,7 +125,6 @@ function AdminPage({ user, navigate }) {
         limit: 50
       };
       
-      // Apply status filter
       if (allListingsFilter !== 'all') {
         if (allListingsFilter === 'active') {
           queryOptions.where = [['status', '==', 'available']];
@@ -144,7 +141,6 @@ function AdminPage({ user, navigate }) {
       
       setAllListingsUsingIndex(result.usingIndex);
       
-      // Apply search filter client-side (for text search across multiple fields)
       let filteredData = result.data;
       if (allListingsSearch.trim()) {
         const searchTerm = allListingsSearch.toLowerCase().trim();
@@ -196,31 +192,61 @@ function AdminPage({ user, navigate }) {
     }
   }
   
-  // Fetch user verifications
+  // ===== FETCH LANDLORD VERIFICATIONS =====
   React.useEffect(function() {
-    if (!isAdmin || activeTab !== 'verifications') return;
-    fetchVerifications();
+    if (!isAdmin || activeTab !== 'landlord_verifications') return;
+    fetchLandlordVerifications();
   }, [isAdmin, activeTab]);
 
-  async function fetchVerifications() {
-    setVerificationsLoading(true);
+  async function fetchLandlordVerifications() {
+    setLandlordVerificationsLoading(true);
     
     try {
+      // Get all users with pending landlord verification
       const result = await FirestoreQueries.query({
         collection: 'users',
-        where: [['verified.status', '==', 'pending']],
+        where: [['verified.landlord.status', '==', 'pending']],
         orderBy: 'createdAt',
         orderDirection: 'desc',
         limit: 50
       });
       
-      setVerificationsUsingIndex(result.usingIndex);
-      setVerifications(result.data);
+      setLandlordVerificationsUsingIndex(result.usingIndex);
+      setLandlordVerifications(result.data);
       
     } catch (err) {
       
     } finally {
-      setVerificationsLoading(false);
+      setLandlordVerificationsLoading(false);
+    }
+  }
+  
+  // ===== FETCH AGENT VERIFICATIONS =====
+  React.useEffect(function() {
+    if (!isAdmin || activeTab !== 'agent_verifications') return;
+    fetchAgentVerifications();
+  }, [isAdmin, activeTab]);
+
+  async function fetchAgentVerifications() {
+    setAgentVerificationsLoading(true);
+    
+    try {
+      // Get all users with pending agent verification
+      const result = await FirestoreQueries.query({
+        collection: 'users',
+        where: [['verified.agent.status', '==', 'pending']],
+        orderBy: 'createdAt',
+        orderDirection: 'desc',
+        limit: 50
+      });
+      
+      setAgentVerificationsUsingIndex(result.usingIndex);
+      setAgentVerifications(result.data);
+      
+    } catch (err) {
+      
+    } finally {
+      setAgentVerificationsLoading(false);
     }
   }
 
@@ -251,38 +277,30 @@ function AdminPage({ user, navigate }) {
     }
   }
 
-  // ===== CONTENT MODERATION ACTIONS =====
-
-  // PERMANENTLY DELETE a listing (irreversible)
+  // ===== CONTENT MODERATION ACTIONS ===== (same as before, keeping existing)
   async function permanentlyDeleteListing(listing) {
     setConfirmModal({
       show: true,
       title: '⚠️ Permanently Delete Listing',
-      message: `Are you sure you want to PERMANENTLY delete "${listing.title}"? This action CANNOT be undone. The listing will be completely removed from the database.`,
+      message: `Are you sure you want to PERMANENTLY delete "${listing.title}"? This action CANNOT be undone.`,
       action: async () => {
         setLoading(listing.id, true);
         try {
-          // Actually delete the document (not just update status)
           await db.collection('listings').doc(listing.id).delete();
           
-          // Also delete associated data
           try {
-            // Delete comments subcollection
             const commentsRef = db.collection('listings').doc(listing.id).collection('comments');
             const comments = await commentsRef.get();
             const batch = db.batch();
             comments.docs.forEach(doc => batch.delete(doc.ref));
             await batch.commit();
-          } catch (e) {
-                      }
+          } catch (e) {}
           
-          // Remove from UI
           setAllListings(prev => prev.filter(l => l.id !== listing.id));
           if (selectedListings.includes(listing.id)) {
             setSelectedListings(prev => prev.filter(id => id !== listing.id));
           }
           
-          // Log admin action
           await db.collection('adminLogs').add({
             action: 'permanent_delete',
             targetId: listing.id,
@@ -293,58 +311,48 @@ function AdminPage({ user, navigate }) {
           
           alert(`✅ Listing "${listing.title}" permanently deleted`);
         } catch (err) {
-          
-          alert('❌ Failed to delete listing. Check console for details.');
+          alert('❌ Failed to delete listing.');
         } finally {
           setLoading(listing.id, false);
           setConfirmModal({ ...confirmModal, show: false });
         }
-      },
-      data: listing
+      }
     });
   }
 
-  // HIDE a listing (soft delete - can be restored)
   async function hideListing(listing) {
     setLoading(listing.id, true);
     try {
       await db.collection('listings').doc(listing.id).update({
         status: 'hidden_by_admin',
         hiddenAt: firebase.firestore.FieldValue.serverTimestamp(),
-        hiddenBy: user.uid,
-        hiddenReason: 'Admin moderation'
+        hiddenBy: user.uid
       });
       
-      // Update UI
       setAllListings(prev => prev.map(l => 
         l.id === listing.id ? { ...l, status: 'hidden_by_admin' } : l
       ));
       
-      // Notify user
       try {
         await db.collection('users').doc(listing.userId)
           .collection('notifications').add({
             type: 'listing_hidden',
             title: '📢 Your listing has been hidden',
-            body: `Your listing "${listing.title}" has been hidden by an admin. Please review our guidelines.`,
+            body: `Your listing "${listing.title}" has been hidden by an admin.`,
             listingId: listing.id,
             read: false,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
           });
-      } catch (e) {
-        
-      }
+      } catch (e) {}
       
-      alert(`✅ Listing "${listing.title}" hidden from public view`);
+      alert(`✅ Listing "${listing.title}" hidden`);
     } catch (err) {
-      
       alert('❌ Failed to hide listing');
     } finally {
       setLoading(listing.id, false);
     }
   }
 
-  // RESTORE a hidden/deleted listing
   async function restoreListing(listing) {
     setLoading(listing.id, true);
     try {
@@ -354,18 +362,16 @@ function AdminPage({ user, navigate }) {
         restoredBy: user.uid
       });
       
-      // Update UI
       setAllListings(prev => prev.map(l => 
         l.id === listing.id ? { ...l, status: 'available' } : l
       ));
       
-      // Notify user
       try {
         await db.collection('users').doc(listing.userId)
           .collection('notifications').add({
             type: 'listing_restored',
             title: '✅ Your listing has been restored',
-            body: `Your listing "${listing.title}" has been restored and is now public again.`,
+            body: `Your listing "${listing.title}" has been restored.`,
             listingId: listing.id,
             read: false,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -374,21 +380,19 @@ function AdminPage({ user, navigate }) {
       
       alert(`✅ Listing "${listing.title}" restored`);
     } catch (err) {
-      
       alert('❌ Failed to restore listing');
     } finally {
       setLoading(listing.id, false);
     }
   }
 
-  // BULK ACTIONS
   async function bulkHide() {
     if (selectedListings.length === 0) return;
     
     setConfirmModal({
       show: true,
       title: `Hide ${selectedListings.length} Listings`,
-      message: `Are you sure you want to hide ${selectedListings.length} selected listings? They will no longer be visible to users.`,
+      message: `Hide ${selectedListings.length} selected listings?`,
       action: async () => {
         setBulkActionLoading(true);
         try {
@@ -403,7 +407,6 @@ function AdminPage({ user, navigate }) {
           });
           await batch.commit();
           
-          // Update UI
           setAllListings(prev => prev.map(l => 
             selectedListings.includes(l.id) ? { ...l, status: 'hidden_by_admin' } : l
           ));
@@ -411,14 +414,12 @@ function AdminPage({ user, navigate }) {
           
           alert(`✅ ${selectedListings.length} listings hidden`);
         } catch (err) {
-          
           alert('❌ Failed to hide some listings');
         } finally {
           setBulkActionLoading(false);
           setConfirmModal({ ...confirmModal, show: false });
         }
-      },
-      data: null
+      }
     });
   }
 
@@ -428,11 +429,10 @@ function AdminPage({ user, navigate }) {
     setConfirmModal({
       show: true,
       title: '⚠️ PERMANENTLY DELETE Multiple Listings',
-      message: `Are you ABSOLUTELY sure you want to PERMANENTLY DELETE ${selectedListings.length} listings? This CANNOT be undone.`,
+      message: `Delete ${selectedListings.length} listings permanently?`,
       action: async () => {
         setBulkActionLoading(true);
         try {
-          // Delete each listing (in batches of 10 due to Firestore limits)
           for (let i = 0; i < selectedListings.length; i += 10) {
             const batch = db.batch();
             const batchIds = selectedListings.slice(i, i + 10);
@@ -445,29 +445,23 @@ function AdminPage({ user, navigate }) {
             await batch.commit();
           }
           
-          // Update UI
           setAllListings(prev => prev.filter(l => !selectedListings.includes(l.id)));
           setSelectedListings([]);
           
-          alert(`✅ ${selectedListings.length} listings permanently deleted`);
+          alert(`✅ ${selectedListings.length} listings deleted`);
         } catch (err) {
-          
           alert('❌ Failed to delete some listings');
         } finally {
           setBulkActionLoading(false);
           setConfirmModal({ ...confirmModal, show: false });
         }
-      },
-      data: null
+      }
     });
   }
 
-  // Toggle selection for bulk actions
   function toggleSelectListing(id) {
     setSelectedListings(prev => 
-      prev.includes(id) 
-        ? prev.filter(i => i !== id)
-        : [...prev, id]
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   }
 
@@ -479,8 +473,6 @@ function AdminPage({ user, navigate }) {
     }
   }
 
-  // ===== EXISTING FUNCTIONS (reports, verifications, pending) =====
-  // [All your existing functions remain exactly the same]
   function setLoading(id, val) {
     setActionLoading(function(prev) {
       const next = { ...prev };
@@ -494,8 +486,12 @@ function AdminPage({ user, navigate }) {
     setReports(function(prev) { return prev.filter(function(r) { return r.id !== reportId; }); });
   }
 
-  function removeVerification(userId) {
-    setVerifications(function(prev) { return prev.filter(function(v) { return v.id !== userId; }); });
+  function removeLandlordVerification(userId) {
+    setLandlordVerifications(function(prev) { return prev.filter(function(v) { return v.id !== userId; }); });
+  }
+
+  function removeAgentVerification(userId) {
+    setAgentVerifications(function(prev) { return prev.filter(function(v) { return v.id !== userId; }); });
   }
 
   function removePendingListing(listingId) {
@@ -512,14 +508,14 @@ function AdminPage({ user, navigate }) {
       });
       removeReport(report.id);
     } catch (err) {
-      alert('Failed to dismiss report. Try again.');
+      alert('Failed to dismiss report.');
     } finally {
       setLoading(report.id, false);
     }
   }
 
   async function removeContent(report) {
-    if (!window.confirm('Remove this ' + report.targetType + '? This will mark it as removed and resolve the report.')) return;
+    if (!window.confirm('Remove this ' + report.targetType + '?')) return;
 
     setLoading(report.id, true);
     try {
@@ -544,7 +540,7 @@ function AdminPage({ user, navigate }) {
       await batch.commit();
       removeReport(report.id);
     } catch (err) {
-      alert('Failed to remove content. Try again.');
+      alert('Failed to remove content.');
     } finally {
       setLoading(report.id, false);
     }
@@ -553,11 +549,11 @@ function AdminPage({ user, navigate }) {
   async function banUser(report) {
     const userId = report.targetType === 'user' ? report.targetId : null;
     if (!userId) {
-      alert('Cannot ban: no user target on this report. Use the user ID directly.');
+      alert('Cannot ban: no user target.');
       return;
     }
 
-    if (!window.confirm('Ban user ' + userId + '? They will no longer be able to use UnaDomot.')) return;
+    if (!window.confirm('Ban user ' + userId + '?')) return;
 
     setLoading(report.id, true);
     try {
@@ -580,47 +576,137 @@ function AdminPage({ user, navigate }) {
       await batch.commit();
       removeReport(report.id);
     } catch (err) {
-      alert('Failed to ban user. Try again.');
+      alert('Failed to ban user.');
     } finally {
       setLoading(report.id, false);
     }
   }
 
-  async function approveVerification(targetUser) {
+  // ===== LANDLORD VERIFICATION ACTIONS =====
+  async function approveLandlordVerification(targetUser) {
     setLoading(targetUser.id, true);
     try {
       await db.collection('users').doc(targetUser.id).update({
-        'verified.status': 'approved',
-        'verified.approvedAt': firebase.firestore.FieldValue.serverTimestamp(),
-        'verified.approvedBy': user.uid
+        'verified.landlord.status': 'approved',
+        'verified.landlord.approvedAt': firebase.firestore.FieldValue.serverTimestamp(),
+        'verified.landlord.approvedBy': user.uid
       });
-      removeVerification(targetUser.id);
+      removeLandlordVerification(targetUser.id);
+      
+      // Send notification
+      await db.collection('users').doc(targetUser.id)
+        .collection('notifications').add({
+          type: 'verification_approved',
+          title: '✅ Landlord Verification Approved',
+          body: 'Your landlord verification has been approved! You now have a Landlord badge.',
+          read: false,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+      alert('✅ Landlord verification approved');
     } catch (err) {
-      alert('Failed to approve. Try again.');
+      alert('Failed to approve.');
     } finally {
       setLoading(targetUser.id, false);
     }
   }
 
-  async function rejectVerification(targetUser) {
-    const reason = rejectReason[targetUser.id] || '';
+  async function rejectLandlordVerification(targetUser) {
+    const reason = landlordRejectReason[targetUser.id] || '';
     if (!reason.trim()) {
-      alert('Please enter a rejection reason before rejecting.');
+      alert('Please enter a rejection reason.');
       return;
     }
 
     setLoading(targetUser.id, true);
     try {
       await db.collection('users').doc(targetUser.id).update({
-        'verified.status': 'rejected',
-        'verified.rejectionReason': reason.trim(),
-        'verified.reviewedAt': firebase.firestore.FieldValue.serverTimestamp(),
-        'verified.reviewedBy': user.uid
+        'verified.landlord.status': 'rejected',
+        'verified.landlord.rejectionReason': reason.trim(),
+        'verified.landlord.reviewedAt': firebase.firestore.FieldValue.serverTimestamp(),
+        'verified.landlord.reviewedBy': user.uid
       });
-      removeVerification(targetUser.id);
-      setRejectOpen(null);
+      removeLandlordVerification(targetUser.id);
+      setLandlordRejectOpen(null);
+      
+      // Send notification
+      await db.collection('users').doc(targetUser.id)
+        .collection('notifications').add({
+          type: 'verification_rejected',
+          title: '✕ Landlord Verification Rejected',
+          body: `Your landlord verification was rejected. Reason: ${reason}`,
+          read: false,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+      alert('✕ Landlord verification rejected');
     } catch (err) {
-      alert('Failed to reject. Try again.');
+      alert('Failed to reject.');
+    } finally {
+      setLoading(targetUser.id, false);
+    }
+  }
+
+  // ===== AGENT VERIFICATION ACTIONS =====
+  async function approveAgentVerification(targetUser) {
+    setLoading(targetUser.id, true);
+    try {
+      await db.collection('users').doc(targetUser.id).update({
+        'verified.agent.status': 'approved',
+        'verified.agent.approvedAt': firebase.firestore.FieldValue.serverTimestamp(),
+        'verified.agent.approvedBy': user.uid
+      });
+      removeAgentVerification(targetUser.id);
+      
+      // Send notification
+      await db.collection('users').doc(targetUser.id)
+        .collection('notifications').add({
+          type: 'verification_approved',
+          title: '✅ Agent Verification Approved',
+          body: 'Your agent verification has been approved! You now have an Agent badge.',
+          read: false,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+      alert('✅ Agent verification approved');
+    } catch (err) {
+      alert('Failed to approve.');
+    } finally {
+      setLoading(targetUser.id, false);
+    }
+  }
+
+  async function rejectAgentVerification(targetUser) {
+    const reason = agentRejectReason[targetUser.id] || '';
+    if (!reason.trim()) {
+      alert('Please enter a rejection reason.');
+      return;
+    }
+
+    setLoading(targetUser.id, true);
+    try {
+      await db.collection('users').doc(targetUser.id).update({
+        'verified.agent.status': 'rejected',
+        'verified.agent.rejectionReason': reason.trim(),
+        'verified.agent.reviewedAt': firebase.firestore.FieldValue.serverTimestamp(),
+        'verified.agent.reviewedBy': user.uid
+      });
+      removeAgentVerification(targetUser.id);
+      setAgentRejectOpen(null);
+      
+      // Send notification
+      await db.collection('users').doc(targetUser.id)
+        .collection('notifications').add({
+          type: 'verification_rejected',
+          title: '✕ Agent Verification Rejected',
+          body: `Your agent verification was rejected. Reason: ${reason}`,
+          read: false,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+      alert('✕ Agent verification rejected');
+    } catch (err) {
+      alert('Failed to reject.');
     } finally {
       setLoading(targetUser.id, false);
     }
@@ -648,7 +734,7 @@ function AdminPage({ user, navigate }) {
       });
       
     } catch (err) {
-      alert('Failed to approve listing. Try again.');
+      alert('Failed to approve listing.');
     } finally {
       setLoading(listing.id, false);
     }
@@ -657,7 +743,7 @@ function AdminPage({ user, navigate }) {
   async function rejectListing(listing) {
     const reason = rejectionReason[listing.id] || '';
     if (!reason.trim()) {
-      alert('Please enter a rejection reason before rejecting.');
+      alert('Please enter a rejection reason.');
       return;
     }
 
@@ -684,7 +770,7 @@ function AdminPage({ user, navigate }) {
       });
       
     } catch (err) {
-      alert('Failed to reject listing. Try again.');
+      alert('Failed to reject listing.');
     } finally {
       setLoading(listing.id, false);
     }
@@ -701,7 +787,6 @@ function AdminPage({ user, navigate }) {
     return date.toLocaleDateString('en-NG', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   }
 
-  // Confirmation Modal Component
   function ConfirmationModal() {
     if (!confirmModal.show) return null;
     
@@ -783,14 +868,15 @@ function AdminPage({ user, navigate }) {
       available: 'bg-green-100 text-green-700',
       hidden_by_admin: 'bg-orange-100 text-orange-800',
       deleted: 'bg-gray-100 text-gray-600 line-through',
-      scam: 'bg-red-100 text-red-700'
+      scam: 'bg-red-100 text-red-700',
+      approved: 'bg-green-100 text-green-700'
     };
     return React.createElement('span', {
       className: 'inline-block px-2 py-0.5 rounded-full text-xs font-medium ' + (colours[status] || 'bg-gray-100 text-gray-700')
     }, status);
   }
 
-  // ===== NEW: All Listings Tab (Content Moderation) =====
+  // ===== ALL LISTINGS TAB (same as before) =====
   function AllListingsTab() {
     if (allListingsLoading) {
       return React.createElement('div', { className: 'flex justify-center py-16' },
@@ -799,8 +885,6 @@ function AdminPage({ user, navigate }) {
     }
 
     return React.createElement('div', null,
-      
-      // Filter and Search Bar
       React.createElement('div', { className: 'mb-4 space-y-3' },
         React.createElement('div', { className: 'flex items-center gap-2 flex-wrap' },
           React.createElement('span', { className: 'text-sm text-gray-500' }, 'Filter:'),
@@ -820,7 +904,7 @@ function AdminPage({ user, navigate }) {
         React.createElement('div', { className: 'flex gap-2' },
           React.createElement('input', {
             type: 'text',
-            placeholder: 'Search listings by title, location, user...',
+            placeholder: 'Search listings...',
             value: allListingsSearch,
             onChange: (e) => setAllListingsSearch(e.target.value),
             className: 'flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-950'
@@ -831,7 +915,6 @@ function AdminPage({ user, navigate }) {
           }, 'Search')
         ),
         
-        // Bulk actions bar
         selectedListings.length > 0 && React.createElement('div', { 
           className: 'flex items-center justify-between bg-blue-50 p-3 rounded-lg border border-blue-200'
         },
@@ -859,7 +942,6 @@ function AdminPage({ user, navigate }) {
         allListingsUsingIndex ? '⚡ Using Index' : '🔄 JS Fallback'
       ),
 
-      // Select All checkbox
       allListings.length > 0 && React.createElement('div', { className: 'mb-2 flex items-center gap-2' },
         React.createElement('input', {
           type: 'checkbox',
@@ -868,9 +950,7 @@ function AdminPage({ user, navigate }) {
           onChange: selectAll,
           className: 'w-4 h-4 accent-green-900'
         }),
-        React.createElement('label', { htmlFor: 'select-all', className: 'text-sm text-gray-600' },
-          'Select All'
-        )
+        React.createElement('label', { htmlFor: 'select-all', className: 'text-sm text-gray-600' }, 'Select All')
       ),
 
       allListings.length === 0
@@ -890,7 +970,6 @@ function AdminPage({ user, navigate }) {
                   }`
                 },
                 React.createElement('div', { className: 'flex items-start gap-3' },
-                  // Selection checkbox
                   React.createElement('input', {
                     type: 'checkbox',
                     checked: isSelected,
@@ -898,7 +977,6 @@ function AdminPage({ user, navigate }) {
                     className: 'mt-1 w-4 h-4 accent-green-900 flex-shrink-0'
                   }),
                   
-                  // Thumbnail
                   React.createElement('div', { className: 'w-16 h-16 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0' },
                     listing.images && listing.images[0] ?
                       React.createElement('img', {
@@ -908,7 +986,6 @@ function AdminPage({ user, navigate }) {
                       React.createElement('div', { className: 'w-full h-full flex items-center justify-center text-gray-400' }, '📷')
                   ),
                   
-                  // Content
                   React.createElement('div', { className: 'flex-1' },
                     React.createElement('div', { className: 'flex flex-wrap items-start justify-between gap-2 mb-1' },
                       React.createElement('div', null,
@@ -928,40 +1005,34 @@ function AdminPage({ user, navigate }) {
                       )
                     ),
                     
-                    // Location
                     React.createElement('p', { className: 'text-xs text-gray-600 mb-2' },
                       '📍 ' + [listing.address, listing.lga, listing.state].filter(Boolean).join(', ')
                     ),
                     
-                    // Action buttons
                     React.createElement('div', { className: 'flex flex-wrap gap-2 mt-3' },
-                      // View button
                       React.createElement('button', {
                         onClick: () => navigate('/listing/' + listing.id),
                         className: 'px-3 py-1.5 text-xs font-medium bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition'
                       }, '👁️ Preview'),
                       
-                      // Hide/Restore button
                       listing.status === 'hidden_by_admin' ?
                         React.createElement('button', {
                           onClick: () => restoreListing(listing),
                           disabled: busy,
-                          className: 'px-3 py-1.5 text-xs font-medium bg-green-600 text-white rounded hover:bg-green-700 transition disabled:opacity-50'
+                          className: 'px-3 py-1.5 text-xs font-medium bg-green-600 text-white rounded hover:bg-green-700 transition'
                         }, busy ? '...' : '🔄 Restore') :
                         React.createElement('button', {
                           onClick: () => hideListing(listing),
                           disabled: busy,
-                          className: 'px-3 py-1.5 text-xs font-medium bg-orange-500 text-white rounded hover:bg-orange-600 transition disabled:opacity-50'
+                          className: 'px-3 py-1.5 text-xs font-medium bg-orange-500 text-white rounded hover:bg-orange-600 transition'
                         }, busy ? '...' : '👁️ Hide'),
                       
-                      // Delete button (permanent)
                       React.createElement('button', {
                         onClick: () => permanentlyDeleteListing(listing),
                         disabled: busy,
-                        className: 'px-3 py-1.5 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-700 transition disabled:opacity-50'
+                        className: 'px-3 py-1.5 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-700 transition'
                       }, busy ? '...' : '🗑️ Delete'),
                       
-                      // User info
                       React.createElement('button', {
                         onClick: () => navigate('/profile/' + listing.userId),
                         className: 'px-3 py-1.5 text-xs font-medium bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition'
@@ -975,7 +1046,7 @@ function AdminPage({ user, navigate }) {
     );
   }
 
-  // Reports Tab (existing)
+  // ===== REPORTS TAB (same as before) =====
   function ReportsTab() {
     const filterBtns = ['pending', 'resolved', 'dismissed'].map(function(f) {
       return React.createElement('button', {
@@ -995,7 +1066,6 @@ function AdminPage({ user, navigate }) {
     }
 
     return React.createElement('div', null,
-      
       React.createElement('div', { className: 'mb-2 text-xs text-right ' + 
         (reportsUsingIndex ? 'text-green-600' : 'text-yellow-600')
       },
@@ -1056,19 +1126,19 @@ function AdminPage({ user, navigate }) {
                   React.createElement('button', {
                     onClick: function() { dismissReport(report); },
                     disabled: busy,
-                    className: 'px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition disabled:opacity-50 cursor-pointer'
+                    className: 'px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition'
                   }, busy ? '...' : 'Dismiss'),
 
                   report.targetType === 'listing' && React.createElement('button', {
                     onClick: function() { removeContent(report); },
                     disabled: busy,
-                    className: 'px-3 py-1.5 text-xs font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition disabled:opacity-50 cursor-pointer'
+                    className: 'px-3 py-1.5 text-xs font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition'
                   }, busy ? '...' : '🗑 Remove Listing'),
 
                   report.targetType === 'user' && React.createElement('button', {
                     onClick: function() { banUser(report); },
                     disabled: busy,
-                    className: 'px-3 py-1.5 text-xs font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition disabled:opacity-50 cursor-pointer'
+                    className: 'px-3 py-1.5 text-xs font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition'
                   }, busy ? '...' : '🚫 Ban User')
                 )
               );
@@ -1077,33 +1147,32 @@ function AdminPage({ user, navigate }) {
     );
   }
 
-  // Verifications Tab (existing)
-  function VerificationsTab() {
-    if (verificationsLoading) {
+  // ===== LANDLORD VERIFICATIONS TAB =====
+  function LandlordVerificationsTab() {
+    if (landlordVerificationsLoading) {
       return React.createElement('div', { className: 'flex justify-center py-16' },
         React.createElement('div', { className: 'w-6 h-6 rounded-full bg-gray-200 animate-pulse mx-auto' })
       );
     }
 
-    if (verifications.length === 0) {
+    if (landlordVerifications.length === 0) {
       return React.createElement('div', { className: 'text-center py-16 bg-white rounded-xl border border-gray-200' },
-        React.createElement('div', { className: 'text-5xl mb-3' }, '✅'),
-        React.createElement('p', { className: 'text-gray-600 font-medium' }, 'No pending verification requests.')
+        React.createElement('div', { className: 'text-5xl mb-3' }, '🏠'),
+        React.createElement('p', { className: 'text-gray-600 font-medium' }, 'No pending landlord verification requests.')
       );
     }
 
     return React.createElement('div', { className: 'space-y-4' },
-      
       React.createElement('div', { className: 'mb-2 text-xs text-right ' + 
-        (verificationsUsingIndex ? 'text-green-600' : 'text-yellow-600')
+        (landlordVerificationsUsingIndex ? 'text-green-600' : 'text-yellow-600')
       },
-        verificationsUsingIndex ? '⚡ Using Index' : '🔄 JS Fallback'
+        landlordVerificationsUsingIndex ? '⚡ Using Index' : '🔄 JS Fallback'
       ),
 
-      verifications.map(function(v) {
+      landlordVerifications.map(function(v) {
         const busy = actionLoading[v.id];
-        const isRejecting = rejectOpen === v.id;
-        const verified = v.verified || {};
+        const isRejecting = landlordRejectOpen === v.id;
+        const landlordData = v.verified?.landlord || {};
 
         return React.createElement('div', {
             key: v.id,
@@ -1122,32 +1191,40 @@ function AdminPage({ user, navigate }) {
             )
           ),
 
-          React.createElement('div', { className: 'grid grid-cols-2 md:grid-cols-3 gap-3 mb-4' },
+          React.createElement('div', { className: 'grid grid-cols-2 gap-3 mb-4' },
             React.createElement('div', { className: 'bg-gray-50 p-3 rounded-lg' },
               React.createElement('p', { className: 'text-xs text-gray-500 mb-0.5' }, 'ID Type'),
-              React.createElement('p', { className: 'text-sm font-semibold text-gray-800 uppercase' }, verified.idType || '—')
+              React.createElement('p', { className: 'text-sm font-semibold text-gray-800 uppercase' }, landlordData.idType || '—')
             ),
             React.createElement('div', { className: 'bg-gray-50 p-3 rounded-lg' },
               React.createElement('p', { className: 'text-xs text-gray-500 mb-0.5' }, 'ID Number'),
-              React.createElement('p', { className: 'text-sm font-semibold text-gray-800 font-mono' }, maskId(verified.idNumber))
+              React.createElement('p', { className: 'text-sm font-semibold text-gray-800 font-mono' }, maskId(landlordData.idNumber))
             ),
             React.createElement('div', { className: 'bg-gray-50 p-3 rounded-lg' },
               React.createElement('p', { className: 'text-xs text-gray-500 mb-0.5' }, 'Phone'),
-              React.createElement('p', { className: 'text-sm font-semibold text-gray-800' }, verified.phoneNumber || '—')
+              React.createElement('p', { className: 'text-sm font-semibold text-gray-800' }, landlordData.phoneNumber || '—')
+            ),
+            landlordData.propertyProofUrl && React.createElement('div', { className: 'bg-gray-50 p-3 rounded-lg' },
+              React.createElement('p', { className: 'text-xs text-gray-500 mb-0.5' }, 'Property Proof'),
+              React.createElement('a', {
+                href: CloudinaryHelpers?.getUrl(landlordData.propertyProofUrl, { type: 'detail' }),
+                target: '_blank',
+                className: 'text-blue-600 text-sm hover:underline break-all'
+              }, 'View Document')
             )
           ),
           React.createElement('p', { className: 'text-xs text-gray-400 mb-4' },
-            'Submitted: ' + formatTimestamp(verified.submittedAt)
+            'Submitted: ' + formatTimestamp(landlordData.submittedAt)
           ),
 
           isRejecting && React.createElement('div', { className: 'mb-4' },
             React.createElement('label', { className: 'block text-xs font-medium text-gray-700 mb-1.5' }, 'Rejection reason (required):'),
             React.createElement('textarea', {
-              value: rejectReason[v.id] || '',
+              value: landlordRejectReason[v.id] || '',
               onChange: function(e) {
-                setRejectReason(function(prev) { return { ...prev, [v.id]: e.target.value }; });
+                setLandlordRejectReason(function(prev) { return { ...prev, [v.id]: e.target.value }; });
               },
-              placeholder: 'e.g., ID number does not match the provided name...',
+              placeholder: 'e.g., ID number does not match property document...',
               rows: 2,
               className: 'w-full p-2.5 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-green-950'
             })
@@ -1155,26 +1232,26 @@ function AdminPage({ user, navigate }) {
 
           React.createElement('div', { className: 'flex flex-wrap gap-2' },
             !isRejecting && React.createElement('button', {
-              onClick: function() { approveVerification(v); },
+              onClick: function() { approveLandlordVerification(v); },
               disabled: busy,
-              className: 'px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50 cursor-pointer'
+              className: 'px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition'
             }, busy ? '...' : '✅ Approve'),
 
             !isRejecting && React.createElement('button', {
-              onClick: function() { setRejectOpen(v.id); },
+              onClick: function() { setLandlordRejectOpen(v.id); },
               disabled: busy,
-              className: 'px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition disabled:opacity-50 cursor-pointer'
+              className: 'px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition'
             }, '✕ Reject'),
 
             isRejecting && React.createElement('button', {
-              onClick: function() { rejectVerification(v); },
-              disabled: busy || !(rejectReason[v.id] || '').trim(),
-              className: 'px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition disabled:opacity-50 cursor-pointer'
+              onClick: function() { rejectLandlordVerification(v); },
+              disabled: busy || !(landlordRejectReason[v.id] || '').trim(),
+              className: 'px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition'
             }, busy ? '...' : 'Confirm Reject'),
 
             isRejecting && React.createElement('button', {
-              onClick: function() { setRejectOpen(null); },
-              className: 'px-4 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition cursor-pointer'
+              onClick: function() { setLandlordRejectOpen(null); },
+              className: 'px-4 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition'
             }, 'Cancel')
           )
         );
@@ -1182,7 +1259,127 @@ function AdminPage({ user, navigate }) {
     );
   }
 
-  // Pending Listings Tab (existing)
+  // ===== AGENT VERIFICATIONS TAB =====
+  function AgentVerificationsTab() {
+    if (agentVerificationsLoading) {
+      return React.createElement('div', { className: 'flex justify-center py-16' },
+        React.createElement('div', { className: 'w-6 h-6 rounded-full bg-gray-200 animate-pulse mx-auto' })
+      );
+    }
+
+    if (agentVerifications.length === 0) {
+      return React.createElement('div', { className: 'text-center py-16 bg-white rounded-xl border border-gray-200' },
+        React.createElement('div', { className: 'text-5xl mb-3' }, '🤝'),
+        React.createElement('p', { className: 'text-gray-600 font-medium' }, 'No pending agent verification requests.')
+      );
+    }
+
+    return React.createElement('div', { className: 'space-y-4' },
+      React.createElement('div', { className: 'mb-2 text-xs text-right ' + 
+        (agentVerificationsUsingIndex ? 'text-green-600' : 'text-yellow-600')
+      },
+        agentVerificationsUsingIndex ? '⚡ Using Index' : '🔄 JS Fallback'
+      ),
+
+      agentVerifications.map(function(v) {
+        const busy = actionLoading[v.id];
+        const isRejecting = agentRejectOpen === v.id;
+        const agentData = v.verified?.agent || {};
+
+        return React.createElement('div', {
+            key: v.id,
+            className: 'bg-white rounded-xl border border-gray-200 p-5 shadow-sm'
+          },
+          React.createElement('div', { className: 'flex flex-wrap items-center gap-3 mb-4' },
+            React.createElement('div', { className: 'w-10 h-10 bg-green-200 rounded-full flex items-center justify-center flex-shrink-0' },
+              React.createElement('span', { className: 'text-green-800 font-bold text-sm' },
+                (v.name || v.email || 'U').charAt(0).toUpperCase()
+              )
+            ),
+            React.createElement('div', null,
+              React.createElement('p', { className: 'font-semibold text-gray-900' }, v.name || '(No name)'),
+              React.createElement('p', { className: 'text-xs text-gray-500' }, v.email),
+              React.createElement('p', { className: 'text-xs text-gray-400' }, 'User ID: ' + v.id)
+            )
+          ),
+
+          React.createElement('div', { className: 'grid grid-cols-2 gap-3 mb-4' },
+            React.createElement('div', { className: 'bg-gray-50 p-3 rounded-lg' },
+              React.createElement('p', { className: 'text-xs text-gray-500 mb-0.5' }, 'ID Type'),
+              React.createElement('p', { className: 'text-sm font-semibold text-gray-800 uppercase' }, agentData.idType || '—')
+            ),
+            React.createElement('div', { className: 'bg-gray-50 p-3 rounded-lg' },
+              React.createElement('p', { className: 'text-xs text-gray-500 mb-0.5' }, 'ID Number'),
+              React.createElement('p', { className: 'text-sm font-semibold text-gray-800 font-mono' }, maskId(agentData.idNumber))
+            ),
+            React.createElement('div', { className: 'bg-gray-50 p-3 rounded-lg' },
+              React.createElement('p', { className: 'text-xs text-gray-500 mb-0.5' }, 'Phone'),
+              React.createElement('p', { className: 'text-sm font-semibold text-gray-800' }, agentData.phoneNumber || '—')
+            ),
+            agentData.businessRegUrl && React.createElement('div', { className: 'bg-gray-50 p-3 rounded-lg' },
+              React.createElement('p', { className: 'text-xs text-gray-500 mb-0.5' }, 'Business Registration'),
+              React.createElement('a', {
+                href: CloudinaryHelpers?.getUrl(agentData.businessRegUrl, { type: 'detail' }),
+                target: '_blank',
+                className: 'text-blue-600 text-sm hover:underline break-all'
+              }, 'View Document')
+            ),
+            agentData.agencyLicenseUrl && React.createElement('div', { className: 'bg-gray-50 p-3 rounded-lg' },
+              React.createElement('p', { className: 'text-xs text-gray-500 mb-0.5' }, 'Agency License (Optional)'),
+              React.createElement('a', {
+                href: CloudinaryHelpers?.getUrl(agentData.agencyLicenseUrl, { type: 'detail' }),
+                target: '_blank',
+                className: 'text-blue-600 text-sm hover:underline break-all'
+              }, 'View Document')
+            )
+          ),
+          React.createElement('p', { className: 'text-xs text-gray-400 mb-4' },
+            'Submitted: ' + formatTimestamp(agentData.submittedAt)
+          ),
+
+          isRejecting && React.createElement('div', { className: 'mb-4' },
+            React.createElement('label', { className: 'block text-xs font-medium text-gray-700 mb-1.5' }, 'Rejection reason (required):'),
+            React.createElement('textarea', {
+              value: agentRejectReason[v.id] || '',
+              onChange: function(e) {
+                setAgentRejectReason(function(prev) { return { ...prev, [v.id]: e.target.value }; });
+              },
+              placeholder: 'e.g., Business registration is invalid...',
+              rows: 2,
+              className: 'w-full p-2.5 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-green-950'
+            })
+          ),
+
+          React.createElement('div', { className: 'flex flex-wrap gap-2' },
+            !isRejecting && React.createElement('button', {
+              onClick: function() { approveAgentVerification(v); },
+              disabled: busy,
+              className: 'px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition'
+            }, busy ? '...' : '✅ Approve'),
+
+            !isRejecting && React.createElement('button', {
+              onClick: function() { setAgentRejectOpen(v.id); },
+              disabled: busy,
+              className: 'px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition'
+            }, '✕ Reject'),
+
+            isRejecting && React.createElement('button', {
+              onClick: function() { rejectAgentVerification(v); },
+              disabled: busy || !(agentRejectReason[v.id] || '').trim(),
+              className: 'px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition'
+            }, busy ? '...' : 'Confirm Reject'),
+
+            isRejecting && React.createElement('button', {
+              onClick: function() { setAgentRejectOpen(null); },
+              className: 'px-4 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition'
+            }, 'Cancel')
+          )
+        );
+      })
+    );
+  }
+
+  // ===== PENDING LISTINGS TAB (same as before) =====
   function PendingListingsTab() {
     if (pendingListingsLoading) {
       return React.createElement('div', { className: 'flex justify-center py-16' },
@@ -1198,7 +1395,6 @@ function AdminPage({ user, navigate }) {
     }
 
     return React.createElement('div', { className: 'space-y-4' },
-      
       React.createElement('div', { className: 'mb-2 text-xs text-right ' + 
         (pendingListingsUsingIndex ? 'text-green-600' : 'text-yellow-600')
       },
@@ -1233,7 +1429,6 @@ function AdminPage({ user, navigate }) {
             )
           ),
 
-          // Preview images
           listing.images && listing.images.length > 0 &&
           React.createElement('div', { className: 'flex gap-2 mb-4 overflow-x-auto pb-2' },
             listing.images.slice(0, 3).map(function(img, i) {
@@ -1250,18 +1445,15 @@ function AdminPage({ user, navigate }) {
             )
           ),
 
-          // Location
           React.createElement('div', { className: 'bg-gray-50 rounded-lg p-3 mb-3 text-xs text-gray-600' },
             React.createElement('span', { className: 'font-semibold text-gray-800' }, '📍 '),
             [listing.address, listing.lga, listing.state].filter(Boolean).join(', ')
           ),
 
-          // Description preview
           React.createElement('p', { className: 'text-sm text-gray-700 mb-4 line-clamp-2' },
             listing.description || 'No description provided.'
           ),
 
-          // Rejection reason input
           isRejecting && React.createElement('div', { className: 'mb-4' },
             React.createElement('label', { className: 'block text-xs font-medium text-gray-700 mb-1.5' }, 'Rejection reason (required):'),
             React.createElement('textarea', {
@@ -1275,34 +1467,33 @@ function AdminPage({ user, navigate }) {
             })
           ),
 
-          // Action buttons
           React.createElement('div', { className: 'flex flex-wrap gap-2 pt-3 border-t border-gray-100' },
             !isRejecting && React.createElement('button', {
               onClick: function() { approveListing(listing); },
               disabled: busy,
-              className: 'px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:opacity-50 cursor-pointer'
+              className: 'px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition'
             }, busy ? '...' : '✅ Approve'),
 
             !isRejecting && React.createElement('button', {
               onClick: function() { setRejectListingOpen(listing.id); },
               disabled: busy,
-              className: 'px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition disabled:opacity-50 cursor-pointer'
+              className: 'px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition'
             }, '✕ Reject'),
 
             isRejecting && React.createElement('button', {
               onClick: function() { rejectListing(listing); },
               disabled: busy || !(rejectionReason[listing.id] || '').trim(),
-              className: 'px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition disabled:opacity-50 cursor-pointer'
+              className: 'px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition'
             }, busy ? '...' : 'Confirm Reject'),
 
             isRejecting && React.createElement('button', {
               onClick: function() { setRejectListingOpen(null); },
-              className: 'px-4 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition cursor-pointer'
+              className: 'px-4 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition'
             }, 'Cancel'),
 
             React.createElement('button', {
               onClick: function() { navigate('/listing/' + listing.id); },
-              className: 'px-4 py-2 text-sm font-medium text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition cursor-pointer'
+              className: 'px-4 py-2 text-sm font-medium text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition'
             }, '👁️ Preview')
           )
         );
@@ -1313,7 +1504,7 @@ function AdminPage({ user, navigate }) {
   return React.createElement('div', { className: 'min-h-screen bg-green-50 py-8' },
     React.createElement(ConfirmationModal, null),
     
-    React.createElement('div', { className: 'max-w-6xl mx-auto px-4' }, // Increased to 6xl for more space
+    React.createElement('div', { className: 'max-w-6xl mx-auto px-4' },
 
       React.createElement('div', { className: 'mb-6' },
         React.createElement('h1', { className: 'text-3xl font-bold text-gray-900' }, '🛡 Admin Dashboard'),
@@ -1321,20 +1512,22 @@ function AdminPage({ user, navigate }) {
       ),
 
       React.createElement('div', { className: 'bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-lg mb-6 text-sm' },
-        '⚠️  Actions taken here are permanent. Always review content before approving or rejecting.'
+        '⚠️ Actions taken here are permanent. Always review content before approving or rejecting.'
       ),
 
       React.createElement('div', { className: 'flex gap-1 border-b border-gray-200 mb-6 flex-wrap' },
         TabBtn('📋 All Listings', 'listings'),
         TabBtn('📝 Pending Review', 'pending'),
         TabBtn('📊 Reports', 'reports'),
-        TabBtn('🪪 Verifications', 'verifications')
+        TabBtn('🏠 Landlord Verifications', 'landlord_verifications'),
+        TabBtn('🤝 Agent Verifications', 'agent_verifications')
       ),
 
       activeTab === 'listings' && React.createElement(AllListingsTab, null),
       activeTab === 'pending' && React.createElement(PendingListingsTab, null),
       activeTab === 'reports' && React.createElement(ReportsTab, null),
-      activeTab === 'verifications' && React.createElement(VerificationsTab, null)
+      activeTab === 'landlord_verifications' && React.createElement(LandlordVerificationsTab, null),
+      activeTab === 'agent_verifications' && React.createElement(AgentVerificationsTab, null)
     )
   );
 }

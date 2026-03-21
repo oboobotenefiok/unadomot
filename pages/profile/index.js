@@ -8,11 +8,9 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
   
   // ===== RESTORE STATE FROM CACHE =====
   const [activeTab, setActiveTab] = React.useState(() => {
-    // First check cached state
     if (cachedState?.activeTab) {
       return cachedState.activeTab;
     }
-    // Then check initialTab from navigation
     if (initialTab) {
       return initialTab;
     }
@@ -110,6 +108,15 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
     }
   };
   
+  // ===== VERIFICATION HANDLERS =====
+  const handleVerifyLandlord = () => {
+    navigate('/verify?role=landlord');
+  };
+  
+  const handleVerifyAgent = () => {
+    navigate('/verify?role=agent');
+  };
+  
   const validateForm = async () => {
     const v = ValidationHelpers;
     const errors = {};
@@ -205,8 +212,6 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
     window.location.href = 'mailto:support@unadomot.com?subject=Username Change Request';
   };
   
-
-  
   // ===== SAVE STATE BEFORE UNLOAD =====
   React.useEffect(() => {
     const saveState = () => {
@@ -259,7 +264,6 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
   },
     React.createElement('div', { className: 'max-w-7xl mx-auto px-4 py-8' },
       
-
       profileHook.error && React.createElement('div', {
         className: 'bg-red-50 text-red-700 p-4 rounded mb-6 border border-red-200'
       }, profileHook.error),
@@ -268,7 +272,9 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
         profile: profileHook.profile,
         user: user,
         onEditClick: handleEditClick,
-        onAdminClick: handleAdminClick
+        onAdminClick: handleAdminClick,
+        onVerifyLandlord: handleVerifyLandlord,
+        onVerifyAgent: handleVerifyAgent
       }),
       
       React.createElement(ProfileTabs, {

@@ -1,4 +1,4 @@
-// components/PostListingWizard.js - With Email Verification Check
+// components/PostListingWizard.js - With Email Verification Check & Role Selector
 // Listings go to pending_review for admin approval
 
 function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null }) {
@@ -12,6 +12,10 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
   };
   
   const [showVerificationWarning, setShowVerificationWarning] = React.useState(false);
+  
+  // ===== ROLE SELECTOR STATE =====
+  const [selectedRole, setSelectedRole] = React.useState(''); // 'landlord', 'agent', or '' for regular user
+  const [userVerification, setUserVerification] = React.useState({ landlord: null, agent: null });
 
   const CLOUD_NAME = 'djddnda47';
   const UPLOAD_PRESET = 'unadomot';
@@ -36,16 +40,16 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
   
   // Coordinates state
   const [coordinates, setCoordinates] = React.useState(null);
-  const [geocodingStatus, setGeocodingStatus] = React.useState(null); // 'loading', 'success', 'error'
-  const [geocodingSource, setGeocodingSource] = React.useState(null); // which service worked
-  const [geocodingMessage, setGeocodingMessage] = React.useState(''); // user-friendly message
-  const [geocodingAccuracy, setGeocodingAccuracy] = React.useState(null); // 'lga-level', 'state-level', 'precise'
+  const [geocodingStatus, setGeocodingStatus] = React.useState(null);
+  const [geocodingSource, setGeocodingSource] = React.useState(null);
+  const [geocodingMessage, setGeocodingMessage] = React.useState('');
+  const [geocodingAccuracy, setGeocodingAccuracy] = React.useState(null);
   
   const [existingImages, setExistingImages] = React.useState([]);
   const [uploadingImages, setUploadingImages] = React.useState(false);
   const [errors, setErrors] = React.useState({});
   const [warnings, setWarnings] = React.useState({});
-  const [shakeFields, setShakeFields] = React.useState({}); // Track which fields should shake
+  const [shakeFields, setShakeFields] = React.useState({});
   const [lgas, setLgas] = React.useState([]);
   const [lgasList, setLgasList] = React.useState([]);
   const [submitting, setSubmitting] = React.useState(false);
@@ -65,6 +69,39 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
       if (onClose) onClose();
     }
   }, [user, modal, openModal, onClose, listingId]);
+
+  // ===== FETCH USER VERIFICATION STATUS =====
+  React.useEffect(function() {
+    if (!user) return;
+    
+    const fetchUserVerification = async () => {
+      try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          const data = userDoc.data();
+          const verified = data.verified || {};
+          
+          setUserVerification({
+            landlord: verified.landlord?.status === 'approved',
+            agent: verified.agent?.status === 'approved'
+          });
+          
+          // Auto-select role if only one is verified
+          if (verified.landlord?.status === 'approved' && verified.agent?.status !== 'approved') {
+            setSelectedRole('landlord');
+          } else if (verified.agent?.status === 'approved' && verified.landlord?.status !== 'approved') {
+            setSelectedRole('agent');
+          } else if (verified.landlord?.status !== 'approved' && verified.agent?.status !== 'approved') {
+            setSelectedRole('');
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching verification:', err);
+      }
+    };
+    
+    fetchUserVerification();
+  }, [user]);
 
   React.useEffect(function() {
     if (document.querySelector('script[src*="cloudinary"]')) {
@@ -141,7 +178,11 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
           furnishing:   data.furnishing   || ''
         });
 
-        // Load coordinates if they exist
+        // Load the listing role if editing
+        if (data.listingRole) {
+          setSelectedRole(data.listingRole);
+        }
+
         if (data.lat && data.lng) {
           setCoordinates({ lat: data.lat, lng: data.lng });
           setGeocodingStatus('success');
@@ -184,10 +225,8 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
     }
   }, [form.state]);
 
-  // Trigger shake animation for a field
   function triggerShake(field) {
     setShakeFields(prev => ({ ...prev, [field]: true }));
-    // Remove shake after animation completes
     setTimeout(() => {
       setShakeFields(prev => ({ ...prev, [field]: false }));
     }, 500);
@@ -198,12 +237,10 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
       const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
       setForm(function(prev) { return { ...prev, [field]: value }; });
       
-      // Clear error when user types
       if (errors[field]) {
         setErrors(function(prev) { return { ...prev, [field]: null }; });
       }
       
-      // Generate friendly warning when user types (only if field has value)
       if (value) {
         const warning = getFriendlyWarning(field, value);
         setWarnings(prev => ({ ...prev, [field]: warning }));
@@ -211,7 +248,6 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
         setWarnings(prev => ({ ...prev, [field]: null }));
       }
       
-      // Clear geocoding status when address fields change
       if (field === 'address' || field === 'state' || field === 'lga') {
         setGeocodingStatus(null);
         setGeocodingSource(null);
@@ -225,7 +261,6 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
     return function() {
       setTouched(prev => ({ ...prev, [field]: true }));
       
-      // Check if field is required and empty
       const requiredFields = ['title', 'description', 'price', 'address', 'state', 'lga', 'propertyType', 'bedrooms', 'bathrooms', 'furnishing'];
       if (requiredFields.includes(field) && !form[field]) {
         setErrors(prev => ({ ...prev, [field]: `${field.charAt(0).toUpperCase() + field.slice(1)} is required` }));
@@ -236,20 +271,17 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
           setErrors(prev => ({ ...prev, [field]: error }));
           triggerShake(field);
         } else if (form[field]) {
-          // If no error, show friendly warning
           const warning = getFriendlyWarning(field, form[field]);
           setWarnings(prev => ({ ...prev, [field]: warning }));
         }
       }
       
-      // Auto-geocode when user finishes LGA field
       if (field === 'lga' && form.address && form.state && form.lga && !coordinates) {
         geocodeCurrentAddress();
       }
     };
   }
 
-  // Generate user-friendly warnings for each field
   function getFriendlyWarning(field, value) {
     if (!value) return null;
     
@@ -466,7 +498,6 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
   };
 
   function validateField(field, value) {
-    // First check if it's a required field and empty
     const requiredFields = ['title', 'description', 'price', 'address', 'state', 'lga', 'propertyType', 'bedrooms', 'bathrooms', 'furnishing'];
     if (requiredFields.includes(field) && !value) {
       return `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
@@ -498,6 +529,14 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
     let hasErrors = false;
     
     if (step === 1) {
+      // ===== VALIDATE ROLE SELECTION =====
+      const isDualVerified = userVerification.landlord && userVerification.agent;
+      if (isDualVerified && !selectedRole) {
+        stepErrors.role = 'Please select whether you are posting as a Landlord or Agent';
+        triggerShake('role');
+        hasErrors = true;
+      }
+      
       // Title validation
       if (!form.title.trim()) {
         stepErrors.title = 'Title is required';
@@ -566,7 +605,6 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
     else if (step === 4) {
       if (existingImages.length === 0) {
         stepErrors.images = 'Please add at least one photo';
-        // Visual feedback for photos section
         const photosSection = document.querySelector('.photos-section');
         if (photosSection) {
           photosSection.classList.add('shake', 'border-red-500', 'border', 'rounded-lg', 'p-2');
@@ -580,16 +618,14 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
     
     setErrors(prev => ({ ...prev, ...stepErrors }));
     
-    // Mark all fields in this step as touched to show errors
     if (step === 1) {
-      setTouched(prev => ({ ...prev, title: true, price: true }));
+      setTouched(prev => ({ ...prev, title: true, price: true, role: true }));
     } else if (step === 2) {
       setTouched(prev => ({ ...prev, address: true, state: true, lga: true }));
     } else if (step === 3) {
       setTouched(prev => ({ ...prev, propertyType: true, bedrooms: true, bathrooms: true, furnishing: true, description: true }));
     }
     
-    // If there are errors, scroll to the first error
     if (hasErrors) {
       const firstErrorField = Object.keys(stepErrors)[0];
       const errorElement = document.querySelector(`[name="${firstErrorField}"], #${firstErrorField}`);
@@ -611,7 +647,6 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
     setCurrentStep(prev => Math.max(prev - 1, 1));
   }
 
-  // ===== Get coordinates from local nigeria-states.js =====
   const getLocalCoordinates = (lga, state) => {
     if (!window.nigeriaStates) {
       console.warn('⚠️ nigeriaStates not loaded');
@@ -648,7 +683,6 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
     return null;
   };
 
-  // ===== Geocoding function with local only =====
   async function geocodeCurrentAddress() {
     if (!form.address || !form.state || !form.lga) {
       setGeocodingMessage('Please fill in address, state, and LGA first');
@@ -661,7 +695,6 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
     setGeocodingMessage('Searching for coordinates...');
     
     try {
-      // ONLY use local coordinates from nigeria-states.js
       const localCoords = getLocalCoordinates(form.lga, form.state);
       
       if (localCoords) {
@@ -700,13 +733,11 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
     }
   }
 
-  // Manual retry geocoding
   async function handleRetryGeocode() {
     setCoordinates(null);
     await geocodeCurrentAddress();
   }
 
-  // ===== UPDATED: Use centralized resend function =====
   const handleResendVerification = async function() {
     const success = await resendVerification(auth.currentUser);
     if (success) {
@@ -725,14 +756,20 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
       return; 
     }
     
-    // ===== UPDATED: Use centralized verification check =====
+    // ===== VALIDATE ROLE FOR DUAL-VERIFIED USERS =====
+    const isDualVerified = userVerification.landlord && userVerification.agent;
+    if (isDualVerified && !selectedRole) {
+      setErrors(prev => ({ ...prev, role: 'Please select a role for this listing' }));
+      setCurrentStep(1);
+      return;
+    }
+    
     if (!checkVerification(currentUser, 'post listings')) {
       setShowVerificationWarning(true);
       setTimeout(() => setShowVerificationWarning(false), 5000);
       return;
     }
     
-    // Validate all steps
     for (let step = 1; step <= totalSteps; step++) {
       if (!validateStep(step)) {
         setCurrentStep(step);
@@ -744,7 +781,6 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
     setSubmitError('');
 
     try {
-      // Geocode address if we don't have coordinates yet
       let finalCoordinates = coordinates;
       if (!finalCoordinates && form.address && form.state && form.lga) {
         finalCoordinates = await geocodeCurrentAddress();
@@ -763,10 +799,11 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
         bedrooms:    form.bedrooms,
         bathrooms:   form.bathrooms,
         furnishing:  form.furnishing,
-        updatedAt:   firebase.firestore.FieldValue.serverTimestamp()
+        updatedAt:   firebase.firestore.FieldValue.serverTimestamp(),
+        // ===== ADD LISTING ROLE =====
+        listingRole: selectedRole || 'user'  // 'landlord', 'agent', or 'user'
       };
 
-      // Add coordinates if available
       if (finalCoordinates) {
         listingData.lat = finalCoordinates.lat;
         listingData.lng = finalCoordinates.lng;
@@ -779,14 +816,12 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
       listingData.images = existingImages;
       
       if (listingId) {
-        // ===== EDIT: Keep existing status (don't change to pending) =====
         await db.collection('listings').doc(listingId).update(listingData);
         
         if (window.AppCache) {
           AppCache.clear('listings', listingId);
         }
         
-        // Notify user that edits are submitted for review
         const notificationRef = db.collection('users').doc(currentUser.uid)
           .collection('notifications').doc();
         await notificationRef.set({
@@ -799,17 +834,14 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
         });
         
       } else {
-        // ===== NEW LISTING: Set status to pending_review =====
         listingData.userId = currentUser.uid;
         listingData.userName = currentUser.displayName || 'Property Owner';
-        // ===== ADD USER TYPE TO LISTING =====
         listingData.userType = currentUserData?.userType || 'user';
         
         if (currentUserData?.username) {
           listingData.userUsername = currentUserData.username;
         }
         
-        // ===== CHANGED: New listings go to pending_review =====
         listingData.status = 'pending_review';
         listingData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
         
@@ -830,13 +862,12 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
         
         const docRef = await db.collection('listings').add(listingData);
         
-        // Notify user that listing is pending review
         const notificationRef = db.collection('users').doc(currentUser.uid)
           .collection('notifications').doc();
         await notificationRef.set({
           type: 'listing_submitted',
           title: 'Listing Submitted for Review 📋',
-          body: `Your listing "${listingData.title}" has been submitted and is pending admin approval. You'll be notified once it's live.`,
+          body: `Your listing "${listingData.title}" has been submitted and is pending admin approval.`,
           listingId: docRef.id,
           read: false,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -863,7 +894,6 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
       ${shouldShake ? 'shake' : ''}`;
   }
 
-  // Add shake animation CSS
   React.useEffect(() => {
     const style = document.createElement('style');
     style.textContent = `
@@ -882,13 +912,6 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
       document.head.removeChild(style);
     };
   }, []);
-
-  const stepTitles = {
-    1: 'Basic Info',
-    2: 'Location',
-    3: 'Details',
-    4: 'Photos'
-  };
 
   if (loading) {
     return React.createElement('div', { className: 'p-8 text-center' },
@@ -939,10 +962,59 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
   const submitButtonText = submitting 
     ? (listingId ? 'Saving...' : 'Submitting...') 
     : (listingId ? 'Save Changes' : 'Submit for Review');
+  
+  const isDualVerified = userVerification.landlord && userVerification.agent;
+  const showRoleSelector = isDualVerified;
 
   function renderStep() {
     switch(currentStep) {
       case 1: return React.createElement('div', { className: 'space-y-3' },
+        // ===== ROLE SELECTOR (only for dual-verified users) =====
+        showRoleSelector && React.createElement('div', { className: 'mb-4 pb-3 border-b border-gray-200' },
+          React.createElement('label', { className: 'block text-xs font-medium text-gray-700 mb-2' }, 'Post as:'),
+          React.createElement('div', { className: 'flex gap-4' },
+            React.createElement('label', { className: 'flex items-center gap-2 cursor-pointer' },
+              React.createElement('input', {
+                type: 'radio',
+                name: 'listingRole',
+                value: 'landlord',
+                checked: selectedRole === 'landlord',
+                onChange: (e) => {
+                  setSelectedRole(e.target.value);
+                  if (errors.role) setErrors(prev => ({ ...prev, role: null }));
+                },
+                className: 'w-4 h-4 accent-green-950'
+              }),
+              React.createElement('div', null,
+                React.createElement('span', { className: 'font-medium text-gray-800' }, '🏠 Landlord'),
+                React.createElement('span', { className: 'text-xs text-gray-500 ml-2' }, 'Shows Landlord badge')
+              )
+            ),
+            React.createElement('label', { className: 'flex items-center gap-2 cursor-pointer' },
+              React.createElement('input', {
+                type: 'radio',
+                name: 'listingRole',
+                value: 'agent',
+                checked: selectedRole === 'agent',
+                onChange: (e) => {
+                  setSelectedRole(e.target.value);
+                  if (errors.role) setErrors(prev => ({ ...prev, role: null }));
+                },
+                className: 'w-4 h-4 accent-green-950'
+              }),
+              React.createElement('div', null,
+                React.createElement('span', { className: 'font-medium text-gray-800' }, '🤝 Agent'),
+                React.createElement('span', { className: 'text-xs text-gray-500 ml-2' }, 'Shows Agent badge')
+              )
+            )
+          ),
+          errors.role && React.createElement('p', { className: 'text-red-500 text-xs mt-2' }, errors.role),
+          React.createElement('p', { className: 'text-xs text-blue-600 mt-2 flex items-center gap-1' },
+            React.createElement('span', null, '💡'),
+            'You are verified for both roles. Choose how to present this listing.'
+          )
+        ),
+        
         React.createElement('div', null,
           React.createElement('label', { className: 'block text-xs font-medium text-gray-700 mb-1' }, 'Title *'),
           React.createElement('input', {
@@ -989,7 +1061,6 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
 
       // ===== SIMPLE STEP 2 - NO AUTOCOMPLETE =====
       case 2: return React.createElement('div', { className: 'space-y-3' },
-        // Simple address input (no autocomplete)
         React.createElement('div', null,
           React.createElement('label', { className: 'block text-xs font-medium text-gray-700 mb-1' }, 'Address *'),
           React.createElement('input', {
@@ -1010,7 +1081,6 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
             )
         ),
         
-        // State and LGA dropdowns
         React.createElement('div', { className: 'grid grid-cols-2 gap-2' },
           React.createElement('div', null,
             React.createElement('label', { className: 'block text-xs font-medium text-gray-700 mb-1' }, 'State *'),
@@ -1060,7 +1130,6 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
           )
         ),
 
-        // Geocoding status section
         (form.address && form.state && form.lga) && React.createElement('div', { 
           className: 'mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200' 
         },
@@ -1354,7 +1423,6 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
   }
 
   return React.createElement('div', null,
-    // ===== VERIFICATION WARNING =====
     showVerificationWarning && React.createElement(VerificationWarning, {
       message: 'Please verify your email to post listings.',
       onResend: handleResendVerification,
