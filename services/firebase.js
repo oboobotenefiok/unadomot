@@ -210,14 +210,39 @@ auth.onAuthStateChanged((user) => {
     if (navigator.onLine) {
       goOnline(user.uid);
     }
-    
-    // ===== CHANGED: Use verify-email.html instead of /verify-email =====
-    if (!user.emailVerified && user.providerData.some(provider => provider.providerId === 'password')) {
-      user.sendEmailVerification({
-        url: window.location.origin + '/verify-email.html',
-        handleCodeInApp: true
-      }).then(() => {}).catch((err) => {});
+
+    // ===== GUARANTEED FIRESTORE VERIFICATION SYNC =====
+    // Firebase Auth is the source of truth. When auth state fires and the Auth
+    // object reports emailVerified=true, we ensure Firestore reflects that
+    // regardless of which device or browser the user clicked the link on.
+    // This is the only reliable place to guarantee the sync because it fires
+    // on every session — including sessions on different devices where
+    // verify-email.html had no auth.currentUser available at the time
+    // applyActionCode() was called.
+    //
+    // The write is only issued for password-provider accounts (Google sign-in
+    // users are considered verified automatically and do not have this field).
+    // Using set() with merge:true makes this fully idempotent — safe to run
+    // on every sign-in even if the field is already correct.
+    const isPasswordProvider = user.providerData.some(
+      (provider) => provider.providerId === 'password'
+    );
+
+    if (isPasswordProvider && user.emailVerified) {
+      db.collection('users').doc(user.uid).set(
+        {
+          emailVerified: true,
+          verifiedAt: firebase.firestore.FieldValue.serverTimestamp()
+        },
+        { merge: true }
+      ).catch(() => {});
     }
+
+    // NOTE: Do NOT call sendEmailVerification here. Issuing a new oobCode on
+    // every auth-state change immediately invalidates any previously sent
+    // verification link still in the user's inbox.
+    // Verification emails are sent once: immediately after account creation in
+    // SignupForm.js. Resending is handled explicitly via verify-email.html.
   } else {
     goOffline();
   }
