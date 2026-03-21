@@ -817,6 +817,15 @@ function HomePage({ user, navigate, cachedState, locationState }) {
                           : listing.address
                       ),
                       
+                      // ===== UPDATED: Role badge - shows Landlord or Agent, no badge for regular users =====
+                      React.createElement('div', { className: isDesktop ? 'flex items-center gap-2 mb-2' : 'flex flex-wrap gap-0.5 mb-1' },
+                        listing.userType && listing.userType !== 'user' &&
+                          React.createElement(RoleBadge, { 
+                            user: { userType: listing.userType }, 
+                            size: 'xs' 
+                          })
+                      ),
+                      
                       // Action buttons
                       React.createElement('div', { className: isDesktop ? 'flex items-center justify-between mt-2' : 'flex items-center justify-between pt-1 border-t border-gray-100' },
                         React.createElement('div', { className: 'flex gap-1' },
@@ -930,7 +939,13 @@ function HomePage({ user, navigate, cachedState, locationState }) {
                                 : listing.address
                             ),
                             
+                            // ===== UPDATED: Role badge in other locations section =====
                             React.createElement('div', { className: 'flex flex-wrap gap-0.5 mb-1' },
+                              listing.userType && listing.userType !== 'user' &&
+                                React.createElement(RoleBadge, { 
+                                  user: { userType: listing.userType }, 
+                                  size: 'xs' 
+                                }),
                               React.createElement('span', { className: 'bg-blue-100 text-blue-700 px-1 py-0.5 rounded text-[10px]' },
                                 listing.lga ? listing.lga : listing.state
                               )
@@ -1047,7 +1062,13 @@ function HomePage({ user, navigate, cachedState, locationState }) {
                               : listing.address
                           ),
                           
+                          // ===== UPDATED: Role badge in recommendations section =====
                           React.createElement('div', { className: 'flex flex-wrap gap-0.5 mb-1' },
+                            listing.userType && listing.userType !== 'user' &&
+                              React.createElement(RoleBadge, { 
+                                user: { userType: listing.userType }, 
+                                size: 'xs' 
+                              }),
                             React.createElement('span', { className: 'bg-blue-100 text-blue-700 px-1 py-0.5 rounded text-[10px]' },
                               'Based on your interests'
                             )

@@ -405,13 +405,11 @@ const handleMessageClick = React.useCallback(async () => {
         })
       ),
 
-      // Badges
-      React.createElement('div', { className: 'flex flex-wrap gap-2 mb-6' },
-        listing.propertyType &&
-        React.createElement('span', { className: 'bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm' },
-          listing.propertyType
-        )
-      ),
+      // ===== UPDATED: Badges component with userType prop =====
+      React.createElement(Badges, { 
+        listing: listing, 
+        userType: listingUser?.userType 
+      }),
 
       // Description
       React.createElement('div', { className: 'mb-6' },

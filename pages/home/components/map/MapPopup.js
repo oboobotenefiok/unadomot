@@ -135,12 +135,28 @@ window.createPopupContent = function(
   if (currentListing.state) locationParts.push(currentListing.state);
   const locationText = locationParts.join(', ') || '';
   
+  // ===== ROLE BADGE HTML (will be conditionally added) =====
+  const userType = currentListing.userType || 'user';
+  const roleBadgeHtml = (userType && userType !== 'user') 
+    ? `<div class="mb-1">
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${
+          userType === 'landlord' 
+            ? 'bg-green-100 text-green-700 border border-green-200' 
+            : 'bg-gray-700 text-white border border-gray-800'
+        }">
+          ${userType === 'landlord' ? 'Landlord' : 'Agent'}
+        </span>
+      </div>`
+    : '';
+  
   // Content section
   const contentDiv = document.createElement('div');
   contentDiv.className = 'p-2';
   contentDiv.innerHTML = `
     <h3 class="font-bold text-gray-900 text-sm mb-0.5 line-clamp-1">${currentListing.title || 'Property'}</h3>
     <p class="text-gray-600 text-xs mb-1 line-clamp-1">${locationText}</p>
+    
+    ${roleBadgeHtml}
     
     <div class="flex items-center justify-between pt-1 border-t border-gray-100 mt-1">
       <div class="flex gap-1">

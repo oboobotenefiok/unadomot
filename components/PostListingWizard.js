@@ -802,6 +802,7 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
         // ===== NEW LISTING: Set status to pending_review =====
         listingData.userId = currentUser.uid;
         listingData.userName = currentUser.displayName || 'Property Owner';
+        // ===== ADD USER TYPE TO LISTING =====
         listingData.userType = currentUserData?.userType || 'user';
         
         if (currentUserData?.username) {

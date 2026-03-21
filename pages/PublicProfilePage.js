@@ -454,20 +454,16 @@ const handleCardMessageClick = async (listingId, userId, e) => {
                         React.createElement('h3', { className: 'font-bold text-gray-900 mb-0.5 line-clamp-1 text-sm' }, listing.title),
                         React.createElement('p', { className: 'text-gray-600 mb-1 line-clamp-1 text-xs' }, listing.address),
                         
+                        // ===== UPDATED: Role badge - shows Landlord or Agent, no badge for regular users =====
                         React.createElement('div', { className: 'flex flex-wrap gap-0.5 mb-1' },
-                          !listing.agentToggle && React.createElement('span', {
-                            className: 'bg-green-100 text-green-700 px-1 py-0.5 rounded text-[10px]'
-                          }, 'Agent-Free'),
-                          listing.propertyType && React.createElement('span', {
-                            className: 'bg-gray-100 text-gray-700 px-1 py-0.5 rounded text-[10px]'
-                          }, listing.propertyType),
-                          
-                          // Show role badge on listing card if available
                           listing.userType && listing.userType !== 'user' &&
                             React.createElement(RoleBadge, { 
                               user: { userType: listing.userType }, 
                               size: 'xs' 
-                            })
+                            }),
+                          listing.propertyType && React.createElement('span', {
+                            className: 'bg-gray-100 text-gray-700 px-1 py-0.5 rounded text-[10px]'
+                          }, listing.propertyType)
                         ),
                         
                         React.createElement('div', { className: 'flex items-center justify-between pt-1 border-t border-gray-100' },
