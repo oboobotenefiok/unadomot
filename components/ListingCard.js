@@ -241,11 +241,11 @@ function ListingCard({ listing, onClick, currentUserId, onFavoriteToggle, onDele
           isDeleted ? 'Listing removed by owner' : listing.address
         ),
         
-        // ===== UPDATED: Role badge - shows Landlord or Agent, no badge for regular users =====
+        // ===== UPDATED: Role badge using listingRole (landlord, agent, or user) =====
         !isDeleted && React.createElement('div', { className: 'flex items-center gap-1 mb-2' },
-          listing.userType && listing.userType !== 'user' &&
+          listing.listingRole && listing.listingRole !== 'user' &&
           React.createElement(RoleBadge, {
-            user: { userType: listing.userType },
+            user: { userType: listing.listingRole },
             size: 'xs'
           })
         ),
