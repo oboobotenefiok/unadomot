@@ -16,51 +16,51 @@ function ProfileHeader({ profile, user, onEditClick, onAdminClick, onVerifyLandl
   const landlordRejectionReason = landlordVerified?.rejectionReason || '';
   const agentRejectionReason = agentVerified?.rejectionReason || '';
   
-  // Helper to get status badge
-  const getStatusBadge = (status, type) => {
+  // Helper to get button text and style based on status
+  const getButtonConfig = (status, type) => {
     if (status === 'approved') {
-      return React.createElement('span', {
-          className: 'inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full'
-        },
-        React.createElement('svg', { className: 'w-3 h-3', fill: 'currentColor', viewBox: '0 0 20 20' },
-          React.createElement('path', { fillRule: 'evenodd', d: 'M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z', clipRule: 'evenodd' })
-        ),
-        'Verified'
-      );
+      return {
+        text: '✓ Verified',
+        className: 'bg-green-100 text-green-700 border border-green-200 cursor-default hover:bg-green-100',
+        disabled: true
+      };
     }
     if (status === 'pending') {
-      return React.createElement('span', {
-          className: 'inline-flex items-center gap-1 text-xs text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full',
-          title: 'Waiting for admin review'
-        },
-        React.createElement('svg', { className: 'w-3 h-3', fill: 'currentColor', viewBox: '0 0 20 20' },
-          React.createElement('path', { fillRule: 'evenodd', d: 'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z', clipRule: 'evenodd' })
-        ),
-        'Pending'
-      );
+      return {
+        text: '⏳ Pending',
+        className: 'bg-yellow-100 text-yellow-700 border border-yellow-200 cursor-default hover:bg-yellow-100',
+        disabled: true
+      };
     }
     if (status === 'rejected') {
-      return React.createElement('span', {
-          className: 'inline-flex items-center gap-1 text-xs text-red-600 bg-red-50 px-2 py-0.5 rounded-full',
-          title: type === 'landlord' ? landlordRejectionReason : agentRejectionReason
-        },
-        React.createElement('svg', { className: 'w-3 h-3', fill: 'currentColor', viewBox: '0 0 20 20' },
-          React.createElement('path', { fillRule: 'evenodd', d: 'M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z', clipRule: 'evenodd' })
-        ),
-        'Rejected'
-      );
+      return {
+        text: '⚠️ Reapply',
+        className: 'bg-red-100 text-red-700 border border-red-200 hover:bg-red-200 cursor-pointer',
+        disabled: false
+      };
     }
-    return null;
+    return {
+      text: 'Apply',
+      className: 'bg-green-950 text-white hover:bg-green-800 cursor-pointer',
+      disabled: false
+    };
   };
   
-  // Check if verification can be applied for
-  const canApplyLandlord = landlordStatus !== 'approved' && landlordStatus !== 'pending';
-  const canApplyAgent = agentStatus !== 'approved' && agentStatus !== 'pending';
+  const landlordConfig = getButtonConfig(landlordStatus, 'landlord');
+  const agentConfig = getButtonConfig(agentStatus, 'agent');
+  
+  // Tooltip for rejected status
+  const getRejectionTooltip = (status, reason) => {
+    if (status === 'rejected' && reason) {
+      return { title: `Rejected: ${reason}` };
+    }
+    return {};
+  };
   
   return React.createElement('div', { className: 'bg-white rounded-lg shadow-md p-6 mb-8' },
     React.createElement('div', { className: 'flex justify-between items-start' },
       
-      // Left side - User info
+      // Left side - User info (NO ROLE BADGE HERE)
       React.createElement('div', null,
         React.createElement('h1', { className: 'text-2xl font-bold' },
           profile.name || 'User'
@@ -70,16 +70,12 @@ function ProfileHeader({ profile, user, onEditClick, onAdminClick, onVerifyLandl
           React.createElement('p', { className: 'text-sm text-gray-500' },
             '@' + (profile.username || 'username-not-set')
           ),
-          
-          // Role badge - shows for agents and landlords only
-          React.createElement(RoleBadge, { user: profile, size: 'md' }),
-          
           profile.usernameEdited && React.createElement('span', {
             className: 'text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full'
           }, 'locked')
         ),
         
-        // ===== VERIFICATION STATUS SECTION =====
+        // ===== VERIFICATION STATUS SECTION (Unified) =====
         React.createElement('div', { className: 'mt-4 pt-3 border-t border-gray-100' },
           React.createElement('p', { className: 'text-xs font-medium text-gray-500 mb-2' }, 'Verification Status'),
           
@@ -87,55 +83,38 @@ function ProfileHeader({ profile, user, onEditClick, onAdminClick, onVerifyLandl
           React.createElement('div', { className: 'flex items-center justify-between py-2' },
             React.createElement('div', { className: 'flex items-center gap-2' },
               React.createElement('span', { className: 'text-base' }, ''),
-              React.createElement('span', { className: 'text-sm text-gray-700' }, 'Landlord'),
-              getStatusBadge(landlordStatus, 'landlord')
+              React.createElement('span', { className: 'text-sm text-gray-700' }, 'Landlord')
             ),
             React.createElement('button', {
-                onClick: onVerifyLandlord,
-                disabled: !canApplyLandlord,
-                className: `text-xs px-3 py-1 rounded-lg transition ${
-                canApplyLandlord
-                  ? 'bg-green-950 text-white hover:bg-green-800'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              }`
-              },
-              landlordStatus === 'rejected' ? 'Reapply' :
-              landlordStatus === 'pending' ? 'Pending Review' :
-              landlordStatus === 'approved' ? 'Verified' :
-              'Apply'
-            )
+              onClick: landlordStatus !== 'approved' && landlordStatus !== 'pending' ? onVerifyLandlord : undefined,
+              disabled: landlordConfig.disabled,
+              title: landlordStatus === 'rejected' ? `Rejected: ${landlordRejectionReason}` : '',
+              className: `text-xs px-3 py-1 rounded-lg transition ${landlordConfig.className} ${landlordConfig.disabled ? 'cursor-default' : ''}`
+            }, landlordConfig.text)
           ),
           
           // Agent verification row
           React.createElement('div', { className: 'flex items-center justify-between py-2 border-t border-gray-50' },
             React.createElement('div', { className: 'flex items-center gap-2' },
               React.createElement('span', { className: 'text-base' }, ''),
-              React.createElement('span', { className: 'text-sm text-gray-700' }, 'Agent'),
-              getStatusBadge(agentStatus, 'agent')
+              React.createElement('span', { className: 'text-sm text-gray-700' }, 'Agent')
             ),
             React.createElement('button', {
-                onClick: onVerifyAgent,
-                disabled: !canApplyAgent,
-                className: `text-xs px-3 py-1 rounded-lg transition ${
-                canApplyAgent
-                  ? 'bg-green-950 text-white hover:bg-green-800'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              }`
-              },
-              agentStatus === 'rejected' ? 'Reapply' :
-              agentStatus === 'pending' ? 'Pending Review' :
-              agentStatus === 'approved' ? 'Verified' :
-              'Apply'
-            )
+              onClick: agentStatus !== 'approved' && agentStatus !== 'pending' ? onVerifyAgent : undefined,
+              disabled: agentConfig.disabled,
+              title: agentStatus === 'rejected' ? `Rejected: ${agentRejectionReason}` : '',
+              className: `text-xs px-3 py-1 rounded-lg transition ${agentConfig.className} ${agentConfig.disabled ? 'cursor-default' : ''}`
+            }, agentConfig.text)
           ),
           
-          // Info note
+          // Info note for rejected applications
           (landlordStatus === 'rejected' || agentStatus === 'rejected') &&
           React.createElement('p', { className: 'text-xs text-red-500 mt-2 flex items-center gap-1' },
             React.createElement('span', null, '⚠️'),
             'Rejected applications can be resubmitted with correct documents.'
           ),
           
+          // Info note for unverified users
           (landlordStatus === null && agentStatus === null) &&
           React.createElement('p', { className: 'text-xs text-gray-400 mt-2' },
             'Get verified to receive badges on your profile and listings.'
