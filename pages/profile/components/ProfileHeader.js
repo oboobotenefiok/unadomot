@@ -86,7 +86,7 @@ function ProfileHeader({ profile, user, onEditClick, onAdminClick, onVerifyLandl
           // Landlord verification row
           React.createElement('div', { className: 'flex items-center justify-between py-2' },
             React.createElement('div', { className: 'flex items-center gap-2' },
-              React.createElement('span', { className: 'text-base' }, '🏠'),
+              React.createElement('span', { className: 'text-base' }, ''),
               React.createElement('span', { className: 'text-sm text-gray-700' }, 'Landlord'),
               getStatusBadge(landlordStatus, 'landlord')
             ),
@@ -109,7 +109,7 @@ function ProfileHeader({ profile, user, onEditClick, onAdminClick, onVerifyLandl
           // Agent verification row
           React.createElement('div', { className: 'flex items-center justify-between py-2 border-t border-gray-50' },
             React.createElement('div', { className: 'flex items-center gap-2' },
-              React.createElement('span', { className: 'text-base' }, '🤝'),
+              React.createElement('span', { className: 'text-base' }, ''),
               React.createElement('span', { className: 'text-sm text-gray-700' }, 'Agent'),
               getStatusBadge(agentStatus, 'agent')
             ),

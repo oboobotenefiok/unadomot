@@ -246,16 +246,7 @@ function VerificationPage({ user, navigate }) {
   return React.createElement('div', { className: 'min-h-screen bg-green-50' },
     React.createElement('div', { className: 'max-w-3xl mx-auto px-4 py-12' },
       
-      React.createElement('div', { className: 'mb-6' },
-        React.createElement('a', {
-          href: '/profile',
-          onClick: function(e) {
-            e.preventDefault();
-            navigate('/profile');
-          },
-          className: 'text-green-950 hover:underline cursor-pointer inline-flex items-center gap-2'
-        }, '← Back to Profile')
-      ),
+     
       
       React.createElement('div', { className: 'bg-white rounded-lg shadow-md p-8' },
         React.createElement('h1', { className: 'text-3xl font-bold mb-4 text-gray-900' }, 'Verification'),
