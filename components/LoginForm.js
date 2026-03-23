@@ -407,16 +407,20 @@ function LoginForm({ onSuccess, setIsLoading, initialEmail = '' }) {
         
         // Forgot password link
         React.createElement('div', { className: 'text-right mt-1' },
-          React.createElement('button', {
-            type: 'button',
-            onClick: () => {
-              if (window.__navigate) {
-                window.__navigate('/forgot-password');
-                if (typeof closeModal === 'function') closeModal();
-              }
-            },
-            className: 'text-xs text-green-950 hover:underline'
-          }, 'Forgot password?')
+  
+
+// NEW:
+React.createElement('button', {
+  type: 'button',
+  onClick: () => {
+    // Trigger opening of forgot password modal
+    const event = new CustomEvent('open-forgot-password-modal', {
+      detail: { email: email }
+    });
+    window.dispatchEvent(event);
+  },
+  className: 'text-xs text-green-950 hover:underline'
+}, 'Forgot password?')
         )
       ),
 

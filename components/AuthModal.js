@@ -2,7 +2,27 @@
 function AuthModal() {
   const { isOpen, mode, redirectPath, modalProps, closeModal, toggleMode } = window.useAuthModal();
   const [isLoading, setIsLoading] = React.useState(false);
+  const [showForgotPassword, setShowForgotPassword] = React.useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = React.useState('');
   const modalRef = React.useRef(null);
+  
+  // Listen for forgot password modal trigger
+  React.useEffect(function() {
+    const handleOpenForgotPassword = (e) => {
+      setForgotPasswordEmail(e.detail?.email || '');
+      setShowForgotPassword(true);
+    };
+    
+    window.addEventListener('open-forgot-password-modal', handleOpenForgotPassword);
+    return () => window.removeEventListener('open-forgot-password-modal', handleOpenForgotPassword);
+  }, []);
+  
+  // Close forgot password modal when auth modal closes
+  React.useEffect(function() {
+    if (!isOpen) {
+      setShowForgotPassword(false);
+    }
+  }, [isOpen]);
   
   React.useEffect(function() {
     const onEsc = function(e) { if (e.key === 'Escape' && isOpen) closeModal(); };
@@ -141,47 +161,59 @@ function AuthModal() {
     'w-full max-w-2xl' :
     'w-full max-w-md';
   
-  return React.createElement('div', {
-      className: 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm',
-      onClick: handleBackdropClick
-    },
+  return React.createElement(React.Fragment, null,
+    // Main Auth Modal
     React.createElement('div', {
-        ref: modalRef,
-        className: `${modalWidth} bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 transform scale-100`,
-        style: {
-          maxHeight: mode === 'post' ? '95vh' : 'auto',
-          overflowY: mode === 'post' ? 'auto' : 'hidden'
-        },
-        onClick: (e) => e.stopPropagation()
+        className: 'fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm',
+        onClick: handleBackdropClick
       },
-      // Close button for all modes
       React.createElement('div', {
-          className: 'flex justify-end p-2 absolute top-0 right-0 z-10'
-        },
-        React.createElement('button', {
-            onClick: closeModal,
-            className: 'text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100 transition',
-            'aria-label': 'Close modal'
+          ref: modalRef,
+          className: `${modalWidth} bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 transform scale-100`,
+          style: {
+            maxHeight: mode === 'post' ? '95vh' : 'auto',
+            overflowY: mode === 'post' ? 'auto' : 'hidden',
+            position: 'relative',
+            zIndex: 10000
           },
-          React.createElement('svg', { className: 'w-5 h-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
-            React.createElement('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M6 18L18 6M6 6l12 12' })
+          onClick: (e) => e.stopPropagation()
+        },
+        // Close button for all modes
+        React.createElement('div', {
+            className: 'flex justify-end p-2 absolute top-0 right-0 z-[10001]'
+          },
+          React.createElement('button', {
+              onClick: closeModal,
+              className: 'text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100 transition',
+              'aria-label': 'Close modal'
+            },
+            React.createElement('svg', { className: 'w-5 h-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+              React.createElement('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M6 18L18 6M6 6l12 12' })
+            )
+          )
+        ),
+        
+        // Main content
+        renderContent(),
+        
+        // Loading overlay
+        isLoading && React.createElement('div', {
+            className: 'absolute inset-0 bg-white/80 flex items-center justify-center z-[10002]'
+          },
+          React.createElement('div', { className: 'text-center' },
+            React.createElement('div', { className: 'w-8 h-8 border-4 border-green-950 border-t-transparent rounded-full animate-spin mx-auto mb-2' }),
+            React.createElement('p', { className: 'text-sm text-gray-600' }, 'Please wait...')
           )
         )
-      ),
-      
-      // Main content
-      renderContent(),
-      
-      // Loading overlay
-      isLoading && React.createElement('div', {
-          className: 'absolute inset-0 bg-white/80 flex items-center justify-center z-20'
-        },
-        React.createElement('div', { className: 'text-center' },
-          React.createElement('div', { className: 'w-8 h-8 border-4 border-green-950 border-t-transparent rounded-full animate-spin mx-auto mb-2' }),
-          React.createElement('p', { className: 'text-sm text-gray-600' }, 'Please wait...')
-        )
       )
-    )
+    ),
+    
+    // Forgot Password Modal
+    window.ForgotPasswordModal && React.createElement(window.ForgotPasswordModal, {
+      isOpen: showForgotPassword,
+      onClose: () => setShowForgotPassword(false),
+      initialEmail: forgotPasswordEmail
+    })
   );
 }
 
