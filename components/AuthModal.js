@@ -89,19 +89,13 @@ function AuthModal() {
         const emailFromProps = modalProps?.email || '';
         
         return React.createElement(React.Fragment, null,
-          // HEADER - ONLY HERE, NOT IN FORMS
+          // HEADER - ONLY LOGO, NO TEXT
           React.createElement('div', { className: 'text-center pt-6 px-6 pb-2' },
             React.createElement('img', {
               src: '/vault/img/unadomot.jpg',
               alt: 'UnaDomot',
               className: 'w-16 h-16 rounded-full mx-auto mb-2'
-            }),
-            React.createElement('h2', { className: 'text-2xl font-bold text-gray-900' },
-              mode === 'login' ? 'Welcome Back!' : 'Create Your Account'
-            ),
-            React.createElement('p', { className: 'text-sm text-gray-500 mt-1' },
-              mode === 'login' ? 'Sign in to continue your journey' : 'Join thousands finding homes in Nigeria'
-            )
+            })
           ),
           
           // FORM - NO HEADINGS INSIDE

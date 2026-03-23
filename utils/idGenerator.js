@@ -1,29 +1,87 @@
-
-
+// utils/idGenerator.js
 const IDGenerator = {
   
   CODE_CHARS: 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789',
-  CODE_LENGTH: 6, 
+  CODE_LENGTH: 6,
   
+  // ===== NEW: Generate listing code with date + counter + random =====
+  generateListingCode: async function() {
+    const today = new Date();
+    const year = today.getFullYear().toString().slice(-2);
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const dateCode = `${year}${month}${day}`;
+    
+    // Get next counter for today (atomic increment)
+    const counterRef = db.collection('dailyCounters').doc(dateCode);
+    
+    const newCounter = await db.runTransaction(async (transaction) => {
+      const doc = await transaction.get(counterRef);
+      const currentCounter = doc.exists ? doc.data().counter : 0;
+      const nextCounter = currentCounter + 1;
+      transaction.set(counterRef, { counter: nextCounter, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      return nextCounter;
+    });
+    
+    // Format counter with leading zeros (001, 002, etc.)
+    const counterPadded = String(newCounter).padStart(3, '0');
+    
+    // Generate random 3-character suffix
+    const randomSuffix = Math.random().toString(36).substring(2, 5).toLowerCase();
+    
+    return `${dateCode}-${counterPadded}-${randomSuffix}`;
+  },
   
+  // ===== NEW: Validate listing code format =====
+  validateListingCode: function(code) {
+    if (!code) return false;
+    // Format: YYMMDD-XXX-CCC (e.g., 250322-001-a1b)
+    const pattern = /^\d{6}-\d{3}-[a-z0-9]{3}$/;
+    return pattern.test(code);
+  },
   
+  // ===== NEW: Extract date from listing code =====
+  extractDateFromCode: function(code) {
+    if (!this.validateListingCode(code)) return null;
+    const datePart = code.split('-')[0];
+    const year = 2000 + parseInt(datePart.slice(0, 2));
+    const month = parseInt(datePart.slice(2, 4)) - 1;
+    const day = parseInt(datePart.slice(4, 6));
+    return new Date(year, month, day);
+  },
   
+  // ===== NEW: Generate unique listing code with retry =====
+  generateUniqueListingCode: async function(maxAttempts = 3) {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const code = await this.generateListingCode();
+      
+      try {
+        const snapshot = await db.collection('listings')
+          .where('listingCode', '==', code)
+          .limit(1)
+          .get();
+        
+        if (snapshot.empty) return code;
+      } catch (error) {
+        // If query fails, still return the code (will be caught later)
+        return code;
+      }
+    }
+    throw new Error('Could not generate unique listing code after ' + maxAttempts + ' attempts');
+  },
   
-  
+  // ===== USERNAME FUNCTIONS (unchanged) =====
   generateUsernameSuggestion: function(name) {
     if (!name) return '';
-    
     
     const base = name.toLowerCase()
       .replace(/[^a-z0-9]/g, '')
       .slice(0, 12);
     
-    
     const random = Math.random().toString(36).substring(2, 5);
     
     return base + random;
   },
-  
   
   validateUsername: function(username) {
     if (!username) return 'Username is required';
@@ -32,9 +90,8 @@ const IDGenerator = {
     if (!/^[a-z0-9_]+$/.test(username)) {
       return 'Username can only contain lowercase letters, numbers, and underscores';
     }
-    return null; 
+    return null;
   },
-  
   
   checkUsernameExists: async function(username, excludeUserId = null) {
     if (!username) return false;
@@ -47,96 +104,34 @@ const IDGenerator = {
       
       if (snapshot.empty) return false;
       
-      
       if (excludeUserId && snapshot.docs[0].id === excludeUserId) return false;
       
       return true;
     } catch (error) {
-      return true; 
+      return true;
     }
   },
   
-  
-  
-  
-  
-  
-  generateListingCode: function() {
-    let code = '';
-    for (let i = 0; i < this.CODE_LENGTH; i++) {
-      const randomIndex = Math.floor(Math.random() * this.CODE_CHARS.length);
-      code += this.CODE_CHARS[randomIndex];
-    }
-    
-    code += this.calculateChecksum(code);
-    return code;
-  },
-  
-  
-  calculateChecksum: function(str) {
-    let sum = 0;
-    for (let i = 0; i < str.length; i++) {
-      sum += str.charCodeAt(i);
-    }
-    return this.CODE_CHARS[sum % this.CODE_CHARS.length];
-  },
-  
-  
-  validateListingCode: function(code) {
-    if (!code || code.length !== this.CODE_LENGTH + 1) return false;
-    const data = code.slice(0, this.CODE_LENGTH);
-    const checksum = code[this.CODE_LENGTH];
-    return checksum === this.calculateChecksum(data);
-  },
-  
-  
-  generateUniqueListingCode: async function(maxAttempts = 5) {
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      const code = this.generateListingCode();
-      
-      try {
-        const snapshot = await db.collection('listings')
-          .where('shortCode', '==', code)
-          .limit(1)
-          .get();
-        
-        if (snapshot.empty) return code;
-      } catch (error) {
-        
-        return code;
-      }
-    }
-    throw new Error('Could not generate unique listing code after ' + maxAttempts + ' attempts');
-  },
-  
-  
-  
-  
-  
-  
+  // ===== URL HELPERS (updated) =====
   getProfileUrl: function(username) {
     if (!username) return null;
-    return '/u/' + username;
+    return '/' + username;
   },
   
-  
-  getListingUrl: function(shortCode) {
-    if (!shortCode) return null;
-    return '/l/' + shortCode;
+  getListingUrl: function(listingCode) {
+    if (!listingCode) return null;
+    return '/listing/' + listingCode;
   },
-  
   
   extractUsernameFromUrl: function(url) {
-    const match = url.match(/\/u\/([a-z0-9_]+)/);
+    const match = url.match(/^\/([a-z0-9_]+)(?:\/|$)/);
     return match ? match[1] : null;
   },
   
-  
-  extractShortCodeFromUrl: function(url) {
-    const match = url.match(/\/l\/([A-Z2-9]{7})/);
+  extractListingCodeFromUrl: function(url) {
+    const match = url.match(/\/listing\/(\d{6}-\d{3}-[a-z0-9]{3})/);
     return match ? match[1] : null;
   }
 };
 
 window.IDGenerator = IDGenerator;
-

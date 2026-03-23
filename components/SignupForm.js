@@ -133,13 +133,7 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
   };
 
   // ===== SHOW PRE-SIGNUP TOAST =====
-  const showPreSignupToast = React.useCallback(() => {
-    showToast(
-      '📧 After signup, you\'ll need to verify your email to post listings, comment, and message.',
-      'info',
-      6000
-    );
-  }, [showToast]);
+
 
   // ===== HANDLE FINAL SUBMIT - With pre-toast =====
   const handleFinalSubmit = async (e) => {
@@ -147,8 +141,7 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
     
     if (!validateStep(2)) return;
 
-    // Show the verification reminder BEFORE attempting signup
-    showPreSignupToast();
+    
 
     setLoading(true);
     setIsLoading(true);
@@ -229,8 +222,7 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
   const handleGoogleSignUp = async () => {
     if (googleLoading) return;
     
-    // Show verification reminder BEFORE Google signup
-    showPreSignupToast();
+  
     
     setGoogleLoading(true);
     setIsLoading(true);
@@ -379,44 +371,6 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
 
   return React.createElement('div', { className: 'w-full' },
 
-    // Google Sign-Up
-    React.createElement('div', { className: 'mb-3' },
-      React.createElement('button', {
-        onClick: handleGoogleSignUp,
-        disabled: googleLoading || loading,
-        className: `w-full bg-white border border-gray-300 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-50 flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all ${googleLoading ? 'animate-pulse' : ''}`,
-        style: { minHeight: '44px' }
-      },
-        googleLoading ? (
-          React.createElement(React.Fragment, null,
-            React.createElement('div', { className: 'w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin' }),
-            React.createElement('span', null, 'Connecting to Google...')
-          )
-        ) : (
-          React.createElement(React.Fragment, null,
-            React.createElement('svg', { className: 'w-5 h-5', viewBox: '0 0 24 24' },
-              React.createElement('path', { fill: '#4285F4', d: 'M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z' }),
-              React.createElement('path', { fill: '#34A853', d: 'M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z' }),
-              React.createElement('path', { fill: '#FBBC05', d: 'M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z' }),
-              React.createElement('path', { fill: '#EA4335', d: 'M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z' })
-            ),
-            React.createElement('span', null, 'Sign up with Google')
-          )
-        )
-      ),
-
-      React.createElement('div', { className: 'relative my-3' }, 
-        React.createElement('div', { className: 'absolute inset-0 flex items-center' },
-          React.createElement('div', { className: 'w-full border-t border-gray-200' })
-        ),
-        React.createElement('div', { className: 'relative flex justify-center text-xs' },
-          React.createElement('span', { className: 'px-2 bg-white text-gray-400' }, 
-            currentStep === 1 ? 'or sign up with email' : 'or continue'
-          )
-        )
-      )
-    ),
-
     // Step indicator
     React.createElement('div', { className: 'flex justify-center gap-1 mb-3' },
       [1, 2].map(step => 
@@ -434,73 +388,113 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
       className: 'mb-3 bg-red-50 border border-red-200 text-red-600 p-2 rounded-lg text-xs' 
     }, error),
 
-    // Step 1: Name + Email Form
-    currentStep === 1 && React.createElement('form', { 
-      onSubmit: handleStep1Submit,
-      className: 'space-y-3'
-    },
-      React.createElement('div', null,
-        React.createElement('input', {
-          type: 'text',
-          value: form.name,
-          onChange: (e) => {
-            setForm({ ...form, name: e.target.value });
-            setTouched({ ...touched, name: true });
-            if (errors.name) setErrors({ ...errors, name: null });
-          },
-          onBlur: () => setTouched({ ...touched, name: true }),
-          placeholder: 'Full name',
-          className: inputClass('name'),
-          autoFocus: true,
-          maxLength: 60
-        }),
-        errors.name && touched.name && 
-          React.createElement('p', { className: 'text-red-500 text-xs mt-1' }, errors.name)
+    // ===== STEP 1: Name + Email Form (includes Google button) =====
+    currentStep === 1 && React.createElement('div', null,
+      // Google Sign-Up (ONLY in Step 1)
+      React.createElement('div', { className: 'mb-3' },
+        React.createElement('button', {
+          onClick: handleGoogleSignUp,
+          disabled: googleLoading || loading,
+          className: `w-full bg-white border border-gray-300 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-50 flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all ${googleLoading ? 'animate-pulse' : ''}`,
+          style: { minHeight: '44px' }
+        },
+          googleLoading ? (
+            React.createElement(React.Fragment, null,
+              React.createElement('div', { className: 'w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin' }),
+              React.createElement('span', null, 'Connecting to Google...')
+            )
+          ) : (
+            React.createElement(React.Fragment, null,
+              React.createElement('svg', { className: 'w-5 h-5', viewBox: '0 0 24 24' },
+                React.createElement('path', { fill: '#4285F4', d: 'M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z' }),
+                React.createElement('path', { fill: '#34A853', d: 'M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z' }),
+                React.createElement('path', { fill: '#FBBC05', d: 'M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z' }),
+                React.createElement('path', { fill: '#EA4335', d: 'M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z' })
+              ),
+              React.createElement('span', null, 'Sign up with Google')
+            )
+          )
+        ),
+
+        // Divider
+        React.createElement('div', { className: 'relative my-3' }, 
+          React.createElement('div', { className: 'absolute inset-0 flex items-center' },
+            React.createElement('div', { className: 'w-full border-t border-gray-200' })
+          ),
+          React.createElement('div', { className: 'relative flex justify-center text-xs' },
+            React.createElement('span', { className: 'px-2 bg-white text-gray-400' }, 'or sign up with email')
+          )
+        )
       ),
 
-      React.createElement('div', null,
-        React.createElement('input', {
-          type: 'email',
-          value: form.email,
-          onChange: (e) => {
-            setForm({ ...form, email: e.target.value });
-            setTouched({ ...touched, email: true });
-            if (errors.email) setErrors({ ...errors, email: null });
-          },
-          onBlur: () => setTouched({ ...touched, email: true }),
-          placeholder: 'Email address',
-          className: inputClass('email'),
-          disabled: loading || checkingEmail
-        }),
-        
-        checkingEmail && React.createElement('p', { className: 'text-xs text-gray-500 mt-1 flex items-center gap-1' },
-          React.createElement('div', { className: 'w-3 h-3 border-2 border-gray-500 border-t-transparent rounded-full animate-spin' }),
-          'Checking email...'
+      // Name + Email Form
+      React.createElement('form', { 
+        onSubmit: handleStep1Submit,
+        className: 'space-y-3'
+      },
+        React.createElement('div', null,
+          React.createElement('input', {
+            type: 'text',
+            value: form.name,
+            onChange: (e) => {
+              setForm({ ...form, name: e.target.value });
+              setTouched({ ...touched, name: true });
+              if (errors.name) setErrors({ ...errors, name: null });
+            },
+            onBlur: () => setTouched({ ...touched, name: true }),
+            placeholder: 'Full name',
+            className: inputClass('name'),
+            autoFocus: true,
+            maxLength: 60
+          }),
+          errors.name && touched.name && 
+            React.createElement('p', { className: 'text-red-500 text-xs mt-1' }, errors.name)
         ),
-        
-        emailExists && !checkingEmail && React.createElement('p', { className: 'text-xs text-amber-600 mt-1' },
-          'Email already registered. ', 
-          React.createElement('button', {
-            type: 'button',
-            onClick: switchToLogin,
-            className: 'text-green-950 hover:underline font-medium'
-          }, 'Sign in instead')
-        ),
-        
-        errors.email && touched.email && 
-          React.createElement('p', { className: 'text-red-500 text-xs mt-1' }, errors.email)
-      ),
 
-      React.createElement('button', {
-        type: 'submit',
-        disabled: loading || checkingEmail || emailExists,
-        className: `w-full bg-green-950 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition disabled:opacity-50 disabled:cursor-not-allowed mt-1 ${
-          emailExists ? 'opacity-50 cursor-not-allowed' : ''
-        }`
-      }, loading || checkingEmail ? 'Checking...' : 'Continue →')
+        React.createElement('div', null,
+          React.createElement('input', {
+            type: 'email',
+            value: form.email,
+            onChange: (e) => {
+              setForm({ ...form, email: e.target.value });
+              setTouched({ ...touched, email: true });
+              if (errors.email) setErrors({ ...errors, email: null });
+            },
+            onBlur: () => setTouched({ ...touched, email: true }),
+            placeholder: 'Email address',
+            className: inputClass('email'),
+            disabled: loading || checkingEmail
+          }),
+          
+          checkingEmail && React.createElement('p', { className: 'text-xs text-gray-500 mt-1 flex items-center gap-1' },
+            React.createElement('div', { className: 'w-3 h-3 border-2 border-gray-500 border-t-transparent rounded-full animate-spin' }),
+            'Checking email...'
+          ),
+          
+          emailExists && !checkingEmail && React.createElement('p', { className: 'text-xs text-amber-600 mt-1' },
+            'Email already registered. ', 
+            React.createElement('button', {
+              type: 'button',
+              onClick: switchToLogin,
+              className: 'text-green-950 hover:underline font-medium'
+            }, 'Sign in instead')
+          ),
+          
+          errors.email && touched.email && 
+            React.createElement('p', { className: 'text-red-500 text-xs mt-1' }, errors.email)
+        ),
+
+        React.createElement('button', {
+          type: 'submit',
+          disabled: loading || checkingEmail || emailExists,
+          className: `w-full bg-green-950 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition disabled:opacity-50 disabled:cursor-not-allowed mt-1 ${
+            emailExists ? 'opacity-50 cursor-not-allowed' : ''
+          }`
+        }, loading || checkingEmail ? 'Checking...' : 'Continue →')
+      )
     ),
 
-    // Step 2: Password + Confirm Form
+    // ===== STEP 2: Password + Confirm Form (NO Google button) =====
     currentStep === 2 && React.createElement('form', { 
       onSubmit: handleFinalSubmit,
       className: 'space-y-3'
@@ -599,17 +593,7 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
           )
       ),
 
-      // ===== VERIFICATION INFO BOX =====
-      React.createElement('div', { 
-        className: 'mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800 flex items-start gap-2' 
-      },
-        React.createElement('span', { className: 'text-base' }, '📧'),
-        React.createElement('span', null,
-          'After signup, you\'ll need to ',
-          React.createElement('strong', null, 'verify your email'),
-          ' to post listings, comment, and message others. Check your inbox for the verification link.'
-        )
-      ),
+   
 
       // Terms agreement
       React.createElement('div', { className: 'mt-2 text-xs text-gray-500 text-center' },
@@ -642,17 +626,6 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
       )
     ),
 
-    // Footer - Link to login
-    currentStep === 1 && React.createElement('div', { 
-      className: 'mt-4 text-center text-xs text-gray-500 border-t border-gray-100 pt-4'
-    },
-      'Already have an account? ',
-      React.createElement('button', {
-        type: 'button',
-        onClick: switchToLogin,
-        className: 'text-green-950 font-medium hover:underline'
-      }, 'Sign in')
-    )
   );
 }
 

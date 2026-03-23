@@ -845,21 +845,7 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
         listingData.status = 'pending_review';
         listingData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
         
-        try {
-          if (!window.IDGenerator) {
-            throw new Error('IDGenerator not available');
-          }
-          
-          const shortCode = await window.IDGenerator.generateUniqueListingCode();
-          listingData.shortCode = shortCode;
-          
-        } catch (codeErr) {
-          console.error('Error generating short code:', codeErr);
-          setSubmitError('Failed to generate unique listing code. Please try again.');
-          setSubmitting(false);
-          return;
-        }
-        
+
         const docRef = await db.collection('listings').add(listingData);
         
         const notificationRef = db.collection('users').doc(currentUser.uid)

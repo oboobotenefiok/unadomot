@@ -213,28 +213,47 @@ function App() {
           // For homepage, load critical path first based on preferred mode
           const preferredMode = localStorage.getItem('home_view_mode') || 'grid';
           
-          
           // Load homepage component (this will handle its own priority loading)
           component = await lazyLoad('HomePage', '/pages/home/index.js');
-        } else if (base === '/listings') {
+        } 
+        else if (base === '/listings') {
           component = await lazyLoad('ListingsPage', '/pages/ListingsPage.js');
-        } else if (base.startsWith('/listing/')) {
-          component = await lazyLoad('ListingDetailPage', '/pages/listing-detail/index.js');
-        } else if (base.startsWith('/l/')) {
-          component = await lazyLoad('ListingByShortCodePage', '/pages/ListingByShortCodePage.js');
-        } else if (base === '/profile') {
+        }
+        else if (base.startsWith('/listing/')) {
+          // Extract the part after /listing/
+          const codeOrId = base.split('/')[2];
+          
+          // Check if it's a listing code (format: YYMMDD-XXX-CCC)
+          // Pattern: 6 digits, hyphen, 3 digits, hyphen, 3 alphanumeric
+          const isListingCode = codeOrId && /^\d{6}-\d{3}-[a-z0-9]{3}$/.test(codeOrId);
+          
+          if (isListingCode) {
+            // It's a listing code - resolve via ListingByCodePage
+            component = await lazyLoad('ListingByCodePage', '/pages/ListingByCodePage.js');
+          } else {
+            // It's a Firestore ID - go directly to listing detail
+            component = await lazyLoad('ListingDetailPage', '/pages/listing-detail/index.js');
+          }
+        }
+        else if (base === '/profile') {
           component = await lazyLoad('ProfilePage', '/pages/profile/index.js');
-        } else if (base.startsWith('/profile/')) {
+        }
+        else if (base.startsWith('/profile/')) {
           component = await lazyLoad('ProfileRedirectPage', '/pages/ProfileRedirectPage.js');
-        } else if (base.startsWith('/public-profile/')) {
+        }
+        else if (base.startsWith('/public-profile/')) {
           component = await lazyLoad('PublicProfilePage', '/pages/PublicProfilePage.js');
-        } else if (base.startsWith('/u/')) {
+        }
+        else if (base.startsWith('/u/')) {
           component = await lazyLoad('UserByUsernamePage', '/pages/UserByUsernamePage.js');
-        } else if (base === '/chat') {
+        }
+        else if (base === '/chat') {
           component = await lazyLoad('ChatPage', '/pages/ChatPage.js');
-        } else if (base === '/favorites') {
+        }
+        else if (base === '/favorites') {
           component = await lazyLoad('FavoritesPage', '/pages/FavoritesPage.js');
-        } else if (base === '/post') {
+        }
+        else if (base === '/post') {
           // Redirect to home and open the post modal
           navigate('/');
           setTimeout(() => {
@@ -243,25 +262,33 @@ function App() {
             }
           }, 100);
           return;
-        } else if (base.startsWith('/edit/')) {
+        }
+        else if (base.startsWith('/edit/')) {
           const lid = base.split('/')[2];
           navigate('/listing/' + lid);
           const { openModal } = window.useAuthModal?.() || {};
           if (openModal) setTimeout(() => openModal('post', { listingId: lid }), 100);
           return;
-        } else if (base === '/verify') {
+        }
+        else if (base === '/verify') {
           component = await lazyLoad('VerificationPage', '/pages/VerificationPage.js');
-        } else if (base === '/checkout') {
+        }
+        else if (base === '/checkout') {
           component = await lazyLoad('CheckoutNoticePage', '/pages/CheckoutNoticePage.js');
-        } else if (base === '/forgot-password') {
+        }
+        else if (base === '/forgot-password') {
           component = await lazyLoad('ForgotPasswordPage', '/pages/ForgotPasswordPage.js');
-        } else if (base === '/admin') {
+        }
+        else if (base === '/admin') {
           component = await lazyLoad('AdminPage', '/pages/AdminPage.js');
-        } else if (base === '/terms') {
+        }
+        else if (base === '/terms') {
           component = await lazyLoad('TermsPage', '/pages/TermsPage.js');
-        } else if (base === '/privacy') {
+        }
+        else if (base === '/privacy') {
           component = await lazyLoad('PrivacyPage', '/pages/PrivacyPage.js');
-        } else {
+        }
+        else {
           component = await lazyLoad('NotFoundPage', '/pages/NotFoundPage.js');
         }
         
@@ -292,10 +319,6 @@ function App() {
     
     if (!loading) loadPage();
   }, [currentPath, user, loading, navigate]);
-  
-  // ===== REMOVED DUPLICATE useEffect =====
-  // The duplicate verification warning handler has been removed
-  // The one below this line is the only one needed
   
   // Hide splash screen when app is ready
   React.useEffect(() => {

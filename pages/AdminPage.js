@@ -712,34 +712,47 @@ function AdminPage({ user, navigate }) {
     }
   }
 
-  async function approveListing(listing) {
-    setLoading(listing.id, true);
+async function approveListing(listing) {
+  setLoading(listing.id, true);
+  try {
+    // ===== GENERATE LISTING CODE ON APPROVAL =====
+    let listingCode = null;
     try {
-      await db.collection('listings').doc(listing.id).update({
-        status: 'available',
-        approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        approvedBy: user.uid
-      });
-      removePendingListing(listing.id);
-      
-      const notificationRef = db.collection('users').doc(listing.userId)
-        .collection('notifications').doc();
-      await notificationRef.set({
-        type: 'listing_approved',
-        title: 'Listing Approved! ✅',
-        body: `Your listing "${listing.title}" has been approved and is now live.`,
-        listingId: listing.id,
-        read: false,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      
-    } catch (err) {
-      alert('Failed to approve listing.');
-    } finally {
+      listingCode = await window.IDGenerator.generateUniqueListingCode();
+    } catch (codeErr) {
+      console.error('Error generating listing code:', codeErr);
+      alert('Failed to generate listing code. Please try again.');
       setLoading(listing.id, false);
+      return;
     }
+    
+    await db.collection('listings').doc(listing.id).update({
+      status: 'available',
+      listingCode: listingCode, // ← NEW FIELD
+      approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      approvedBy: user.uid
+    });
+    
+    removePendingListing(listing.id);
+    
+    const notificationRef = db.collection('users').doc(listing.userId)
+      .collection('notifications').doc();
+    await notificationRef.set({
+      type: 'listing_approved',
+      title: 'Listing Approved! ✅',
+      body: `Your listing "${listing.title}" has been approved and is now live. Share it at: /listing/${listingCode}`,
+      listingId: listing.id,
+      listingCode: listingCode,
+      read: false,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    
+  } catch (err) {
+    alert('Failed to approve listing.');
+  } finally {
+    setLoading(listing.id, false);
   }
-
+}
   async function rejectListing(listing) {
     const reason = rejectionReason[listing.id] || '';
     if (!reason.trim()) {

@@ -1,4 +1,4 @@
-
+// utils/share.js
 const ShareHelpers = {
   
   shareListing: async function(listing, options = {}) {
@@ -12,22 +12,21 @@ const ShareHelpers = {
         customMessage = null,
         onSuccess = null,
         onError = null,
-        showToast = null 
+        showToast = null
     } = options;
     
-    
-    const shareUrl = window.location.origin + '/listing/' + listing.id;
-    
+    // ===== USE LISTING CODE IF AVAILABLE =====
+    const shareUrl = listing.listingCode ?
+      window.location.origin + '/listing/' + listing.listingCode :
+      window.location.origin + '/listing/' + listing.id;
     
     const shareTitle = listing.title || 'Check out this property';
-    
     
     let shareText = '';
     
     if (customMessage) {
       shareText = customMessage;
     } else {
-      
       const priceText = includePrice && listing.price ?
         ` - ₦${listing.price.toLocaleString()}/month` :
         '';
@@ -40,7 +39,6 @@ const ShareHelpers = {
       text: shareText,
       url: includeLink ? shareUrl : undefined
     };
-    
     
     if (navigator.share) {
       try {
@@ -55,9 +53,7 @@ const ShareHelpers = {
         }
         return false;
       }
-    }
-    
-    else {
+    } else {
       try {
         await navigator.clipboard.writeText(shareUrl);
         if (onSuccess) onSuccess();
@@ -70,7 +66,6 @@ const ShareHelpers = {
       }
     }
   },
-  
   
   shareNaijaStyle: async function(listing, options = {}) {
     const messages = [
@@ -91,7 +86,6 @@ const ShareHelpers = {
       customMessage: randomMessage
     });
   },
-  
   
   shareUrl: async function(url, options = {}) {
     const { onSuccess, onError, showToast } = options;

@@ -1,29 +1,32 @@
-// pages/ListingByShortCodePage.js
-function ListingByShortCodePage({ navigate }) {
+// pages/ListingByCodePage.js
+// Resolves listing codes like /listing/250322-001-a1b to actual listing IDs
+
+function ListingByCodePage({ navigate }) {
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(true);
   
-  const shortCode = window.location.pathname.split('/')[2];
+  const listingCode = window.location.pathname.split('/')[2];
   
   React.useEffect(() => {
-    if (!shortCode) {
+    if (!listingCode) {
       setError('No listing code provided');
       setLoading(false);
       return;
     }
     
-    const resolveShortCode = async () => {
+    const resolveListingCode = async () => {
       try {
-        if (window.IDGenerator) {
-          const isValid = window.IDGenerator.validateListingCode(shortCode);
-          if (!isValid) {
-            
-          }
+        // Validate format
+        if (window.IDGenerator && !window.IDGenerator.validateListingCode(listingCode)) {
+          setError('Invalid listing code format');
+          setLoading(false);
+          return;
         }
         
+        // Query by listingCode
         const result = await FirestoreQueries.query({
           collection: 'listings',
-          where: [['shortCode', '==', shortCode]],
+          where: [['listingCode', '==', listingCode]],
           limit: 1
         });
         
@@ -33,26 +36,34 @@ function ListingByShortCodePage({ navigate }) {
           return;
         }
         
-        const listingId = result.data[0].id;
-        const listingData = result.data[0];
+        const listing = result.data[0];
         
-        if (listingData.status === 'deleted') {
+        // Check if listing is deleted
+        if (listing.status === 'deleted') {
           setError('This listing has been removed');
           setLoading(false);
           return;
         }
         
-        navigate('/listing/' + listingId);
+        // Check if listing is pending review (not yet live)
+        if (listing.status === 'pending_review') {
+          setError('This listing is pending review and not yet available');
+          setLoading(false);
+          return;
+        }
+        
+        // Redirect to the listing detail page (by Firestore ID)
+        navigate('/listing/' + listing.id);
         
       } catch (err) {
-        
+        console.error('Error resolving listing code:', err);
         setError('Failed to load listing. Please try again.');
         setLoading(false);
       }
     };
     
-    resolveShortCode();
-  }, [shortCode, navigate]);
+    resolveListingCode();
+  }, [listingCode, navigate]);
   
   if (loading) {
     return React.createElement('div', { className: 'min-h-screen bg-green-50 flex items-center justify-center' },
@@ -67,16 +78,12 @@ function ListingByShortCodePage({ navigate }) {
     return React.createElement('div', { className: 'min-h-screen bg-green-50 flex items-center justify-center' },
       React.createElement('div', { className: 'text-center max-w-md mx-auto px-4' },
         React.createElement('div', { className: 'text-6xl mb-4' }, '🏠'),
-        React.createElement('h2', { className: 'text-2xl font-bold text-gray-900 mb-2' }, 'Listing Not Found'),
-        React.createElement('p', { className: 'text-gray-600 mb-6' },
-          error === 'Listing not found' ?
-          `No listing found with code "${shortCode}"` :
-          error
-        ),
+        React.createElement('h2', { className: 'text-2xl font-bold text-gray-900 mb-2' }, 'Listing Not Available'),
+        React.createElement('p', { className: 'text-gray-600 mb-6' }, error),
         React.createElement('button', {
-          onClick: () => navigate('/listings'),
+          onClick: () => navigate('/'),
           className: 'bg-green-950 text-white px-6 py-3 rounded-lg hover:bg-green-800 transition cursor-pointer'
-        }, 'Browse Listings')
+        }, 'Go Home')
       )
     );
   }
@@ -84,4 +91,4 @@ function ListingByShortCodePage({ navigate }) {
   return null;
 }
 
-window.ListingByShortCodePage = ListingByShortCodePage;
+window.ListingByCodePage = ListingByCodePage;
