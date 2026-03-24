@@ -50,7 +50,7 @@
     <meta name="robots" content="index, follow">
 
     <!-- Styles -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com" defer></script>
     <link rel="stylesheet" href="/styles/styles.css">
     <link rel="stylesheet" href="/styles/accessibility-base.css">
     <link rel="stylesheet" href="/styles/themes/light.css">
@@ -258,8 +258,8 @@
     <link rel="stylesheet" href="/vault/css/leaflet.css">
     <link rel="stylesheet" href="/vault/css/MarkerCluster.css">
     <link rel="stylesheet" href="/vault/css/MarkerCluster.Default.css">
-    <script src="/vault/js/leaflet.js"></script>
-    <script src="/vault/js/leaflet.markercluster.js"></script>
+    <script src="/vault/js/leaflet.js" defer></script>
+    <script src="/vault/js/leaflet.markercluster.js" defer></script>
     
     <!-- Dynamic CSS loading based on screen size -->
     <script>
@@ -368,234 +368,234 @@
     </script>
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js" defer></script>
 
     <!-- React -->
-    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js" defer></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js" defer></script>
 
     <!-- Critical data and services (load immediately) -->
-    <script src="/data/nigeria-states.js"></script>
-    <script src="/services/firebase.js"></script>
+    <script src="/data/nigeria-states.js" defer></script>
+    <script src="/services/firebase.js" defer></script>
 
     <!-- Core utilities (load immediately) -->
-    <script src="/utils/LazyLoad.js"></script>
-    <script src="/utils/sanitize.js"></script>
-    <script src="/utils/validation.js"></script>
-    <script src="/utils/validationPatterns.js"></script>
-    <script src="/utils/validationMessages.js"></script>
-    <script src="/utils/smartValidation.js"></script>
-    <script src="/utils/cache.js"></script>
-    <script src="/utils/idGenerator.js"></script>
-    <script src="/utils/cloudinary.js"></script>
-    <script src="/utils/share.js"></script>
-    <script src="/utils/favorites.js"></script>
-    <script src="/utils/chat.js"></script>
-    <script src="/utils/notifications.js"></script>
-    <script src="/utils/messaging.js"></script>
-    <script src="/utils/firestoreRetry.js"></script>
-    <script src="/utils/router.js"></script>
-    <script src="/utils/preload.js"></script>
-    <script src="/utils/firestoreQueries.js"></script>
+    <script src="/utils/LazyLoad.js" defer></script>
+    <script src="/utils/sanitize.js" defer></script>
+    <script src="/utils/validation.js" defer></script>
+    <script src="/utils/validationPatterns.js" defer></script>
+    <script src="/utils/validationMessages.js" defer></script>
+    <script src="/utils/smartValidation.js" defer></script>
+    <script src="/utils/cache.js" defer></script>
+    <script src="/utils/idGenerator.js" defer></script>
+    <script src="/utils/cloudinary.js" defer></script>
+    <script src="/utils/share.js" defer></script>
+    <script src="/utils/favorites.js" defer></script>
+    <script src="/utils/chat.js" defer></script>
+    <script src="/utils/notifications.js" defer></script>
+    <script src="/utils/messaging.js" defer></script>
+    <script src="/utils/firestoreRetry.js" defer></script>
+    <script src="/utils/router.js" defer></script>
+    <script src="/utils/preload.js" defer></script>
+    <script src="/utils/firestoreQueries.js" defer></script>
     
     <!-- Geocoding Utility -->
-    <script src="/utils/geocoding.js"></script>
+    <script src="/utils/geocoding.js" defer></script>
 
     <!-- Error Handling System -->
-    <script src="/utils/errors/constants.js"></script>
-    <script src="/utils/errors/ErrorLogger.js"></script>
-    <script src="/utils/errors/ErrorBoundary.js"></script>
-    <script src="/utils/errors/ErrorToast.js"></script>
-    <script src="/utils/errors/ErrorModal.js"></script>
-    <script src="/utils/errors/ErrorFallback.js"></script>
-    <script src="/utils/errors/ErrorProvider.js"></script>
-    <script src="/utils/errors/index.js"></script>
+    <script src="/utils/errors/constants.js" defer></script>
+    <script src="/utils/errors/ErrorLogger.js" defer></script>
+    <script src="/utils/errors/ErrorBoundary.js" defer></script>
+    <script src="/utils/errors/ErrorToast.js" defer></script>
+    <script src="/utils/errors/ErrorModal.js" defer></script>
+    <script src="/utils/errors/ErrorFallback.js" defer></script>
+    <script src="/utils/errors/ErrorProvider.js" defer></script>
+    <script src="/utils/errors/index.js" defer></script>
 
     <!-- ===== NEW: Verification & Toast Utilities ===== -->
-    <script src="/utils/verification.js"></script>
-    <script src="/utils/toast.js"></script>
+    <script src="/utils/verification.js" defer></script>
+    <script src="/utils/toast.js" defer></script>
 
     <!-- Accessibility -->
-    <script src="/utils/accessibilityContext.js"></script>
-    <script src="/utils/accessibilityLayout.js"></script>
-    <script src="/hooks/useAccessibility.js"></script>
-    <script src="/components/AccessibilityProvider.js"></script>
-    <script src="/components/AccessibilityPanel.js"></script>
+    <script src="/utils/accessibilityContext.js" defer></script>
+    <script src="/utils/accessibilityLayout.js" defer></script>
+    <script src="/hooks/useAccessibility.js" defer></script>
+    <script src="/components/AccessibilityProvider.js" defer></script>
+    <script src="/components/AccessibilityPanel.js" defer></script>
 
     <!-- Scroll hook -->
-    <script src="/hooks/useScrollDirection.js"></script>
-    <script src="/components/ScrollToTopButton.js"></script>
+    <script src="/hooks/useScrollDirection.js" defer></script>
+    <script src="/components/ScrollToTopButton.js" defer></script>
 
     <!-- Contexts -->
-    <script src="/contexts/AuthModalContext.js"></script>
-    <script src="/contexts/NotificationContext.js"></script>
-    <script src="/contexts/RouteCacheContext.js"></script>
-    <script src="/contexts/FormDraftContext.js"></script>
+    <script src="/contexts/AuthModalContext.js" defer></script>
+    <script src="/contexts/NotificationContext.js" defer></script>
+    <script src="/contexts/RouteCacheContext.js" defer></script>
+    <script src="/contexts/FormDraftContext.js" defer></script>
 
     <!-- Hooks -->
-    <script src="/hooks/useSmartValidation.js"></script>
-    <script src="/hooks/useCache.js"></script>
-    <script src="/hooks/usePersistentState.js"></script>
-    <script src="/hooks/useRequireAuth.js"></script>
+    <script src="/hooks/useSmartValidation.js" defer></script>
+    <script src="/hooks/useCache.js" defer></script>
+    <script src="/hooks/usePersistentState.js" defer></script>
+    <script src="/hooks/useRequireAuth.js" defer></script>
     
     <!-- ===== NEW: Verification & Toast Hooks ===== -->
-    <script src="/hooks/useVerification.js"></script>
-    <script src="/hooks/useToast.js"></script>
+    <script src="/hooks/useVerification.js" defer></script>
+    <script src="/hooks/useToast.js" defer></script>
     
     <!-- ===== CHAT HOOKS ===== -->
-    <script src="/hooks/useChatMessages.js"></script>
+    <script src="/hooks/useChatMessages.js" defer></script>
 
     <!-- ===== REACTION SYSTEM ===== -->
-    <script src="/utils/reactionHelpers.js"></script>
-    <script src="/hooks/useReactions.js"></script>
-    <script src="/components/ReactionButton.js"></script>
+    <script src="/utils/reactionHelpers.js" defer></script>
+    <script src="/hooks/useReactions.js" defer></script>
+    <script src="/components/ReactionButton.js" defer></script>
 
     <!-- ===== NEW SIMILAR LISTINGS HOOK ===== -->
-    <script src="/hooks/useSimilarListings.js"></script>
+    <script src="/hooks/useSimilarListings.js" defer></script>
 
     <!-- Core components -->
-    <script src="/components/RouteCache.js"></script>
-    <script src="/components/SmartFormField.js"></script>
-    <script src="/components/SmartForm.js"></script>
-    <script src="/components/PasswordStrengthMeter.js"></script>
-    <script src="/components/ValidationIndicator.js"></script>
-    <script src="/components/LoginForm.js"></script>
+    <script src="/components/RouteCache.js" defer></script>
+    <script src="/components/SmartFormField.js" defer></script>
+    <script src="/components/SmartForm.js" defer></script>
+    <script src="/components/PasswordStrengthMeter.js" defer></script>
+    <script src="/components/ValidationIndicator.js" defer></script>
+    <script src="/components/LoginForm.js" defer></script>
     
     <!-- ===== UPDATED: SignupForm with pre-signup toast ===== -->
-    <script src="/components/SignupForm.js"></script>
+    <script src="/components/SignupForm.js" defer></script>
     
     <!-- ===== UPDATED: AuthModal with ForgotPasswordModal ===== -->
-    <script src="/components/AuthModal.js"></script>
-    <script src="/components/ForgotPasswordModal.js"></script>
+    <script src="/components/AuthModal.js" defer></script>
+    <script src="/components/ForgotPasswordModal.js" defer></script>
     
     <!-- ===== UPDATED: PostListingWizard with verification ===== -->
-    <script src="/components/PostListingWizard.js"></script>
+    <script src="/components/PostListingWizard.js" defer></script>
     
-    <script src="/components/VerificationBadge.js"></script>
-    <script src="/components/ReportModal.js"></script>
+    <script src="/components/VerificationBadge.js" defer></script>
+    <script src="/components/ReportModal.js" defer></script>
     
     <!-- ===== UPDATED: ListingCard with verification ===== -->
-    <script src="/components/ListingCard.js"></script>
+    <script src="/components/ListingCard.js" defer></script>
     
-    <script src="/components/SkeletonLoader.js"></script>
-    <script src="/components/ChatMessage.js"></script>
+    <script src="/components/SkeletonLoader.js" defer></script>
+    <script src="/components/ChatMessage.js" defer></script>
     
     <!-- ===== UPDATED: ChatInterface with verification ===== -->
-    <script src="/components/ChatInterface.js"></script>
+    <script src="/components/ChatInterface.js" defer></script>
     
-    <script src="/components/ChatList.js"></script>
-    <script src="/components/BackButton.js"></script>
-    <script src="/components/UnreadBadge.js"></script>
-    <script src="/components/NotificationBell.js"></script>
-    <script src="/components/Header.js"></script>
-    <script src="/components/Footer.js"></script>
-    <script src="/components/Layout.js"></script>
+    <script src="/components/ChatList.js" defer></script>
+    <script src="/components/BackButton.js" defer></script>
+    <script src="/components/UnreadBadge.js" defer></script>
+    <script src="/components/NotificationBell.js" defer></script>
+    <script src="/components/Header.js" defer></script>
+    <script src="/components/Footer.js" defer></script>
+    <script src="/components/Layout.js" defer></script>
 
     <!-- Global Components -->
-    <script src="/components/RoleBadge.js"></script>
+    <script src="/components/RoleBadge.js" defer></script>
 
     <!-- ===== NEW COMPONENTS ===== -->
-    <script src="/components/DeleteConfirmationModal.js"></script>
-    <script src="/components/SimilarListings.js"></script>
-    <script src="/components/DetailRightPanel.js"></script>
+    <script src="/components/DeleteConfirmationModal.js" defer></script>
+    <script src="/components/SimilarListings.js" defer></script>
+    <script src="/components/DetailRightPanel.js" defer></script>
     
     <!-- ===== NEW: VerificationWarning Component ===== -->
-    <script src="/components/VerificationWarning.js"></script>
+    <script src="/components/VerificationWarning.js" defer></script>
 
     <!-- ===== HOME PAGE MODULAR FILES ===== -->
-    <script src="/pages/home/utils/affinity.js"></script>
-    <script src="/pages/home/utils/scoring.js"></script>
-    <script src="/pages/home/utils/constants.js"></script>
-    <script src="/pages/home/hooks/useListings.js"></script>
-    <script src="/pages/home/hooks/useFavorites.js"></script>
-    <script src="/pages/home/hooks/useSearch.js"></script>
-    <script src="/pages/home/hooks/useFilters.js"></script>
-    <script src="/pages/home/hooks/useCarousel.js"></script>
-    <script src="/pages/home/hooks/useOtherLocations.js"></script>
-    <script src="/pages/home/components/SearchBar.js"></script>
-    <script src="/pages/home/components/FilterBar.js"></script>
+    <script src="/pages/home/utils/affinity.js" defer></script>
+    <script src="/pages/home/utils/scoring.js" defer></script>
+    <script src="/pages/home/utils/constants.js" defer></script>
+    <script src="/pages/home/hooks/useListings.js" defer></script>
+    <script src="/pages/home/hooks/useFavorites.js" defer></script>
+    <script src="/pages/home/hooks/useSearch.js" defer></script>
+    <script src="/pages/home/hooks/useFilters.js" defer></script>
+    <script src="/pages/home/hooks/useCarousel.js" defer></script>
+    <script src="/pages/home/hooks/useOtherLocations.js" defer></script>
+    <script src="/pages/home/components/SearchBar.js" defer></script>
+    <script src="/pages/home/components/FilterBar.js" defer></script>
     
     <!-- ===== UPDATED: Carousel with verification ===== -->
-    <script src="/pages/home/components/Carousel.js"></script>
+    <script src="/pages/home/components/Carousel.js" defer></script>
     
-    <script src="/pages/home/components/ListingGrid.js"></script>
-    <script src="/pages/home/components/AccessibilityModal.js"></script>
+    <script src="/pages/home/components/ListingGrid.js" defer></script>
+    <script src="/pages/home/components/AccessibilityModal.js" defer></script>
     
     <!-- Map View Components -->
-    <script src="/pages/home/components/ViewToggle.js"></script>
+    <script src="/pages/home/components/ViewToggle.js" defer></script>
     
     <!-- Map View Modular Files -->
-    <script src="/pages/home/components/map/utils.js"></script>
-    <script src="/pages/home/components/map/MapCore.js"></script>
-    <script src="/pages/home/components/map/useNavigation.js"></script>
-    <script src="/pages/home/components/map/MapLayers.js"></script>
+    <script src="/pages/home/components/map/utils.js" defer></script>
+    <script src="/pages/home/components/map/MapCore.js" defer></script>
+    <script src="/pages/home/components/map/useNavigation.js" defer></script>
+    <script src="/pages/home/components/map/MapLayers.js" defer></script>
     
     <!-- ===== UPDATED: MapPopup with verification ===== -->
-    <script src="/pages/home/components/map/MapPopup.js"></script>
+    <script src="/pages/home/components/map/MapPopup.js" defer></script>
     
-    <script src="/pages/home/components/map/MapMarkers.js"></script>
-    <script src="/pages/home/components/map/MapGeolocation.js"></script>
-    <script src="/pages/home/components/map/MapControls.js"></script>
-    <script src="/pages/home/components/map/index.js"></script>
+    <script src="/pages/home/components/map/MapMarkers.js" defer></script>
+    <script src="/pages/home/components/map/MapGeolocation.js" defer></script>
+    <script src="/pages/home/components/map/MapControls.js" defer></script>
+    <script src="/pages/home/components/map/index.js" defer></script>
     
     <!-- Filter Components -->
-    <script src="/pages/home/components/filters/PriceFilter.js"></script>
-    <script src="/pages/home/components/filters/SavedSearches.js"></script>
+    <script src="/pages/home/components/filters/PriceFilter.js" defer></script>
+    <script src="/pages/home/components/filters/SavedSearches.js" defer></script>
     
     <!-- Additional Map Components -->
-    <script src="/pages/home/components/LocationSearch.js"></script>
-    <script src="/pages/home/components/PriceRangeSlider.js"></script>
-    <script src="/pages/home/components/SavedSearches.js"></script>
-    <script src="/pages/home/components/RecentViews.js"></script>
+    <script src="/pages/home/components/LocationSearch.js" defer></script>
+    <script src="/pages/home/components/PriceRangeSlider.js" defer></script>
+    <script src="/pages/home/components/SavedSearches.js" defer></script>
+    <script src="/pages/home/components/RecentViews.js" defer></script>
     
     <!-- ===== UPDATED: Home page main entry ===== -->
-    <script src="/pages/home/index.js"></script>
+    <script src="/pages/home/index.js" defer></script>
 
     <!-- ===== PROFILE PAGE MODULAR FILES ===== -->
-    <script src="/pages/profile/utils/constants.js"></script>
-    <script src="/pages/profile/hooks/useProfile.js"></script>
-    <script src="/pages/profile/hooks/useListings.js"></script>
-    <script src="/pages/profile/hooks/useUsername.js"></script>
-    <script src="/pages/profile/hooks/useSettings.js"></script>
-    <script src="/pages/profile/components/ProfileHeader.js"></script>
-    <script src="/pages/profile/components/ProfileTabs.js"></script>
-    <script src="/pages/profile/components/EditProfileModal.js"></script>
-    <script src="/pages/profile/components/ListingsTab.js"></script>
-    <script src="/pages/profile/components/SettingsTab.js"></script>
-    <script src="/pages/profile/components/PopupModal.js"></script>
-    <script src="/pages/profile/index.js"></script>
+    <script src="/pages/profile/utils/constants.js" defer></script>
+    <script src="/pages/profile/hooks/useProfile.js" defer></script>
+    <script src="/pages/profile/hooks/useListings.js" defer></script>
+    <script src="/pages/profile/hooks/useUsername.js" defer></script>
+    <script src="/pages/profile/hooks/useSettings.js" defer></script>
+    <script src="/pages/profile/components/ProfileHeader.js" defer></script>
+    <script src="/pages/profile/components/ProfileTabs.js" defer></script>
+    <script src="/pages/profile/components/EditProfileModal.js" defer></script>
+    <script src="/pages/profile/components/ListingsTab.js" defer></script>
+    <script src="/pages/profile/components/SettingsTab.js" defer></script>
+    <script src="/pages/profile/components/PopupModal.js" defer></script>
+    <script src="/pages/profile/index.js" defer></script>
 
     <!-- ===== LISTING DETAIL PAGE MODULAR FILES ===== -->
-    <script src="/pages/listing-detail/utils/constants.js"></script>
-    <script src="/pages/listing-detail/utils/commentHelpers.js"></script>
-    <script src="/pages/listing-detail/hooks/useListing.js"></script>
-    <script src="/pages/listing-detail/hooks/useImageGallery.js"></script>
-    <script src="/pages/listing-detail/hooks/useComments.js"></script>
-    <script src="/pages/listing-detail/components/ImageGallery.js"></script>
-    <script src="/pages/listing-detail/components/Lightbox.js"></script>
-    <script src="/pages/listing-detail/components/ListingInfo.js"></script>
-    <script src="/pages/listing-detail/components/LandlordCard.js"></script>
-    <script src="/pages/listing-detail/components/ActionButtons.js"></script>
-    <script src="/pages/listing-detail/components/MessageButton.js"></script>
-    <script src="/pages/listing-detail/components/PropertyDetails.js"></script>
-    <script src="/pages/listing-detail/components/Badges.js"></script>
-    <script src="/pages/listing-detail/components/Description.js"></script>
-    <script src="/pages/listing-detail/components/Amenities.js"></script>
+    <script src="/pages/listing-detail/utils/constants.js" defer></script>
+    <script src="/pages/listing-detail/utils/commentHelpers.js" defer></script>
+    <script src="/pages/listing-detail/hooks/useListing.js" defer></script>
+    <script src="/pages/listing-detail/hooks/useImageGallery.js" defer></script>
+    <script src="/pages/listing-detail/hooks/useComments.js" defer></script>
+    <script src="/pages/listing-detail/components/ImageGallery.js" defer></script>
+    <script src="/pages/listing-detail/components/Lightbox.js" defer></script>
+    <script src="/pages/listing-detail/components/ListingInfo.js" defer></script>
+    <script src="/pages/listing-detail/components/LandlordCard.js" defer></script>
+    <script src="/pages/listing-detail/components/ActionButtons.js" defer></script>
+    <script src="/pages/listing-detail/components/MessageButton.js" defer></script>
+    <script src="/pages/listing-detail/components/PropertyDetails.js" defer></script>
+    <script src="/pages/listing-detail/components/Badges.js" defer></script>
+    <script src="/pages/listing-detail/components/Description.js" defer></script>
+    <script src="/pages/listing-detail/components/Amenities.js" defer></script>
     
     <!-- ===== UPDATED: CommentForm with verification ===== -->
-    <script src="/pages/listing-detail/components/CommentForm.js"></script>
+    <script src="/pages/listing-detail/components/CommentForm.js" defer></script>
     
-    <script src="/pages/listing-detail/components/CommentItem.js"></script>
-    <script src="/pages/listing-detail/components/CommentsSection.js"></script>
-    <script src="/pages/listing-detail/components/ReportButton.js"></script>
-    <script src="/pages/listing-detail/components/ProfileCard.js"></script>
-    <script src="/pages/listing-detail/index.js"></script>
+    <script src="/pages/listing-detail/components/CommentItem.js" defer></script>
+    <script src="/pages/listing-detail/components/CommentsSection.js" defer></script>
+    <script src="/pages/listing-detail/components/ReportButton.js" defer></script>
+    <script src="/pages/listing-detail/components/ProfileCard.js" defer></script>
+    <script src="/pages/listing-detail/index.js" defer></script>
 
     <!-- Critical pages -->
-    <script src="/pages/ListingByCodePage.js"></script>
+    <script src="/pages/ListingByCodePage.js" defer></script>
  
     <!-- Secondary pages (defer after paint) -->
     <script src="/pages/PublicProfilePage.js" defer></script>
@@ -614,8 +614,8 @@
     <script src="/pages/AdminPage.js" defer></script>
 
     <!-- Version and App entry -->
-    <script src="/version.js"></script>
-    <script src="/app.js"></script>
+    <script src="/version.js" defer></script>
+    <script src="/app.js" defer></script>
 
     <!-- Offline detection with proper return -->
     <script>
