@@ -215,27 +215,16 @@ function App() {
             component = await lazyLoad('ListingDetailPage', '/pages/listing-detail/index.js');
           }
         }
-        // ===== USERNAME PROFILE (FIXED) =====
+        // ===== OWN PROFILE PAGE (MUST COME BEFORE USERNAME ROUTE) =====
+        // User's own profile settings page
+        else if (base === '/profile') {
+          component = await lazyLoad('ProfilePage', '/pages/profile/index.js');
+        }
+        // ===== USERNAME PUBLIC PROFILE (for other users) =====
         // Check if path is a username (letters, numbers, underscore, 3-20 chars)
-        // Must come before other routes to avoid conflicts
-        // Load PublicProfilePage for viewing other users' profiles
+        // This handles URLs like /johnd1234 for viewing other users' profiles
         else if (/^[a-z0-9_]{3,20}$/.test(base.slice(1))) {
           component = await lazyLoad('PublicProfilePage', '/pages/PublicProfilePage.js');
-        }
-        // User's own profile settings (redirects to username)
-        else if (base === '/profile') {
-          // Redirect to username-based profile if logged in
-          if (user) {
-            const userDoc = await db.collection('users').doc(user.uid).get();
-            const username = userDoc.data()?.username;
-            if (username) {
-              navigate('/' + username);
-              return;
-            }
-          }
-          // Fallback: go to home
-          navigate('/');
-          return;
         }
         // Chat
         else if (base === '/chat') {
@@ -350,9 +339,8 @@ function App() {
       locationState: window.history.state
     };
     
-    // For username-based public profile pages (FIXED)
-    // This now renders PublicProfilePage which correctly displays other users' profiles
-    if (/^[a-z0-9_]{3,20}$/.test(base.slice(1))) {
+    // For own profile page (/profile)
+    if (base === '/profile') {
       return React.createElement(PageErrorBoundary, null,
         React.createElement(Layout, { user, navigate, currentPath, installProps: {} },
           React.createElement(pageComponent, sharedProps)
@@ -360,8 +348,8 @@ function App() {
       );
     }
     
-    // Legacy profile redirect (if needed)
-    if (base === '/profile') {
+    // For username-based public profile pages (other users)
+    if (/^[a-z0-9_]{3,20}$/.test(base.slice(1))) {
       return React.createElement(PageErrorBoundary, null,
         React.createElement(Layout, { user, navigate, currentPath, installProps: {} },
           React.createElement(pageComponent, sharedProps)
