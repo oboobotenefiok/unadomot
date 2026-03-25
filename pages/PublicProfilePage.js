@@ -385,18 +385,7 @@ function PublicProfilePage({ user, navigate }) {
     React.createElement('div', { className: 'min-h-screen bg-green-50' },
       React.createElement('div', { className: 'max-w-4xl mx-auto px-4 py-8' },
 
-        React.createElement('div', { className: 'mb-4' },
-          React.createElement('button', {
-            onClick: function() { window.history.back(); },
-            className: 'text-gray-600 hover:text-green-950 flex items-center gap-1 text-sm'
-          },
-            React.createElement('svg', { className: 'w-4 h-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
-              React.createElement('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M15 19l-7-7 7-7' })
-            ),
-            'Back'
-          )
-        ),
-
+        
         React.createElement('div', { className: 'bg-white rounded-xl shadow-md overflow-hidden mb-6' },
           React.createElement('div', { className: 'h-32 bg-gradient-to-r from-green-800 to-green-600 relative' },
             React.createElement('div', { 
