@@ -1,8 +1,8 @@
-// pages/PublicProfilePage.js
+// pages/PublicProfilePage.js - Username-based profile (FIXED)
 function PublicProfilePage({ user, navigate }) {
   
-  const pathParts = window.location.pathname.split('/');
-  const profileUserId = pathParts[2];
+  // Extract username from URL (e.g., /johnd1234)
+  const username = window.location.pathname.slice(1); // Remove leading /
 
   const [profileUser, setProfileUser] = React.useState(null);
   const [listings, setListings] = React.useState([]);
@@ -17,6 +17,10 @@ function PublicProfilePage({ user, navigate }) {
   
   const { openModal } = window.useAuthModal();
   const toastTimeoutRef = React.useRef(null);
+  
+  // ===== STATE FOR CURRENT USER'S USERNAME (for self-profile detection) =====
+  const [currentUserUsername, setCurrentUserUsername] = React.useState(null);
+  const [currentUserUid, setCurrentUserUid] = React.useState(null);
 
   const showToast = (message, type = 'success') => {
     if (toastTimeoutRef.current) {
@@ -30,14 +34,37 @@ function PublicProfilePage({ user, navigate }) {
     }, 3000);
   };
 
+  // ===== FETCH CURRENT USER'S USERNAME AND UID =====
+  React.useEffect(() => {
+    if (!user) return;
+    
+    setCurrentUserUid(user.uid);
+    
+    const fetchCurrentUser = async () => {
+      try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          setCurrentUserUsername(userDoc.data().username);
+        }
+      } catch (err) {
+        console.error('Error fetching current user:', err);
+      }
+    };
+    
+    fetchCurrentUser();
+  }, [user]);
+
+  // ===== FETCH USER BY USERNAME =====
   React.useEffect(function() {
-    if (!profileUserId) {
-      setError('Invalid user ID');
+    if (!username) {
+      setError('No username provided');
       setLoading(false);
       return;
     }
 
-    if (user && user.uid === profileUserId) {
+    // ===== FIXED: Check if viewing own profile by comparing usernames =====
+    // Also check if the URL username equals current user's username
+    if (user && currentUserUsername && currentUserUsername === username) {
       navigate('/profile');
       return;
     }
@@ -46,11 +73,16 @@ function PublicProfilePage({ user, navigate }) {
     setLoading(true);
     setError('');
 
-    async function fetchProfile() {
+    async function fetchUserByUsername() {
       try {
-        const userDoc = await db.collection('users').doc(profileUserId).get();
+        // Query Firestore by username
+        const result = await FirestoreQueries.query({
+          collection: 'users',
+          where: [['username', '==', username.toLowerCase()]],
+          limit: 1
+        });
         
-        if (!userDoc.exists) {
+        if (result.data.length === 0) {
           if (isMounted) {
             setError('User not found');
             setLoading(false);
@@ -58,10 +90,24 @@ function PublicProfilePage({ user, navigate }) {
           return;
         }
 
-        var userData = { id: userDoc.id, ...userDoc.data() };
+        var userData = { id: result.data[0].id, ...result.data[0] };
         
-        if (!userData.name) {
-          userData.name = 'User';
+        // ===== CRITICAL FIX: Verify we actually got the correct user =====
+        // Make sure the fetched user's username matches exactly what we searched for
+        if (userData.username && userData.username.toLowerCase() !== username.toLowerCase()) {
+          if (isMounted) {
+            setError('User not found');
+            setLoading(false);
+          }
+          return;
+        }
+        
+        // Use displayName (new field) with fallback to name (old field)
+        if (!userData.displayName && userData.name) {
+          userData.displayName = userData.name;
+        }
+        if (!userData.displayName) {
+          userData.displayName = 'User';
         }
 
         if (isMounted) {
@@ -70,6 +116,7 @@ function PublicProfilePage({ user, navigate }) {
         }
 
       } catch (err) {
+        console.error('Error fetching user by username:', err);
         if (isMounted) {
           setError('Failed to load profile');
           setLoading(false);
@@ -77,15 +124,16 @@ function PublicProfilePage({ user, navigate }) {
       }
     }
 
-    fetchProfile();
+    fetchUserByUsername();
 
     return function() {
       isMounted = false;
     };
-  }, [profileUserId, user, navigate]);
+  }, [username, user, currentUserUsername, navigate]);
 
+  // ===== FETCH USER'S LISTINGS =====
   React.useEffect(function() {
-    if (!profileUserId) return;
+    if (!profileUser) return;
     
     var isMounted = true;
     setListingsLoading(true);
@@ -95,7 +143,7 @@ function PublicProfilePage({ user, navigate }) {
         const result = await FirestoreQueries.query({
           collection: 'listings',
           where: [
-            ['userId', '==', profileUserId],
+            ['userId', '==', profileUser.id],
             ['status', '==', 'available']
           ],
           orderBy: 'createdAt',
@@ -115,6 +163,7 @@ function PublicProfilePage({ user, navigate }) {
         }
 
       } catch (err) {
+        console.error('Error fetching listings:', err);
         if (isMounted) {
           setListings([]);
           setListingsLoading(false);
@@ -127,7 +176,7 @@ function PublicProfilePage({ user, navigate }) {
     return function() {
       isMounted = false;
     };
-  }, [profileUserId, user]);
+  }, [profileUser, user]);
 
   const checkAllFavorites = async (listingsArray) => {
     if (!user) return;
@@ -320,7 +369,7 @@ function PublicProfilePage({ user, navigate }) {
     );
   }
 
-  var isOwnProfile = user && user.uid === profileUserId;
+  var isOwnProfile = user && user.uid === profileUser.id;
   var joinDate = formatJoinDate(profileUser.createdAt);
   var responseRate = getResponseRate();
 
@@ -336,7 +385,17 @@ function PublicProfilePage({ user, navigate }) {
     React.createElement('div', { className: 'min-h-screen bg-green-50' },
       React.createElement('div', { className: 'max-w-4xl mx-auto px-4 py-8' },
 
-        
+        React.createElement('div', { className: 'mb-4' },
+          React.createElement('button', {
+            onClick: function() { window.history.back(); },
+            className: 'text-gray-600 hover:text-green-950 flex items-center gap-1 text-sm'
+          },
+            React.createElement('svg', { className: 'w-4 h-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+              React.createElement('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M15 19l-7-7 7-7' })
+            ),
+            'Back'
+          )
+        ),
 
         React.createElement('div', { className: 'bg-white rounded-xl shadow-md overflow-hidden mb-6' },
           React.createElement('div', { className: 'h-32 bg-gradient-to-r from-green-800 to-green-600 relative' },
@@ -346,17 +405,17 @@ function PublicProfilePage({ user, navigate }) {
               profileUser.photoURL ?
                 React.createElement('img', {
                   src: profileUser.photoURL,
-                  alt: profileUser.name || 'User',
+                  alt: profileUser.displayName,
                   className: 'w-full h-full object-cover',
                   onError: function(e) {
                     e.target.style.display = 'none';
                     e.target.parentNode.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-green-200"><span class="text-3xl font-bold text-green-800">' + 
-                      (profileUser.name ? profileUser.name.charAt(0).toUpperCase() : 'U') + '</span></div>';
+                      (profileUser.displayName ? profileUser.displayName.charAt(0).toUpperCase() : 'U') + '</span></div>';
                   }
                 }) :
                 React.createElement('div', { className: 'w-full h-full flex items-center justify-center bg-green-200' },
                   React.createElement('span', { className: 'text-3xl font-bold text-green-800' },
-                    profileUser.name ? profileUser.name.charAt(0).toUpperCase() : 'U'
+                    profileUser.displayName ? profileUser.displayName.charAt(0).toUpperCase() : 'U'
                   )
                 )
             )
@@ -365,19 +424,20 @@ function PublicProfilePage({ user, navigate }) {
           React.createElement('div', { className: 'pt-14 p-6' },
             React.createElement('div', { className: 'flex flex-wrap justify-between items-start gap-4' },
               React.createElement('div', null,
-                // ===== USER INFO WITH DUAL BADGES =====
+                // Display Name
                 React.createElement('div', { className: 'flex items-center gap-2 mb-1' },
                   React.createElement('h1', { className: 'text-2xl font-bold text-gray-900' },
-                    profileUser.name || 'User'
+                    profileUser.displayName || 'User'
                   )
                 ),
                 
-                // ===== SHOW BOTH BADGES SIDE BY SIDE =====
-                renderRoleBadges(),
-                
-                React.createElement('p', { className: 'text-sm text-gray-500 mt-2' },
-                  'Member since ' + joinDate
+                // Username with @
+                React.createElement('p', { className: 'text-sm text-gray-500 mb-2' },
+                  '@' + (profileUser.username || 'username-not-set')
                 ),
+                
+                // Role badges (both if verified)
+                renderRoleBadges(),
                 
                 React.createElement('div', { className: 'flex items-center gap-4 text-sm text-gray-600 mt-2' },
                   React.createElement('span', { className: 'flex items-center gap-1' },
@@ -397,7 +457,7 @@ function PublicProfilePage({ user, navigate }) {
 
               React.createElement('div', { className: 'flex gap-2' },
                 isOwnProfile ? React.createElement('button', {
-                  onClick: function() { navigate('/profile'); },
+                  onClick: function() { navigate('/profile-settings'); },
                   className: 'bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition flex items-center gap-2 text-sm'
                 },
                   React.createElement('svg', { className: 'w-4 h-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
@@ -474,7 +534,6 @@ function PublicProfilePage({ user, navigate }) {
                         React.createElement('h3', { className: 'font-bold text-gray-900 mb-0.5 line-clamp-1 text-sm' }, listing.title),
                         React.createElement('p', { className: 'text-gray-600 mb-1 line-clamp-1 text-xs' }, listing.address),
                         
-                        // ===== UPDATED: Show role badge on listing card based on listingRole =====
                         React.createElement('div', { className: 'flex flex-wrap gap-0.5 mb-1' },
                           listing.listingRole === 'landlord' &&
                             React.createElement('span', {
@@ -551,7 +610,7 @@ function PublicProfilePage({ user, navigate }) {
                 React.createElement('div', { className: 'space-y-2' },
                   React.createElement('div', { className: 'flex items-center justify-between' },
                     React.createElement('div', { className: 'flex items-center gap-2' },
-                      React.createElement('span', { className: 'text-base' }, '🏠'),
+                      React.createElement('span', { className: 'text-base' }, ''),
                       React.createElement('span', { className: 'text-sm text-gray-700' }, 'Landlord')
                     ),
                     React.createElement('span', { 
@@ -562,7 +621,7 @@ function PublicProfilePage({ user, navigate }) {
                   ),
                   React.createElement('div', { className: 'flex items-center justify-between' },
                     React.createElement('div', { className: 'flex items-center gap-2' },
-                      React.createElement('span', { className: 'text-base' }, '🤝'),
+                      React.createElement('span', { className: 'text-base' }, ''),
                       React.createElement('span', { className: 'text-sm text-gray-700' }, 'Agent')
                     ),
                     React.createElement('span', { 
@@ -596,7 +655,7 @@ function PublicProfilePage({ user, navigate }) {
               !isOwnProfile && user ? React.createElement('div', null,
                 React.createElement('h3', { className: 'text-sm font-medium text-gray-500 mb-2' }, 'Contact'),
                 React.createElement('p', { className: 'text-sm text-gray-600' },
-                  'You can message ' + (profileUser.name || 'this user') + ' through any of their listings.'
+                  'You can message ' + (profileUser.displayName || 'this user') + ' through any of their listings.'
                 )
               ) : null
             )

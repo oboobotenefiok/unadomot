@@ -13,8 +13,14 @@ function CommentItem({
   const userPhoto = comment.userPhotoURL || comment.user?.photoURL || null;
   const userId = comment.userId;
   const userType = comment.userType || comment.user?.userType || 'user';
+  const userUsername = comment.userUsername || null; // Username if available
   const text = comment.text || '';
   const createdAt = comment.createdAt;
+  
+  // Profile click handler - passes userId to parent which resolves to username URL
+  const handleProfileClick = () => {
+    onProfileClick(userId, userUsername);
+  };
   
   return React.createElement('div', {
       className: `bg-gray-50 p-4 rounded-lg ${isTemp ? 'opacity-70' : ''}`
@@ -24,7 +30,7 @@ function CommentItem({
       // User avatar
       React.createElement('div', {
           className: 'w-10 h-10 rounded-lg overflow-hidden bg-green-200 flex-shrink-0 cursor-pointer',
-          onClick: function() { onProfileClick(userId); }
+          onClick: handleProfileClick
         },
         userPhoto ?
         React.createElement('img', {
@@ -50,8 +56,13 @@ function CommentItem({
         React.createElement('div', { className: 'flex items-center gap-2 flex-wrap' },
           React.createElement('p', {
             className: 'font-medium text-sm cursor-pointer hover:underline',
-            onClick: function() { onProfileClick(userId); }
+            onClick: handleProfileClick
           }, userName),
+          
+          // Show username as @ if available
+          userUsername && React.createElement('span', {
+            className: 'text-xs text-gray-400'
+          }, `@${userUsername}`),
           
           React.createElement(RoleBadge, { user: { userType }, size: 'sm' }),
           

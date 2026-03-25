@@ -115,55 +115,62 @@ function ListingDetailPage({ user, navigate, locationState }) {
     }
   }, [deleteListing, navigate, locationState]);
 
-// pages/listing-detail/index.js - FIND THE handleMessageClick FUNCTION
-
-const handleMessageClick = React.useCallback(async () => {
-  if (!user) {
-    openModal('login', window.location.pathname);
-    return;
-  }
-  
-  // ===== ADD EMAIL VERIFICATION CHECK =====
-  const verificationCheck = window.checkEmailVerification(user, 'send messages');
-  if (!verificationCheck.allowed) {
-    // Show toast
-    const toastEvent = new CustomEvent('show-toast', {
-      detail: { message: verificationCheck.message, type: 'warning' }
-    });
-    window.dispatchEvent(toastEvent);
+  // ===== MESSAGE CLICK HANDLER =====
+  const handleMessageClick = React.useCallback(async () => {
+    if (!user) {
+      openModal('login', window.location.pathname);
+      return;
+    }
     
-    // Also show verification reminder
-    const reminderEvent = new CustomEvent('show-verification-warning', {
-      detail: { message: verificationCheck.message }
-    });
-    window.dispatchEvent(reminderEvent);
+    const verificationCheck = window.checkEmailVerification(user, 'send messages');
+    if (!verificationCheck.allowed) {
+      const toastEvent = new CustomEvent('show-toast', {
+        detail: { message: verificationCheck.message, type: 'warning' }
+      });
+      window.dispatchEvent(toastEvent);
+      
+      const reminderEvent = new CustomEvent('show-verification-warning', {
+        detail: { message: verificationCheck.message }
+      });
+      window.dispatchEvent(reminderEvent);
+      
+      return;
+    }
     
-    return;
-  }
-  
-  if (!listingUser) return;
-  
-  try {
-    const chatId = await ChatHelpers.getOrCreateListingChat(
-      user.uid, listingUser.id, listing.id, 'Is this still available?'
-    );
-    navigate('/chat?chat=' + chatId);
-  } catch (err) {
+    if (!listingUser) return;
     
-    alert('Failed to start chat. Please try again.');
-  }
-}, [user, listingUser, listing, navigate, openModal]);
+    try {
+      const chatId = await ChatHelpers.getOrCreateListingChat(
+        user.uid, listingUser.id, listing.id, 'Is this still available?'
+      );
+      navigate('/chat?chat=' + chatId);
+    } catch (err) {
+      alert('Failed to start chat. Please try again.');
+    }
+  }, [user, listingUser, listing, navigate, openModal]);
+  
   const handleShareClick = React.useCallback(async () => {
     await ShareHelpers.shareListing(listing, { style: 'naija' });
   }, [listing]);
 
+  // ===== PROFILE CLICK HANDLER (UPDATED to use username) =====
   const handleProfileClick = React.useCallback((userId) => {
-    navigate('/profile/' + userId, {
-      from: 'listing-detail',
-      returnTo: locationState,
-      listingId: listing.id
-    });
-  }, [navigate, locationState, listing]);
+    // Check if we have the username for this user
+    if (listingUser && listingUser.username) {
+      navigate('/' + listingUser.username, {
+        from: 'listing-detail',
+        returnTo: locationState,
+        listingId: listing.id
+      });
+    } else {
+      // Fallback to user ID if username not available
+      navigate('/profile/' + userId, {
+        from: 'listing-detail',
+        returnTo: locationState,
+        listingId: listing.id
+      });
+    }
+  }, [navigate, locationState, listing, listingUser]);
 
   const handleReportClick = React.useCallback(() => {
     setShowReport(true);
@@ -383,7 +390,7 @@ const handleMessageClick = React.useCallback(async () => {
         )
       ),
 
-      // Profile Card (always show)
+      // Profile Card (passes username to ProfileCard)
       React.createElement(ProfileCard, {
         user: listingUser,
         onProfileClick: handleProfileClick
@@ -405,10 +412,9 @@ const handleMessageClick = React.useCallback(async () => {
         })
       ),
 
-      // ===== UPDATED: Badges component with userType prop =====
+      // ===== UPDATED: Badges component with listingRole =====
       React.createElement(Badges, { 
-        listing: listing, 
-        userType: listingUser?.userType 
+        listing: listing
       }),
 
       // Description

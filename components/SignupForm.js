@@ -133,7 +133,13 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
   };
 
   // ===== SHOW PRE-SIGNUP TOAST =====
-
+  const showPreSignupToast = React.useCallback(() => {
+    showToast(
+      '📧 After signup, you\'ll need to verify your email to post listings, comment, and message.',
+      'info',
+      6000
+    );
+  }, [showToast]);
 
   // ===== HANDLE FINAL SUBMIT - With pre-toast =====
   const handleFinalSubmit = async (e) => {
@@ -141,7 +147,7 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
     
     if (!validateStep(2)) return;
 
-    
+    showPreSignupToast();
 
     setLoading(true);
     setIsLoading(true);
@@ -158,20 +164,27 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
       
       await credential.user.updateProfile({ displayName: sanitizedName });
 
-      let base = sanitizedName.toLowerCase().replace(/[^a-z0-9]/g, '');
-      if (base.length < 3) base = 'user' + base;
-      const username = base.substring(0, 14) + Math.random().toString(36).substring(2, 6);
+      // ===== GENERATE PERMANENT USERNAME =====
+      let username = '';
+      try {
+        username = await window.IDGenerator.generateUniqueUsername(sanitizedName);
+      } catch (err) {
+        // Fallback if generation fails
+        const base = sanitizedName.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8);
+        username = base + Math.random().toString(36).substring(2, 8);
+      }
       
+      // ===== CREATE USER DOCUMENT WITH DISPLAY NAME AND USERNAME =====
       await db.collection('users').doc(credential.user.uid).set({
-        name: sanitizedName,
-        username: username,
+        displayName: sanitizedName,      // Editable display name (can be changed)
+        username: username,               // Permanent, never changes
         email: email,
         phone: '',
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         lastActive: firebase.firestore.FieldValue.serverTimestamp(),
         replyRate: 0,
-        usernameEdited: false,
-        isOnline: true
+        isOnline: true,
+        displayNameLastChanged: firebase.firestore.FieldValue.serverTimestamp() // Track for cooldown
       });
 
       try {
@@ -180,14 +193,12 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
           handleCodeInApp: true
         });
         
-        // Show success toast after verification email sent
         showToast(
           '✅ Verification email sent! Check your inbox.',
           'success'
         );
         
       } catch (verificationErr) {
-        // Even if verification email fails, account is created
         showToast(
           '⚠️ Account created but verification email could not be sent. You can request one later.',
           'warning'
@@ -222,7 +233,7 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
   const handleGoogleSignUp = async () => {
     if (googleLoading) return;
     
-  
+    showPreSignupToast();
     
     setGoogleLoading(true);
     setIsLoading(true);
@@ -237,8 +248,6 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
       try {
         const result = await auth.signInWithPopup(provider);
         
-        // Google users are automatically verified (since Google verified their email)
-        // But we still show a success message
         showToast(
           '✅ Signed up successfully with Google!',
           'success'
@@ -247,12 +256,18 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
         const userDoc = await db.collection('users').doc(result.user.uid).get();
         
         if (!userDoc.exists) {
-          let base = (result.user.displayName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '');
-          if (base.length < 3) base = 'user' + base;
-          const username = base.substring(0, 14) + Math.random().toString(36).substring(2, 6);
+          // Generate username from Google display name
+          const displayName = result.user.displayName || 'User';
+          let username = '';
+          try {
+            username = await window.IDGenerator.generateUniqueUsername(displayName);
+          } catch (err) {
+            const base = displayName.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8);
+            username = base + Math.random().toString(36).substring(2, 8);
+          }
           
           await db.collection('users').doc(result.user.uid).set({
-            name: result.user.displayName || 'User',
+            displayName: displayName,
             username: username,
             email: result.user.email || '',
             phone: '',
@@ -260,8 +275,8 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             lastActive: firebase.firestore.FieldValue.serverTimestamp(),
             replyRate: 0,
-            usernameEdited: false,
-            isOnline: true
+            isOnline: true,
+            displayNameLastChanged: firebase.firestore.FieldValue.serverTimestamp()
           });
         }
         
@@ -300,16 +315,20 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
       try {
         const result = await auth.getRedirectResult();
         if (result.user) {
-          
           const userDoc = await db.collection('users').doc(result.user.uid).get();
           
           if (!userDoc.exists) {
-            let base = (result.user.displayName || 'user').toLowerCase().replace(/[^a-z0-9]/g, '');
-            if (base.length < 3) base = 'user' + base;
-            const username = base.substring(0, 14) + Math.random().toString(36).substring(2, 6);
+            const displayName = result.user.displayName || 'User';
+            let username = '';
+            try {
+              username = await window.IDGenerator.generateUniqueUsername(displayName);
+            } catch (err) {
+              const base = displayName.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8);
+              username = base + Math.random().toString(36).substring(2, 8);
+            }
             
             await db.collection('users').doc(result.user.uid).set({
-              name: result.user.displayName || 'User',
+              displayName: displayName,
               username: username,
               email: result.user.email || '',
               phone: '',
@@ -317,8 +336,8 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
               createdAt: firebase.firestore.FieldValue.serverTimestamp(),
               lastActive: firebase.firestore.FieldValue.serverTimestamp(),
               replyRate: 0,
-              usernameEdited: false,
-              isOnline: true
+              isOnline: true,
+              displayNameLastChanged: firebase.firestore.FieldValue.serverTimestamp()
             });
           }
           
@@ -499,7 +518,7 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
       onSubmit: handleFinalSubmit,
       className: 'space-y-3'
     },
-      // Compact user info pill
+      // Compact user info pill (shows display name and email)
       React.createElement('div', { 
         className: 'flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 text-sm'
       },
@@ -593,8 +612,6 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
           )
       ),
 
-   
-
       // Terms agreement
       React.createElement('div', { className: 'mt-2 text-xs text-gray-500 text-center' },
         'By continuing, you agree to our ',
@@ -626,6 +643,17 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
       )
     ),
 
+    // Footer - Link to login (only in Step 1)
+    currentStep === 1 && React.createElement('div', { 
+      className: 'mt-4 text-center text-xs text-gray-500 border-t border-gray-100 pt-4'
+    },
+      'Already have an account? ',
+      React.createElement('button', {
+        type: 'button',
+        onClick: switchToLogin,
+        className: 'text-green-950 font-medium hover:underline'
+      }, 'Sign in')
+    )
   );
 }
 

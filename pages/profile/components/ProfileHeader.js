@@ -16,6 +16,10 @@ function ProfileHeader({ profile, user, onEditClick, onAdminClick, onVerifyLandl
   const landlordRejectionReason = landlordVerified?.rejectionReason || '';
   const agentRejectionReason = agentVerified?.rejectionReason || '';
   
+  // Get display name and username
+  const displayName = profile.displayName || profile.name || 'User';
+  const username = profile.username || 'username-not-set';
+  
   // Helper to get button text and style based on status
   const getButtonConfig = (status, type) => {
     if (status === 'approved') {
@@ -49,30 +53,21 @@ function ProfileHeader({ profile, user, onEditClick, onAdminClick, onVerifyLandl
   const landlordConfig = getButtonConfig(landlordStatus, 'landlord');
   const agentConfig = getButtonConfig(agentStatus, 'agent');
   
-  // Tooltip for rejected status
-  const getRejectionTooltip = (status, reason) => {
-    if (status === 'rejected' && reason) {
-      return { title: `Rejected: ${reason}` };
-    }
-    return {};
-  };
-  
   return React.createElement('div', { className: 'bg-white rounded-lg shadow-md p-6 mb-8' },
     React.createElement('div', { className: 'flex justify-between items-start' },
       
-      // Left side - User info (NO ROLE BADGE HERE)
+      // Left side - User info
       React.createElement('div', null,
+        // Display Name (editable, shows prominently)
         React.createElement('h1', { className: 'text-2xl font-bold' },
-          profile.name || 'User'
+          displayName
         ),
         
+        // Username (permanent, never changes, used for URL)
         React.createElement('div', { className: 'flex items-center gap-2 mt-1' },
           React.createElement('p', { className: 'text-sm text-gray-500' },
-            '@' + (profile.username || 'username-not-set')
-          ),
-          profile.usernameEdited && React.createElement('span', {
-            className: 'text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full'
-          }, 'locked')
+            '@' + username
+          )
         ),
         
         // ===== VERIFICATION STATUS SECTION (Unified) =====

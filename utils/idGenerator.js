@@ -4,7 +4,7 @@ const IDGenerator = {
   CODE_CHARS: 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789',
   CODE_LENGTH: 6,
   
-  // ===== NEW: Generate listing code with date + counter + random =====
+  // ===== LISTING CODE FUNCTIONS (already existing) =====
   generateListingCode: async function() {
     const today = new Date();
     const year = today.getFullYear().toString().slice(-2);
@@ -12,7 +12,6 @@ const IDGenerator = {
     const day = String(today.getDate()).padStart(2, '0');
     const dateCode = `${year}${month}${day}`;
     
-    // Get next counter for today (atomic increment)
     const counterRef = db.collection('dailyCounters').doc(dateCode);
     
     const newCounter = await db.runTransaction(async (transaction) => {
@@ -23,24 +22,18 @@ const IDGenerator = {
       return nextCounter;
     });
     
-    // Format counter with leading zeros (001, 002, etc.)
     const counterPadded = String(newCounter).padStart(3, '0');
-    
-    // Generate random 3-character suffix
     const randomSuffix = Math.random().toString(36).substring(2, 5).toLowerCase();
     
     return `${dateCode}-${counterPadded}-${randomSuffix}`;
   },
   
-  // ===== NEW: Validate listing code format =====
   validateListingCode: function(code) {
     if (!code) return false;
-    // Format: YYMMDD-XXX-CCC (e.g., 250322-001-a1b)
     const pattern = /^\d{6}-\d{3}-[a-z0-9]{3}$/;
     return pattern.test(code);
   },
   
-  // ===== NEW: Extract date from listing code =====
   extractDateFromCode: function(code) {
     if (!this.validateListingCode(code)) return null;
     const datePart = code.split('-')[0];
@@ -50,7 +43,6 @@ const IDGenerator = {
     return new Date(year, month, day);
   },
   
-  // ===== NEW: Generate unique listing code with retry =====
   generateUniqueListingCode: async function(maxAttempts = 3) {
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       const code = await this.generateListingCode();
@@ -63,23 +55,61 @@ const IDGenerator = {
         
         if (snapshot.empty) return code;
       } catch (error) {
-        // If query fails, still return the code (will be caught later)
         return code;
       }
     }
     throw new Error('Could not generate unique listing code after ' + maxAttempts + ' attempts');
   },
   
-  // ===== USERNAME FUNCTIONS (unchanged) =====
+  // ===== NEW: Generate permanent username from name =====
+  // Format: {firstName}{lastInitial}{4randomNumbers}
+  // Example: John Doe → johnd1234
+  generateUsernameFromName: function(fullName) {
+    if (!fullName) return null;
+    
+    // Clean and split name
+    const nameParts = fullName.trim().split(/\s+/);
+    const firstName = nameParts[0];
+    const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+    
+    // Get first 4 letters of first name (pad with random letters if shorter)
+    let firstPart = firstName.toLowerCase().replace(/[^a-z]/g, '').slice(0, 4);
+    while (firstPart.length < 4) {
+      firstPart += String.fromCharCode(97 + Math.floor(Math.random() * 26)); // a-z
+    }
+    
+    // Get last initial (first letter of last name, or random if no last name)
+    let lastInitial = '';
+    if (lastName && lastName.length > 0) {
+      lastInitial = lastName.toLowerCase().replace(/[^a-z]/g, '').charAt(0);
+    }
+    if (!lastInitial) {
+      lastInitial = String.fromCharCode(97 + Math.floor(Math.random() * 26));
+    }
+    
+    // Generate 4 random numbers
+    const randomNum = Math.floor(Math.random() * 9000 + 1000); // 1000-9999
+    
+    return `${firstPart}${lastInitial}${randomNum}`;
+  },
+  
+  // ===== NEW: Ensure username is unique (with retry) =====
+  generateUniqueUsername: async function(fullName, maxAttempts = 5) {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const username = this.generateUsernameFromName(fullName);
+      const exists = await this.checkUsernameExists(username);
+      if (!exists) return username;
+    }
+    // Fallback: add timestamp
+    const fallback = this.generateUsernameFromName(fullName);
+    return `${fallback}${Date.now().toString().slice(-2)}`;
+  },
+  
+  // ===== USERNAME FUNCTIONS (existing, keep) =====
   generateUsernameSuggestion: function(name) {
     if (!name) return '';
-    
-    const base = name.toLowerCase()
-      .replace(/[^a-z0-9]/g, '')
-      .slice(0, 12);
-    
+    const base = name.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 12);
     const random = Math.random().toString(36).substring(2, 5);
-    
     return base + random;
   },
   

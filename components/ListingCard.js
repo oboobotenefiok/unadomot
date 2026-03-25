@@ -20,6 +20,11 @@ function ListingCard({ listing, onClick, currentUserId, onFavoriteToggle, onDele
   
   const imagePublicId = listing.images && listing.images.length > 0 ? listing.images[0] : null;
   
+  // ===== GET USERNAME FOR PROFILE LINK =====
+  const profileUrl = listing.userUsername 
+    ? '/' + listing.userUsername 
+    : (listing.userId ? '/profile/' + listing.userId : '#');
+  
   React.useEffect(function() {
     if (!currentUserId || isDeleted) return;
     
@@ -241,7 +246,7 @@ function ListingCard({ listing, onClick, currentUserId, onFavoriteToggle, onDele
           isDeleted ? 'Listing removed by owner' : listing.address
         ),
         
-        // ===== UPDATED: Role badge using listingRole (landlord, agent, or user) =====
+        // ===== UPDATED: Role badge using listingRole =====
         !isDeleted && React.createElement('div', { className: 'flex items-center gap-1 mb-2' },
           listing.listingRole && listing.listingRole !== 'user' &&
           React.createElement(RoleBadge, {

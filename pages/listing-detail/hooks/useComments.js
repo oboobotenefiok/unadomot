@@ -13,6 +13,26 @@ function useComments(listingId, user) {
   
   const unsubscribeRef = React.useRef(null);
   
+  // ===== FETCH CURRENT USER DATA FOR USERNAME =====
+  const [currentUserData, setCurrentUserData] = React.useState(null);
+  
+  React.useEffect(() => {
+    if (!user) return;
+    
+    const fetchUserData = async () => {
+      try {
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          setCurrentUserData(userDoc.data());
+        }
+      } catch (err) {
+        console.error('Error fetching user data:', err);
+      }
+    };
+    
+    fetchUserData();
+  }, [user]);
+  
   // ===== REAL-TIME LISTENER FOR COMMENTS =====
   React.useEffect(() => {
     if (!listingId) {
@@ -62,7 +82,8 @@ function useComments(listingId, user) {
                         user: {
                           name: data.userName || 'User',
                           photoURL: data.userPhotoURL || null,
-                          userType: data.userType || 'user'
+                          userType: data.userType || 'user',
+                          username: data.userUsername || null
                         },
                         reactionCounts: data.reactionCounts || {},
                         isTemp: false
@@ -92,7 +113,8 @@ function useComments(listingId, user) {
                     user: {
                       name: data.userName || 'User',
                       photoURL: data.userPhotoURL || null,
-                      userType: data.userType || 'user'
+                      userType: data.userType || 'user',
+                      username: data.userUsername || null
                     },
                     reactionCounts: data.reactionCounts || {},
                     isTemp: false
@@ -106,7 +128,8 @@ function useComments(listingId, user) {
                     user: {
                       name: data.userName || 'User',
                       photoURL: data.userPhotoURL || null,
-                      userType: data.userType || 'user'
+                      userType: data.userType || 'user',
+                      username: data.userUsername || null
                     },
                     reactionCounts: data.reactionCounts || {},
                     isTemp: false
@@ -184,19 +207,27 @@ function useComments(listingId, user) {
     const timestamp = Date.now();
     const clientTimestamp = timestamp / 1000; // Use seconds for Firestore
     
+    // Get user data including username
+    const userDisplayName = user.displayName || user.name || 'User';
+    const userPhoto = user.photoURL || null;
+    const userType = currentUserData?.userType || 'user';
+    const userUsername = currentUserData?.username || null;
+    
     // Create optimistic comment with user data embedded
     const optimisticComment = {
       id: tempId,
       userId: user.uid,
-      userName: user.displayName || 'User',
-      userPhotoURL: user.photoURL || null,
-      userType: user.userType || 'user',
+      userName: userDisplayName,
+      userPhotoURL: userPhoto,
+      userType: userType,
+      userUsername: userUsername,  // ===== ADD USERNAME =====
       text: CommentHelpers.sanitizeComment(trimmed),
       createdAt: { seconds: clientTimestamp },
       user: {
-        name: user.displayName || 'User',
-        photoURL: user.photoURL || null,
-        userType: user.userType || 'user'
+        name: userDisplayName,
+        photoURL: userPhoto,
+        userType: userType,
+        username: userUsername
       },
       reactionCounts: {},
       isTemp: true
@@ -223,9 +254,10 @@ function useComments(listingId, user) {
         .collection('comments')
         .add({
           userId: user.uid,
-          userName: user.displayName || 'User',
-          userPhotoURL: user.photoURL || null,
-          userType: user.userType || 'user',
+          userName: userDisplayName,
+          userPhotoURL: userPhoto,
+          userType: userType,
+          userUsername: userUsername,  // ===== ADD USERNAME =====
           text: CommentHelpers.sanitizeComment(trimmed),
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           clientTimestamp: clientTimestamp,
@@ -250,7 +282,7 @@ function useComments(listingId, user) {
     } finally {
       setSubmittingComment(false);
     }
-  }, [user, listingId, newComment]);
+  }, [user, listingId, newComment, currentUserData]);
   
   // Clean up old temp mappings periodically
   React.useEffect(() => {

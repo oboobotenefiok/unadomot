@@ -22,19 +22,16 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
   });
   
   const [editing, setEditing] = React.useState(false);
+  
+  // ===== FORM STATE (displayName, not username) =====
   const [form, setForm] = React.useState({ 
-    name: profileHook.profile?.name || cachedState?.form?.name || '',
+    displayName: profileHook.profile?.displayName || cachedState?.form?.displayName || '',
     username: profileHook.profile?.username || cachedState?.form?.username || '',
     phone: profileHook.profile?.phone || cachedState?.form?.phone || '',
     bio: profileHook.profile?.bio || cachedState?.form?.bio || '' 
   });
   const [formErrors, setFormErrors] = React.useState({});
-  
-  const usernameHook = window.useUsername(
-    form.username,
-    profileHook.profile?.username,
-    profileHook.usernameEdited
-  );
+  const [originalDisplayName, setOriginalDisplayName] = React.useState('');
   
   const settingsRef = React.useRef(null);
   const pageRef = React.useRef(null);
@@ -50,11 +47,12 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
   React.useEffect(() => {
     if (profileHook.profile) {
       setForm({
-        name: profileHook.profile.name || '',
+        displayName: profileHook.profile.displayName || '',
         username: profileHook.profile.username || '',
         phone: profileHook.profile.phone || '',
         bio: profileHook.profile.bio || ''
       });
+      setOriginalDisplayName(profileHook.profile.displayName || '');
     }
   }, [profileHook.profile]);
   
@@ -82,11 +80,12 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
   // ===== HANDLERS =====
   const handleEditClick = () => {
     setForm({
-      name: profileHook.profile?.name || '',
+      displayName: profileHook.profile?.displayName || '',
       username: profileHook.profile?.username || '',
       phone: profileHook.profile?.phone || '',
       bio: profileHook.profile?.bio || ''
     });
+    setOriginalDisplayName(profileHook.profile?.displayName || '');
     setFormErrors({});
     setShowEditModal(true);
     document.body.style.overflow = 'hidden';
@@ -103,8 +102,8 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
   
   const handleFormChange = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
-    if (field === 'username') {
-      usernameHook.handleUsernameChange(value, user?.uid);
+    if (formErrors[field]) {
+      setFormErrors(prev => ({ ...prev, [field]: null }));
     }
   };
   
@@ -117,34 +116,43 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
     navigate('/verify?role=agent');
   };
   
-  const validateForm = async () => {
+  // ===== DISPLAY NAME VALIDATION =====
+  const validateDisplayName = (value) => {
     const v = ValidationHelpers;
+    if (!value || value.trim() === '') return 'Display name is required';
+    if (value.length < 2) return 'Display name must be at least 2 characters';
+    if (value.length > 60) return 'Display name is too long';
+    if (!/^[a-zA-Z\s'-]+$/.test(value)) {
+      return 'Display name can only contain letters, spaces, hyphens and apostrophes';
+    }
+    return null;
+  };
+  
+  const validateForm = async () => {
     const errors = {};
     
-    const nameError = v.validateText(form.name, 'Name', {
-      required: true,
-      minLength: PROFILE_CONSTANTS.VALIDATION.NAME_MIN_LENGTH,
-      maxLength: PROFILE_CONSTANTS.VALIDATION.NAME_MAX_LENGTH
-    });
-    if (nameError) errors.name = nameError;
+    // Validate display name
+    const displayNameError = validateDisplayName(form.displayName);
+    if (displayNameError) errors.displayName = displayNameError;
     
-    if (form.username !== profileHook.profile?.username) {
-      if (profileHook.usernameEdited) {
-        errors.username = 'Username can only be set once. Please contact admin to change it.';
-      } else if (usernameHook.usernameError) {
-        errors.username = usernameHook.usernameError;
-      }
+    // Check cooldown for display name change
+    const displayNameChanged = form.displayName !== originalDisplayName;
+    if (displayNameChanged && !profileHook.canChangeDisplayName()) {
+      const nextDate = profileHook.getNextDisplayNameChangeDate();
+      errors.displayName = `You can only change your display name once every 6 months. Next available: ${nextDate?.toLocaleDateString() || 'later'}`;
     }
     
+    // Phone validation (optional)
     if (form.phone && form.phone.trim()) {
-      const phoneError = v.validatePhone(form.phone, false);
+      const phoneError = ValidationHelpers.validatePhone(form.phone, false);
       if (phoneError) errors.phone = phoneError;
     }
     
+    // Bio validation (optional)
     if (form.bio && form.bio.trim()) {
-      const bioError = v.validateText(form.bio, 'Bio', {
+      const bioError = ValidationHelpers.validateText(form.bio, 'Bio', {
         required: false,
-        maxLength: PROFILE_CONSTANTS.VALIDATION.BIO_MAX_LENGTH
+        maxLength: 500
       });
       if (bioError) errors.bio = bioError;
     }
@@ -161,23 +169,24 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
     setEditing(true);
     
     try {
-      const sanitizedName = ValidationHelpers.sanitizeInput(form.name, 'text');
-      const sanitizedPhone = form.phone ? ValidationHelpers.sanitizeInput(form.phone, 'phone') : '';
-      const sanitizedBio = form.bio ? ValidationHelpers.sanitizeInput(form.bio, 'text') : '';
-      
       const updateData = {
-        name: sanitizedName,
-        phone: sanitizedPhone,
-        bio: sanitizedBio,
         lastActive: firebase.firestore.FieldValue.serverTimestamp()
       };
       
-      const usernameChanged = form.username && form.username !== profileHook.profile?.username;
-      if (usernameChanged && !profileHook.usernameEdited) {
-        const sanitizedUsername = form.username.toLowerCase().replace(/[^a-z0-9_]/g, '');
-        updateData.username = sanitizedUsername;
-        updateData.usernameEdited = true;
-        updateData.usernameEditedAt = firebase.firestore.FieldValue.serverTimestamp();
+      // Update display name if changed
+      const displayNameChanged = form.displayName !== originalDisplayName;
+      if (displayNameChanged) {
+        updateData.displayName = ValidationHelpers.sanitizeInput(form.displayName.trim(), 'text');
+        updateData.displayNameLastChanged = firebase.firestore.FieldValue.serverTimestamp();
+      }
+      
+      // Update phone and bio
+      if (form.phone !== profileHook.profile?.phone) {
+        updateData.phone = form.phone ? ValidationHelpers.sanitizeInput(form.phone, 'phone') : '';
+      }
+      
+      if (form.bio !== profileHook.profile?.bio) {
+        updateData.bio = form.bio ? ValidationHelpers.sanitizeInput(form.bio, 'text') : '';
       }
       
       await db.collection('users').doc(user.uid).update(updateData);
@@ -186,7 +195,15 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
       handleEditClose();
       setFormErrors({});
       
+      // Show success toast
+      if (displayNameChanged) {
+        ToastHelpers?.success('Display name updated! Next change available in 6 months.');
+      } else {
+        ToastHelpers?.success('Profile updated successfully!');
+      }
+      
     } catch (err) {
+      console.error('Update error:', err);
       profileHook.setError(err.code === 'unavailable' ?
         'Network error. Please check your connection.' :
         'Failed to update profile. Please try again.');
@@ -206,10 +223,6 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
   
   const handleEditListing = (listingId) => {
     openModal('post', { listingId });
-  };
-  
-  const handleContactAdmin = () => {
-    window.location.href = 'mailto:support@unadomot.com?subject=Username Change Request';
   };
   
   // ===== SAVE STATE BEFORE UNLOAD =====
@@ -319,14 +332,10 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
       form: form,
       onFormChange: handleFormChange,
       errors: formErrors,
-      usernameState: {
-        checking: usernameHook.checkingUsername,
-        available: usernameHook.usernameAvailable,
-        error: usernameHook.usernameError
-      },
       isSubmitting: editing,
-      isUsernameEdited: profileHook.usernameEdited,
-      onContactAdmin: handleContactAdmin
+      displayNameLastChanged: profileHook.profile?.displayNameLastChanged,
+      canChangeDisplayName: profileHook.canChangeDisplayName(),
+      nextChangeDate: profileHook.getNextDisplayNameChangeDate()
     }),
     
     settingsHook.activePopup && React.createElement(PopupModal, {

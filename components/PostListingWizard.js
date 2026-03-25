@@ -838,6 +838,7 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
         listingData.userName = currentUser.displayName || 'Property Owner';
         listingData.userType = currentUserData?.userType || 'user';
         
+        // ===== ADD USERNAME TO LISTING FOR PROFILE LINK =====
         if (currentUserData?.username) {
           listingData.userUsername = currentUserData.username;
         }
@@ -845,7 +846,6 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
         listingData.status = 'pending_review';
         listingData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
         
-
         const docRef = await db.collection('listings').add(listingData);
         
         const notificationRef = db.collection('users').doc(currentUser.uid)

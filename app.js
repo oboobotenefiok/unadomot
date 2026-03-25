@@ -7,7 +7,6 @@ class PageErrorBoundary extends React.Component {
     this.state = { hasError: false, errorMessage: '' };
   }
   static getDerivedStateFromError(error) {
-    // Log to our new error system
     if (window.ErrorLogger) {
       window.ErrorLogger.critical(error, {
         component: 'PageErrorBoundary',
@@ -17,7 +16,6 @@ class PageErrorBoundary extends React.Component {
     return { hasError: true, errorMessage: error && error.message ? error.message : 'Unknown error' };
   }
   componentDidCatch(error, errorInfo) {
-    // Log to our new error system
     if (window.ErrorLogger) {
       window.ErrorLogger.critical(error, {
         component: 'PageErrorBoundary',
@@ -93,15 +91,12 @@ function App() {
   const navigate = React.useCallback(function(path, state) {
     state = state || {};
     
-    // Ensure path starts with '/'
     if (!path.startsWith('/')) path = '/' + path;
     
-    // Cache current page state before navigating away
     if (pageComponent && currentPath) {
       const scrollY = window.scrollY;
       let extra = {};
       
-      // Collect page-specific state
       if (currentPath === '/' && window.__homePageState) {
         extra = {
           ...window.__homePageState,
@@ -115,19 +110,15 @@ function App() {
         extra = window.__favoritesPageState;
       }
       
-      // Save to route cache
       cachePage?.(currentPath, pageComponent, pageData, scrollY, extra);
     }
     
-    // Push new state to history WITH the state object
     history.pushState(state, '', path);
     setCurrentPath(path.split('?')[0]);
   }, [pageComponent, currentPath, pageData, cachePage]);
   
-  /* Expose for global use */
   window.__navigate = navigate;
   
-  /* Initialize favorites listener when user changes */
   React.useEffect(function() {
     if (user) {
       window.FavoritesHelpers?.initFavoritesListener(user.uid);
@@ -159,24 +150,20 @@ function App() {
       if (path === '/index.html' || path === '') path = '/';
       if (path !== '/' && path.endsWith('/')) path = path.slice(0, -1);
       
-      // Get the state from the event
       const state = event.state || {};
       
-      // Try to get cached page
       const cached = getCachedPage?.(path);
       if (cached) {
         setPageComponent(() => cached.component);
         setPageData(cached.data);
-        setPageState({ ...cached, ...state }); // Merge with navigation state
-        
-        // Restore scroll position after a tiny delay to ensure DOM is ready
+        setPageState({ ...cached, ...state });
         setTimeout(() => {
           window.scrollTo(0, cached.scrollPosition || 0);
         }, 50);
       } else {
         setPageComponent(null);
         setPageData(null);
-        setPageState(state); // Store navigation state
+        setPageState(state);
       }
       setCurrentPath(path);
     };
@@ -188,7 +175,6 @@ function App() {
   /* ===== LOAD PAGE WITH PRIORITY BASED ON USER PREFERENCE ===== */
   React.useEffect(function() {
     async function loadPage() {
-      /* Serve cache instantly */
       const cached = getCachedPage?.(currentPath);
       if (cached && cached.component) {
         setPageComponent(() => cached.component);
@@ -208,53 +194,59 @@ function App() {
         let component = null;
         const base = currentPath.split('?')[0];
         
-        // Page routes - load with priority
+        // ===== ROUTE HANDLING =====
+        
+        // Homepage
         if (base === '/') {
-          // For homepage, load critical path first based on preferred mode
-          const preferredMode = localStorage.getItem('home_view_mode') || 'grid';
-          
-          // Load homepage component (this will handle its own priority loading)
           component = await lazyLoad('HomePage', '/pages/home/index.js');
-        } 
+        }
+        // Listings page
         else if (base === '/listings') {
           component = await lazyLoad('ListingsPage', '/pages/ListingsPage.js');
         }
+        // Listing detail (by code or ID)
         else if (base.startsWith('/listing/')) {
-          // Extract the part after /listing/
           const codeOrId = base.split('/')[2];
-          
-          // Check if it's a listing code (format: YYMMDD-XXX-CCC)
-          // Pattern: 6 digits, hyphen, 3 digits, hyphen, 3 alphanumeric
           const isListingCode = codeOrId && /^\d{6}-\d{3}-[a-z0-9]{3}$/.test(codeOrId);
           
           if (isListingCode) {
-            // It's a listing code - resolve via ListingByCodePage
             component = await lazyLoad('ListingByCodePage', '/pages/ListingByCodePage.js');
           } else {
-            // It's a Firestore ID - go directly to listing detail
             component = await lazyLoad('ListingDetailPage', '/pages/listing-detail/index.js');
           }
         }
-        else if (base === '/profile') {
-          component = await lazyLoad('ProfilePage', '/pages/profile/index.js');
-        }
-        else if (base.startsWith('/profile/')) {
-          component = await lazyLoad('ProfileRedirectPage', '/pages/ProfileRedirectPage.js');
-        }
-        else if (base.startsWith('/public-profile/')) {
+        // ===== USERNAME PROFILE (FIXED) =====
+        // Check if path is a username (letters, numbers, underscore, 3-20 chars)
+        // Must come before other routes to avoid conflicts
+        // Load PublicProfilePage for viewing other users' profiles
+        else if (/^[a-z0-9_]{3,20}$/.test(base.slice(1))) {
           component = await lazyLoad('PublicProfilePage', '/pages/PublicProfilePage.js');
         }
-        else if (base.startsWith('/u/')) {
-          component = await lazyLoad('UserByUsernamePage', '/pages/UserByUsernamePage.js');
+        // User's own profile settings (redirects to username)
+        else if (base === '/profile') {
+          // Redirect to username-based profile if logged in
+          if (user) {
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            const username = userDoc.data()?.username;
+            if (username) {
+              navigate('/' + username);
+              return;
+            }
+          }
+          // Fallback: go to home
+          navigate('/');
+          return;
         }
+        // Chat
         else if (base === '/chat') {
           component = await lazyLoad('ChatPage', '/pages/ChatPage.js');
         }
+        // Favorites
         else if (base === '/favorites') {
           component = await lazyLoad('FavoritesPage', '/pages/FavoritesPage.js');
         }
+        // Post listing
         else if (base === '/post') {
-          // Redirect to home and open the post modal
           navigate('/');
           setTimeout(() => {
             if (window.__openAuthModal) {
@@ -263,6 +255,7 @@ function App() {
           }, 100);
           return;
         }
+        // Edit listing
         else if (base.startsWith('/edit/')) {
           const lid = base.split('/')[2];
           navigate('/listing/' + lid);
@@ -270,24 +263,31 @@ function App() {
           if (openModal) setTimeout(() => openModal('post', { listingId: lid }), 100);
           return;
         }
+        // Verification
         else if (base === '/verify') {
           component = await lazyLoad('VerificationPage', '/pages/VerificationPage.js');
         }
+        // Checkout notice
         else if (base === '/checkout') {
           component = await lazyLoad('CheckoutNoticePage', '/pages/CheckoutNoticePage.js');
         }
+        // Forgot password
         else if (base === '/forgot-password') {
           component = await lazyLoad('ForgotPasswordPage', '/pages/ForgotPasswordPage.js');
         }
+        // Admin
         else if (base === '/admin') {
           component = await lazyLoad('AdminPage', '/pages/AdminPage.js');
         }
+        // Terms
         else if (base === '/terms') {
           component = await lazyLoad('TermsPage', '/pages/TermsPage.js');
         }
+        // Privacy
         else if (base === '/privacy') {
           component = await lazyLoad('PrivacyPage', '/pages/PrivacyPage.js');
         }
+        // 404
         else {
           component = await lazyLoad('NotFoundPage', '/pages/NotFoundPage.js');
         }
@@ -298,7 +298,6 @@ function App() {
           setPageState(null);
         }
       } catch (err) {
-        // Log the error
         if (window.ErrorLogger) {
           window.ErrorLogger.error(err, {
             source: 'page-loader',
@@ -343,21 +342,29 @@ function App() {
     const base = currentPath.split('?')[0];
     const params = new URLSearchParams(window.location.search);
     
-    // Pass both cached state and navigation state to pages
     const sharedProps = {
       user,
       navigate,
       cachedData: pageData,
-      cachedState: pageState, // This contains navigation state
-      locationState: window.history.state // Raw history state
+      cachedState: pageState,
+      locationState: window.history.state
     };
     
-    if (base === '/profile') {
-      const tab = params.get('tab');
-      const initialTab = (tab === 'listings' || tab === 'favorites') ? tab : 'listings';
+    // For username-based public profile pages (FIXED)
+    // This now renders PublicProfilePage which correctly displays other users' profiles
+    if (/^[a-z0-9_]{3,20}$/.test(base.slice(1))) {
       return React.createElement(PageErrorBoundary, null,
         React.createElement(Layout, { user, navigate, currentPath, installProps: {} },
-          React.createElement(pageComponent, { ...sharedProps, initialTab })
+          React.createElement(pageComponent, sharedProps)
+        )
+      );
+    }
+    
+    // Legacy profile redirect (if needed)
+    if (base === '/profile') {
+      return React.createElement(PageErrorBoundary, null,
+        React.createElement(Layout, { user, navigate, currentPath, installProps: {} },
+          React.createElement(pageComponent, sharedProps)
         )
       );
     }
@@ -369,7 +376,6 @@ function App() {
     );
   };
   
-  // Wrap the entire app with ErrorProvider
   const ErrorProvider = window.ErrorProvider || function({ children }) { return children; };
   
   return React.createElement(
