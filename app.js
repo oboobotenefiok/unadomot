@@ -215,16 +215,9 @@ function App() {
             component = await lazyLoad('ListingDetailPage', '/pages/listing-detail/index.js');
           }
         }
-        // ===== OWN PROFILE PAGE (MUST COME BEFORE USERNAME ROUTE) =====
-        // User's own profile settings page
+        // ===== OWN PROFILE PAGE =====
         else if (base === '/profile') {
           component = await lazyLoad('ProfilePage', '/pages/profile/index.js');
-        }
-        // ===== USERNAME PUBLIC PROFILE (for other users) =====
-        // Check if path is a username (letters, numbers, underscore, 3-20 chars)
-        // This handles URLs like /johnd1234 for viewing other users' profiles
-        else if (/^[a-z0-9_]{3,20}$/.test(base.slice(1))) {
-          component = await lazyLoad('PublicProfilePage', '/pages/PublicProfilePage.js');
         }
         // Chat
         else if (base === '/chat') {
@@ -275,6 +268,21 @@ function App() {
         // Privacy
         else if (base === '/privacy') {
           component = await lazyLoad('PrivacyPage', '/pages/PrivacyPage.js');
+        }
+        // ===== USERNAME PUBLIC PROFILE (must come AFTER all other routes) =====
+        // Only treat as username if it's NOT one of the reserved paths above
+        else if (/^[a-z0-9_]{3,20}$/.test(base.slice(1))) {
+          // Check if this username is the current user's own username
+          if (user) {
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            const currentUsername = userDoc.data()?.username;
+            if (currentUsername && currentUsername === base.slice(1)) {
+              // If it's the current user's own username, redirect to profile
+              navigate('/profile');
+              return;
+            }
+          }
+          component = await lazyLoad('PublicProfilePage', '/pages/PublicProfilePage.js');
         }
         // 404
         else {
@@ -349,6 +357,7 @@ function App() {
     }
     
     // For username-based public profile pages (other users)
+    // This only runs for paths that passed the username check in loadPage
     if (/^[a-z0-9_]{3,20}$/.test(base.slice(1))) {
       return React.createElement(PageErrorBoundary, null,
         React.createElement(Layout, { user, navigate, currentPath, installProps: {} },
