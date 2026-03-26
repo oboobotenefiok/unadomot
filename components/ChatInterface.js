@@ -1,4 +1,4 @@
-// components/ChatInterface.js - ADD VERIFICATION CHECK TO MESSAGE SENDING
+// components/ChatInterface.js - FIXED: Use username for profile navigation
 
 function ChatInterface({ 
   chatId, 
@@ -30,7 +30,8 @@ function ChatInterface({
   const [listingInfo, setListingInfo] = React.useState(null);
   const [otherUserData, setOtherUserData] = React.useState({
     name: otherUserName || 'User',
-    photoURL: otherUserPhoto || null
+    photoURL: otherUserPhoto || null,
+    username: null  // ===== ADD USERNAME FIELD =====
   });
   const [otherUserTyping, setOtherUserTyping] = React.useState(false);
   
@@ -96,14 +97,15 @@ function ChatInterface({
     validateAccess();
   }, [chatId, currentUserId]);
   
-  // ===== FETCH OTHER USER =====
+  // ===== FETCH OTHER USER (INCLUDING USERNAME) =====
   React.useEffect(function() {
     if (!otherUserId) return;
     
     if (otherUserName) {
       setOtherUserData({
         name: otherUserName,
-        photoURL: otherUserPhoto || null
+        photoURL: otherUserPhoto || null,
+        username: null
       });
       return;
     }
@@ -114,8 +116,9 @@ function ChatInterface({
         if (userDoc.exists) {
           const data = userDoc.data();
           setOtherUserData({
-            name: data.name || 'User',
-            photoURL: data.photoURL || null
+            name: data.displayName || data.name || 'User',
+            photoURL: data.photoURL || null,
+            username: data.username || null  // ===== GET USERNAME =====
           });
         }
       } catch (error) {
@@ -197,7 +200,6 @@ function ChatInterface({
     }, 2000);
   };
   
-  // ===== FIXED: Use centralized verification check =====
   const handleSend = async function(e) {
     e.preventDefault();
     
@@ -206,14 +208,12 @@ function ChatInterface({
     const trimmedMessage = newMessage.trim();
     if (!trimmedMessage) return;
     
-    // Use centralized verification check
     if (!checkVerification(auth.currentUser, 'send messages')) {
       setShowVerificationWarning(true);
       setTimeout(() => setShowVerificationWarning(false), 5000);
       return;
     }
     
-    // Clear input field immediately
     setNewMessage('');
     setSending(true);
     
@@ -226,7 +226,6 @@ function ChatInterface({
     }
   };
   
-  // ===== FIXED: Use centralized resend function =====
   const handleResendVerification = async function() {
     const success = await resendVerification(auth.currentUser);
     if (success) {
@@ -246,6 +245,25 @@ function ChatInterface({
       e.preventDefault();
       handleSend(e);
     }
+  };
+  
+  // ===== FIXED: Navigate to user profile using username =====
+  const navigateToUserProfile = function() {
+    if (!window.__navigate) return;
+    
+    // Use username if available, otherwise fallback to user ID
+    if (otherUserData.username) {
+      window.__navigate('/' + otherUserData.username);
+    } else {
+      // Fallback to user ID (legacy support)
+      window.__navigate('/profile/' + otherUserId);
+    }
+  };
+  
+  // ===== FIXED: Navigate to listing detail =====
+  const navigateToListing = function() {
+    if (!window.__navigate || !listingInfo?.id) return;
+    window.__navigate('/listing/' + listingInfo.id);
   };
   
   // ===== RENDER =====
@@ -302,14 +320,13 @@ function ChatInterface({
           )
         ),
         
-        React.createElement('div', { className: 'relative flex-shrink-0' },
+        // ===== LISTING IMAGE (clickable) =====
+        React.createElement('div', { 
+          className: 'relative flex-shrink-0 cursor-pointer',
+          onClick: navigateToListing
+        },
           React.createElement('div', { 
-            className: 'w-10 h-10 rounded-lg overflow-hidden bg-gray-200 cursor-pointer',
-            onClick: function() { 
-              if (window.__navigate && listingInfo?.id) {
-                window.__navigate('/listing/' + listingInfo.id);
-              }
-            }
+            className: 'w-10 h-10 rounded-lg overflow-hidden bg-gray-200'
           },
             listingInfo?.images?.[0] ?
             React.createElement('img', {
@@ -324,47 +341,34 @@ function ChatInterface({
             React.createElement('div', { 
               className: 'w-full h-full flex items-center justify-center text-gray-500 text-xs' 
             }, '🏠')
-          ),
-          
-          React.createElement('div', {
-            className: `absolute -bottom-1 -right-2 w-4 h-4 rounded-full border-2 border-white shadow-md cursor-pointer ${
-              otherUserOnline ? 'bg-green-500' : 'bg-gray-400'
-            }`,
-            title: otherUserOnline ? 'Online' : 'Offline',
-            onClick: function(e) {
-              e.stopPropagation();
-              if (window.__navigate) {
-                window.__navigate('/profile/' + otherUserId);
-              }
-            }
-          })
+          )
         ),
         
-        React.createElement('div', { className: 'min-w-0 flex-1' },
+        // ===== USER INFO (clickable to profile) =====
+        React.createElement('div', { 
+          className: 'min-w-0 flex-1 cursor-pointer',
+          onClick: navigateToUserProfile
+        },
           React.createElement('div', { className: 'flex items-center gap-1' },
             React.createElement('h3', { 
-              className: 'font-bold text-gray-900 truncate cursor-pointer hover:underline text-sm',
-              onClick: function() { 
-                if (window.__navigate) {
-                  window.__navigate('/profile/' + otherUserId);
-                }
-              }
+              className: 'font-bold text-gray-900 truncate hover:underline text-sm'
             }, otherUserData.name)
           ),
           
           listingInfo && React.createElement('p', { 
-            className: 'text-xs text-gray-500 truncate cursor-pointer hover:underline',
-            onClick: function() {
-              if (window.__navigate) {
-                window.__navigate('/listing/' + listingInfo.id);
-              }
-            }
+            className: 'text-xs text-gray-500 truncate'
           }, '📋 ' + listingInfo.title),
           
           React.createElement('p', { 
             className: 'text-xs text-gray-500' 
           }, otherUserTyping ? 'Typing...' : lastSeenText)
-        )
+        ),
+        
+        // ===== ONLINE STATUS DOT =====
+        React.createElement('div', {
+          className: `w-3 h-3 rounded-full ${otherUserOnline ? 'bg-green-500' : 'bg-gray-400'} flex-shrink-0`,
+          title: otherUserOnline ? 'Online' : lastSeenText
+        })
       ),
       
       React.createElement('button', {
