@@ -643,17 +643,7 @@ function SignupForm({ onSuccess, setIsLoading, initialEmail = '' }) {
       )
     ),
 
-    // Footer - Link to login (only in Step 1)
-    currentStep === 1 && React.createElement('div', { 
-      className: 'mt-4 text-center text-xs text-gray-500 border-t border-gray-100 pt-4'
-    },
-      'Already have an account? ',
-      React.createElement('button', {
-        type: 'button',
-        onClick: switchToLogin,
-        className: 'text-green-950 font-medium hover:underline'
-      }, 'Sign in')
-    )
+
   );
 }
 
