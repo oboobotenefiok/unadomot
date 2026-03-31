@@ -5,7 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>UnaDomot - dey your domot</title>
-
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YPZP5WK6H9"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-YPZP5WK6H9');
+    </script>
     <!-- Preconnects for performance -->
     <link rel="preconnect" href="https://www.gstatic.com">
     <link rel="preconnect" href="https://firestore.googleapis.com">
@@ -15,19 +23,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://widget.cloudinary.com">
     <link rel="preconnect" href="https://res.cloudinary.com">
-
+    
     <link rel="dns-prefetch" href="//www.gstatic.com">
     <link rel="dns-prefetch" href="//firestore.googleapis.com">
     <link rel="dns-prefetch" href="//unpkg.com">
     <link rel="dns-prefetch" href="//widget.cloudinary.com">
     <link rel="dns-prefetch" href="//res.cloudinary.com">
-
+    
     <!-- Preload critical assets -->
     <link rel="preload" href="/vault/img/unadomot.jpg" as="image">
     <link rel="preload" href="/styles/styles.css" as="style">
     <link rel="preload" href="/styles/accessibility-base.css" as="style">
     <link rel="preload" href="/styles/themes/light.css" as="style">
-
+    
     <!-- CSP Headers -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
@@ -41,14 +49,14 @@
         base-uri 'self';
         form-action 'self';
     ">
-
+    
     <!-- Favicon & Manifest -->
     <link rel="shortcut icon" href="/vault/img/unadomot.jpg" type="image/x-icon" />
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#C8E9BE" id="theme-color">
     <meta name="description" content="UnaDomot - Connect directly with landlords, eliminate agent fees">
     <meta name="robots" content="index, follow">
-
+    
     <!-- Styles -->
     <script src="https://cdn.tailwindcss.com" defer></script>
     <link rel="stylesheet" href="/styles/styles.css">
@@ -56,7 +64,7 @@
     <link rel="stylesheet" href="/styles/themes/light.css">
     <link rel="stylesheet" href="/styles/themes/dark.css">
     <link rel="stylesheet" href="/styles/themes/high-contrast.css">
-
+    
     <!-- Critical inline styles -->
     <style>
         body {
@@ -67,32 +75,46 @@
             margin: 0;
             padding: 0;
         }
-        #root { 
-            min-height: 100vh; 
+        
+        #root {
+            min-height: 100vh;
             opacity: 0;
             transition: opacity 0.3s ease-in;
         }
+        
         #root.ready {
             opacity: 1;
         }
+        
         .sticky.top-0 {
             will-change: transform;
             backface-visibility: hidden;
             transform: translateZ(0);
         }
-        .fixed.bottom-0, .fixed.top-0 {
+        
+        .fixed.bottom-0,
+        .fixed.top-0 {
             transform: translateZ(0);
             backface-visibility: hidden;
         }
+        
         /* Smooth page transitions prevent flash */
         .page-transition {
             animation: pgFadeIn 0.12s ease-out;
         }
+        
         @keyframes pgFadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+            
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-
+        
         /* Splash screen styles */
         .splash-screen {
             position: fixed;
@@ -106,17 +128,19 @@
             z-index: 9999;
             transition: opacity 0.3s ease-out;
         }
+        
         .splash-screen.hidden {
             opacity: 0;
             pointer-events: none;
         }
-     
+        
         .splash-center {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
         }
+        
         .splash-logo {
             width: 100px;
             height: 100px;
@@ -124,38 +148,46 @@
             object-fit: cover;
             animation: pulse 3s infinite;
         }
-
+        
         @keyframes pulse {
-            0%, 100% { transform: scale(0.8); }
-            50% { transform: scale(1.2); }
-        }
 
+            0%,
+            100% {
+                transform: scale(0.8);
+            }
+            
+            50% {
+                transform: scale(1.2);
+            }
+        }
+        
         /* Scroll to top button animation */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
                 transform: translateY(20px);
             }
+            
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-
+        
         .animate-fade-in-up {
             animation: fadeInUp 0.3s ease-out;
         }
-
+        
         /* Transition for hiding/showing headers */
         .transition-transform {
             transition: transform 0.3s ease-in-out;
         }
-
+        
         /* ===== MAP CLUSTER STYLES ===== */
         .custom-cluster {
             background: transparent;
         }
-
+        
         .cluster-icon {
             border-radius: 50%;
             display: flex;
@@ -163,60 +195,62 @@
             justify-content: center;
             color: white;
             font-weight: bold;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
         }
-
+        
         .cluster-icon.small {
             width: 30px;
             height: 30px;
             font-size: 12px;
         }
-
+        
         .cluster-icon.medium {
             width: 40px;
             height: 40px;
             font-size: 14px;
         }
-
+        
         .cluster-icon.large {
             width: 50px;
             height: 50px;
             font-size: 16px;
         }
-
+        
         /* Pulse animation for user location */
         @keyframes pulse {
             0% {
                 opacity: 1;
                 r: 8;
             }
+            
             50% {
                 opacity: 0.5;
                 r: 12;
             }
+            
             100% {
                 opacity: 1;
                 r: 8;
             }
         }
-
+        
         .pulse-dot {
             animation: pulse 2s infinite;
         }
-
+        
         /* Map popup custom styles */
         .leaflet-popup-content {
             margin: 0;
             min-width: 240px;
         }
-
+        
         .leaflet-popup-content-wrapper {
             padding: 0;
             border-radius: 12px;
             overflow: hidden;
         }
-
+        
         /* Mobile optimizations for map */
         @media (max-width: 640px) {
             .leaflet-popup-content {
@@ -319,7 +353,7 @@
                 
                 // Create style tag that applies dark mode BEFORE any content renders
                 var style = document.createElement('style');
-                style.textContent = 
+                style.textContent =
                     '.splash-screen { background-color: #0f1722 !important; } ' +
                     '.splash-logo { filter: brightness(1.1); } ' +
                     '.typewriter, .typewriter-top, .typewriter-bottom { color: #34d399 !important; } ' +
@@ -339,7 +373,7 @@
             }
         })();
     </script>
-
+    
     <div id="root"></div>
     
     <!-- Splash Screen - Shows immediately -->
@@ -348,7 +382,7 @@
             <img src="/vault/img/unadomot.jpg" alt="UnaDomot" class="splash-logo">
         </div>
     </div>
-
+    
     <script>
         // Hide splash screen when app is ready
         window.hideSplashScreen = function() {
@@ -366,21 +400,21 @@
             }
         };
     </script>
-
+    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js" defer></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js" defer></script>
-
+    
     <!-- React -->
     <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js" defer></script>
     <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js" defer></script>
-
+    
     <!-- Critical data and services (load immediately) -->
     <script src="/data/nigeria-states.js" defer></script>
     <script src="/services/firebase.js" defer></script>
-
+    
     <!-- Core utilities (load immediately) -->
     <script src="/utils/LazyLoad.js" defer></script>
     <script src="/utils/sanitize.js" defer></script>
@@ -403,7 +437,7 @@
     
     <!-- Geocoding Utility -->
     <script src="/utils/geocoding.js" defer></script>
-
+    
     <!-- Error Handling System -->
     <script src="/utils/errors/constants.js" defer></script>
     <script src="/utils/errors/ErrorLogger.js" defer></script>
@@ -413,28 +447,28 @@
     <script src="/utils/errors/ErrorFallback.js" defer></script>
     <script src="/utils/errors/ErrorProvider.js" defer></script>
     <script src="/utils/errors/index.js" defer></script>
-
+    
     <!-- ===== NEW: Verification & Toast Utilities ===== -->
     <script src="/utils/verification.js" defer></script>
     <script src="/utils/toast.js" defer></script>
-
+    
     <!-- Accessibility -->
     <script src="/utils/accessibilityContext.js" defer></script>
     <script src="/utils/accessibilityLayout.js" defer></script>
     <script src="/hooks/useAccessibility.js" defer></script>
     <script src="/components/AccessibilityProvider.js" defer></script>
     <script src="/components/AccessibilityPanel.js" defer></script>
-
+    
     <!-- Scroll hook -->
     <script src="/hooks/useScrollDirection.js" defer></script>
     <script src="/components/ScrollToTopButton.js" defer></script>
-
+    
     <!-- Contexts -->
     <script src="/contexts/AuthModalContext.js" defer></script>
     <script src="/contexts/NotificationContext.js" defer></script>
     <script src="/contexts/RouteCacheContext.js" defer></script>
     <script src="/contexts/FormDraftContext.js" defer></script>
-
+    
     <!-- Hooks -->
     <script src="/hooks/useSmartValidation.js" defer></script>
     <script src="/hooks/useCache.js" defer></script>
@@ -447,15 +481,15 @@
     
     <!-- ===== CHAT HOOKS ===== -->
     <script src="/hooks/useChatMessages.js" defer></script>
-
+    
     <!-- ===== REACTION SYSTEM ===== -->
     <script src="/utils/reactionHelpers.js" defer></script>
     <script src="/hooks/useReactions.js" defer></script>
     <script src="/components/ReactionButton.js" defer></script>
-
+    
     <!-- ===== NEW SIMILAR LISTINGS HOOK ===== -->
     <script src="/hooks/useSimilarListings.js" defer></script>
-
+    
     <!-- Core components -->
     <script src="/components/RouteCache.js" defer></script>
     <script src="/components/SmartFormField.js" defer></script>
@@ -493,10 +527,10 @@
     <script src="/components/Header.js" defer></script>
     <script src="/components/Footer.js" defer></script>
     <script src="/components/Layout.js" defer></script>
-
+    
     <!-- Global Components -->
     <script src="/components/RoleBadge.js" defer></script>
-
+    
     <!-- ===== NEW COMPONENTS ===== -->
     <script src="/components/DeleteConfirmationModal.js" defer></script>
     <script src="/components/SimilarListings.js" defer></script>
@@ -504,7 +538,7 @@
     
     <!-- ===== NEW: VerificationWarning Component ===== -->
     <script src="/components/VerificationWarning.js" defer></script>
-
+    
     <!-- ===== HOME PAGE MODULAR FILES ===== -->
     <script src="/pages/home/utils/affinity.js" defer></script>
     <script src="/pages/home/utils/scoring.js" defer></script>
@@ -553,7 +587,7 @@
     
     <!-- ===== UPDATED: Home page main entry ===== -->
     <script src="/pages/home/index.js" defer></script>
-
+    
     <!-- ===== PROFILE PAGE MODULAR FILES ===== -->
     <script src="/pages/profile/utils/constants.js" defer></script>
     <script src="/pages/profile/hooks/useProfile.js" defer></script>
@@ -567,7 +601,7 @@
     <script src="/pages/profile/components/SettingsTab.js" defer></script>
     <script src="/pages/profile/components/PopupModal.js" defer></script>
     <script src="/pages/profile/index.js" defer></script>
-
+    
     <!-- ===== LISTING DETAIL PAGE MODULAR FILES ===== -->
     <script src="/pages/listing-detail/utils/constants.js" defer></script>
     <script src="/pages/listing-detail/utils/commentHelpers.js" defer></script>
@@ -593,10 +627,10 @@
     <script src="/pages/listing-detail/components/ReportButton.js" defer></script>
     <script src="/pages/listing-detail/components/ProfileCard.js" defer></script>
     <script src="/pages/listing-detail/index.js" defer></script>
-
+    
     <!-- Critical pages -->
     <script src="/pages/ListingByCodePage.js" defer></script>
- 
+    
     <!-- Secondary pages (defer after paint) -->
     <script src="/pages/PublicProfilePage.js" defer></script>
     <script src="/pages/ProfileRedirectPage.js" defer></script>
@@ -612,11 +646,11 @@
     <script src="/pages/TermsPage.js" defer></script>
     <script src="/pages/VerificationPage.js" defer></script>
     <script src="/pages/AdminPage.js" defer></script>
-
+    
     <!-- Version and App entry -->
     <script src="/version.js" defer></script>
     <script src="/app.js" defer></script>
-
+    
     <!-- Offline detection with proper return -->
     <script>
         // Store the last attempted URL
@@ -653,7 +687,7 @@
             }
         });
     </script>
-
+    
     <!-- Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
@@ -663,7 +697,7 @@
                 });
             });
         }
-
+        
         if (window.PreloadHelpers) {
             window.addEventListener('load', function() {
                 setTimeout(function() {
@@ -671,7 +705,7 @@
                 }, 2000);
             });
         }
-
+        
         console.log('UnaDomot v' + (window.APP_VERSION || '1.0.0') + ' loaded');
     </script>
 </body>
