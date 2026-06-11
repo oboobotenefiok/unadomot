@@ -1,6 +1,7 @@
 # netlify.toml
 [build]
-publish = "."
+  command = "node inject-env.js"
+  publish = "."
 
 # ===== Email verification — MUST be declared before the SPA wildcard =====
 # Firebase email links always use /verify-email as the base path (set in the
