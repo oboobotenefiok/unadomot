@@ -17,9 +17,10 @@ function PostListingWizard({ modal = false, onSuccess, onClose, listingId = null
   const [selectedRole, setSelectedRole] = React.useState(''); // 'landlord', 'agent', or '' for regular user
   const [userVerification, setUserVerification] = React.useState({ landlord: null, agent: null });
 
-  const CLOUD_NAME = 'djddnda47';
-  const UPLOAD_PRESET = 'unadomot';
+  const CLOUD_NAME = window.__ENV.CLOUDINARY_CLOUD_NAME;
+  const UPLOAD_PRESET = window.__ENV.CLOUDINARY_UPLOAD_PRESET;
   const CLOUDINARY_URL = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/`;
+
   
   const [currentStep, setCurrentStep] = React.useState(1);
   const totalSteps = 4; // Basic Info, Location, Details, Photos

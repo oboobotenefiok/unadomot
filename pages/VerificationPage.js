@@ -29,8 +29,8 @@ function VerificationPage({ user, navigate }) {
   const [errors, setErrors] = React.useState({});
   
   const { openModal } = window.useAuthModal();
-  const CLOUD_NAME = 'djddnda47';
-  const UPLOAD_PRESET = 'unadomot';
+  const CLOUD_NAME = window.__ENV.CLOUDINARY_CLOUD_NAME;
+  const UPLOAD_PRESET = window.__ENV.CLOUDINARY_UPLOAD_PRESET;
   
   React.useEffect(function() {
     if (!user) {

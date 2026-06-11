@@ -164,7 +164,14 @@
             Failed to send verification email. Please try again.
         </div>
     </div>
-
+  <!--
+  WE'LL DO THIS TO ALL HTML FILES SO IT SEEMS
+     Load local env if available (git-ignored), otherwise no-op.
+     Production env-loader.js (with process.env.*) loads next.
+     
+     This is very important otherwise you can't test locally -->
+<script src="/env-loader.local.js" onerror="void(0)"></script>
+<script src="/env-loader.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -172,13 +179,14 @@
     <script>
         // Firebase config
         const firebaseConfig = {
-            apiKey: "AIzaSyBx3kx5iU1H4oYhLAAwK1E6qeWvLpltsAE",
-            authDomain: "unadomot.firebaseapp.com",
-            projectId: "unadomot",
-            storageBucket: "unadomot.firebasestorage.app",
-            messagingSenderId: "664216160325",
-            appId: "1:664216160325:web:dc214e21b24d506f85fb2c"
+            apiKey: window.__ENV.FIREBASE_API_KEY,
+            authDomain: window.__ENV.FIREBASE_AUTH_DOMAIN,
+            projectId: window.__ENV.FIREBASE_PROJECT_ID,
+            storageBucket: window.__ENV.FIREBASE_STORAGE_BUCKET,
+            messagingSenderId: window.__ENV.FIREBASE_MESSAGING_SENDER_ID,
+            appId: window.__ENV.FIREBASE_APP_ID
         };
+
 
         // Initialize Firebase
         if (!firebase.apps.length) {

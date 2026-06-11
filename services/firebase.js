@@ -2,13 +2,13 @@
 // Firebase configuration and initialization
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBx3kx5iU1H4oYhLAAwK1E6qeWvLpltsAE",
-  authDomain: "unadomot.firebaseapp.com",
-  projectId: "unadomot",
-  storageBucket: "unadomot.firebasestorage.app",
-  messagingSenderId: "664216160325",
-  appId: "1:664216160325:web:dc214e21b24d506f85fb2c",
-  measurementId: "G-YPZP5WK6H9"
+  apiKey: window.__ENV.FIREBASE_API_KEY,
+  authDomain: window.__ENV.FIREBASE_AUTH_DOMAIN,
+  projectId: window.__ENV.FIREBASE_PROJECT_ID,
+  storageBucket: window.__ENV.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: window.__ENV.FIREBASE_MESSAGING_SENDER_ID,
+  appId: window.__ENV.FIREBASE_APP_ID,
+  measurementId: window.__ENV.FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase if not already initialized

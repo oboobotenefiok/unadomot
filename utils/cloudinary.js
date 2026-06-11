@@ -1,6 +1,8 @@
 const CloudinaryHelpers = {
-  CLOUD_NAME: 'djddnda47',
-  
+  get CLOUD_NAME() {
+    return window.__ENV.CLOUDINARY_CLOUD_NAME;
+  },
+
   getUrl: function(publicId, options = {}) {
     if (!publicId) return '/vault/img/no-image.jpg';
     if (publicId.startsWith('http')) return publicId; // Already a full URL

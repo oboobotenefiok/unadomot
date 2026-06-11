@@ -5,6 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>UnaDomot - dey your domot</title>
+<!--
+WE'LL DO THIS TO ALL HTML FILES SO IT SEEMS
+     Load local env if available (git-ignored), otherwise no-op.
+     Production env-loader.js (with process.env.*) loads next.
+     
+     This is very important otherwise you can't test locally -->
+<script src="/env-loader.local.js" onerror="void(0)"></script>
+<script src="/env-loader.js"></script>
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-YPZP5WK6H9"></script>
     <script>
