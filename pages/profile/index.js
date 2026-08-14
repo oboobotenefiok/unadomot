@@ -1,4 +1,6 @@
-// pages/profile/index.js
+// pages/profile/index.js - COMPLETE REFACTORED VERSION
+// All changes integrated: Badges, SettingsTab, Verification moved, Info icon
+
 function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, locationState }) {
   // ===== HOOKS =====
   const profileHook = window.useProfile(user);
@@ -107,13 +109,9 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
     }
   };
   
-  // ===== VERIFICATION HANDLERS =====
-  const handleVerifyLandlord = () => {
-    navigate('/verify?role=landlord');
-  };
-  
-  const handleVerifyAgent = () => {
-    navigate('/verify?role=agent');
+  // ===== VERIFICATION HANDLER (MOVED TO SETTINGS) =====
+  const handleVerify = () => {
+    navigate('/verify');
   };
   
   // ===== DISPLAY NAME VALIDATION =====
@@ -281,15 +279,16 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
         className: 'bg-red-50 text-red-700 p-4 rounded mb-6 border border-red-200'
       }, profileHook.error),
       
+      // ===== UPDATED: ProfileHeader without verification section =====
       React.createElement(ProfileHeader, {
         profile: profileHook.profile,
         user: user,
         onEditClick: handleEditClick,
-        onAdminClick: handleAdminClick,
-        onVerifyLandlord: handleVerifyLandlord,
-        onVerifyAgent: handleVerifyAgent
+        onAdminClick: handleAdminClick
+        // NOTE: onVerifyLandlord and onVerifyAgent REMOVED - moved to SettingsTab
       }),
       
+      // ===== UPDATED: ProfileTabs with Info icon =====
       React.createElement(ProfileTabs, {
         activeTab: activeTab,
         onTabChange: setActiveTab
@@ -306,6 +305,7 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
         usingIndex: listingsHook.usingIndex
       }),
       
+      // ===== UPDATED: SettingsTab with Get Verified option =====
       activeTab === 'settings' &&
       React.createElement(SettingsTab, {
         openDropdowns: settingsHook.openDropdowns,
@@ -321,10 +321,12 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
             profileHook.setError('Failed to log out. Please try again.');
           }
         },
-        settingsRef: settingsRef
+        settingsRef: settingsRef,
+        onVerify: handleVerify // ← NEW: Pass verification handler
       })
     ),
     
+    // ===== Edit Profile Modal (unchanged) =====
     React.createElement(EditProfileModal, {
       show: showEditModal,
       onClose: handleEditClose,
@@ -338,6 +340,7 @@ function ProfilePage({ user, navigate, initialTab = 'listings', cachedState, loc
       nextChangeDate: profileHook.getNextDisplayNameChangeDate()
     }),
     
+    // ===== Popup Modal (unchanged) =====
     settingsHook.activePopup && React.createElement(PopupModal, {
       popupName: settingsHook.activePopup,
       onClose: settingsHook.closePopup,

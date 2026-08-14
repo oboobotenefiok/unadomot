@@ -1,4 +1,5 @@
-// pages/profile/hooks/useSettings.js
+// pages/profile/hooks/useSettings.js - FIXED
+
 function useSettings() {
   const [openDropdowns, setOpenDropdowns] = React.useState({
     support: false,
@@ -7,7 +8,7 @@ function useSettings() {
   });
   const [activePopup, setActivePopup] = React.useState(null);
   const [versionInfo, setVersionInfo] = React.useState({
-    current: PROFILE_CONSTANTS.VERSION.CURRENT,
+    current: window.PROFILE_CONSTANTS?.VERSION?.CURRENT || '1.0.0', // ← FIXED: Optional chaining + fallback
     latest: null,
     updateAvailable: false,
     checking: false
@@ -45,7 +46,7 @@ function useSettings() {
     
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      const latestVersion = PROFILE_CONSTANTS.VERSION.LATEST;
+      const latestVersion = window.PROFILE_CONSTANTS?.VERSION?.LATEST || '1.0.1';
       const current = versionInfo.current;
       
       setVersionInfo(prev => ({

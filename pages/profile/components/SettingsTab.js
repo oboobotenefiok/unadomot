@@ -1,4 +1,5 @@
-// pages/profile/components/SettingsTab.js
+// pages/profile/components/SettingsTab.js - MODIFIED VERSION
+
 function SettingsTab({
   openDropdowns,
   toggleDropdown,
@@ -6,7 +7,8 @@ function SettingsTab({
   versionInfo,
   checkForUpdates,
   handleLogout,
-  settingsRef
+  settingsRef,
+  onVerify // NEW: callback for verification
 }) {
   const getArrowIcon = (isOpen) => isOpen ? '✕' : '▼';
   
@@ -15,6 +17,21 @@ function SettingsTab({
     className: 'bg-white rounded-lg shadow-md p-6 space-y-2'
   },
     
+    // ===== NEW: Verification option (at the top) =====
+    React.createElement('div', { className: 'border-b border-gray-100 pb-2' },
+      React.createElement('button', {
+        onClick: onVerify,
+        className: 'w-full flex items-center justify-between py-3 text-left px-2 rounded-lg transition hover:bg-gray-50'
+      },
+        React.createElement('div', { className: 'flex items-center gap-3' },
+          React.createElement('span', { className: 'text-xl' }, '✅'),
+          React.createElement('span', { className: 'font-medium text-gray-800' }, 'Get Verified')
+        ),
+        React.createElement('span', { className: 'text-sm text-gray-400' }, '→')
+      )
+    ),
+    
+    // Support dropdown (unchanged)
     React.createElement('div', { className: 'border-b border-gray-100 pb-2' },
       React.createElement('button', {
         onClick: () => toggleDropdown('support'),
@@ -34,7 +51,7 @@ function SettingsTab({
           React.createElement('button', {
             key: item,
             onClick: () => openPopup(item.toLowerCase().replace(/\s+/g, '_')),
-            className: 'w-full flex items-center justify-between py-2 px-2 text-sm text-gray-600 rounded-lg transition'
+            className: 'w-full flex items-center justify-between py-2 px-2 text-sm text-gray-600 rounded-lg transition hover:bg-gray-50'
           },
             React.createElement('span', null, item),
             React.createElement('span', { className: 'text-gray-400' }, '→')
@@ -43,6 +60,7 @@ function SettingsTab({
       )
     ),
     
+    // About (unchanged)
     React.createElement('div', { className: 'border-b border-gray-100 pb-2' },
       React.createElement('button', {
         onClick: () => openPopup('about_us'),
@@ -56,6 +74,7 @@ function SettingsTab({
       )
     ),
     
+    // Legal dropdown (unchanged)
     React.createElement('div', { className: 'border-b border-gray-100 pb-2' },
       React.createElement('button', {
         onClick: () => toggleDropdown('legal'),
@@ -75,7 +94,7 @@ function SettingsTab({
           React.createElement('button', {
             key: item,
             onClick: () => openPopup(item.toLowerCase().replace(/\s+&\s+/, '_').replace(/\s+/g, '_')),
-            className: 'w-full flex items-center justify-between py-2 px-2 text-sm text-gray-600 rounded-lg transition'
+            className: 'w-full flex items-center justify-between py-2 px-2 text-sm text-gray-600 rounded-lg transition hover:bg-gray-50'
           },
             React.createElement('span', null, item),
             React.createElement('span', { className: 'text-gray-400' }, '→')
@@ -84,6 +103,7 @@ function SettingsTab({
       )
     ),
     
+    // Version dropdown (unchanged)
     React.createElement('div', { className: 'border-b border-gray-100 pb-2' },
       React.createElement('button', {
         onClick: () => toggleDropdown('version'),
@@ -108,7 +128,7 @@ function SettingsTab({
         React.createElement('button', {
           onClick: checkForUpdates,
           disabled: versionInfo.checking,
-          className: 'w-full flex items-center justify-between py-2 px-2 text-sm text-gray-600 rounded-lg transition disabled:opacity-50'
+          className: 'w-full flex items-center justify-between py-2 px-2 text-sm text-gray-600 rounded-lg transition hover:bg-gray-50 disabled:opacity-50'
         },
           React.createElement('span', null, versionInfo.checking ? 'Checking...' : '🔄 Check for Updates'),
           versionInfo.updateAvailable && React.createElement('span', {
@@ -118,9 +138,10 @@ function SettingsTab({
       )
     ),
     
+    // Logout (unchanged)
     React.createElement('button', {
       onClick: handleLogout,
-      className: 'w-full flex items-center gap-3 py-3 text-left px-2 rounded-lg transition text-red-600 font-medium'
+      className: 'w-full flex items-center gap-3 py-3 text-left px-2 rounded-lg transition text-red-600 font-medium hover:bg-red-50'
     },
       React.createElement('span', { className: 'text-xl' }, '🚪'),
       React.createElement('span', null, 'LOGOUT')
