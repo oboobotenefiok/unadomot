@@ -1,7 +1,6 @@
-use crate::application::auth::{
-    AuthenticatedUser, AuthError, StoredUser, UserRepository,
-};
+use crate::application::auth::{AuthenticatedUser, AuthError, StoredUser, UserRepository};
 use crate::application::listings::{ListingError, ListingRepository};
+use crate::application::media::{MediaError, MediaSigner, UploadSignature};
 use crate::domain::listing::{Listing, ListingFilter, NewListing};
 use uuid::Uuid;
 
@@ -17,6 +16,28 @@ impl ListingRepository for UnconfiguredRepository {
     }
 
     fn create(&self, _listing: &NewListing) -> Result<Listing, ListingError> {
+        Err(ListingError::Repository("Persistence not configured".into()))
+    }
+
+    fn update(
+        &self,
+        _id: Uuid,
+        _owner_id: Uuid,
+        _update: &crate::domain::listing::ListingUpdate,
+    ) -> Result<Listing, ListingError> {
+        Err(ListingError::Repository("Persistence not configured".into()))
+    }
+
+    fn delete(&self, _id: Uuid, _owner_id: Uuid) -> Result<(), ListingError> {
+        Err(ListingError::Repository("Persistence not configured".into()))
+    }
+
+    fn add_media(
+        &self,
+        _listing_id: Uuid,
+        _owner_id: Uuid,
+        _media: &crate::domain::listing::NewListingMedia,
+    ) -> Result<crate::domain::listing::ListingMedia, ListingError> {
         Err(ListingError::Repository("Persistence not configured".into()))
     }
 }
@@ -35,5 +56,13 @@ impl UserRepository for UnconfiguredUserRepository {
 
     fn find_by_email(&self, _email: &str) -> Result<Option<StoredUser>, AuthError> {
         Err(AuthError::Repository("Persistence not configured".into()))
+    }
+}
+
+pub struct UnconfiguredMediaSigner;
+
+impl MediaSigner for UnconfiguredMediaSigner {
+    fn sign_upload(&self, _folder: &str) -> Result<UploadSignature, MediaError> {
+        Err(MediaError::NotConfigured)
     }
 }

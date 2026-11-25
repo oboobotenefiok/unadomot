@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
 class ApiException implements Exception {
@@ -93,6 +94,63 @@ class ApiClient {
       authenticated: true,
     );
     return Map<String, dynamic>.from(result as Map);
+  }
+
+  Future<Map<String, dynamic>> mediaSignature({String folder = 'unadomot/listings'}) async {
+    if (!signedIn) {
+      throw const ApiException(401, 'Please sign in to upload photos.');
+    }
+    final result = await _request(
+      'POST',
+      '/api/media/signature',
+      body: {'folder': folder},
+      authenticated: true,
+    );
+    return Map<String, dynamic>.from(result as Map);
+  }
+
+  Future<Map<String, dynamic>> uploadToCloudinary({
+    required Uint8List bytes,
+    required String filename,
+    required Map<String, dynamic> signature,
+  }) async {
+    final cloud = signature['cloud_name'] as String;
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('https://api.cloudinary.com/v1_1/$cloud/image/upload'),
+    )
+      ..fields['api_key'] = signature['api_key'] as String
+      ..fields['timestamp'] = '${signature['timestamp']}'
+      ..fields['signature'] = signature['signature'] as String
+      ..fields['folder'] = signature['folder'] as String
+      ..files.add(http.MultipartFile.fromBytes('file', bytes, filename: filename));
+
+    final streamed = await _client.send(request);
+    final response = await http.Response.fromStream(streamed);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw ApiException(response.statusCode, 'Photo upload failed.');
+    }
+    return Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+  }
+
+  Future<void> attachMedia(
+    String listingId, {
+    required String publicId,
+    required String url,
+    String? altText,
+    int position = 0,
+  }) async {
+    await _request(
+      'POST',
+      '/api/listings/$listingId/media',
+      body: {
+        'cloudinary_public_id': publicId,
+        'url': url,
+        'alt_text': altText,
+        'position': position,
+      },
+      authenticated: true,
+    );
   }
 
   Future<dynamic> _request(

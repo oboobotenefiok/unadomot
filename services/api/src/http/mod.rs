@@ -3,13 +3,14 @@ use crate::application::listings::{
     add_listing_media, browse_listings, create_listing, delete_listing, get_listing,
     update_listing, ListingError, ListingRepository,
 };
+use crate::application::media::{MediaError, MediaSigner};
 use crate::domain::listing::{
     Listing, ListingFilter, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
 };
 use axum::{
     extract::{Path, Query, State},
     http::{HeaderMap, StatusCode},
-    routing::{delete, get, patch, post},
+    routing::{get, post},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
@@ -20,6 +21,7 @@ use uuid::Uuid;
 pub struct AppState {
     pub users: Arc<dyn UserRepository>,
     pub listings: Arc<dyn ListingRepository>,
+    pub media: Arc<dyn MediaSigner>,
     pub jwt_secret: Arc<String>,
 }
 
@@ -81,6 +83,11 @@ pub struct AddMediaRequest {
     pub alt_text: Option<String>,
     #[serde(default)]
     pub position: i32,
+}
+
+#[derive(Deserialize, Default)]
+pub struct SignatureRequest {
+    pub folder: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -158,10 +165,8 @@ pub fn router(state: AppState) -> Router {
                 .patch(update_listing_handler)
                 .delete(delete_listing_handler),
         )
-        .route(
-            "/api/listings/{id}/media",
-            post(add_media_handler),
-        )
+        .route("/api/listings/{id}/media", post(add_media_handler))
+        .route("/api/media/signature", post(signature_handler))
         .with_state(state)
 }
 
@@ -327,6 +332,20 @@ async fn add_media_handler(
         .map_err(listing_error)
 }
 
+async fn signature_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(request): Json<SignatureRequest>,
+) -> Result<Json<crate::application::media::UploadSignature>, (StatusCode, String)> {
+    authorize(&state, &headers)?;
+    let folder = request
+        .folder
+        .filter(|value| !value.trim().is_empty())
+        .unwrap_or_else(|| "unadomot/listings".into());
+
+    state.media.sign_upload(&folder).map(Json).map_err(media_error)
+}
+
 fn authorize(
     state: &AppState,
     headers: &HeaderMap,
@@ -354,5 +373,15 @@ fn listing_error(error: ListingError) -> (StatusCode, String) {
         ListingError::Forbidden => (StatusCode::FORBIDDEN, "Not allowed".into()),
         ListingError::InvalidInput(message) => (StatusCode::BAD_REQUEST, message),
         ListingError::Repository(message) => (StatusCode::SERVICE_UNAVAILABLE, message),
+    }
+}
+
+fn media_error(error: MediaError) -> (StatusCode, String) {
+    match error {
+        MediaError::NotConfigured => (
+            StatusCode::SERVICE_UNAVAILABLE,
+            "Media uploads are not configured".into(),
+        ),
+        MediaError::Signing(message) => (StatusCode::INTERNAL_SERVER_ERROR, message),
     }
 }
