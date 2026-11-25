@@ -19,9 +19,10 @@
 - [x] Structured request logging
 - [x] Public listing pages, social metadata and sitemap
 - [x] Flutter secure token storage
+- [x] Postgres service in CI
 - [ ] Rate limiting
 - [ ] Refresh-token rotation and revocation
-- [ ] Integration tests against Postgres
+- [ ] Full Postgres integration test suite
 - [ ] Confirm CI passes
 - [ ] Messaging, verification and admin parity
 - [ ] Data migration and production deployment
