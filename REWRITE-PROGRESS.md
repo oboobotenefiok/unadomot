@@ -13,8 +13,9 @@ Hexagonal Rust API: HTTP adapters depend on application use cases; application d
 - [x] Postgres initial schema and SQLx listing repository adapter
 - [x] Email/password registration and login with Argon2 and JWT sessions
 - [x] Listing creation and detail endpoints with ownership authorization
+- [x] Listing update, soft delete and Cloudinary media association
+- [x] Price, bedrooms and furnishing filters
 - [ ] Confirm CI passes
-- [ ] Listing update, delete, media association and filters
 - [ ] SQLite cache and signed Cloudinary uploads
 - [ ] Messaging, favorites, verification and admin parity
 - [ ] Public HTML listing pages, metadata and deep links

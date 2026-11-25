@@ -1,12 +1,15 @@
 use crate::application::auth::{issue_session, login, register, verify_session, AuthError, UserRepository};
 use crate::application::listings::{
-    browse_listings, create_listing, get_listing, ListingError, ListingRepository,
+    add_listing_media, browse_listings, create_listing, delete_listing, get_listing,
+    update_listing, ListingError, ListingRepository,
 };
-use crate::domain::listing::{Listing, ListingFilter, NewListing};
+use crate::domain::listing::{
+    Listing, ListingFilter, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
+};
 use axum::{
     extract::{Path, Query, State},
     http::{HeaderMap, StatusCode},
-    routing::{get, post},
+    routing::{delete, get, patch, post},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
@@ -55,6 +58,31 @@ pub struct CreateListingRequest {
     pub furnishing: Option<String>,
 }
 
+#[derive(Deserialize, Default)]
+pub struct UpdateListingRequest {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub price: Option<f64>,
+    pub address: Option<String>,
+    pub state: Option<String>,
+    pub lga: Option<String>,
+    pub is_agent_listing: Option<bool>,
+    pub status: Option<ListingStatus>,
+    pub bedrooms: Option<Option<i32>>,
+    pub bathrooms: Option<Option<i32>>,
+    pub property_type: Option<Option<String>>,
+    pub furnishing: Option<Option<String>>,
+}
+
+#[derive(Deserialize)]
+pub struct AddMediaRequest {
+    pub cloudinary_public_id: String,
+    pub url: String,
+    pub alt_text: Option<String>,
+    #[serde(default)]
+    pub position: i32,
+}
+
 #[derive(Serialize)]
 pub struct ListingResponse {
     pub id: Uuid,
@@ -70,6 +98,16 @@ pub struct ListingResponse {
     pub bathrooms: Option<i32>,
     pub property_type: Option<String>,
     pub furnishing: Option<String>,
+    pub media: Vec<MediaResponse>,
+}
+
+#[derive(Serialize)]
+pub struct MediaResponse {
+    pub id: Uuid,
+    pub cloudinary_public_id: String,
+    pub url: String,
+    pub alt_text: Option<String>,
+    pub position: i32,
 }
 
 impl From<Listing> for ListingResponse {
@@ -88,6 +126,19 @@ impl From<Listing> for ListingResponse {
             bathrooms: listing.bathrooms,
             property_type: listing.property_type,
             furnishing: listing.furnishing,
+            media: listing.media.into_iter().map(MediaResponse::from).collect(),
+        }
+    }
+}
+
+impl From<crate::domain::listing::ListingMedia> for MediaResponse {
+    fn from(media: crate::domain::listing::ListingMedia) -> Self {
+        Self {
+            id: media.id,
+            cloudinary_public_id: media.cloudinary_public_id,
+            url: media.url,
+            alt_text: media.alt_text,
+            position: media.position,
         }
     }
 }
@@ -101,7 +152,16 @@ pub fn router(state: AppState) -> Router {
             "/api/listings",
             get(list_listings).post(create_listing_handler),
         )
-        .route("/api/listings/{id}", get(get_listing_handler))
+        .route(
+            "/api/listings/{id}",
+            get(get_listing_handler)
+                .patch(update_listing_handler)
+                .delete(delete_listing_handler),
+        )
+        .route(
+            "/api/listings/{id}/media",
+            post(add_media_handler),
+        )
         .with_state(state)
 }
 
@@ -148,6 +208,10 @@ struct ListingQuery {
     state: Option<String>,
     lga: Option<String>,
     property_type: Option<String>,
+    min_price: Option<f64>,
+    max_price: Option<f64>,
+    bedrooms: Option<i32>,
+    furnishing: Option<String>,
 }
 
 async fn list_listings(
@@ -158,7 +222,10 @@ async fn list_listings(
         state: query.state,
         lga: query.lga,
         property_type: query.property_type,
-        ..Default::default()
+        min_price: query.min_price,
+        max_price: query.max_price,
+        bedrooms: query.bedrooms,
+        furnishing: query.furnishing,
     };
 
     browse_listings(state.listings.as_ref(), &filter)
@@ -203,10 +270,67 @@ async fn get_listing_handler(
         .ok_or((StatusCode::NOT_FOUND, "Listing not found".into()))
 }
 
+async fn update_listing_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<Uuid>,
+    Json(request): Json<UpdateListingRequest>,
+) -> Result<Json<ListingResponse>, (StatusCode, String)> {
+    let user = authorize(&state, &headers)?;
+    let update = ListingUpdate {
+        title: request.title,
+        description: request.description,
+        price: request.price,
+        address: request.address,
+        state: request.state,
+        lga: request.lga,
+        is_agent_listing: request.is_agent_listing,
+        status: request.status,
+        bedrooms: request.bedrooms,
+        bathrooms: request.bathrooms,
+        property_type: request.property_type,
+        furnishing: request.furnishing,
+    };
+
+    update_listing(state.listings.as_ref(), id, user.id, &update)
+        .map(|listing| Json(ListingResponse::from(listing)))
+        .map_err(listing_error)
+}
+
+async fn delete_listing_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<Uuid>,
+) -> Result<StatusCode, (StatusCode, String)> {
+    let user = authorize(&state, &headers)?;
+    delete_listing(state.listings.as_ref(), id, user.id)
+        .map(|_| StatusCode::NO_CONTENT)
+        .map_err(listing_error)
+}
+
+async fn add_media_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<Uuid>,
+    Json(request): Json<AddMediaRequest>,
+) -> Result<Json<MediaResponse>, (StatusCode, String)> {
+    let user = authorize(&state, &headers)?;
+    let media = NewListingMedia {
+        cloudinary_public_id: request.cloudinary_public_id,
+        url: request.url,
+        alt_text: request.alt_text,
+        position: request.position,
+    };
+
+    add_listing_media(state.listings.as_ref(), id, user.id, &media)
+        .map(|media| Json(MediaResponse::from(media)))
+        .map_err(listing_error)
+}
+
 fn authorize(
     state: &AppState,
     headers: &HeaderMap,
-) -> Result<AuthenticatedUser, (StatusCode, String)> {
+) -> Result<crate::application::auth::AuthenticatedUser, (StatusCode, String)> {
     let token = headers
         .get("authorization")
         .and_then(|value| value.to_str().ok())

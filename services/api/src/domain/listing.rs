@@ -17,6 +17,8 @@ pub struct Listing {
     pub bathrooms: Option<i32>,
     pub property_type: Option<String>,
     pub furnishing: Option<String>,
+    #[serde(default)]
+    pub media: Vec<ListingMedia>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -37,6 +39,23 @@ impl ListingStatus {
     }
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ListingMedia {
+    pub id: Uuid,
+    pub cloudinary_public_id: String,
+    pub url: String,
+    pub alt_text: Option<String>,
+    pub position: i32,
+}
+
+#[derive(Clone, Debug)]
+pub struct NewListingMedia {
+    pub cloudinary_public_id: String,
+    pub url: String,
+    pub alt_text: Option<String>,
+    pub position: i32,
+}
+
 #[derive(Clone, Debug, Default)]
 pub struct ListingFilter {
     pub state: Option<String>,
@@ -45,9 +64,10 @@ pub struct ListingFilter {
     pub min_price: Option<f64>,
     pub max_price: Option<f64>,
     pub bedrooms: Option<i32>,
+    pub furnishing: Option<String>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct NewListing {
     pub landlord_id: Uuid,
     pub title: String,
@@ -61,4 +81,20 @@ pub struct NewListing {
     pub bathrooms: Option<i32>,
     pub property_type: Option<String>,
     pub furnishing: Option<String>,
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct ListingUpdate {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub price: Option<f64>,
+    pub address: Option<String>,
+    pub state: Option<String>,
+    pub lga: Option<String>,
+    pub is_agent_listing: Option<bool>,
+    pub status: Option<ListingStatus>,
+    pub bedrooms: Option<Option<i32>>,
+    pub bathrooms: Option<Option<i32>>,
+    pub property_type: Option<Option<String>>,
+    pub furnishing: Option<Option<String>>,
 }
