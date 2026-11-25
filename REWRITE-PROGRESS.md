@@ -26,6 +26,6 @@
 - [x] Messaging backend with participant checks
 - [x] Flutter messaging inbox and chat screens
 - [x] Verification requests and admin review endpoints
-- [ ] Flutter verification screen
+- [x] Flutter verification screen
 - [ ] Confirm CI passes
 - [ ] Data migration and production deployment

@@ -176,6 +176,25 @@ class ApiClient {
     return Map<String, dynamic>.from(result as Map);
   }
 
+  Future<Map<String, dynamic>?> myVerification() async {
+    final result = await _request('GET', '/api/verification/me', authenticated: true);
+    if (result == null) return null;
+    return Map<String, dynamic>.from(result as Map);
+  }
+
+  Future<Map<String, dynamic>> submitVerification({
+    required String documentUrl,
+    String? notes,
+  }) async {
+    final result = await _request(
+      'POST',
+      '/api/verification',
+      body: {'document_url': documentUrl, 'notes': notes},
+      authenticated: true,
+    );
+    return Map<String, dynamic>.from(result as Map);
+  }
+
   Future<Map<String, dynamic>> mediaSignature({String folder = 'unadomot/listings'}) async {
     if (!signedIn) {
       throw const ApiException(401, 'Please sign in to upload photos.');

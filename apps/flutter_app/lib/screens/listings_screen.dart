@@ -4,6 +4,7 @@ import '../data/local_cache.dart';
 import '../models/listing.dart';
 import 'listing_detail_screen.dart';
 import 'messages_screen.dart';
+import 'verification_screen.dart';
 
 class ListingsScreen extends StatefulWidget {
   final ApiClient api;
@@ -73,6 +74,21 @@ class _ListingsScreenState extends State<ListingsScreen> {
                   builder: (_) => MessagesScreen(api: widget.api),
                 ),
               ),
+            ),
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'verification') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => VerificationScreen(api: widget.api),
+                    ),
+                  );
+                }
+              },
+              itemBuilder: (context) => const [
+                PopupMenuItem(value: 'verification', child: Text('Verification')),
+              ],
             ),
           ],
         ),
