@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'api/api_client.dart';
+import 'screens/auth_screen.dart';
+import 'screens/create_listing_screen.dart';
+import 'screens/listings_screen.dart';
+import 'state/app_state.dart';
 
 void main() => runApp(const UnaDomotApp());
 
@@ -6,48 +11,23 @@ class UnaDomotApp extends StatelessWidget {
   const UnaDomotApp({super.key});
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-        title: 'UnaDomot',
-        theme: ThemeData(colorSchemeSeed: Colors.green, useMaterial3: true),
-        home: const HomePage(),
-      );
-}
+  Widget build(BuildContext context) {
+    const baseUrl = String.fromEnvironment(
+      'API_BASE_URL',
+      defaultValue: 'http://10.0.2.2:3000',
+    );
+    final api = ApiClient(baseUrl: baseUrl);
+    final state = AppState(api: api);
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  bool listing = false;
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('UnaDomot')),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Your next home, closer.'),
-                const SizedBox(height: 24),
-                SwitchListTile(
-                  title: const Text('Landlord / agent mode'),
-                  value: listing,
-                  onChanged: (value) => setState(() => listing = value),
-                ),
-                const SizedBox(height: 24),
-                Text(listing ? 'Manage your listings' : 'Find a rental'),
-                const SizedBox(height: 12),
-                const Text(
-                  'Foundation preview. Listings, sign-in and messaging are not connected yet.',
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
+    return MaterialApp(
+      title: 'UnaDomot',
+      theme: ThemeData(colorSchemeSeed: Colors.green, useMaterial3: true),
+      home: ListenableBuilder(
+        listenable: state,
+        builder: (context, _) => state.signedIn
+            ? ListingsScreen(api: api)
+            : AuthScreen(appState: state),
+      ),
+    );
+  }
 }

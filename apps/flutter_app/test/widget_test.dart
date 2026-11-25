@@ -3,11 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:unadomot/main.dart';
 
 void main() {
-  testWidgets('one app supports renter and lister experiences', (tester) async {
+  testWidgets('shows sign-in screen before authentication', (tester) async {
     await tester.pumpWidget(const UnaDomotApp());
-    expect(find.text('Find a rental'), findsOneWidget);
-    await tester.tap(find.byType(SwitchListTile));
-    await tester.pumpAndSettle();
-    expect(find.text('Manage your listings'), findsOneWidget);
+    expect(find.text('Sign in'), findsOneWidget);
   });
 }
