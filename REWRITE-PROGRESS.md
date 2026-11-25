@@ -36,6 +36,7 @@
 - [x] Redis-backed rate limiting with in-memory fallback
 - [x] Configurable restrictive CORS via ALLOWED_ORIGINS
 - [x] Graceful shutdown
+- [x] Database-backed admin roles with env bootstrap
+- [x] Admin audit log table
 - [ ] Confirm CI passes on GitHub
-- [ ] Roles table instead of ADMIN_EMAILS
 - [ ] Release APK signing

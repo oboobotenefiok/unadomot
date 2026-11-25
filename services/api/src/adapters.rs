@@ -94,6 +94,10 @@ impl UserRepository for UnconfiguredUserRepository {
     ) -> Result<Option<AuthenticatedUser>, AuthError> {
         Err(AuthError::Repository("Persistence not configured".into()))
     }
+
+    async fn is_admin(&self, _user_id: Uuid) -> Result<bool, AuthError> {
+        Ok(false)
+    }
 }
 
 pub struct UnconfiguredMessagingRepository;

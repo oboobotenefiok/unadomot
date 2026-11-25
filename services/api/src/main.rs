@@ -90,7 +90,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
 
     let state = AppState {
-        users,
+        users: users.clone(),
         listings,
         messaging,
         media,
@@ -101,6 +101,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let verification_state = verification::VerificationState {
         repository: verification_repo,
+        users,
         jwt_secret,
         admin_emails,
     };

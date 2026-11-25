@@ -1,4 +1,4 @@
-use crate::application::auth::{verify_session, AuthError};
+use crate::application::auth::{verify_session, AuthError, UserRepository};
 use crate::application::verification::{
     my_request, pending_requests, review_request, submit_request, VerificationError,
     VerificationRepository,
@@ -19,6 +19,7 @@ use uuid::Uuid;
 #[derive(Clone)]
 pub struct VerificationState {
     pub repository: Arc<dyn VerificationRepository>,
+    pub users: Arc<dyn UserRepository>,
     pub jwt_secret: Arc<String>,
     pub admin_emails: Arc<Vec<String>>,
 }
@@ -109,9 +110,19 @@ fn authorize(state: &VerificationState, headers: &HeaderMap) -> Result<crate::ap
     })
 }
 
-fn authorize_admin(state: &VerificationState, headers: &HeaderMap) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
+async fn authorize_admin(state: &VerificationState, headers: &HeaderMap) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
     let user = authorize(state, headers)?;
-    if !state.admin_emails.iter().any(|email| email.eq_ignore_ascii_case(&user.email)) {
+    let is_bootstrap_admin = state
+        .admin_emails
+        .iter()
+        .any(|email| email.eq_ignore_ascii_case(&user.email));
+    let is_db_admin = state
+        .users
+        .is_admin(user.id)
+        .await
+        .unwrap_or(false);
+
+    if !is_bootstrap_admin && !is_db_admin {
         return Err(VerificationApiError::new(
             StatusCode::FORBIDDEN,
             "forbidden",
@@ -153,7 +164,7 @@ async fn admin_list_handler(
     State(state): State<VerificationState>,
     headers: HeaderMap,
 ) -> Result<Json<Vec<VerificationResponse>>, VerificationApiError> {
-    authorize_admin(&state, &headers)?;
+    authorize_admin(&state, &headers).await?;
     pending_requests(state.repository.as_ref())
         .await
         .map(|requests| Json(requests.into_iter().map(VerificationResponse::from).collect()))
@@ -166,7 +177,7 @@ async fn admin_review_handler(
     Path(id): Path<Uuid>,
     Json(request): Json<ReviewRequest>,
 ) -> Result<Json<VerificationResponse>, VerificationApiError> {
-    authorize_admin(&state, &headers)?;
+    authorize_admin(&state, &headers).await?;
     review_request(
         state.repository.as_ref(),
         id,

@@ -141,6 +141,15 @@ impl UserRepository for PostgresUserRepository {
             email: user.email,
         }))
     }
+
+    async fn is_admin(&self, user_id: Uuid) -> Result<bool, AuthError> {
+        let row: Option<(bool,)> = sqlx::query_as("SELECT is_admin FROM users WHERE id = $1")
+            .bind(user_id)
+            .fetch_optional(&self.pool)
+            .await
+            .map_err(|e| AuthError::Repository(e.to_string()))?;
+        Ok(row.map(|(is_admin,)| is_admin).unwrap_or(false))
+    }
 }
 
 #[derive(sqlx::FromRow)]

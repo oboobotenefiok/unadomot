@@ -68,6 +68,7 @@ pub trait UserRepository: Send + Sync {
         new_hash: &str,
         expires_at: DateTime<Utc>,
     ) -> Result<Option<AuthenticatedUser>, AuthError>;
+    async fn is_admin(&self, user_id: Uuid) -> Result<bool, AuthError>;
 }
 
 pub async fn register(
