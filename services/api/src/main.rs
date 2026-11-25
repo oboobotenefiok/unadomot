@@ -6,7 +6,7 @@ use unadomot_api::adapters::{
 use unadomot_api::application::auth::UserRepository;
 use unadomot_api::application::listings::ListingRepository;
 use unadomot_api::application::media::MediaSigner;
-use unadomot_api::http::{public_pages, router, AppState};
+use unadomot_api::http::{public_pages, router, AppState, RateLimiter};
 use unadomot_api::infrastructure::cloudinary::CloudinarySigner;
 use unadomot_api::infrastructure::postgres::{
     listing_repository::PostgresListingRepository, user_repository::PostgresUserRepository,
@@ -62,6 +62,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         listings,
         media,
         jwt_secret,
+        limiter: Arc::new(RateLimiter::new()),
     };
 
     let app = router(state.clone()).merge(public_pages::router(state));

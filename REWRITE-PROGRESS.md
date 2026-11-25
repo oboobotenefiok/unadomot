@@ -20,7 +20,7 @@
 - [x] Public listing pages, social metadata and sitemap
 - [x] Flutter secure token storage
 - [x] Postgres service in CI
-- [ ] Rate limiting
+- [x] Per-IP rate limiting
 - [ ] Refresh-token rotation and revocation
 - [ ] Full Postgres integration test suite
 - [ ] Confirm CI passes

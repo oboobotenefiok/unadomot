@@ -8,8 +8,9 @@ use crate::domain::listing::{
     Listing, ListingFilter, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
 };
 use axum::{
-    extract::{DefaultBodyLimit, Path, Query, State},
+    extract::{DefaultBodyLimit, Path, Query, Request, State},
     http::{header, HeaderMap, HeaderValue, StatusCode},
+    middleware::{self, Next},
     response::{IntoResponse, Response},
     routing::{get, post},
     Json, Router,
@@ -17,8 +18,10 @@ use axum::{
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use std::collections::HashMap;
 use std::str::FromStr;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
 use tower_http::{
     cors::CorsLayer,
     set_header::SetResponseHeaderLayer,
@@ -28,12 +31,47 @@ use uuid::Uuid;
 
 pub mod public_pages;
 
+pub struct RateLimiter {
+    buckets: Mutex<HashMap<String, Bucket>>,
+}
+
+struct Bucket {
+    window_start: Instant,
+    count: u32,
+}
+
+impl RateLimiter {
+    pub fn new() -> Self {
+        Self {
+            buckets: Mutex::new(HashMap::new()),
+        }
+    }
+
+    fn allow(&self, key: &str) -> bool {
+        let mut buckets = self.buckets.lock().expect("rate limiter lock");
+        let now = Instant::now();
+        let bucket = buckets.entry(key.to_string()).or_insert(Bucket {
+            window_start: now,
+            count: 0,
+        });
+
+        if now.duration_since(bucket.window_start) > Duration::from_secs(60) {
+            bucket.window_start = now;
+            bucket.count = 0;
+        }
+
+        bucket.count += 1;
+        bucket.count <= 120
+    }
+}
+
 #[derive(Clone)]
 pub struct AppState {
     pub users: Arc<dyn UserRepository>,
     pub listings: Arc<dyn ListingRepository>,
     pub media: Arc<dyn MediaSigner>,
     pub jwt_secret: Arc<String>,
+    pub limiter: Arc<RateLimiter>,
 }
 
 pub struct ApiError {
@@ -200,6 +238,8 @@ impl From<crate::domain::listing::ListingMedia> for MediaResponse {
 }
 
 pub fn router(state: AppState) -> Router {
+    let limiter_state = state.clone();
+
     Router::new()
         .route("/health", get(|| async { "ok" }))
         .route("/ready", get(ready_handler))
@@ -232,7 +272,32 @@ pub fn router(state: AppState) -> Router {
         ))
         .layer(CorsLayer::permissive())
         .layer(TraceLayer::new_for_http())
+        .layer(middleware::from_fn_with_state(limiter_state, rate_limit))
         .with_state(state)
+}
+
+async fn rate_limit(
+    State(state): State<AppState>,
+    request: Request,
+    next: Next,
+) -> Result<Response, ApiError> {
+    let key = request
+        .headers()
+        .get("x-forwarded-for")
+        .and_then(|value| value.to_str().ok())
+        .and_then(|value| value.split(',').next())
+        .map(|value| value.trim().to_string())
+        .unwrap_or_else(|| "unknown".into());
+
+    if !state.limiter.allow(&key) {
+        return Err(ApiError::new(
+            StatusCode::TOO_MANY_REQUESTS,
+            "rate_limited",
+            "Too many requests. Please try again shortly.",
+        ));
+    }
+
+    Ok(next.run(request).await)
 }
 
 async fn ready_handler(State(state): State<AppState>) -> Result<StatusCode, ApiError> {
