@@ -18,9 +18,9 @@
 - [x] Liveness and database readiness endpoints
 - [x] Structured request logging
 - [x] Public listing pages, social metadata and sitemap
+- [x] Flutter secure token storage
 - [ ] Rate limiting
 - [ ] Refresh-token rotation and revocation
-- [ ] Flutter secure token storage
 - [ ] Integration tests against Postgres
 - [ ] Confirm CI passes
 - [ ] Messaging, verification and admin parity

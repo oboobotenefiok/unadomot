@@ -12,6 +12,18 @@ class ApiException implements Exception {
   String toString() => message;
 }
 
+class ListingPage {
+  final List<Map<String, dynamic>> items;
+  final bool hasMore;
+  final int nextOffset;
+
+  const ListingPage({
+    required this.items,
+    required this.hasMore,
+    required this.nextOffset,
+  });
+}
+
 class ApiClient {
   final Uri baseUrl;
   final http.Client _client;
@@ -30,6 +42,15 @@ class ApiClient {
       _token != null &&
       _expiresAt != null &&
       _expiresAt!.isAfter(DateTime.now());
+
+  String? get token => _token;
+  DateTime? get expiresAt => _expiresAt;
+
+  void restoreSession(String token, DateTime expiresAt) {
+    if (token.isEmpty || !expiresAt.isAfter(DateTime.now())) return;
+    _token = token;
+    _expiresAt = expiresAt;
+  }
 
   void signOut() {
     _token = null;
@@ -64,13 +85,25 @@ class ApiClient {
     _expiresAt = expiresAt;
   }
 
-  Future<List<Map<String, dynamic>>> browse({
+  Future<ListingPage> browse({
     Map<String, String> filters = const {},
+    int limit = 20,
+    int offset = 0,
   }) async {
-    final result = await _request('GET', '/api/listings', query: filters);
-    return (result as List)
-        .map((item) => Map<String, dynamic>.from(item as Map))
-        .toList();
+    final query = {
+      ...filters,
+      'limit': '$limit',
+      'offset': '$offset',
+    };
+    final result = await _request('GET', '/api/listings', query: query);
+    final page = Map<String, dynamic>.from(result as Map);
+    return ListingPage(
+      items: (page['items'] as List)
+          .map((item) => Map<String, dynamic>.from(item as Map))
+          .toList(),
+      hasMore: page['has_more'] as bool? ?? false,
+      nextOffset: (page['next_offset'] as num?)?.toInt() ?? offset + limit,
+    );
   }
 
   Future<Map<String, dynamic>> detail(String id) async {

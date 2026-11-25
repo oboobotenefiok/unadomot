@@ -33,11 +33,11 @@ class _ListingsScreenState extends State<ListingsScreen> {
     });
 
     try {
-      final rows = await widget.api.browse();
-      await widget.cache.cacheListings(rows);
+      final page = await widget.api.browse();
+      await widget.cache.cacheListings(page.items);
       if (mounted) {
         setState(() {
-          _listings = rows.map(Listing.fromJson).toList();
+          _listings = page.items.map(Listing.fromJson).toList();
           _cachedAt = null;
         });
       }

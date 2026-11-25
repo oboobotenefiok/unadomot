@@ -5,30 +5,40 @@ import 'screens/auth_screen.dart';
 import 'screens/listings_screen.dart';
 import 'state/app_state.dart';
 
-void main() => runApp(const UnaDomotApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  const baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://10.0.2.2:3000',
+  );
+  final api = ApiClient(baseUrl: baseUrl);
+  final cache = LocalCache();
+  final state = AppState(api: api, cache: cache);
+  await state.restore();
+  runApp(UnaDomotApp(state: state, api: api, cache: cache));
+}
 
 class UnaDomotApp extends StatelessWidget {
-  const UnaDomotApp({super.key});
+  final AppState state;
+  final ApiClient api;
+  final LocalCache cache;
+
+  const UnaDomotApp({
+    super.key,
+    required this.state,
+    required this.api,
+    required this.cache,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    const baseUrl = String.fromEnvironment(
-      'API_BASE_URL',
-      defaultValue: 'http://10.0.2.2:3000',
-    );
-    final api = ApiClient(baseUrl: baseUrl);
-    final cache = LocalCache();
-    final state = AppState(api: api, cache: cache);
-
-    return MaterialApp(
-      title: 'UnaDomot',
-      theme: ThemeData(colorSchemeSeed: Colors.green, useMaterial3: true),
-      home: ListenableBuilder(
-        listenable: state,
-        builder: (context, _) => state.signedIn
-            ? ListingsScreen(api: api, cache: cache)
-            : AuthScreen(appState: state),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp(
+        title: 'UnaDomot',
+        theme: ThemeData(colorSchemeSeed: Colors.green, useMaterial3: true),
+        home: ListenableBuilder(
+          listenable: state,
+          builder: (context, _) => state.signedIn
+              ? ListingsScreen(api: api, cache: cache)
+              : AuthScreen(appState: state),
+        ),
+      );
 }

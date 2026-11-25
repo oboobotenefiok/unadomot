@@ -97,7 +97,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       final listing = await widget.api.createListing({
         'title': _title.text.trim(),
         'description': _description.text.trim(),
-        'price': double.tryParse(_price.text.trim()) ?? 0,
+        'price': _price.text.trim(),
         'address': _address.text.trim(),
         'state': _state.text.trim(),
         'lga': _lga.text.trim(),

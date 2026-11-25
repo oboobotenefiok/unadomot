@@ -12,13 +12,23 @@ void main() {
         expect(request.url.path, '/api/listings');
         expect(request.url.queryParameters['state'], 'Rivers');
         expect(request.headers['Authorization'], isNull);
-        return http.Response('[{"id":"one","title":"Flat"}]', 200);
+        return http.Response(
+          jsonEncode({
+            'items': [
+              {'id': 'one', 'title': 'Flat'}
+            ],
+            'has_more': false,
+            'next_offset': 20,
+          }),
+          200,
+        );
       }),
     );
     addTearDown(api.close);
 
-    final listings = await api.browse(filters: {'state': 'Rivers'});
-    expect(listings.single['id'], 'one');
+    final page = await api.browse(filters: {'state': 'Rivers'});
+    expect(page.items.single['id'], 'one');
+    expect(page.hasMore, isFalse);
   });
 
   test('creation requires a session', () async {

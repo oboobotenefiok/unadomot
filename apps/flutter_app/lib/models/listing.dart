@@ -35,7 +35,7 @@ class Listing {
         id: json['id'] as String,
         title: json['title'] as String? ?? '',
         description: json['description'] as String? ?? '',
-        price: (json['price'] as num?)?.toDouble() ?? 0,
+        price: double.tryParse(json['price']?.toString() ?? '') ?? 0,
         address: json['address'] as String? ?? '',
         state: json['state'] as String? ?? '',
         lga: json['lga'] as String? ?? '',
