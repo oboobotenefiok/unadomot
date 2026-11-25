@@ -27,5 +27,7 @@
 - [x] Flutter messaging inbox and chat screens
 - [x] Verification requests and admin review endpoints
 - [x] Flutter verification screen
+- [x] Docker image, compose stack and deployment guide
 - [ ] Confirm CI passes
-- [ ] Data migration and production deployment
+- [ ] Firebase data migration
+- [ ] Production release signing
