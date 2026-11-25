@@ -28,6 +28,13 @@
 - [x] Verification requests and admin review endpoints
 - [x] Flutter verification screen
 - [x] Docker image, compose stack and deployment guide
-- [ ] Confirm CI passes
-- [ ] Firebase data migration
-- [ ] Production release signing
+- [x] CI caching, clippy gate and stable Android scaffold
+- [x] HMAC-SHA256 refresh-token hashing
+- [x] Flutter automatic access-token refresh on 401
+- [x] Firebase migration script with dry-run
+- [x] Production readiness and rollback documentation
+- [ ] Confirm CI passes on GitHub
+- [ ] Redis-backed rate limiting
+- [ ] Restrictive CORS configuration
+- [ ] Roles table instead of ADMIN_EMAILS
+- [ ] Release APK signing

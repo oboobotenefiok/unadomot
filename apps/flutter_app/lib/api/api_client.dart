@@ -91,6 +91,38 @@ class ApiClient {
     _expiresAt = expiresAt;
   }
 
+  Future<bool> _refreshSession() async {
+    final refreshToken = _refreshToken;
+    if (refreshToken == null) return false;
+
+    try {
+      final response = await _client.post(
+        baseUrl.resolve('/api/auth/refresh'),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'refresh_token': refreshToken}),
+      ).timeout(const Duration(seconds: 20));
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        signOut();
+        return false;
+      }
+
+      final session = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      _token = session['token'] as String;
+      _refreshToken = session['refresh_token'] as String?;
+      _expiresAt = DateTime.fromMillisecondsSinceEpoch(
+        (session['expires_at'] as num).toInt() * 1000,
+        isUtc: true,
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<ListingPage> browse({
     Map<String, String> filters = const {},
     int limit = 20,
@@ -258,6 +290,7 @@ class ApiClient {
     Map<String, String>? query,
     Map<String, dynamic>? body,
     bool authenticated = false,
+    bool retried = false,
   }) async {
     final uri = baseUrl.resolve(path).replace(queryParameters: query);
     final request = http.Request(method, uri)
@@ -277,10 +310,21 @@ class ApiClient {
       final response = await http.Response.fromStream(streamed)
           .timeout(const Duration(seconds: 20));
 
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        if (response.statusCode == 401 && authenticated) {
-          signOut();
+      if (response.statusCode == 401 && authenticated && !retried) {
+        if (await _refreshSession()) {
+          return _request(
+            method,
+            path,
+            query: query,
+            body: body,
+            authenticated: true,
+            retried: true,
+          );
         }
+        signOut();
+      }
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
         throw ApiException(
           response.statusCode,
           response.statusCode >= 500
