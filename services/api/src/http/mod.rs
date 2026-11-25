@@ -17,13 +17,14 @@ use crate::domain::listing::{
 use crate::domain::messaging::{Conversation, Message};
 use axum::{
     extract::{DefaultBodyLimit, Path, Query, Request, State},
-    http::{header, HeaderMap, HeaderValue, StatusCode},
+    http::{header, HeaderMap, HeaderValue, Method, StatusCode},
     middleware::{self, Next},
     response::{IntoResponse, Response},
     routing::{get, post},
     Json, Router,
 };
 use chrono::{Duration, Utc};
+use redis::AsyncCommands;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -32,7 +33,7 @@ use std::str::FromStr;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration as StdDuration, Instant};
 use tower_http::{
-    cors::CorsLayer,
+    cors::{AllowOrigin, CorsLayer},
     set_header::SetResponseHeaderLayer,
     trace::TraceLayer,
 };
@@ -42,7 +43,9 @@ pub mod public_pages;
 pub mod verification;
 
 pub struct RateLimiter {
+    redis: Option<redis::Client>,
     buckets: Mutex<HashMap<String, Bucket>>,
+    limit: u32,
 }
 
 struct Bucket {
@@ -52,12 +55,35 @@ struct Bucket {
 
 impl RateLimiter {
     pub fn new() -> Self {
+        let redis = std::env::var("REDIS_URL")
+            .ok()
+            .and_then(|url| redis::Client::open(url).ok());
+        let limit = std::env::var("RATE_LIMIT_PER_MINUTE")
+            .ok()
+            .and_then(|value| value.parse().ok())
+            .unwrap_or(120);
+
         Self {
+            redis,
             buckets: Mutex::new(HashMap::new()),
+            limit,
         }
     }
 
-    fn allow(&self, key: &str) -> bool {
+    async fn allow(&self, key: &str) -> bool {
+        if let Some(client) = &self.redis {
+            if let Ok(mut connection) = client.get_multiplexed_async_connection().await {
+                let redis_key = format!("ratelimit:{key}");
+                let count: Result<i64, _> = connection.incr(&redis_key, 1).await;
+                if let Ok(count) = count {
+                    if count == 1 {
+                        let _: Result<(), _> = connection.expire(&redis_key, 60).await;
+                    }
+                    return count <= self.limit as i64;
+                }
+            }
+        }
+
         let mut buckets = self.buckets.lock().expect("rate limiter lock");
         let now = Instant::now();
         let bucket = buckets.entry(key.to_string()).or_insert(Bucket {
@@ -71,7 +97,7 @@ impl RateLimiter {
         }
 
         bucket.count += 1;
-        bucket.count <= 120
+        bucket.count <= self.limit
     }
 }
 
@@ -83,6 +109,7 @@ pub struct AppState {
     pub media: Arc<dyn MediaSigner>,
     pub jwt_secret: Arc<String>,
     pub limiter: Arc<RateLimiter>,
+    pub allowed_origins: Arc<Vec<String>>,
 }
 
 pub struct ApiError {
@@ -313,6 +340,19 @@ impl From<Message> for MessageResponse {
 
 pub fn router(state: AppState) -> Router {
     let limiter_state = state.clone();
+    let cors = if state.allowed_origins.is_empty() {
+        CorsLayer::permissive()
+    } else {
+        let origins = state
+            .allowed_origins
+            .iter()
+            .filter_map(|origin| origin.parse::<HeaderValue>().ok())
+            .collect::<Vec<_>>();
+        CorsLayer::new()
+            .allow_origin(AllowOrigin::list(origins))
+            .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])
+            .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE])
+    };
 
     Router::new()
         .route("/health", get(|| async { "ok" }))
@@ -353,7 +393,7 @@ pub fn router(state: AppState) -> Router {
             header::REFERRER_POLICY,
             HeaderValue::from_static("strict-origin-when-cross-origin"),
         ))
-        .layer(CorsLayer::permissive())
+        .layer(cors)
         .layer(TraceLayer::new_for_http())
         .layer(middleware::from_fn_with_state(limiter_state, rate_limit))
         .with_state(state)
@@ -372,7 +412,7 @@ async fn rate_limit(
         .map(|value| value.trim().to_string())
         .unwrap_or_else(|| "unknown".into());
 
-    if !state.limiter.allow(&key) {
+    if !state.limiter.allow(&key).await {
         return Err(ApiError::new(
             StatusCode::TOO_MANY_REQUESTS,
             "rate_limited",

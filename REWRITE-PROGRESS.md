@@ -33,8 +33,9 @@
 - [x] Flutter automatic access-token refresh on 401
 - [x] Firebase migration script with dry-run
 - [x] Production readiness and rollback documentation
+- [x] Redis-backed rate limiting with in-memory fallback
+- [x] Configurable restrictive CORS via ALLOWED_ORIGINS
+- [x] Graceful shutdown
 - [ ] Confirm CI passes on GitHub
-- [ ] Redis-backed rate limiting
-- [ ] Restrictive CORS configuration
 - [ ] Roles table instead of ADMIN_EMAILS
 - [ ] Release APK signing

@@ -80,6 +80,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .collect::<Vec<_>>(),
     );
 
+    let allowed_origins = Arc::new(
+        std::env::var("ALLOWED_ORIGINS")
+            .unwrap_or_default()
+            .split(',')
+            .map(|origin| origin.trim().to_string())
+            .filter(|origin| !origin.is_empty())
+            .collect::<Vec<_>>(),
+    );
+
     let state = AppState {
         users,
         listings,
@@ -87,6 +96,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         media,
         jwt_secret: jwt_secret.clone(),
         limiter: Arc::new(RateLimiter::new()),
+        allowed_origins,
     };
 
     let verification_state = verification::VerificationState {
@@ -102,6 +112,35 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let address = std::env::var("BIND_ADDR").unwrap_or_else(|_| "127.0.0.1:3000".into());
     let listener = tokio::net::TcpListener::bind(address).await?;
     tracing::info!("UnaDomot API listening on {}", listener.local_addr()?);
-    axum::serve(listener, app).await?;
+
+    axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal())
+        .await?;
     Ok(())
+}
+
+async fn shutdown_signal() {
+    let ctrl_c = async {
+        tokio::signal::ctrl_c()
+            .await
+            .expect("failed to install Ctrl+C handler");
+    };
+
+    #[cfg(unix)]
+    let terminate = async {
+        tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+            .expect("failed to install signal handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {},
+        _ = terminate => {},
+    }
+
+    tracing::info!("Shutdown signal received");
 }
