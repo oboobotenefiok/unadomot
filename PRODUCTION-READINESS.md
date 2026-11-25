@@ -9,9 +9,10 @@
 - `PUBLIC_WEB_URL` canonical public URL.
 - `BIND_ADDR` e.g. `0.0.0.0:3000`.
 - `RUST_LOG` e.g. `info,tower_http=info`.
-- `ADMIN_EMAILS` comma-separated bootstrap admins.
+- `ADMIN_EMAILS` bootstrap admins; persistent rights live in `users.is_admin`.
 - `ALLOWED_ORIGINS` comma-separated production origins.
 - `REDIS_URL` optional; enables shared rate limiting.
+- `RATE_LIMIT_PER_MINUTE` optional, default 120.
 
 Secrets should be injected by the platform secret manager, not committed. The API reads environment variables only and never logs them.
 
@@ -21,14 +22,36 @@ Secrets should be injected by the platform secret manager, not committed. The AP
 docker compose up --build
 ```
 
-Or build `services/api/Dockerfile` and run it behind a TLS-terminating load balancer. Migrations run at startup.
+Or build `services/api/Dockerfile` and run it behind a TLS-terminating load balancer. Migrations run at startup. The process handles `SIGTERM` gracefully.
 
 ## Health and monitoring
 
 - `/health` liveness.
 - `/ready` Postgres readiness.
 - Structured tracing logs.
-- Rate limiting is per-IP.
+- Redis-backed rate limiting when configured.
+
+## Android release signing
+
+1. Create a keystore outside the repository:
+
+```bash
+keytool -genkey -v -keystore ~/unadomot-release.jks \
+  -keyalg RSA -keysize 2048 -validity 10000 -alias unadomot
+```
+
+2. Add `apps/flutter_app/android/key.properties` locally (never commit it):
+
+```properties
+storePassword=...
+keyPassword=...
+keyAlias=unadomot
+storeFile=/absolute/path/to/unadomot-release.jks
+```
+
+3. Configure `android/app/build.gradle` to read `key.properties` and use `signingConfigs.release`.
+4. In CI, inject the keystore and passwords as base64 secrets, decode them into the runner, and build with `flutter build apk --release`.
+5. Verify with `apksigner verify --print-certs app-release.apk`.
 
 ## Migration from Firebase
 
@@ -51,7 +74,8 @@ Users migrate without passwords; they must use password reset or social login. L
 ## Known limitations
 
 - Rate limiting falls back to per-process memory when `REDIS_URL` is absent.
-- Admin rights use `ADMIN_EMAILS`; a roles table is a follow-up.
+- Admin rights can be bootstrapped with `ADMIN_EMAILS`; persistent rights use `users.is_admin`.
 - Offset pagination is used instead of cursors.
 - No automated zero-downtime migration; cut-over is scripted and manual.
 - Release APK signing requires a keystore configured outside the repo.
+- Business metrics are currently derived from structured logs; a Prometheus endpoint is a follow-up.

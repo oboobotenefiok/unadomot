@@ -37,6 +37,7 @@
 - [x] Configurable restrictive CORS via ALLOWED_ORIGINS
 - [x] Graceful shutdown
 - [x] Database-backed admin roles with env bootstrap
-- [x] Admin audit log table
+- [x] Admin audit logging for verification reviews
+- [x] Release signing documentation
 - [ ] Confirm CI passes on GitHub
-- [ ] Release APK signing
+- [ ] Prometheus metrics endpoint
