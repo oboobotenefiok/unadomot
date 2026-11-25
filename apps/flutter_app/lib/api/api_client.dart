@@ -28,6 +28,7 @@ class ApiClient {
   final Uri baseUrl;
   final http.Client _client;
   String? _token;
+  String? _refreshToken;
   DateTime? _expiresAt;
 
   ApiClient({required String baseUrl, http.Client? client})
@@ -44,16 +45,19 @@ class ApiClient {
       _expiresAt!.isAfter(DateTime.now());
 
   String? get token => _token;
+  String? get refreshToken => _refreshToken;
   DateTime? get expiresAt => _expiresAt;
 
-  void restoreSession(String token, DateTime expiresAt) {
+  void restoreSession(String token, DateTime expiresAt, {String? refreshToken}) {
     if (token.isEmpty || !expiresAt.isAfter(DateTime.now())) return;
     _token = token;
     _expiresAt = expiresAt;
+    _refreshToken = refreshToken;
   }
 
   void signOut() {
     _token = null;
+    _refreshToken = null;
     _expiresAt = null;
   }
 
@@ -72,6 +76,7 @@ class ApiClient {
     final data = await _request('POST', path, body: body);
     final session = Map<String, dynamic>.from(data as Map);
     final token = session['token'] as String;
+    final refreshToken = session['refresh_token'] as String?;
     final expiresAt = DateTime.fromMillisecondsSinceEpoch(
       (session['expires_at'] as num).toInt() * 1000,
       isUtc: true,
@@ -82,6 +87,7 @@ class ApiClient {
     }
 
     _token = token;
+    _refreshToken = refreshToken;
     _expiresAt = expiresAt;
   }
 

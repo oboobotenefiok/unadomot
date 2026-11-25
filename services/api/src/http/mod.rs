@@ -1,4 +1,7 @@
-use crate::application::auth::{issue_session, login, register, verify_session, AuthError, UserRepository};
+use crate::application::auth::{
+    hash_refresh_token, issue_session, login, new_refresh_token, register, verify_session,
+    AuthError, UserRepository,
+};
 use crate::application::listings::{
     add_listing_media, browse_listings, create_listing, delete_listing, get_listing,
     update_listing, ListingError, ListingRepository,
@@ -15,13 +18,14 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
+use chrono::{Duration, Utc};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::collections::HashMap;
 use std::str::FromStr;
 use std::sync::{Arc, Mutex};
-use std::time::{Duration, Instant};
+use std::time::{Duration as StdDuration, Instant};
 use tower_http::{
     cors::CorsLayer,
     set_header::SetResponseHeaderLayer,
@@ -55,7 +59,7 @@ impl RateLimiter {
             count: 0,
         });
 
-        if now.duration_since(bucket.window_start) > Duration::from_secs(60) {
+        if now.duration_since(bucket.window_start) > StdDuration::from_secs(60) {
             bucket.window_start = now;
             bucket.count = 0;
         }
@@ -118,9 +122,15 @@ pub struct LoginRequest {
     pub password: String,
 }
 
+#[derive(Deserialize)]
+pub struct RefreshRequest {
+    pub refresh_token: String,
+}
+
 #[derive(Serialize)]
 pub struct SessionResponse {
     pub token: String,
+    pub refresh_token: String,
     pub expires_at: i64,
 }
 
@@ -245,6 +255,7 @@ pub fn router(state: AppState) -> Router {
         .route("/ready", get(ready_handler))
         .route("/api/auth/register", post(register_handler))
         .route("/api/auth/login", post(login_handler))
+        .route("/api/auth/refresh", post(refresh_handler))
         .route(
             "/api/listings",
             get(list_listings).post(create_listing_handler),
@@ -323,9 +334,20 @@ async fn register_handler(
     .map_err(auth_error)?;
 
     let session = issue_session(user.id, user.email, &state.jwt_secret).map_err(auth_error)?;
+    let refresh_token = new_refresh_token();
+    state
+        .users
+        .store_refresh_token(
+            user.id,
+            &hash_refresh_token(&refresh_token),
+            Utc::now() + Duration::days(30),
+        )
+        .await
+        .map_err(auth_error)?;
 
     Ok(Json(SessionResponse {
         token: session.token,
+        refresh_token,
         expires_at: session.expires_at,
     }))
 }
@@ -343,8 +365,52 @@ async fn login_handler(
     .await
     .map_err(auth_error)?;
 
+    let user = state
+        .users
+        .find_by_email(&request.email)
+        .await
+        .map_err(auth_error)?
+        .ok_or_else(|| ApiError::new(StatusCode::UNAUTHORIZED, "invalid_credentials", "Invalid email or password"))?;
+
+    let refresh_token = new_refresh_token();
+    state
+        .users
+        .store_refresh_token(
+            user.id,
+            &hash_refresh_token(&refresh_token),
+            Utc::now() + Duration::days(30),
+        )
+        .await
+        .map_err(auth_error)?;
+
     Ok(Json(SessionResponse {
         token: session.token,
+        refresh_token,
+        expires_at: session.expires_at,
+    }))
+}
+
+async fn refresh_handler(
+    State(state): State<AppState>,
+    Json(request): Json<RefreshRequest>,
+) -> Result<Json<SessionResponse>, ApiError> {
+    let new_token = new_refresh_token();
+    let user = state
+        .users
+        .rotate_refresh_token(
+            &hash_refresh_token(&request.refresh_token),
+            &hash_refresh_token(&new_token),
+            Utc::now() + Duration::days(30),
+        )
+        .await
+        .map_err(auth_error)?
+        .ok_or_else(|| ApiError::new(StatusCode::UNAUTHORIZED, "invalid_refresh_token", "Refresh token is invalid or expired"))?;
+
+    let session = issue_session(user.id, user.email, &state.jwt_secret).map_err(auth_error)?;
+
+    Ok(Json(SessionResponse {
+        token: session.token,
+        refresh_token: new_token,
         expires_at: session.expires_at,
     }))
 }

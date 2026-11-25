@@ -1,6 +1,8 @@
 use crate::application::auth::{AuthenticatedUser, AuthError, StoredUser, UserRepository};
 use async_trait::async_trait;
+use chrono::{DateTime, Utc};
 use sqlx::PgPool;
+use uuid::Uuid;
 
 pub struct PostgresUserRepository {
     pool: PgPool,
@@ -68,11 +70,87 @@ impl UserRepository for PostgresUserRepository {
             password_hash: row.password_hash,
         }))
     }
+
+    async fn store_refresh_token(
+        &self,
+        user_id: Uuid,
+        token_hash: &str,
+        expires_at: DateTime<Utc>,
+    ) -> Result<(), AuthError> {
+        sqlx::query(
+            "INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3)",
+        )
+        .bind(user_id)
+        .bind(token_hash)
+        .bind(expires_at)
+        .execute(&self.pool)
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
+        Ok(())
+    }
+
+    async fn rotate_refresh_token(
+        &self,
+        old_hash: &str,
+        new_hash: &str,
+        expires_at: DateTime<Utc>,
+    ) -> Result<Option<AuthenticatedUser>, AuthError> {
+        let mut transaction = self
+            .pool
+            .begin()
+            .await
+            .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        let rotated = sqlx::query_as::<_, RefreshRow>(
+            "UPDATE refresh_tokens SET revoked_at = now() WHERE token_hash = $1 AND revoked_at IS NULL AND expires_at > now() RETURNING user_id",
+        )
+        .bind(old_hash)
+        .fetch_optional(&mut *transaction)
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        let Some(rotated) = rotated else {
+            return Ok(None);
+        };
+
+        let user = sqlx::query_as::<_, UserRow>(
+            "SELECT id, email, password_hash FROM users WHERE id = $1",
+        )
+        .bind(rotated.user_id)
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        sqlx::query(
+            "INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3)",
+        )
+        .bind(user.id)
+        .bind(new_hash)
+        .bind(expires_at)
+        .execute(&mut *transaction)
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        transaction
+            .commit()
+            .await
+            .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        Ok(Some(AuthenticatedUser {
+            id: user.id,
+            email: user.email,
+        }))
+    }
 }
 
 #[derive(sqlx::FromRow)]
 struct UserRow {
-    id: uuid::Uuid,
+    id: Uuid,
     email: String,
     password_hash: Option<String>,
+}
+
+#[derive(sqlx::FromRow)]
+struct RefreshRow {
+    user_id: Uuid,
 }

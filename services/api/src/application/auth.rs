@@ -3,9 +3,10 @@ use argon2::{
     Argon2,
 };
 use async_trait::async_trait;
-use chrono::{Duration, Utc};
+use chrono::{DateTime, Duration, Utc};
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
+use sha1::{Digest, Sha1};
 use uuid::Uuid;
 
 #[derive(Debug)]
@@ -54,6 +55,18 @@ pub trait UserRepository: Send + Sync {
         name: &str,
     ) -> Result<AuthenticatedUser, AuthError>;
     async fn find_by_email(&self, email: &str) -> Result<Option<StoredUser>, AuthError>;
+    async fn store_refresh_token(
+        &self,
+        user_id: Uuid,
+        token_hash: &str,
+        expires_at: DateTime<Utc>,
+    ) -> Result<(), AuthError>;
+    async fn rotate_refresh_token(
+        &self,
+        old_hash: &str,
+        new_hash: &str,
+        expires_at: DateTime<Utc>,
+    ) -> Result<Option<AuthenticatedUser>, AuthError>;
 }
 
 pub async fn register(
@@ -152,6 +165,16 @@ pub fn verify_session(token: &str, jwt_secret: &str) -> Result<AuthenticatedUser
         id: data.claims.sub,
         email: data.claims.email,
     })
+}
+
+pub fn new_refresh_token() -> String {
+    format!("{}{}", Uuid::new_v4().simple(), Uuid::new_v4().simple())
+}
+
+pub fn hash_refresh_token(token: &str) -> String {
+    let mut hasher = Sha1::new();
+    hasher.update(token.as_bytes());
+    hex::encode(hasher.finalize())
 }
 
 #[cfg(test)]

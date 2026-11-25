@@ -21,8 +21,8 @@
 - [x] Flutter secure token storage
 - [x] Postgres service in CI
 - [x] Per-IP rate limiting
-- [ ] Refresh-token rotation and revocation
-- [ ] Full Postgres integration test suite
+- [x] Refresh-token rotation and revocation
+- [x] Postgres integration test for the core listing flow
 - [ ] Confirm CI passes
 - [ ] Messaging, verification and admin parity
 - [ ] Data migration and production deployment
