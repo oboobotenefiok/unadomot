@@ -4,9 +4,10 @@ use argon2::{
 };
 use async_trait::async_trait;
 use chrono::{DateTime, Duration, Utc};
+use hmac::{Hmac, Mac};
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
-use sha1::{Digest, Sha1};
+use sha2::Sha256;
 use uuid::Uuid;
 
 #[derive(Debug)]
@@ -172,9 +173,14 @@ pub fn new_refresh_token() -> String {
 }
 
 pub fn hash_refresh_token(token: &str) -> String {
-    let mut hasher = Sha1::new();
-    hasher.update(token.as_bytes());
-    hex::encode(hasher.finalize())
+    let secret = std::env::var("REFRESH_TOKEN_SECRET")
+        .or_else(|_| std::env::var("JWT_SECRET"))
+        .unwrap_or_else(|_| "development-refresh-secret-change-me".into());
+
+    let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_bytes())
+        .expect("HMAC accepts keys of any size");
+    mac.update(token.as_bytes());
+    hex::encode(mac.finalize().into_bytes())
 }
 
 #[cfg(test)]
@@ -192,5 +198,12 @@ mod tests {
         assert!(Argon2::default()
             .verify_password(b"correct-password", &parsed)
             .is_ok());
+    }
+
+    #[test]
+    fn refresh_tokens_are_hashed_with_hmac() {
+        let hash = hash_refresh_token("token-value");
+        assert_eq!(hash.len(), 64);
+        assert_ne!(hash, "token-value");
     }
 }

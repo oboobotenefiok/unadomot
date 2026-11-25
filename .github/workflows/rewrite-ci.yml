@@ -27,6 +27,7 @@ jobs:
     env:
       DATABASE_URL: postgres://unadomot:unadomot@localhost:5432/unadomot_test
       JWT_SECRET: test-secret-that-is-at-least-32-bytes-long
+      REFRESH_TOKEN_SECRET: test-refresh-secret-that-is-at-least-32-bytes
     defaults:
       run:
         working-directory: services/api
@@ -35,9 +36,12 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: services/api -> target
       - run: cargo fmt --check
-      - run: cargo test
       - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo test
   android:
     runs-on: ubuntu-latest
     steps:
@@ -50,8 +54,11 @@ jobs:
         with:
           channel: stable
           cache: true
-      - name: Generate Android platform scaffold
-        run: flutter create --project-name unadomot --org com.unadomot --platforms android apps/flutter_app
+      - name: Ensure Android platform files
+        run: |
+          if [ ! -d apps/flutter_app/android ]; then
+            flutter create --project-name unadomot --org com.unadomot --platforms android apps/flutter_app
+          fi
       - name: Analyze, test and build
         working-directory: apps/flutter_app
         run: |
