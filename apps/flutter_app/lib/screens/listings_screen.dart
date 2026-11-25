@@ -3,6 +3,7 @@ import '../api/api_client.dart';
 import '../data/local_cache.dart';
 import '../models/listing.dart';
 import 'listing_detail_screen.dart';
+import 'messages_screen.dart';
 
 class ListingsScreen extends StatefulWidget {
   final ApiClient api;
@@ -60,7 +61,21 @@ class _ListingsScreenState extends State<ListingsScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Find a rental')),
+        appBar: AppBar(
+          title: const Text('Find a rental'),
+          actions: [
+            IconButton(
+              tooltip: 'Messages',
+              icon: const Icon(Icons.chat_bubble_outline),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => MessagesScreen(api: widget.api),
+                ),
+              ),
+            ),
+          ],
+        ),
         body: RefreshIndicator(
           onRefresh: _load,
           child: _loading

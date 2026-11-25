@@ -24,7 +24,7 @@
 - [x] Refresh-token rotation and revocation
 - [x] Postgres integration test for the core listing flow
 - [x] Messaging backend with participant checks
-- [ ] Flutter messaging UI
+- [x] Flutter messaging inbox and chat screens
 - [ ] Verification and admin parity
 - [ ] Confirm CI passes
 - [ ] Data migration and production deployment

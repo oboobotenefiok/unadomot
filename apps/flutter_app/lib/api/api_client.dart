@@ -135,6 +135,47 @@ class ApiClient {
     return Map<String, dynamic>.from(result as Map);
   }
 
+  Future<List<Map<String, dynamic>>> conversations() async {
+    final result = await _request('GET', '/api/conversations', authenticated: true);
+    return (result as List)
+        .map((item) => Map<String, dynamic>.from(item as Map))
+        .toList();
+  }
+
+  Future<List<Map<String, dynamic>>> messages(String conversationId) async {
+    final result = await _request(
+      'GET',
+      '/api/conversations/${Uri.encodeComponent(conversationId)}/messages',
+      authenticated: true,
+    );
+    return (result as List)
+        .map((item) => Map<String, dynamic>.from(item as Map))
+        .toList();
+  }
+
+  Future<Map<String, dynamic>> sendMessage(String conversationId, String body) async {
+    final result = await _request(
+      'POST',
+      '/api/conversations/${Uri.encodeComponent(conversationId)}/messages',
+      body: {'body': body},
+      authenticated: true,
+    );
+    return Map<String, dynamic>.from(result as Map);
+  }
+
+  Future<Map<String, dynamic>> startConversation({
+    required String listingId,
+    required String otherUserId,
+  }) async {
+    final result = await _request(
+      'POST',
+      '/api/conversations',
+      body: {'listing_id': listingId, 'other_user_id': otherUserId},
+      authenticated: true,
+    );
+    return Map<String, dynamic>.from(result as Map);
+  }
+
   Future<Map<String, dynamic>> mediaSignature({String folder = 'unadomot/listings'}) async {
     if (!signedIn) {
       throw const ApiException(401, 'Please sign in to upload photos.');
