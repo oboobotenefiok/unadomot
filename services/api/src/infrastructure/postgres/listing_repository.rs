@@ -1,6 +1,7 @@
 use crate::application::listings::{ListingError, ListingRepository};
-use crate::domain::listing::{Listing, ListingFilter, ListingStatus};
+use crate::domain::listing::{Listing, ListingFilter, ListingStatus, NewListing};
 use sqlx::PgPool;
+use uuid::Uuid;
 
 pub struct PostgresListingRepository {
     pool: PgPool,
@@ -13,17 +14,20 @@ impl PostgresListingRepository {
 }
 
 impl ListingRepository for PostgresListingRepository {
-    fn browse(&self, _filter: &ListingFilter) -> Result<Vec<Listing>, ListingError> {
+    fn browse(&self, filter: &ListingFilter) -> Result<Vec<Listing>, ListingError> {
         let rows = sqlx::query_as::<_, ListingRow>(
-            "SELECT id, landlord_id, title, description, price, address, state, lga, is_agent_listing, status, bedrooms, bathrooms, property_type, furnishing FROM listings WHERE deleted_at IS NULL AND status = 'available' ORDER BY created_at DESC LIMIT 50",
+            "SELECT id, landlord_id, title, description, price, address, state, lga, is_agent_listing, status, bedrooms, bathrooms, property_type, furnishing FROM listings WHERE deleted_at IS NULL AND status = 'available' AND ($1::text IS NULL OR state = $1) AND ($2::text IS NULL OR lga = $2) AND ($3::text IS NULL OR property_type = $3) ORDER BY created_at DESC LIMIT 50",
         )
+        .bind(filter.state.as_deref())
+        .bind(filter.lga.as_deref())
+        .bind(filter.property_type.as_deref())
         .fetch_all(&self.pool)
         .map_err(|e| ListingError::Repository(e.to_string()))?;
 
         Ok(rows.into_iter().map(ListingRow::into).collect())
     }
 
-    fn get(&self, id: uuid::Uuid) -> Result<Option<Listing>, ListingError> {
+    fn get(&self, id: Uuid) -> Result<Option<Listing>, ListingError> {
         let row = sqlx::query_as::<_, ListingRow>(
             "SELECT id, landlord_id, title, description, price, address, state, lga, is_agent_listing, status, bedrooms, bathrooms, property_type, furnishing FROM listings WHERE id = $1 AND deleted_at IS NULL",
         )
@@ -33,12 +37,34 @@ impl ListingRepository for PostgresListingRepository {
 
         Ok(row.map(ListingRow::into))
     }
+
+    fn create(&self, input: &NewListing) -> Result<Listing, ListingError> {
+        let row = sqlx::query_as::<_, ListingRow>(
+            "INSERT INTO listings (landlord_id, title, description, price, address, state, lga, is_agent_listing, bedrooms, bathrooms, property_type, furnishing) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id, landlord_id, title, description, price, address, state, lga, is_agent_listing, status, bedrooms, bathrooms, property_type, furnishing",
+        )
+        .bind(input.landlord_id)
+        .bind(input.title.trim())
+        .bind(input.description.trim())
+        .bind(rust_decimal::Decimal::from_f64_retain(input.price).unwrap_or_default())
+        .bind(input.address.trim())
+        .bind(input.state.trim())
+        .bind(input.lga.trim())
+        .bind(input.is_agent_listing)
+        .bind(input.bedrooms)
+        .bind(input.bathrooms)
+        .bind(input.property_type.as_deref())
+        .bind(input.furnishing.as_deref())
+        .fetch_one(&self.pool)
+        .map_err(|e| ListingError::Repository(e.to_string()))?;
+
+        Ok(row.into())
+    }
 }
 
 #[derive(sqlx::FromRow)]
 struct ListingRow {
-    id: uuid::Uuid,
-    landlord_id: uuid::Uuid,
+    id: Uuid,
+    landlord_id: Uuid,
     title: String,
     description: String,
     price: rust_decimal::Decimal,

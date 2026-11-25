@@ -9,11 +9,12 @@ Hexagonal Rust API: HTTP adapters depend on application use cases; application d
 - [x] Initial hexagonal API skeleton and unit test
 - [x] Flutter role-switching shell
 - [x] Android debug APK artifact workflow
-- [x] Inventory Firestore domain: users, listings, favorites, verification, reports, chats/messages, checkout notices, admin roles
+- [x] Inventory Firestore domain
 - [x] Postgres initial schema and SQLx listing repository adapter
+- [x] Email/password registration and login with Argon2 and JWT sessions
+- [x] Listing creation and detail endpoints with ownership authorization
 - [ ] Confirm CI passes
-- [ ] Listing creation, detail, update and ownership authorization
-- [ ] Authentication and authorization
+- [ ] Listing update, delete, media association and filters
 - [ ] SQLite cache and signed Cloudinary uploads
 - [ ] Messaging, favorites, verification and admin parity
 - [ ] Public HTML listing pages, metadata and deep links

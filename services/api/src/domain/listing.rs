@@ -27,6 +27,16 @@ pub enum ListingStatus {
     RemovedByAdmin,
 }
 
+impl ListingStatus {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Available => "available",
+            Self::Rented => "rented",
+            Self::RemovedByAdmin => "removed_by_admin",
+        }
+    }
+}
+
 #[derive(Clone, Debug, Default)]
 pub struct ListingFilter {
     pub state: Option<String>,
@@ -37,13 +47,18 @@ pub struct ListingFilter {
     pub bedrooms: Option<i32>,
 }
 
-impl ListingFilter {
-    pub fn is_empty(&self) -> bool {
-        self.state.is_none()
-            && self.lga.is_none()
-            && self.property_type.is_none()
-            && self.min_price.is_none()
-            && self.max_price.is_none()
-            && self.bedrooms.is_none()
-    }
+#[derive(Clone, Debug)]
+pub struct NewListing {
+    pub landlord_id: Uuid,
+    pub title: String,
+    pub description: String,
+    pub price: f64,
+    pub address: String,
+    pub state: String,
+    pub lga: String,
+    pub is_agent_listing: bool,
+    pub bedrooms: Option<i32>,
+    pub bathrooms: Option<i32>,
+    pub property_type: Option<String>,
+    pub furnishing: Option<String>,
 }
