@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import '../api/api_client.dart';
+import '../data/local_cache.dart';
 
 class AppState extends ChangeNotifier {
   final ApiClient api;
+  final LocalCache cache;
 
-  AppState({required this.api});
+  AppState({required this.api, required this.cache});
 
   bool get signedIn => api.signedIn;
 

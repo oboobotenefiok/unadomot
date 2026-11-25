@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'api/api_client.dart';
+import 'data/local_cache.dart';
 import 'screens/auth_screen.dart';
-import 'screens/create_listing_screen.dart';
 import 'screens/listings_screen.dart';
 import 'state/app_state.dart';
 
@@ -17,7 +17,8 @@ class UnaDomotApp extends StatelessWidget {
       defaultValue: 'http://10.0.2.2:3000',
     );
     final api = ApiClient(baseUrl: baseUrl);
-    final state = AppState(api: api);
+    final cache = LocalCache();
+    final state = AppState(api: api, cache: cache);
 
     return MaterialApp(
       title: 'UnaDomot',
@@ -25,7 +26,7 @@ class UnaDomotApp extends StatelessWidget {
       home: ListenableBuilder(
         listenable: state,
         builder: (context, _) => state.signedIn
-            ? ListingsScreen(api: api)
+            ? ListingsScreen(api: api, cache: cache)
             : AuthScreen(appState: state),
       ),
     );

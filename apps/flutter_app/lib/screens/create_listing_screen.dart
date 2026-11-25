@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import '../api/api_client.dart';
+import '../data/local_cache.dart';
 
 class CreateListingScreen extends StatefulWidget {
   final ApiClient api;
+  final LocalCache cache;
 
-  const CreateListingScreen({super.key, required this.api});
+  const CreateListingScreen({super.key, required this.api, required this.cache});
 
   @override
   State<CreateListingScreen> createState() => _CreateListingScreenState();
 }
 
 class _CreateListingScreenState extends State<CreateListingScreen> {
+  static const _draftId = 'new-listing';
   final _formKey = GlobalKey<FormState>();
   final _title = TextEditingController();
   final _description = TextEditingController();
@@ -22,13 +25,44 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   String? _error;
 
   @override
+  void initState() {
+    super.initState();
+    _restoreDraft();
+    for (final controller in [_title, _description, _price, _address, _state, _lga]) {
+      controller.addListener(_saveDraft);
+    }
+  }
+
+  Future<void> _restoreDraft() async {
+    final draft = await widget.cache.readDraft(_draftId);
+    if (draft == null || !mounted) return;
+    setState(() {
+      _title.text = draft['title'] as String? ?? '';
+      _description.text = draft['description'] as String? ?? '';
+      _price.text = draft['price'] as String? ?? '';
+      _address.text = draft['address'] as String? ?? '';
+      _state.text = draft['state'] as String? ?? 'Rivers';
+      _lga.text = draft['lga'] as String? ?? '';
+    });
+  }
+
+  void _saveDraft() {
+    widget.cache.saveDraft(_draftId, {
+      'title': _title.text,
+      'description': _description.text,
+      'price': _price.text,
+      'address': _address.text,
+      'state': _state.text,
+      'lga': _lga.text,
+    });
+  }
+
+  @override
   void dispose() {
-    _title.dispose();
-    _description.dispose();
-    _price.dispose();
-    _address.dispose();
-    _state.dispose();
-    _lga.dispose();
+    for (final controller in [_title, _description, _price, _address, _state, _lga]) {
+      controller.removeListener(_saveDraft);
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -49,6 +83,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         'lga': _lga.text.trim(),
         'is_agent_listing': false,
       });
+      await widget.cache.clearDraft(_draftId);
       if (mounted) Navigator.pop(context);
     } catch (error) {
       if (mounted) setState(() => _error = error.toString());

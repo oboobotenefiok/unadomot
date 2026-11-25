@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import '../api/api_client.dart';
+import '../data/local_cache.dart';
 import '../models/listing.dart';
 
 class ListingDetailScreen extends StatefulWidget {
   final ApiClient api;
+  final LocalCache cache;
   final String listingId;
 
   const ListingDetailScreen({
     super.key,
     required this.api,
+    required this.cache,
     required this.listingId,
   });
 
@@ -20,6 +23,8 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
   Listing? _listing;
   bool _loading = true;
   String? _error;
+  DateTime? _cachedAt;
+  bool _favorite = false;
 
   @override
   void initState() {
@@ -35,17 +40,50 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
 
     try {
       final data = await widget.api.detail(widget.listingId);
-      if (mounted) setState(() => _listing = Listing.fromJson(data));
+      await widget.cache.cacheDetail(data);
+      if (mounted) {
+        setState(() {
+          _listing = Listing.fromJson(data);
+          _cachedAt = null;
+        });
+      }
     } catch (error) {
-      if (mounted) setState(() => _error = error.toString());
+      final cached = await widget.cache.readDetail(widget.listingId);
+      if (mounted) {
+        setState(() {
+          if (cached != null) {
+            _listing = Listing.fromJson(cached.listing);
+            _cachedAt = cached.updatedAt;
+          } else {
+            _error = error.toString();
+          }
+        });
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+
+    final favorite = await widget.cache.isFavorite(widget.listingId);
+    if (mounted) setState(() => _favorite = favorite);
+  }
+
+  Future<void> _toggleFavorite() async {
+    final next = !_favorite;
+    await widget.cache.setFavorite(widget.listingId, next);
+    if (mounted) setState(() => _favorite = next);
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text(_listing?.title ?? 'Listing')),
+        appBar: AppBar(
+          title: Text(_listing?.title ?? 'Listing'),
+          actions: [
+            IconButton(
+              onPressed: _toggleFavorite,
+              icon: Icon(_favorite ? Icons.favorite : Icons.favorite_border),
+            ),
+          ],
+        ),
         body: _loading
             ? const Center(child: CircularProgressIndicator())
             : _error != null
@@ -55,6 +93,14 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                     : ListView(
                         padding: const EdgeInsets.all(16),
                         children: [
+                          if (_cachedAt != null)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Text(
+                                'Offline view • updated ${_cachedAt!.toLocal()}',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ),
                           if (_listing!.media.isNotEmpty)
                             AspectRatio(
                               aspectRatio: 16 / 9,

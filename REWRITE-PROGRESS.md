@@ -6,8 +6,9 @@
 - [x] Auth, listing lifecycle and media endpoints
 - [x] Tested Flutter API client
 - [x] Flutter auth and listing UI wired to API
+- [x] SQLite offline cache for listings, details, favorites and drafts
 - [ ] Confirm CI passes
-- [ ] SQLite cache and signed Cloudinary uploads
-- [ ] Messaging, favorites, verification and admin parity
+- [ ] Signed Cloudinary uploads and image picker
+- [ ] Messaging, verification and admin parity
 - [ ] Public HTML listing pages, metadata and deep links
 - [ ] Data migration, integration tests, production deployment
