@@ -52,6 +52,7 @@ void main() {
           return http.Response(
             jsonEncode({
               'token': 'test-token',
+              'refresh_token': 'test-refresh-token',
               'expires_at': DateTime.now()
                   .add(const Duration(hours: 1))
                   .millisecondsSinceEpoch ~/
