@@ -2,10 +2,12 @@ use crate::application::auth::{AuthenticatedUser, AuthError, StoredUser, UserRep
 use crate::application::listings::{ListingError, ListingPage, ListingRepository};
 use crate::application::media::{MediaError, MediaSigner, UploadSignature};
 use crate::application::messaging::{MessagingError, MessagingRepository};
+use crate::application::verification::{VerificationError, VerificationRepository};
 use crate::domain::listing::{
     Listing, ListingFilter, ListingMedia, ListingUpdate, NewListing, NewListingMedia,
 };
 use crate::domain::messaging::{Conversation, Message};
+use crate::domain::verification::VerificationRequest;
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
@@ -135,6 +137,43 @@ impl MessagingRepository for UnconfiguredMessagingRepository {
         _body: &str,
     ) -> Result<Message, MessagingError> {
         Err(MessagingError::Repository("Persistence not configured".into()))
+    }
+}
+
+pub struct UnconfiguredVerificationRepository;
+
+#[async_trait]
+impl VerificationRepository for UnconfiguredVerificationRepository {
+    async fn submit(
+        &self,
+        _user_id: Uuid,
+        _document_url: &str,
+        _notes: Option<&str>,
+    ) -> Result<VerificationRequest, VerificationError> {
+        Err(VerificationError::Repository("Persistence not configured".into()))
+    }
+
+    async fn find_for_user(
+        &self,
+        _user_id: Uuid,
+    ) -> Result<Option<VerificationRequest>, VerificationError> {
+        Err(VerificationError::Repository("Persistence not configured".into()))
+    }
+
+    async fn list_by_status(
+        &self,
+        _status: &str,
+    ) -> Result<Vec<VerificationRequest>, VerificationError> {
+        Err(VerificationError::Repository("Persistence not configured".into()))
+    }
+
+    async fn review(
+        &self,
+        _id: Uuid,
+        _status: &str,
+        _review_notes: Option<&str>,
+    ) -> Result<VerificationRequest, VerificationError> {
+        Err(VerificationError::Repository("Persistence not configured".into()))
     }
 }
 

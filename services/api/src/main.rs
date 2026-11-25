@@ -2,18 +2,20 @@ use sqlx::postgres::PgPoolOptions;
 use std::sync::Arc;
 use unadomot_api::adapters::{
     UnconfiguredMediaSigner, UnconfiguredMessagingRepository, UnconfiguredRepository,
-    UnconfiguredUserRepository,
+    UnconfiguredUserRepository, UnconfiguredVerificationRepository,
 };
 use unadomot_api::application::auth::UserRepository;
 use unadomot_api::application::listings::ListingRepository;
 use unadomot_api::application::media::MediaSigner;
 use unadomot_api::application::messaging::MessagingRepository;
-use unadomot_api::http::{public_pages, router, AppState, RateLimiter};
+use unadomot_api::application::verification::VerificationRepository;
+use unadomot_api::http::{public_pages, router, verification, AppState, RateLimiter};
 use unadomot_api::infrastructure::cloudinary::CloudinarySigner;
 use unadomot_api::infrastructure::postgres::{
     listing_repository::PostgresListingRepository,
     messaging_repository::PostgresMessagingRepository,
     user_repository::PostgresUserRepository,
+    verification_repository::PostgresVerificationRepository,
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -33,10 +35,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let jwt_secret = Arc::new(jwt_secret);
 
-    let (users, listings, messaging): (
+    let (users, listings, messaging, verification_repo): (
         Arc<dyn UserRepository>,
         Arc<dyn ListingRepository>,
         Arc<dyn MessagingRepository>,
+        Arc<dyn VerificationRepository>,
     ) = match std::env::var("DATABASE_URL").ok() {
         Some(url) => {
             let pool = PgPoolOptions::new()
@@ -47,13 +50,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             (
                 Arc::new(PostgresUserRepository::new(pool.clone())),
                 Arc::new(PostgresListingRepository::new(pool.clone())),
-                Arc::new(PostgresMessagingRepository::new(pool)),
+                Arc::new(PostgresMessagingRepository::new(pool.clone())),
+                Arc::new(PostgresVerificationRepository::new(pool)),
             )
         }
         None => (
             Arc::new(UnconfiguredUserRepository),
             Arc::new(UnconfiguredRepository),
             Arc::new(UnconfiguredMessagingRepository),
+            Arc::new(UnconfiguredVerificationRepository),
         ),
     };
 
@@ -66,16 +71,33 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         _ => Arc::new(UnconfiguredMediaSigner),
     };
 
+    let admin_emails = Arc::new(
+        std::env::var("ADMIN_EMAILS")
+            .unwrap_or_default()
+            .split(',')
+            .map(|email| email.trim().to_lowercase())
+            .filter(|email| !email.is_empty())
+            .collect::<Vec<_>>(),
+    );
+
     let state = AppState {
         users,
         listings,
         messaging,
         media,
-        jwt_secret,
+        jwt_secret: jwt_secret.clone(),
         limiter: Arc::new(RateLimiter::new()),
     };
 
-    let app = router(state.clone()).merge(public_pages::router(state));
+    let verification_state = verification::VerificationState {
+        repository: verification_repo,
+        jwt_secret,
+        admin_emails,
+    };
+
+    let app = router(state.clone())
+        .merge(public_pages::router(state))
+        .merge(verification::router(verification_state));
 
     let address = std::env::var("BIND_ADDR").unwrap_or_else(|_| "127.0.0.1:3000".into());
     let listener = tokio::net::TcpListener::bind(address).await?;
