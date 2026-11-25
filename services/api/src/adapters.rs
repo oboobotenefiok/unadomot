@@ -1,9 +1,11 @@
 use crate::application::auth::{AuthenticatedUser, AuthError, StoredUser, UserRepository};
 use crate::application::listings::{ListingError, ListingPage, ListingRepository};
 use crate::application::media::{MediaError, MediaSigner, UploadSignature};
+use crate::application::messaging::{MessagingError, MessagingRepository};
 use crate::domain::listing::{
     Listing, ListingFilter, ListingMedia, ListingUpdate, NewListing, NewListingMedia,
 };
+use crate::domain::messaging::{Conversation, Message};
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
@@ -89,6 +91,50 @@ impl UserRepository for UnconfiguredUserRepository {
         _expires_at: DateTime<Utc>,
     ) -> Result<Option<AuthenticatedUser>, AuthError> {
         Err(AuthError::Repository("Persistence not configured".into()))
+    }
+}
+
+pub struct UnconfiguredMessagingRepository;
+
+#[async_trait]
+impl MessagingRepository for UnconfiguredMessagingRepository {
+    async fn find_or_create_conversation(
+        &self,
+        _listing_id: Uuid,
+        _initiator: Uuid,
+        _other: Uuid,
+    ) -> Result<Conversation, MessagingError> {
+        Err(MessagingError::Repository("Persistence not configured".into()))
+    }
+
+    async fn list_conversations(&self, _user_id: Uuid) -> Result<Vec<Conversation>, MessagingError> {
+        Err(MessagingError::Repository("Persistence not configured".into()))
+    }
+
+    async fn find_conversation(
+        &self,
+        _id: Uuid,
+        _user_id: Uuid,
+    ) -> Result<Option<Conversation>, MessagingError> {
+        Err(MessagingError::Repository("Persistence not configured".into()))
+    }
+
+    async fn list_messages(
+        &self,
+        _conversation_id: Uuid,
+        _limit: i64,
+        _offset: i64,
+    ) -> Result<Vec<Message>, MessagingError> {
+        Err(MessagingError::Repository("Persistence not configured".into()))
+    }
+
+    async fn send_message(
+        &self,
+        _conversation_id: Uuid,
+        _sender_id: Uuid,
+        _body: &str,
+    ) -> Result<Message, MessagingError> {
+        Err(MessagingError::Repository("Persistence not configured".into()))
     }
 }
 

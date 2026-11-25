@@ -1,15 +1,19 @@
 use sqlx::postgres::PgPoolOptions;
 use std::sync::Arc;
 use unadomot_api::adapters::{
-    UnconfiguredMediaSigner, UnconfiguredRepository, UnconfiguredUserRepository,
+    UnconfiguredMediaSigner, UnconfiguredMessagingRepository, UnconfiguredRepository,
+    UnconfiguredUserRepository,
 };
 use unadomot_api::application::auth::UserRepository;
 use unadomot_api::application::listings::ListingRepository;
 use unadomot_api::application::media::MediaSigner;
+use unadomot_api::application::messaging::MessagingRepository;
 use unadomot_api::http::{public_pages, router, AppState, RateLimiter};
 use unadomot_api::infrastructure::cloudinary::CloudinarySigner;
 use unadomot_api::infrastructure::postgres::{
-    listing_repository::PostgresListingRepository, user_repository::PostgresUserRepository,
+    listing_repository::PostgresListingRepository,
+    messaging_repository::PostgresMessagingRepository,
+    user_repository::PostgresUserRepository,
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -29,24 +33,29 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let jwt_secret = Arc::new(jwt_secret);
 
-    let (users, listings): (Arc<dyn UserRepository>, Arc<dyn ListingRepository>) =
-        match std::env::var("DATABASE_URL").ok() {
-            Some(url) => {
-                let pool = PgPoolOptions::new()
-                    .max_connections(10)
-                    .connect(&url)
-                    .await?;
-                sqlx::migrate!("./migrations").run(&pool).await?;
-                (
-                    Arc::new(PostgresUserRepository::new(pool.clone())),
-                    Arc::new(PostgresListingRepository::new(pool)),
-                )
-            }
-            None => (
-                Arc::new(UnconfiguredUserRepository),
-                Arc::new(UnconfiguredRepository),
-            ),
-        };
+    let (users, listings, messaging): (
+        Arc<dyn UserRepository>,
+        Arc<dyn ListingRepository>,
+        Arc<dyn MessagingRepository>,
+    ) = match std::env::var("DATABASE_URL").ok() {
+        Some(url) => {
+            let pool = PgPoolOptions::new()
+                .max_connections(10)
+                .connect(&url)
+                .await?;
+            sqlx::migrate!("./migrations").run(&pool).await?;
+            (
+                Arc::new(PostgresUserRepository::new(pool.clone())),
+                Arc::new(PostgresListingRepository::new(pool.clone())),
+                Arc::new(PostgresMessagingRepository::new(pool)),
+            )
+        }
+        None => (
+            Arc::new(UnconfiguredUserRepository),
+            Arc::new(UnconfiguredRepository),
+            Arc::new(UnconfiguredMessagingRepository),
+        ),
+    };
 
     let media: Arc<dyn MediaSigner> = match (
         std::env::var("CLOUDINARY_CLOUD_NAME"),
@@ -60,6 +69,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let state = AppState {
         users,
         listings,
+        messaging,
         media,
         jwt_secret,
         limiter: Arc::new(RateLimiter::new()),

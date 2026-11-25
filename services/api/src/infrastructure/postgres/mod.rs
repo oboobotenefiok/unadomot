@@ -1,2 +1,3 @@
 pub mod listing_repository;
+pub mod messaging_repository;
 pub mod user_repository;

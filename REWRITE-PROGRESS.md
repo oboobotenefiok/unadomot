@@ -23,6 +23,8 @@
 - [x] Per-IP rate limiting
 - [x] Refresh-token rotation and revocation
 - [x] Postgres integration test for the core listing flow
+- [x] Messaging backend with participant checks
+- [ ] Flutter messaging UI
+- [ ] Verification and admin parity
 - [ ] Confirm CI passes
-- [ ] Messaging, verification and admin parity
 - [ ] Data migration and production deployment
