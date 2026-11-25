@@ -84,6 +84,26 @@ impl VerificationRepository for PostgresVerificationRepository {
 
         Ok(row.into())
     }
+
+    async fn record_audit(
+        &self,
+        admin_id: Uuid,
+        action: &str,
+        target_id: Uuid,
+        metadata: serde_json::Value,
+    ) -> Result<(), VerificationError> {
+        sqlx::query(
+            "INSERT INTO admin_audit_log (admin_user_id, action, target_id, metadata) VALUES ($1, $2, $3, $4)",
+        )
+        .bind(admin_id)
+        .bind(action)
+        .bind(target_id)
+        .bind(metadata)
+        .execute(&self.pool)
+        .await
+        .map_err(|e| VerificationError::Repository(e.to_string()))?;
+        Ok(())
+    }
 }
 
 #[derive(sqlx::FromRow)]

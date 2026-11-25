@@ -179,6 +179,16 @@ impl VerificationRepository for UnconfiguredVerificationRepository {
     ) -> Result<VerificationRequest, VerificationError> {
         Err(VerificationError::Repository("Persistence not configured".into()))
     }
+
+    async fn record_audit(
+        &self,
+        _admin_id: Uuid,
+        _action: &str,
+        _target_id: Uuid,
+        _metadata: serde_json::Value,
+    ) -> Result<(), VerificationError> {
+        Ok(())
+    }
 }
 
 pub struct UnconfiguredMediaSigner;

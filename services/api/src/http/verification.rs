@@ -177,16 +177,28 @@ async fn admin_review_handler(
     Path(id): Path<Uuid>,
     Json(request): Json<ReviewRequest>,
 ) -> Result<Json<VerificationResponse>, VerificationApiError> {
-    authorize_admin(&state, &headers).await?;
-    review_request(
+    let admin = authorize_admin(&state, &headers).await?;
+    let reviewed = review_request(
         state.repository.as_ref(),
         id,
         request.approve,
         request.review_notes.as_deref(),
     )
     .await
-    .map(|request| Json(VerificationResponse::from(request)))
-    .map_err(verification_error)
+    .map_err(verification_error)?;
+
+    state
+        .repository
+        .record_audit(
+            admin.id,
+            "verification.review",
+            id,
+            json!({"approve": request.approve, "status": reviewed.status}),
+        )
+        .await
+        .map_err(verification_error)?;
+
+    Ok(Json(VerificationResponse::from(reviewed)))
 }
 
 fn verification_error(error: VerificationError) -> VerificationApiError {

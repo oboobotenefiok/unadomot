@@ -32,6 +32,13 @@ pub trait VerificationRepository: Send + Sync {
         status: &str,
         review_notes: Option<&str>,
     ) -> Result<VerificationRequest, VerificationError>;
+    async fn record_audit(
+        &self,
+        admin_id: Uuid,
+        action: &str,
+        target_id: Uuid,
+        metadata: serde_json::Value,
+    ) -> Result<(), VerificationError>;
 }
 
 pub async fn submit_request(
