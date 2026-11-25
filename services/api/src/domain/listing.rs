@@ -1,3 +1,4 @@
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -7,7 +8,7 @@ pub struct Listing {
     pub landlord_id: Uuid,
     pub title: String,
     pub description: String,
-    pub price: f64,
+    pub price: Decimal,
     pub address: String,
     pub state: String,
     pub lga: String,
@@ -61,18 +62,18 @@ pub struct ListingFilter {
     pub state: Option<String>,
     pub lga: Option<String>,
     pub property_type: Option<String>,
-    pub min_price: Option<f64>,
-    pub max_price: Option<f64>,
+    pub min_price: Option<Decimal>,
+    pub max_price: Option<Decimal>,
     pub bedrooms: Option<i32>,
     pub furnishing: Option<String>,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct NewListing {
     pub landlord_id: Uuid,
     pub title: String,
     pub description: String,
-    pub price: f64,
+    pub price: Decimal,
     pub address: String,
     pub state: String,
     pub lga: String,
@@ -87,7 +88,7 @@ pub struct NewListing {
 pub struct ListingUpdate {
     pub title: Option<String>,
     pub description: Option<String>,
-    pub price: Option<f64>,
+    pub price: Option<Decimal>,
     pub address: Option<String>,
     pub state: Option<String>,
     pub lga: Option<String>,

@@ -8,7 +8,20 @@
 - [x] Flutter auth and listing UI wired to API
 - [x] SQLite offline cache for listings, details, favorites and drafts
 - [x] Signed Cloudinary uploads and photo attachment
+- [x] Async repositories and application layer
+- [x] Required strong JWT secret at startup
+- [x] Decimal pricing end to end
+- [x] Structured JSON errors
+- [x] CORS, body limit and security headers
+- [x] Pagination with media included in browse
+- [x] Registration and listing validation
+- [x] Liveness and database readiness endpoints
+- [x] Structured request logging
+- [x] Public listing pages, social metadata and sitemap
+- [ ] Rate limiting
+- [ ] Refresh-token rotation and revocation
+- [ ] Flutter secure token storage
+- [ ] Integration tests against Postgres
 - [ ] Confirm CI passes
 - [ ] Messaging, verification and admin parity
-- [ ] Public HTML listing pages, metadata and deep links
-- [ ] Data migration, integration tests, production deployment
+- [ ] Data migration and production deployment

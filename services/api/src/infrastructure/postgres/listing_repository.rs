@@ -1,9 +1,12 @@
-use crate::application::listings::{ListingError, ListingRepository};
+use crate::application::listings::{ListingError, ListingPage, ListingRepository};
 use crate::domain::listing::{
     Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing,
     NewListingMedia,
 };
+use async_trait::async_trait;
+use rust_decimal::Decimal;
 use sqlx::PgPool;
+use std::collections::HashMap;
 use uuid::Uuid;
 
 pub struct PostgresListingRepository {
@@ -16,10 +19,16 @@ impl PostgresListingRepository {
     }
 }
 
+#[async_trait]
 impl ListingRepository for PostgresListingRepository {
-    fn browse(&self, filter: &ListingFilter) -> Result<Vec<Listing>, ListingError> {
+    async fn browse(
+        &self,
+        filter: &ListingFilter,
+        limit: i64,
+        offset: i64,
+    ) -> Result<ListingPage, ListingError> {
         let rows = sqlx::query_as::<_, ListingRow>(
-            "SELECT id, landlord_id, title, description, price, address, state, lga, is_agent_listing, status, bedrooms, bathrooms, property_type, furnishing FROM listings WHERE deleted_at IS NULL AND status = 'available' AND ($1::text IS NULL OR state = $1) AND ($2::text IS NULL OR lga = $2) AND ($3::text IS NULL OR property_type = $3) AND ($4::numeric IS NULL OR price >= $4) AND ($5::numeric IS NULL OR price <= $5) AND ($6::integer IS NULL OR bedrooms >= $6) AND ($7::text IS NULL OR furnishing = $7) ORDER BY created_at DESC LIMIT 50",
+            "SELECT id, landlord_id, title, description, price, address, state, lga, is_agent_listing, status, bedrooms, bathrooms, property_type, furnishing FROM listings WHERE deleted_at IS NULL AND status = 'available' AND ($1::text IS NULL OR state = $1) AND ($2::text IS NULL OR lga = $2) AND ($3::text IS NULL OR property_type = $3) AND ($4::numeric IS NULL OR price >= $4) AND ($5::numeric IS NULL OR price <= $5) AND ($6::integer IS NULL OR bedrooms >= $6) AND ($7::text IS NULL OR furnishing = $7) ORDER BY created_at DESC LIMIT $8 OFFSET $9",
         )
         .bind(filter.state.as_deref())
         .bind(filter.lga.as_deref())
@@ -28,25 +37,41 @@ impl ListingRepository for PostgresListingRepository {
         .bind(filter.max_price)
         .bind(filter.bedrooms)
         .bind(filter.furnishing.as_deref())
+        .bind(limit + 1)
+        .bind(offset)
         .fetch_all(&self.pool)
+        .await
         .map_err(|e| ListingError::Repository(e.to_string()))?;
 
-        Ok(rows
+        let has_more = rows.len() as i64 > limit;
+        let rows: Vec<ListingRow> = rows.into_iter().take(limit as usize).collect();
+        let ids: Vec<Uuid> = rows.iter().map(|row| row.id).collect();
+        let media = self.load_media_for(&ids).await?;
+
+        let items = rows
             .into_iter()
             .map(|row| {
+                let id = row.id;
                 let mut listing: Listing = row.into();
-                listing.media = Vec::new();
+                listing.media = media.get(&id).cloned().unwrap_or_default();
                 listing
             })
-            .collect())
+            .collect();
+
+        Ok(ListingPage {
+            items,
+            has_more,
+            next_offset: offset + limit,
+        })
     }
 
-    fn get(&self, id: Uuid) -> Result<Option<Listing>, ListingError> {
+    async fn get(&self, id: Uuid) -> Result<Option<Listing>, ListingError> {
         let row = sqlx::query_as::<_, ListingRow>(
             "SELECT id, landlord_id, title, description, price, address, state, lga, is_agent_listing, status, bedrooms, bathrooms, property_type, furnishing FROM listings WHERE id = $1 AND deleted_at IS NULL",
         )
         .bind(id)
         .fetch_optional(&self.pool)
+        .await
         .map_err(|e| ListingError::Repository(e.to_string()))?;
 
         let Some(row) = row else {
@@ -54,18 +79,22 @@ impl ListingRepository for PostgresListingRepository {
         };
 
         let mut listing: Listing = row.into();
-        listing.media = self.load_media(id)?;
+        listing.media = self
+            .load_media_for(&[id])
+            .await?
+            .remove(&id)
+            .unwrap_or_default();
         Ok(Some(listing))
     }
 
-    fn create(&self, input: &NewListing) -> Result<Listing, ListingError> {
+    async fn create(&self, input: &NewListing) -> Result<Listing, ListingError> {
         let row = sqlx::query_as::<_, ListingRow>(
             "INSERT INTO listings (landlord_id, title, description, price, address, state, lga, is_agent_listing, bedrooms, bathrooms, property_type, furnishing) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id, landlord_id, title, description, price, address, state, lga, is_agent_listing, status, bedrooms, bathrooms, property_type, furnishing",
         )
         .bind(input.landlord_id)
         .bind(input.title.trim())
         .bind(input.description.trim())
-        .bind(decimal_price(input.price))
+        .bind(input.price)
         .bind(input.address.trim())
         .bind(input.state.trim())
         .bind(input.lga.trim())
@@ -75,6 +104,7 @@ impl ListingRepository for PostgresListingRepository {
         .bind(input.property_type.as_deref())
         .bind(input.furnishing.as_deref())
         .fetch_one(&self.pool)
+        .await
         .map_err(|e| ListingError::Repository(e.to_string()))?;
 
         let mut listing: Listing = row.into();
@@ -82,7 +112,7 @@ impl ListingRepository for PostgresListingRepository {
         Ok(listing)
     }
 
-    fn update(
+    async fn update(
         &self,
         id: Uuid,
         owner_id: Uuid,
@@ -95,7 +125,7 @@ impl ListingRepository for PostgresListingRepository {
         .bind(owner_id)
         .bind(update.title.as_deref())
         .bind(update.description.as_deref())
-        .bind(update.price.map(decimal_price))
+        .bind(update.price)
         .bind(update.address.as_deref())
         .bind(update.state.as_deref())
         .bind(update.lga.as_deref())
@@ -106,19 +136,20 @@ impl ListingRepository for PostgresListingRepository {
         .bind(update.property_type.clone().unwrap_or(None))
         .bind(update.furnishing.clone().unwrap_or(None))
         .fetch_optional(&self.pool)
+        .await
         .map_err(|e| ListingError::Repository(e.to_string()))?;
 
-        row.map(ListingRow::into)
-            .ok_or(ListingError::Forbidden)
+        row.map(ListingRow::into).ok_or(ListingError::Forbidden)
     }
 
-    fn delete(&self, id: Uuid, owner_id: Uuid) -> Result<(), ListingError> {
+    async fn delete(&self, id: Uuid, owner_id: Uuid) -> Result<(), ListingError> {
         let result = sqlx::query(
             "UPDATE listings SET deleted_at = now(), updated_at = now() WHERE id = $1 AND landlord_id = $2 AND deleted_at IS NULL",
         )
         .bind(id)
         .bind(owner_id)
         .execute(&self.pool)
+        .await
         .map_err(|e| ListingError::Repository(e.to_string()))?;
 
         if result.rows_affected() == 0 {
@@ -127,7 +158,7 @@ impl ListingRepository for PostgresListingRepository {
         Ok(())
     }
 
-    fn add_media(
+    async fn add_media(
         &self,
         listing_id: Uuid,
         owner_id: Uuid,
@@ -139,6 +170,7 @@ impl ListingRepository for PostgresListingRepository {
         .bind(listing_id)
         .bind(owner_id)
         .fetch_optional(&self.pool)
+        .await
         .map_err(|e| ListingError::Repository(e.to_string()))?;
 
         if owned.is_none() {
@@ -146,7 +178,7 @@ impl ListingRepository for PostgresListingRepository {
         }
 
         let row = sqlx::query_as::<_, MediaRow>(
-            "INSERT INTO listing_media (listing_id, cloudinary_public_id, url, alt_text, position) VALUES ($1, $2, $3, $4, $5) RETURNING id, cloudinary_public_id, url, alt_text, position",
+            "INSERT INTO listing_media (listing_id, cloudinary_public_id, url, alt_text, position) VALUES ($1, $2, $3, $4, $5) RETURNING listing_id, id, cloudinary_public_id, url, alt_text, position",
         )
         .bind(listing_id)
         .bind(media.cloudinary_public_id.trim())
@@ -154,27 +186,45 @@ impl ListingRepository for PostgresListingRepository {
         .bind(media.alt_text.as_deref())
         .bind(media.position)
         .fetch_one(&self.pool)
+        .await
         .map_err(|e| ListingError::Repository(e.to_string()))?;
 
         Ok(row.into())
     }
-}
 
-impl PostgresListingRepository {
-    fn load_media(&self, listing_id: Uuid) -> Result<Vec<ListingMedia>, ListingError> {
-        let rows = sqlx::query_as::<_, MediaRow>(
-            "SELECT id, cloudinary_public_id, url, alt_text, position FROM listing_media WHERE listing_id = $1 ORDER BY position ASC, created_at ASC",
-        )
-        .bind(listing_id)
-        .fetch_all(&self.pool)
-        .map_err(|e| ListingError::Repository(e.to_string()))?;
-
-        Ok(rows.into_iter().map(MediaRow::into).collect())
+    async fn health_check(&self) -> Result<(), ListingError> {
+        sqlx::query_scalar::<_, i32>("SELECT 1")
+            .fetch_one(&self.pool)
+            .await
+            .map(|_| ())
+            .map_err(|e| ListingError::Repository(e.to_string()))
     }
 }
 
-fn decimal_price(price: f64) -> rust_decimal::Decimal {
-    rust_decimal::Decimal::from_f64_retain(price).unwrap_or_default()
+impl PostgresListingRepository {
+    async fn load_media_for(
+        &self,
+        ids: &[Uuid],
+    ) -> Result<HashMap<Uuid, Vec<ListingMedia>>, ListingError> {
+        if ids.is_empty() {
+            return Ok(HashMap::new());
+        }
+
+        let rows = sqlx::query_as::<_, MediaRow>(
+            "SELECT listing_id, id, cloudinary_public_id, url, alt_text, position FROM listing_media WHERE listing_id = ANY($1) ORDER BY position ASC, created_at ASC",
+        )
+        .bind(ids)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(|e| ListingError::Repository(e.to_string()))?;
+
+        let mut grouped: HashMap<Uuid, Vec<ListingMedia>> = HashMap::new();
+        for row in rows {
+            let listing_id = row.listing_id;
+            grouped.entry(listing_id).or_default().push(row.into());
+        }
+        Ok(grouped)
+    }
 }
 
 #[derive(sqlx::FromRow)]
@@ -183,7 +233,7 @@ struct ListingRow {
     landlord_id: Uuid,
     title: String,
     description: String,
-    price: rust_decimal::Decimal,
+    price: Decimal,
     address: String,
     state: String,
     lga: String,
@@ -202,7 +252,7 @@ impl From<ListingRow> for Listing {
             landlord_id: row.landlord_id,
             title: row.title,
             description: row.description,
-            price: row.price.to_string().parse().unwrap_or_default(),
+            price: row.price,
             address: row.address,
             state: row.state,
             lga: row.lga,
@@ -223,6 +273,7 @@ impl From<ListingRow> for Listing {
 
 #[derive(sqlx::FromRow)]
 struct MediaRow {
+    listing_id: Uuid,
     id: Uuid,
     cloudinary_public_id: String,
     url: String,

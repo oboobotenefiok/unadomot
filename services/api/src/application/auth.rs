@@ -2,8 +2,9 @@ use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
 };
+use async_trait::async_trait;
 use chrono::{Duration, Utc};
-use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
+use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -11,6 +12,7 @@ use uuid::Uuid;
 pub enum AuthError {
     InvalidCredentials,
     EmailTaken,
+    Validation(String),
     Repository(String),
 }
 
@@ -31,6 +33,9 @@ pub struct Claims {
     pub sub: Uuid,
     pub email: String,
     pub exp: i64,
+    pub iat: i64,
+    pub iss: String,
+    pub aud: String,
 }
 
 #[derive(Clone, Debug)]
@@ -40,23 +45,39 @@ pub struct StoredUser {
     pub password_hash: Option<String>,
 }
 
+#[async_trait]
 pub trait UserRepository: Send + Sync {
-    fn create_user(
+    async fn create_user(
         &self,
         email: &str,
         password_hash: Option<&str>,
         name: &str,
     ) -> Result<AuthenticatedUser, AuthError>;
-    fn find_by_email(&self, email: &str) -> Result<Option<StoredUser>, AuthError>;
+    async fn find_by_email(&self, email: &str) -> Result<Option<StoredUser>, AuthError>;
 }
 
-pub fn register(
+pub async fn register(
     repository: &dyn UserRepository,
     email: &str,
     password: &str,
     name: &str,
 ) -> Result<AuthenticatedUser, AuthError> {
-    if repository.find_by_email(email)?.is_some() {
+    let email = email.trim().to_lowercase();
+    let name = name.trim();
+
+    if name.is_empty() || name.len() > 120 {
+        return Err(AuthError::Validation("Name is required (max 120 characters)".into()));
+    }
+    if !email.contains('@') || !email.contains('.') || email.len() > 254 {
+        return Err(AuthError::Validation("A valid email is required".into()));
+    }
+    if password.len() < 8 || password.len() > 128 {
+        return Err(AuthError::Validation(
+            "Password must be between 8 and 128 characters".into(),
+        ));
+    }
+
+    if repository.find_by_email(&email).await?.is_some() {
         return Err(AuthError::EmailTaken);
     }
 
@@ -66,17 +87,18 @@ pub fn register(
         .map_err(|e| AuthError::Repository(e.to_string()))?
         .to_string();
 
-    repository.create_user(email, Some(&hash), name)
+    repository.create_user(&email, Some(&hash), name).await
 }
 
-pub fn login(
+pub async fn login(
     repository: &dyn UserRepository,
     email: &str,
     password: &str,
     jwt_secret: &str,
 ) -> Result<Session, AuthError> {
     let user = repository
-        .find_by_email(email)?
+        .find_by_email(email.trim())
+        .await?
         .ok_or(AuthError::InvalidCredentials)?;
 
     let parsed = user
@@ -92,16 +114,16 @@ pub fn login(
     issue_session(user.id, user.email, jwt_secret)
 }
 
-pub fn issue_session(
-    user_id: Uuid,
-    email: String,
-    jwt_secret: &str,
-) -> Result<Session, AuthError> {
-    let expires_at = (Utc::now() + Duration::days(30)).timestamp();
+pub fn issue_session(user_id: Uuid, email: String, jwt_secret: &str) -> Result<Session, AuthError> {
+    let now = Utc::now();
+    let expires_at = (now + Duration::minutes(60)).timestamp();
     let claims = Claims {
         sub: user_id,
         email,
         exp: expires_at,
+        iat: now.timestamp(),
+        iss: "unadomot".into(),
+        aud: "unadomot-api".into(),
     };
 
     let token = encode(
@@ -115,10 +137,14 @@ pub fn issue_session(
 }
 
 pub fn verify_session(token: &str, jwt_secret: &str) -> Result<AuthenticatedUser, AuthError> {
+    let mut validation = Validation::new(Algorithm::HS256);
+    validation.set_issuer(&["unadomot"]);
+    validation.set_audience(&["unadomot-api"]);
+
     let data = decode::<Claims>(
         token,
         &DecodingKey::from_secret(jwt_secret.as_bytes()),
-        &Validation::default(),
+        &validation,
     )
     .map_err(|_| AuthError::InvalidCredentials)?;
 

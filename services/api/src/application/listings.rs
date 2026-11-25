@@ -1,6 +1,9 @@
 use crate::domain::listing::{
-    Listing, ListingFilter, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
+    Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing,
+    NewListingMedia,
 };
+use async_trait::async_trait;
+use rust_decimal::Decimal;
 use uuid::Uuid;
 
 #[derive(Debug)]
@@ -11,40 +14,58 @@ pub enum ListingError {
     InvalidInput(String),
 }
 
+#[derive(Debug)]
+pub struct ListingPage {
+    pub items: Vec<Listing>,
+    pub has_more: bool,
+    pub next_offset: i64,
+}
+
+#[async_trait]
 pub trait ListingRepository: Send + Sync {
-    fn browse(&self, filter: &ListingFilter) -> Result<Vec<Listing>, ListingError>;
-    fn get(&self, id: Uuid) -> Result<Option<Listing>, ListingError>;
-    fn create(&self, listing: &NewListing) -> Result<Listing, ListingError>;
-    fn update(
+    async fn browse(
+        &self,
+        filter: &ListingFilter,
+        limit: i64,
+        offset: i64,
+    ) -> Result<ListingPage, ListingError>;
+    async fn get(&self, id: Uuid) -> Result<Option<Listing>, ListingError>;
+    async fn create(&self, listing: &NewListing) -> Result<Listing, ListingError>;
+    async fn update(
         &self,
         id: Uuid,
         owner_id: Uuid,
         update: &ListingUpdate,
     ) -> Result<Listing, ListingError>;
-    fn delete(&self, id: Uuid, owner_id: Uuid) -> Result<(), ListingError>;
-    fn add_media(
+    async fn delete(&self, id: Uuid, owner_id: Uuid) -> Result<(), ListingError>;
+    async fn add_media(
         &self,
         listing_id: Uuid,
         owner_id: Uuid,
         media: &NewListingMedia,
     ) -> Result<ListingMedia, ListingError>;
+    async fn health_check(&self) -> Result<(), ListingError>;
 }
 
-pub fn browse_listings(
+pub async fn browse_listings(
     repository: &dyn ListingRepository,
     filter: &ListingFilter,
-) -> Result<Vec<Listing>, ListingError> {
-    repository.browse(filter)
+    limit: i64,
+    offset: i64,
+) -> Result<ListingPage, ListingError> {
+    let limit = limit.clamp(1, 50);
+    let offset = offset.max(0);
+    repository.browse(filter, limit, offset).await
 }
 
-pub fn get_listing(
+pub async fn get_listing(
     repository: &dyn ListingRepository,
     id: Uuid,
 ) -> Result<Option<Listing>, ListingError> {
-    repository.get(id)
+    repository.get(id).await
 }
 
-pub fn create_listing(
+pub async fn create_listing(
     repository: &dyn ListingRepository,
     owner_id: Uuid,
     input: &NewListing,
@@ -53,34 +74,41 @@ pub fn create_listing(
     if input.landlord_id != owner_id {
         return Err(ListingError::Forbidden);
     }
-    repository.create(input)
+    repository.create(input).await
 }
 
-pub fn update_listing(
+pub async fn update_listing(
     repository: &dyn ListingRepository,
     id: Uuid,
     owner_id: Uuid,
     update: &ListingUpdate,
 ) -> Result<Listing, ListingError> {
     if let Some(price) = update.price {
-        if price <= 0.0 {
+        if price <= Decimal::ZERO {
             return Err(ListingError::InvalidInput(
                 "Price must be greater than zero".into(),
             ));
         }
     }
-    repository.update(id, owner_id, update)
+    if let Some(title) = &update.title {
+        if title.trim().is_empty() || title.len() > 120 {
+            return Err(ListingError::InvalidInput(
+                "Title must be between 1 and 120 characters".into(),
+            ));
+        }
+    }
+    repository.update(id, owner_id, update).await
 }
 
-pub fn delete_listing(
+pub async fn delete_listing(
     repository: &dyn ListingRepository,
     id: Uuid,
     owner_id: Uuid,
 ) -> Result<(), ListingError> {
-    repository.delete(id, owner_id)
+    repository.delete(id, owner_id).await
 }
 
-pub fn add_listing_media(
+pub async fn add_listing_media(
     repository: &dyn ListingRepository,
     listing_id: Uuid,
     owner_id: Uuid,
@@ -91,18 +119,28 @@ pub fn add_listing_media(
             "Cloudinary public ID and URL are required".into(),
         ));
     }
-    repository.add_media(listing_id, owner_id, media)
+    repository.add_media(listing_id, owner_id, media).await
 }
 
 fn validate_new_listing(input: &NewListing) -> Result<(), ListingError> {
-    if input.price <= 0.0 {
+    if input.price <= Decimal::ZERO {
         return Err(ListingError::InvalidInput(
             "Price must be greater than zero".into(),
         ));
     }
-    if input.title.trim().is_empty() || input.description.trim().is_empty() {
+    if input.title.trim().is_empty() || input.title.len() > 120 {
         return Err(ListingError::InvalidInput(
-            "Title and description are required".into(),
+            "Title must be between 1 and 120 characters".into(),
+        ));
+    }
+    if input.description.trim().is_empty() || input.description.len() > 5000 {
+        return Err(ListingError::InvalidInput(
+            "Description must be between 1 and 5000 characters".into(),
+        ));
+    }
+    if input.state.trim().is_empty() || input.lga.trim().is_empty() {
+        return Err(ListingError::InvalidInput(
+            "State and LGA are required".into(),
         ));
     }
     Ok(())
@@ -118,7 +156,7 @@ mod tests {
             landlord_id: Uuid::new_v4(),
             title: "Flat".into(),
             description: "Nice".into(),
-            price: 0.0,
+            price: Decimal::ZERO,
             address: "Port Harcourt".into(),
             state: "Rivers".into(),
             lga: "Obio/Akpor".into(),
@@ -130,46 +168,8 @@ mod tests {
         };
 
         assert!(matches!(
-            create_listing(&FailingRepository, Uuid::new_v4(), &input),
+            validate_new_listing(&input),
             Err(ListingError::InvalidInput(_))
         ));
-    }
-
-    struct FailingRepository;
-
-    impl ListingRepository for FailingRepository {
-        fn browse(&self, _filter: &ListingFilter) -> Result<Vec<Listing>, ListingError> {
-            Err(ListingError::Repository("unused".into()))
-        }
-
-        fn get(&self, _id: Uuid) -> Result<Option<Listing>, ListingError> {
-            Err(ListingError::Repository("unused".into()))
-        }
-
-        fn create(&self, _listing: &NewListing) -> Result<Listing, ListingError> {
-            Err(ListingError::Repository("unused".into()))
-        }
-
-        fn update(
-            &self,
-            _id: Uuid,
-            _owner_id: Uuid,
-            _update: &ListingUpdate,
-        ) -> Result<Listing, ListingError> {
-            Err(ListingError::Repository("unused".into()))
-        }
-
-        fn delete(&self, _id: Uuid, _owner_id: Uuid) -> Result<(), ListingError> {
-            Err(ListingError::Repository("unused".into()))
-        }
-
-        fn add_media(
-            &self,
-            _listing_id: Uuid,
-            _owner_id: Uuid,
-            _media: &NewListingMedia,
-        ) -> Result<crate::domain::listing::ListingMedia, ListingError> {
-            Err(ListingError::Repository("unused".into()))
-        }
     }
 }

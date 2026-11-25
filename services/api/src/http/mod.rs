@@ -8,14 +8,25 @@ use crate::domain::listing::{
     Listing, ListingFilter, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
 };
 use axum::{
-    extract::{Path, Query, State},
-    http::{HeaderMap, StatusCode},
+    extract::{DefaultBodyLimit, Path, Query, State},
+    http::{header, HeaderMap, HeaderValue, StatusCode},
+    response::{IntoResponse, Response},
     routing::{get, post},
     Json, Router,
 };
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
+use serde_json::json;
+use std::str::FromStr;
 use std::sync::Arc;
+use tower_http::{
+    cors::CorsLayer,
+    set_header::SetResponseHeaderLayer,
+    trace::TraceLayer,
+};
 use uuid::Uuid;
+
+pub mod public_pages;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -23,6 +34,37 @@ pub struct AppState {
     pub listings: Arc<dyn ListingRepository>,
     pub media: Arc<dyn MediaSigner>,
     pub jwt_secret: Arc<String>,
+}
+
+pub struct ApiError {
+    status: StatusCode,
+    code: &'static str,
+    message: String,
+}
+
+impl ApiError {
+    fn new(status: StatusCode, code: &'static str, message: impl Into<String>) -> Self {
+        Self {
+            status,
+            code,
+            message: message.into(),
+        }
+    }
+}
+
+impl IntoResponse for ApiError {
+    fn into_response(self) -> Response {
+        (
+            self.status,
+            Json(json!({
+                "error": {
+                    "code": self.code,
+                    "message": self.message,
+                }
+            })),
+        )
+            .into_response()
+    }
 }
 
 #[derive(Deserialize)]
@@ -48,7 +90,7 @@ pub struct SessionResponse {
 pub struct CreateListingRequest {
     pub title: String,
     pub description: String,
-    pub price: f64,
+    pub price: String,
     pub address: String,
     pub state: String,
     pub lga: String,
@@ -64,7 +106,7 @@ pub struct CreateListingRequest {
 pub struct UpdateListingRequest {
     pub title: Option<String>,
     pub description: Option<String>,
-    pub price: Option<f64>,
+    pub price: Option<String>,
     pub address: Option<String>,
     pub state: Option<String>,
     pub lga: Option<String>,
@@ -95,7 +137,7 @@ pub struct ListingResponse {
     pub id: Uuid,
     pub title: String,
     pub description: String,
-    pub price: f64,
+    pub price: String,
     pub address: String,
     pub state: String,
     pub lga: String,
@@ -106,6 +148,13 @@ pub struct ListingResponse {
     pub property_type: Option<String>,
     pub furnishing: Option<String>,
     pub media: Vec<MediaResponse>,
+}
+
+#[derive(Serialize)]
+pub struct ListingPageResponse {
+    pub items: Vec<ListingResponse>,
+    pub has_more: bool,
+    pub next_offset: i64,
 }
 
 #[derive(Serialize)]
@@ -123,7 +172,7 @@ impl From<Listing> for ListingResponse {
             id: listing.id,
             title: listing.title,
             description: listing.description,
-            price: listing.price,
+            price: listing.price.to_string(),
             address: listing.address,
             state: listing.state,
             lga: listing.lga,
@@ -153,6 +202,7 @@ impl From<crate::domain::listing::ListingMedia> for MediaResponse {
 pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/health", get(|| async { "ok" }))
+        .route("/ready", get(ready_handler))
         .route("/api/auth/register", post(register_handler))
         .route("/api/auth/login", post(login_handler))
         .route(
@@ -167,19 +217,44 @@ pub fn router(state: AppState) -> Router {
         )
         .route("/api/listings/{id}/media", post(add_media_handler))
         .route("/api/media/signature", post(signature_handler))
+        .layer(DefaultBodyLimit::max(2 * 1024 * 1024))
+        .layer(SetResponseHeaderLayer::overriding(
+            header::X_CONTENT_TYPE_OPTIONS,
+            HeaderValue::from_static("nosniff"),
+        ))
+        .layer(SetResponseHeaderLayer::overriding(
+            header::X_FRAME_OPTIONS,
+            HeaderValue::from_static("DENY"),
+        ))
+        .layer(SetResponseHeaderLayer::overriding(
+            header::REFERRER_POLICY,
+            HeaderValue::from_static("strict-origin-when-cross-origin"),
+        ))
+        .layer(CorsLayer::permissive())
+        .layer(TraceLayer::new_for_http())
         .with_state(state)
+}
+
+async fn ready_handler(State(state): State<AppState>) -> Result<StatusCode, ApiError> {
+    state
+        .listings
+        .health_check()
+        .await
+        .map(|_| StatusCode::OK)
+        .map_err(listing_error)
 }
 
 async fn register_handler(
     State(state): State<AppState>,
     Json(request): Json<RegisterRequest>,
-) -> Result<Json<SessionResponse>, (StatusCode, String)> {
+) -> Result<Json<SessionResponse>, ApiError> {
     let user = register(
         state.users.as_ref(),
         &request.email,
         &request.password,
         &request.name,
     )
+    .await
     .map_err(auth_error)?;
 
     let session = issue_session(user.id, user.email, &state.jwt_secret).map_err(auth_error)?;
@@ -193,13 +268,14 @@ async fn register_handler(
 async fn login_handler(
     State(state): State<AppState>,
     Json(request): Json<LoginRequest>,
-) -> Result<Json<SessionResponse>, (StatusCode, String)> {
+) -> Result<Json<SessionResponse>, ApiError> {
     let session = login(
         state.users.as_ref(),
         &request.email,
         &request.password,
         &state.jwt_secret,
     )
+    .await
     .map_err(auth_error)?;
 
     Ok(Json(SessionResponse {
@@ -213,42 +289,55 @@ struct ListingQuery {
     state: Option<String>,
     lga: Option<String>,
     property_type: Option<String>,
-    min_price: Option<f64>,
-    max_price: Option<f64>,
+    min_price: Option<String>,
+    max_price: Option<String>,
     bedrooms: Option<i32>,
     furnishing: Option<String>,
+    limit: Option<i64>,
+    offset: Option<i64>,
 }
 
 async fn list_listings(
     State(state): State<AppState>,
     Query(query): Query<ListingQuery>,
-) -> Result<Json<Vec<ListingResponse>>, (StatusCode, String)> {
+) -> Result<Json<ListingPageResponse>, ApiError> {
     let filter = ListingFilter {
         state: query.state,
         lga: query.lga,
         property_type: query.property_type,
-        min_price: query.min_price,
-        max_price: query.max_price,
+        min_price: parse_optional_decimal(query.min_price)?,
+        max_price: parse_optional_decimal(query.max_price)?,
         bedrooms: query.bedrooms,
         furnishing: query.furnishing,
     };
 
-    browse_listings(state.listings.as_ref(), &filter)
-        .map(|items| Json(items.into_iter().map(ListingResponse::from).collect()))
-        .map_err(listing_error)
+    let page = browse_listings(
+        state.listings.as_ref(),
+        &filter,
+        query.limit.unwrap_or(20),
+        query.offset.unwrap_or(0),
+    )
+    .await
+    .map_err(listing_error)?;
+
+    Ok(Json(ListingPageResponse {
+        items: page.items.into_iter().map(ListingResponse::from).collect(),
+        has_more: page.has_more,
+        next_offset: page.next_offset,
+    }))
 }
 
 async fn create_listing_handler(
     State(state): State<AppState>,
     headers: HeaderMap,
     Json(request): Json<CreateListingRequest>,
-) -> Result<Json<ListingResponse>, (StatusCode, String)> {
+) -> Result<Json<ListingResponse>, ApiError> {
     let user = authorize(&state, &headers)?;
     let input = NewListing {
         landlord_id: user.id,
         title: request.title,
         description: request.description,
-        price: request.price,
+        price: parse_decimal(&request.price)?,
         address: request.address,
         state: request.state,
         lga: request.lga,
@@ -260,6 +349,7 @@ async fn create_listing_handler(
     };
 
     create_listing(state.listings.as_ref(), user.id, &input)
+        .await
         .map(|listing| Json(ListingResponse::from(listing)))
         .map_err(listing_error)
 }
@@ -267,12 +357,13 @@ async fn create_listing_handler(
 async fn get_listing_handler(
     State(state): State<AppState>,
     Path(id): Path<Uuid>,
-) -> Result<Json<ListingResponse>, (StatusCode, String)> {
+) -> Result<Json<ListingResponse>, ApiError> {
     get_listing(state.listings.as_ref(), id)
+        .await
         .map_err(listing_error)?
         .map(ListingResponse::from)
         .map(Json)
-        .ok_or((StatusCode::NOT_FOUND, "Listing not found".into()))
+        .ok_or_else(|| ApiError::new(StatusCode::NOT_FOUND, "not_found", "Listing not found"))
 }
 
 async fn update_listing_handler(
@@ -280,12 +371,12 @@ async fn update_listing_handler(
     headers: HeaderMap,
     Path(id): Path<Uuid>,
     Json(request): Json<UpdateListingRequest>,
-) -> Result<Json<ListingResponse>, (StatusCode, String)> {
+) -> Result<Json<ListingResponse>, ApiError> {
     let user = authorize(&state, &headers)?;
     let update = ListingUpdate {
         title: request.title,
         description: request.description,
-        price: request.price,
+        price: parse_optional_decimal(request.price)?,
         address: request.address,
         state: request.state,
         lga: request.lga,
@@ -298,6 +389,7 @@ async fn update_listing_handler(
     };
 
     update_listing(state.listings.as_ref(), id, user.id, &update)
+        .await
         .map(|listing| Json(ListingResponse::from(listing)))
         .map_err(listing_error)
 }
@@ -306,9 +398,10 @@ async fn delete_listing_handler(
     State(state): State<AppState>,
     headers: HeaderMap,
     Path(id): Path<Uuid>,
-) -> Result<StatusCode, (StatusCode, String)> {
+) -> Result<StatusCode, ApiError> {
     let user = authorize(&state, &headers)?;
     delete_listing(state.listings.as_ref(), id, user.id)
+        .await
         .map(|_| StatusCode::NO_CONTENT)
         .map_err(listing_error)
 }
@@ -318,7 +411,7 @@ async fn add_media_handler(
     headers: HeaderMap,
     Path(id): Path<Uuid>,
     Json(request): Json<AddMediaRequest>,
-) -> Result<Json<MediaResponse>, (StatusCode, String)> {
+) -> Result<Json<MediaResponse>, ApiError> {
     let user = authorize(&state, &headers)?;
     let media = NewListingMedia {
         cloudinary_public_id: request.cloudinary_public_id,
@@ -328,6 +421,7 @@ async fn add_media_handler(
     };
 
     add_listing_media(state.listings.as_ref(), id, user.id, &media)
+        .await
         .map(|media| Json(MediaResponse::from(media)))
         .map_err(listing_error)
 }
@@ -336,7 +430,7 @@ async fn signature_handler(
     State(state): State<AppState>,
     headers: HeaderMap,
     Json(request): Json<SignatureRequest>,
-) -> Result<Json<crate::application::media::UploadSignature>, (StatusCode, String)> {
+) -> Result<Json<crate::application::media::UploadSignature>, ApiError> {
     authorize(&state, &headers)?;
     let folder = request
         .folder
@@ -346,42 +440,85 @@ async fn signature_handler(
     state.media.sign_upload(&folder).map(Json).map_err(media_error)
 }
 
-fn authorize(
-    state: &AppState,
-    headers: &HeaderMap,
-) -> Result<crate::application::auth::AuthenticatedUser, (StatusCode, String)> {
+fn authorize(state: &AppState, headers: &HeaderMap) -> Result<crate::application::auth::AuthenticatedUser, ApiError> {
     let token = headers
         .get("authorization")
         .and_then(|value| value.to_str().ok())
         .and_then(|value| value.strip_prefix("Bearer "))
-        .ok_or((StatusCode::UNAUTHORIZED, "Missing bearer token".into()))?;
+        .ok_or_else(|| ApiError::new(StatusCode::UNAUTHORIZED, "unauthorized", "Missing bearer token"))?;
 
     verify_session(token, &state.jwt_secret).map_err(auth_error)
 }
 
-fn auth_error(error: AuthError) -> (StatusCode, String) {
-    match error {
-        AuthError::InvalidCredentials => (StatusCode::UNAUTHORIZED, "Invalid credentials".into()),
-        AuthError::EmailTaken => (StatusCode::CONFLICT, "Email already registered".into()),
-        AuthError::Repository(message) => (StatusCode::SERVICE_UNAVAILABLE, message),
-    }
+fn parse_decimal(value: &str) -> Result<Decimal, ApiError> {
+    Decimal::from_str(value.trim()).map_err(|_| {
+        ApiError::new(
+            StatusCode::BAD_REQUEST,
+            "validation_error",
+            "Price must be a valid decimal number",
+        )
+    })
 }
 
-fn listing_error(error: ListingError) -> (StatusCode, String) {
-    match error {
-        ListingError::NotFound => (StatusCode::NOT_FOUND, "Listing not found".into()),
-        ListingError::Forbidden => (StatusCode::FORBIDDEN, "Not allowed".into()),
-        ListingError::InvalidInput(message) => (StatusCode::BAD_REQUEST, message),
-        ListingError::Repository(message) => (StatusCode::SERVICE_UNAVAILABLE, message),
-    }
+fn parse_optional_decimal(value: Option<String>) -> Result<Option<Decimal>, ApiError> {
+    value.map(|value| parse_decimal(&value)).transpose()
 }
 
-fn media_error(error: MediaError) -> (StatusCode, String) {
+fn auth_error(error: AuthError) -> ApiError {
     match error {
-        MediaError::NotConfigured => (
-            StatusCode::SERVICE_UNAVAILABLE,
-            "Media uploads are not configured".into(),
+        AuthError::InvalidCredentials => ApiError::new(
+            StatusCode::UNAUTHORIZED,
+            "invalid_credentials",
+            "Invalid email or password",
         ),
-        MediaError::Signing(message) => (StatusCode::INTERNAL_SERVER_ERROR, message),
+        AuthError::EmailTaken => ApiError::new(
+            StatusCode::CONFLICT,
+            "email_taken",
+            "Email already registered",
+        ),
+        AuthError::Validation(message) => {
+            ApiError::new(StatusCode::BAD_REQUEST, "validation_error", message)
+        }
+        AuthError::Repository(_) => ApiError::new(
+            StatusCode::SERVICE_UNAVAILABLE,
+            "service_unavailable",
+            "The service is temporarily unavailable",
+        ),
+    }
+}
+
+fn listing_error(error: ListingError) -> ApiError {
+    match error {
+        ListingError::NotFound => {
+            ApiError::new(StatusCode::NOT_FOUND, "not_found", "Listing not found")
+        }
+        ListingError::Forbidden => ApiError::new(
+            StatusCode::FORBIDDEN,
+            "forbidden",
+            "You are not allowed to perform this action",
+        ),
+        ListingError::InvalidInput(message) => {
+            ApiError::new(StatusCode::BAD_REQUEST, "validation_error", message)
+        }
+        ListingError::Repository(_) => ApiError::new(
+            StatusCode::SERVICE_UNAVAILABLE,
+            "service_unavailable",
+            "The service is temporarily unavailable",
+        ),
+    }
+}
+
+fn media_error(error: MediaError) -> ApiError {
+    match error {
+        MediaError::NotConfigured => ApiError::new(
+            StatusCode::SERVICE_UNAVAILABLE,
+            "media_not_configured",
+            "Media uploads are not configured",
+        ),
+        MediaError::Signing(_) => ApiError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "media_signing_failed",
+            "Could not sign the upload",
+        ),
     }
 }

@@ -1,4 +1,5 @@
 use crate::application::auth::{AuthenticatedUser, AuthError, StoredUser, UserRepository};
+use async_trait::async_trait;
 use sqlx::PgPool;
 
 pub struct PostgresUserRepository {
@@ -11,8 +12,9 @@ impl PostgresUserRepository {
     }
 }
 
+#[async_trait]
 impl UserRepository for PostgresUserRepository {
-    fn create_user(
+    async fn create_user(
         &self,
         email: &str,
         password_hash: Option<&str>,
@@ -21,6 +23,7 @@ impl UserRepository for PostgresUserRepository {
         let mut transaction = self
             .pool
             .begin()
+            .await
             .map_err(|e| AuthError::Repository(e.to_string()))?;
 
         let user = sqlx::query_as::<_, UserRow>(
@@ -29,16 +32,19 @@ impl UserRepository for PostgresUserRepository {
         .bind(email)
         .bind(password_hash)
         .fetch_one(&mut *transaction)
+        .await
         .map_err(|e| AuthError::Repository(e.to_string()))?;
 
         sqlx::query("INSERT INTO user_profiles (user_id, name) VALUES ($1, $2)")
             .bind(user.id)
             .bind(name)
             .execute(&mut *transaction)
+            .await
             .map_err(|e| AuthError::Repository(e.to_string()))?;
 
         transaction
             .commit()
+            .await
             .map_err(|e| AuthError::Repository(e.to_string()))?;
 
         Ok(AuthenticatedUser {
@@ -47,12 +53,13 @@ impl UserRepository for PostgresUserRepository {
         })
     }
 
-    fn find_by_email(&self, email: &str) -> Result<Option<StoredUser>, AuthError> {
+    async fn find_by_email(&self, email: &str) -> Result<Option<StoredUser>, AuthError> {
         let user = sqlx::query_as::<_, UserRow>(
             "SELECT id, email, password_hash FROM users WHERE lower(email) = lower($1)",
         )
         .bind(email)
         .fetch_optional(&self.pool)
+        .await
         .map_err(|e| AuthError::Repository(e.to_string()))?;
 
         Ok(user.map(|row| StoredUser {
