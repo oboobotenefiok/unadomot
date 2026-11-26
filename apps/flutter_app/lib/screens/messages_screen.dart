@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import '../api/api_client.dart';
+import 'call_screen.dart';
 
 class MessagesScreen extends StatefulWidget {
   final ApiClient api;
@@ -464,9 +465,36 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  void _openCall(String kind) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CallScreen(
+          api: widget.api,
+          conversationId: widget.conversationId,
+          kind: kind,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Conversation')),
+        appBar: AppBar(
+          title: const Text('Conversation'),
+          actions: [
+            IconButton(
+              tooltip: 'Voice call',
+              onPressed: () => _openCall('audio'),
+              icon: const Icon(Icons.call),
+            ),
+            IconButton(
+              tooltip: 'Video call',
+              onPressed: () => _openCall('video'),
+              icon: const Icon(Icons.videocam),
+            ),
+          ],
+        ),
         body: Column(
           children: [
             Expanded(
