@@ -2,7 +2,7 @@ use axum::{
     extract::{Path, State},
     http::{header, HeaderMap, StatusCode},
     response::IntoResponse,
-    routing::{get, post},
+    routing::{delete, get, post},
     Json, Router,
 };
 use serde::Deserialize;
@@ -25,6 +25,7 @@ pub fn router(state: CommentState) -> Router {
             get(list_comments).post(create_comment),
         )
         .route("/api/comments/{id}/reactions", post(toggle_reaction))
+        .route("/api/comments/{id}", delete(delete_comment))
         .route("/api/listings/code/{code}", get(find_by_code))
         .with_state(state)
 }
@@ -75,6 +76,51 @@ async fn find_by_code(
         Ok(Some(id)) => Json(json!({ "id": id, "code": code })).into_response(),
         Ok(None) => error(StatusCode::NOT_FOUND, "No listing matches that code"),
         Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Listing lookup unavailable"),
+    }
+}
+
+async fn delete_comment(
+    State(state): State<CommentState>,
+    headers: HeaderMap,
+    Path(comment_id): Path<Uuid>,
+) -> axum::response::Response {
+    let user_id = match authorize(&state, &headers) {
+        Ok(id) => id,
+        Err(response) => return response,
+    };
+
+    let owner = sqlx::query_scalar::<_, Uuid>(
+        "SELECT user_id FROM listing_comments WHERE id = $1",
+    )
+    .bind(comment_id)
+    .fetch_optional(&state.pool)
+    .await;
+
+    let owner = match owner {
+        Ok(Some(owner)) => owner,
+        Ok(None) => return error(StatusCode::NOT_FOUND, "Comment not found"),
+        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Comment unavailable"),
+    };
+
+    let is_admin: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM admin_roles WHERE user_id = $1)",
+    )
+    .bind(user_id)
+    .fetch_one(&state.pool)
+    .await
+    .unwrap_or(false);
+
+    if owner != user_id && !is_admin {
+        return error(StatusCode::FORBIDDEN, "You cannot delete this comment");
+    }
+
+    match sqlx::query("DELETE FROM listing_comments WHERE id = $1")
+        .bind(comment_id)
+        .execute(&state.pool)
+        .await
+    {
+        Ok(_) => Json(json!({ "ok": true })).into_response(),
+        Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Could not delete comment"),
     }
 }
 
