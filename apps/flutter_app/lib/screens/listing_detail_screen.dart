@@ -7,6 +7,7 @@ import '../state/app_state.dart';
 import '../theme.dart';
 import 'auth_sheet.dart';
 import 'messages_screen.dart';
+import 'report_listing_screen.dart';
 
 class ListingDetailScreen extends StatefulWidget {
   final ApiClient api;
@@ -126,67 +127,20 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
     if (!await requireAuth(context, widget.appState)) return;
     if (!mounted) return;
 
-    final reason = TextEditingController();
-    final details = TextEditingController();
-    final submitted = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Report listing'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: reason,
-              decoration: const InputDecoration(labelText: 'Reason'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: details,
-              maxLines: 3,
-              decoration: const InputDecoration(labelText: 'Details (optional)'),
-            ),
-          ],
+    final submitted = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ReportListingScreen(
+          api: widget.api,
+          listingId: widget.listingId,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Submit'),
-          ),
-        ],
       ),
     );
 
-    if (submitted != true) return;
-    if (reason.text.trim().isEmpty) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Enter a reason for the report')),
-        );
-      }
-      return;
-    }
-
-    try {
-      await widget.api.createReport(
-        widget.listingId,
-        reason: reason.text.trim(),
-        details: details.text,
+    if (submitted == true && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Report submitted')),
       );
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Report submitted')),
-        );
-      }
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.toString())),
-        );
-      }
     }
   }
 
