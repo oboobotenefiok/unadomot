@@ -13,7 +13,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   const configuredBaseUrl = String.fromEnvironment('API_BASE_URL');
   const fallbackBaseUrl = 'http://10.0.2.2:3000';
-  const baseUrl = configuredBaseUrl.isNotEmpty
+  final baseUrl = configuredBaseUrl.isNotEmpty
       ? configuredBaseUrl
       : (kReleaseMode ? '' : fallbackBaseUrl);
 

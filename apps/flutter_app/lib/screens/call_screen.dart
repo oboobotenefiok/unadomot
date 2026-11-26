@@ -87,7 +87,7 @@ class _CallScreenState extends State<CallScreen> {
       await _peer!.setLocalDescription(offer);
       await _waitForIce(_peer!);
 
-      final sdp = _peer!.localDescription?.sdp;
+      final sdp = (await _peer!.getLocalDescription())?.sdp;
       if (sdp == null) throw StateError('Could not prepare the call');
 
       final call = await widget.api.startCall(
@@ -310,7 +310,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
       await _peer!.setLocalDescription(answer);
       await _waitForIce(_peer!);
 
-      final sdp = _peer!.localDescription?.sdp;
+      final sdp = (await _peer!.getLocalDescription())?.sdp;
       if (sdp == null) throw StateError('Could not answer the call');
       await widget.api.answerCall(widget.callId, answerSdp: sdp);
       _poll = Timer.periodic(const Duration(seconds: 2), (_) => _checkCall());
