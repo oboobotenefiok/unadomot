@@ -1,4 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import '../api/api_client.dart';
 import '../data/local_cache.dart';
 import '../state/app_state.dart';
@@ -72,49 +75,123 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final nameController = TextEditingController(text: profile['name'] as String? ?? '');
     final phoneController = TextEditingController(text: profile['phone'] as String? ?? '');
     final bioController = TextEditingController(text: profile['bio'] as String? ?? '');
+    var photoUrl = profile['photo_url'] as String?;
+    var uploading = false;
 
     final saved = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit profile'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Display name'),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(labelText: 'Phone (optional)'),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: bioController,
-                maxLines: 4,
-                maxLength: 500,
-                decoration: const InputDecoration(labelText: 'Bio (optional)'),
-              ),
-            ],
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Edit profile'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 28,
+                      backgroundColor: UnaColors.green100,
+                      backgroundImage: photoUrl == null ? null : NetworkImage(photoUrl),
+                      child: photoUrl == null
+                          ? const Icon(Icons.person, color: UnaColors.green900)
+                          : null,
+                    ),
+                    const SizedBox(width: 12),
+                    TextButton.icon(
+                      onPressed: uploading
+                          ? null
+                          : () async {
+                              final picked = await ImagePicker().pickImage(
+                                source: ImageSource.gallery,
+                                imageQuality: 82,
+                                maxWidth: 1200,
+                              );
+                              if (picked == null) return;
+                              setDialogState(() => uploading = true);
+                              try {
+                                final bytes = await picked.readAsBytes();
+                                final signature = await widget.api.mediaSignature(
+                                  folder: 'unadomot/avatars',
+                                );
+                                final uploaded = await widget.api.uploadToCloudinary(
+                                  bytes: bytes,
+                                  filename: picked.name,
+                                  signature: signature,
+                                );
+                                photoUrl = uploaded['secure_url'] as String?;
+                              } catch (error) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(error.toString())),
+                                  );
+                                }
+                              } finally {
+                                setDialogState(() => uploading = false);
+                              }
+                            },
+                      icon: uploading
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.photo_camera_outlined),
+                      label: Text(uploading ? 'Uploading...' : 'Change photo'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Display name'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(labelText: 'Phone (optional)'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: bioController,
+                  maxLines: 4,
+                  maxLength: 500,
+                  decoration: const InputDecoration(labelText: 'Bio (optional)'),
+                ),
+              ],
+            ),
           ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+            FilledButton(
+              onPressed: uploading ? null : () => Navigator.pop(context, true),
+              child: const Text('Save'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Save')),
-        ],
       ),
     );
 
     if (saved != true) return;
     try {
-      await widget.api.updateProfile(
-        name: nameController.text.trim(),
-        phone: phoneController.text.trim(),
-        bio: bioController.text.trim(),
-      );
+      final response = await http.patch(
+        widget.api.baseUrl.resolve('/api/profile/me'),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.api.token}',
+        },
+        body: jsonEncode({
+          'name': nameController.text.trim(),
+          'phone': phoneController.text.trim(),
+          'bio': bioController.text.trim(),
+          if (photoUrl != null) 'photo_url': photoUrl,
+        }),
+      ).timeout(const Duration(seconds: 20));
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw ApiException(response.statusCode, 'Could not save profile.');
+      }
       await _load();
     } catch (error) {
       if (mounted) {
@@ -187,6 +264,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final username = profile['username'] as String? ?? 'username-not-set';
     final userType = profile['user_type'] as String? ?? 'renter';
     final verified = profile['verified'] as bool? ?? false;
+    final photoUrl = profile['photo_url'] as String?;
     final badge = userType == 'agent'
         ? 'Agent'
         : userType == 'landlord' || userType == 'agency'
@@ -206,6 +284,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: UnaColors.green100,
+                backgroundImage: photoUrl == null ? null : NetworkImage(photoUrl),
+                child: photoUrl == null
+                    ? Text(
+                        name.characters.first.toUpperCase(),
+                        style: const TextStyle(
+                          color: UnaColors.green900,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 22,
+                        ),
+                      )
+                    : null,
+              ),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
