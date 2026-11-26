@@ -101,6 +101,12 @@ impl RateLimiter {
     }
 }
 
+impl Default for RateLimiter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[derive(Clone)]
 pub struct AppState {
     pub users: Arc<dyn UserRepository>,
