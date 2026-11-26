@@ -21,6 +21,10 @@ jobs:
           if [ ! -d apps/flutter_app/android ]; then
             flutter create --project-name unadomot --org com.unadomot --platforms android apps/flutter_app
           fi
+      - name: Set app display name
+        run: |
+          MANIFEST=apps/flutter_app/android/app/src/main/AndroidManifest.xml
+          sed -i 's/android:label="[^"]*"/android:label="UnaDomot"/' "$MANIFEST"
       - name: Get dependencies
         working-directory: apps/flutter_app
         run: flutter pub get
