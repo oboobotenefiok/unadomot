@@ -54,6 +54,19 @@ impl ListingRepository for UnconfiguredRepository {
         Err(ListingError::Repository("Persistence not configured".into()))
     }
 
+    async fn admin_remove(
+        &self,
+        _id: Uuid,
+        _admin_id: Uuid,
+        _reason: &str,
+    ) -> Result<Listing, ListingError> {
+        Err(ListingError::Repository("Persistence not configured".into()))
+    }
+
+    async fn admin_restore(&self, _id: Uuid, _admin_id: Uuid) -> Result<Listing, ListingError> {
+        Err(ListingError::Repository("Persistence not configured".into()))
+    }
+
     async fn add_media(
         &self,
         _listing_id: Uuid,
