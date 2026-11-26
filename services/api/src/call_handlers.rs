@@ -7,12 +7,18 @@ use axum::{
 };
 use serde::Deserialize;
 use serde_json::json;
+use std::sync::Arc;
 use unadomot_api::application::auth::verify_session;
-use unadomot_api::application::calls::CallError;
-use unadomot_api::http::AppState;
+use unadomot_api::application::calls::{CallError, CallRepository};
 use uuid::Uuid;
 
-pub fn router(state: AppState) -> Router {
+#[derive(Clone)]
+pub struct CallState {
+    pub calls: Arc<dyn CallRepository>,
+    pub jwt_secret: Arc<String>,
+}
+
+pub fn router(state: CallState) -> Router {
     Router::new()
         .route("/api/conversations/{id}/calls", post(start_call_handler))
         .route("/api/calls/{id}", get(get_call_handler))
@@ -36,7 +42,7 @@ fn error(status: StatusCode, message: &str) -> axum::response::Response {
     (status, Json(json!({ "error": { "message": message } }))).into_response()
 }
 
-fn authorize(state: &AppState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
+fn authorize(state: &CallState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
     let header = headers
         .get(header::AUTHORIZATION)
         .and_then(|value| value.to_str().ok())
@@ -61,7 +67,7 @@ fn call_error(error_value: CallError) -> axum::response::Response {
 }
 
 async fn start_call_handler(
-    State(state): State<AppState>,
+    State(state): State<CallState>,
     headers: HeaderMap,
     Path(conversation_id): Path<Uuid>,
     Json(request): Json<StartCallRequest>,
@@ -91,7 +97,7 @@ async fn start_call_handler(
 }
 
 async fn get_call_handler(
-    State(state): State<AppState>,
+    State(state): State<CallState>,
     headers: HeaderMap,
     Path(id): Path<Uuid>,
 ) -> axum::response::Response {
@@ -108,7 +114,7 @@ async fn get_call_handler(
 }
 
 async fn answer_call_handler(
-    State(state): State<AppState>,
+    State(state): State<CallState>,
     headers: HeaderMap,
     Path(id): Path<Uuid>,
     Json(request): Json<AnswerCallRequest>,
@@ -133,7 +139,7 @@ async fn answer_call_handler(
 }
 
 async fn end_call_handler(
-    State(state): State<AppState>,
+    State(state): State<CallState>,
     headers: HeaderMap,
     Path(id): Path<Uuid>,
 ) -> axum::response::Response {
