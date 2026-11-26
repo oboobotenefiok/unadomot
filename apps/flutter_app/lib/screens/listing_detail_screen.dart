@@ -10,6 +10,7 @@ import '../state/app_state.dart';
 import '../theme.dart';
 import '../utils/share_helper.dart';
 import 'auth_sheet.dart';
+import 'listing_code_screen.dart';
 import 'map_screen.dart';
 import 'messages_screen.dart';
 import 'report_listing_screen.dart';
@@ -293,6 +294,20 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
     await Share.share(text, subject: listing.title);
   }
 
+  void _openCode() {
+    final listing = _listing;
+    if (listing?.code == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ListingCodeScreen(
+          code: listing!.code!,
+          title: listing.title,
+        ),
+      ),
+    );
+  }
+
   Future<void> _report() async {
     if (!await requireAuth(context, widget.appState)) return;
     if (!mounted) return;
@@ -335,6 +350,12 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
         appBar: AppBar(
           title: Text(_listing?.title ?? 'Listing'),
           actions: [
+            if (_listing?.code != null)
+              IconButton(
+                tooltip: 'Listing code',
+                onPressed: _openCode,
+                icon: const Icon(Icons.qr_code_2),
+              ),
             IconButton(
               tooltip: 'Share',
               onPressed: _share,
@@ -442,13 +463,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                 if (_listing!.code != null) ...[
                                   const SizedBox(height: 8),
                                   InkWell(
-                                    onTap: () async {
-                                      await Clipboard.setData(ClipboardData(text: _listing!.code!));
-                                      if (!context.mounted) return;
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Code ${_listing!.code} copied')),
-                                      );
-                                    },
+                                    onTap: _openCode,
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                       decoration: BoxDecoration(
@@ -469,7 +484,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                             ),
                                           ),
                                           const SizedBox(width: 6),
-                                          const Icon(Icons.copy, size: 12, color: UnaColors.green900),
+                                          const Icon(Icons.open_in_new, size: 12, color: UnaColors.green900),
                                         ],
                                       ),
                                     ),
