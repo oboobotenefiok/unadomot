@@ -113,15 +113,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         _ => Arc::new(UnconfiguredMediaSigner),
     };
 
-    let admin_emails = Arc::new(
-        std::env::var("ADMIN_EMAILS")
-            .unwrap_or_default()
-            .split(',')
-            .map(|email| email.trim().to_lowercase())
-            .filter(|email| !email.is_empty())
-            .collect::<Vec<_>>(),
-    );
-
     let allowed_origins = Arc::new(
         std::env::var("ALLOWED_ORIGINS")
             .unwrap_or_default()
@@ -147,7 +138,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         repository: verification_repo,
         users,
         jwt_secret,
-        admin_emails,
     };
 
     let app = router(state.clone())

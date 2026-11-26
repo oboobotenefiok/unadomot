@@ -21,7 +21,6 @@ pub struct VerificationState {
     pub repository: Arc<dyn VerificationRepository>,
     pub users: Arc<dyn UserRepository>,
     pub jwt_secret: Arc<String>,
-    pub admin_emails: Arc<Vec<String>>,
 }
 
 pub struct VerificationApiError {
@@ -128,13 +127,9 @@ async fn authorize_admin(
     headers: &HeaderMap,
 ) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
     let user = authorize(state, headers)?;
-    let is_bootstrap_admin = state
-        .admin_emails
-        .iter()
-        .any(|email| email.eq_ignore_ascii_case(&user.email));
     let is_db_admin = state.users.is_admin(user.id).await.unwrap_or(false);
 
-    if !is_bootstrap_admin && !is_db_admin {
+    if !is_db_admin {
         return Err(VerificationApiError::new(
             StatusCode::FORBIDDEN,
             "forbidden",

@@ -71,16 +71,37 @@ impl VerificationRepository for PostgresVerificationRepository {
         status: &str,
         review_notes: Option<&str>,
     ) -> Result<VerificationRequest, VerificationError> {
+        let mut transaction = self
+            .pool
+            .begin()
+            .await
+            .map_err(|e| VerificationError::Repository(e.to_string()))?;
+
         let row = sqlx::query_as::<_, VerificationRow>(
             "UPDATE verification_requests SET status = $2, review_notes = $3, reviewed_at = now() WHERE id = $1 RETURNING id, user_id, document_url, notes, status, review_notes, reviewed_at, created_at",
         )
         .bind(id)
         .bind(status)
         .bind(review_notes)
-        .fetch_optional(&self.pool)
+        .fetch_optional(&mut *transaction)
         .await
         .map_err(|e| VerificationError::Repository(e.to_string()))?
         .ok_or(VerificationError::NotFound)?;
+
+        if status == "approved" {
+            sqlx::query(
+                "UPDATE user_profiles SET verified = true, updated_at = now() WHERE user_id = $1",
+            )
+            .bind(row.user_id)
+            .execute(&mut *transaction)
+            .await
+            .map_err(|e| VerificationError::Repository(e.to_string()))?;
+        }
+
+        transaction
+            .commit()
+            .await
+            .map_err(|e| VerificationError::Repository(e.to_string()))?;
 
         Ok(row.into())
     }
