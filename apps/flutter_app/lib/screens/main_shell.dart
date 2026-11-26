@@ -42,20 +42,16 @@ class _MainShellState extends State<MainShell> {
         api: widget.api,
         cache: widget.cache,
         appState: widget.appState,
-        showAppBar: false,
       ),
       CreateListingScreen(
         api: widget.api,
         cache: widget.cache,
-        showAppBar: false,
-        onExit: () => _go(0),
       ),
-      MessagesScreen(api: widget.api, showAppBar: false),
+      MessagesScreen(api: widget.api),
       ProfileScreen(
         api: widget.api,
         cache: widget.cache,
         appState: widget.appState,
-        showAppBar: false,
       ),
     ];
 
