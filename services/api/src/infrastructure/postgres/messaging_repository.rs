@@ -157,11 +157,14 @@ impl MessagingRepository for PostgresMessagingRepository {
         .await
         .map_err(|e| MessagingError::Repository(e.to_string()))?;
 
+        let preview: String = body.chars().take(120).collect();
+
         sqlx::query(
-            "UPDATE conversations SET last_message_at = now(), last_message = $2, last_message_preview = $2, last_sender_id = $3 WHERE id = $1",
+            "UPDATE conversations SET last_message_at = now(), last_message = $2, last_message_preview = $3, last_sender_id = $4 WHERE id = $1",
         )
         .bind(conversation_id)
         .bind(body)
+        .bind(preview)
         .bind(sender_id)
         .execute(&mut *transaction)
         .await
