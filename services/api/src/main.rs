@@ -102,6 +102,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         listings,
         messaging,
         reports,
+        audit: verification_repo.clone(),
         media,
         jwt_secret: jwt_secret.clone(),
         limiter: Arc::new(RateLimiter::new()),
