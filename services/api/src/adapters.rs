@@ -122,6 +122,19 @@ impl UserRepository for UnconfiguredUserRepository {
         Err(AuthError::Repository("Persistence not configured".into()))
     }
 
+    async fn create_password_reset(
+        &self,
+        _email: &str,
+        _token_hash: &str,
+        _expires_at: DateTime<Utc>,
+    ) -> Result<Option<Uuid>, AuthError> {
+        Err(AuthError::Repository("Persistence not configured".into()))
+    }
+
+    async fn reset_password(&self, _token_hash: &str, _password_hash: &str) -> Result<bool, AuthError> {
+        Err(AuthError::Repository("Persistence not configured".into()))
+    }
+
     async fn is_admin(&self, _user_id: Uuid) -> Result<bool, AuthError> {
         Ok(false)
     }
