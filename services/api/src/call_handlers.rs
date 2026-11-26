@@ -21,6 +21,7 @@ pub struct CallState {
 pub fn router(state: CallState) -> Router {
     Router::new()
         .route("/api/conversations/{id}/calls", post(start_call_handler))
+        .route("/api/calls/incoming", get(incoming_calls_handler))
         .route("/api/calls/{id}", get(get_call_handler))
         .route("/api/calls/{id}/answer", post(answer_call_handler))
         .route("/api/calls/{id}/end", post(end_call_handler))
@@ -92,6 +93,21 @@ async fn start_call_handler(
         .await
     {
         Ok(call) => (StatusCode::CREATED, Json(call)).into_response(),
+        Err(error_value) => call_error(error_value),
+    }
+}
+
+async fn incoming_calls_handler(
+    State(state): State<CallState>,
+    headers: HeaderMap,
+) -> axum::response::Response {
+    let user_id = match authorize(&state, &headers) {
+        Ok(id) => id,
+        Err(response) => return response,
+    };
+
+    match state.calls.incoming(user_id).await {
+        Ok(calls) => Json(calls).into_response(),
         Err(error_value) => call_error(error_value),
     }
 }

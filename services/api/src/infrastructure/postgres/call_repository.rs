@@ -115,6 +115,21 @@ impl CallRepository for PostgresCallRepository {
 
         Ok(row.into())
     }
+
+    async fn incoming(&self, user_id: Uuid) -> Result<Vec<CallSession>, CallError> {
+        let rows = sqlx::query_as::<_, CallRow>(
+            "SELECT id, conversation_id, caller_id, callee_id, kind, status, offer_sdp, answer_sdp, created_at, updated_at
+             FROM call_sessions
+             WHERE callee_id = $1 AND status = 'ringing' AND created_at > now() - interval '60 seconds'
+             ORDER BY created_at DESC",
+        )
+        .bind(user_id)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(|e| CallError::Repository(e.to_string()))?;
+
+        Ok(rows.into_iter().map(CallSession::from).collect())
+    }
 }
 
 #[derive(sqlx::FromRow)]
