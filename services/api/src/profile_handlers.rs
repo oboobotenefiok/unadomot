@@ -2,14 +2,14 @@ use axum::{
     extract::{Path, State},
     http::{header, HeaderMap, StatusCode},
     response::IntoResponse,
-    routing::{get, patch},
+    routing::{get, post},
     Json, Router,
 };
 use serde::Deserialize;
 use serde_json::{json, Value};
 use sqlx::PgPool;
 use std::sync::Arc;
-use unadomot_api::application::auth::verify_session;
+use unadomot_api::application::auth::{issue_session, verify_session};
 use uuid::Uuid;
 
 #[derive(Clone)]
@@ -23,6 +23,7 @@ pub fn router(state: ProfileState) -> Router {
         .route("/api/profile/me", get(me).patch(update_me))
         .route("/api/profile/me/listings", get(my_listings))
         .route("/api/profile/{username}", get(public_profile))
+        .route("/api/auth/google", post(google_auth))
         .with_state(state)
 }
 
@@ -249,6 +250,95 @@ async fn public_profile(
     let mut value = profile.into_json();
     value["listings"] = json!(listings.into_iter().map(ListingRow::into_json).collect::<Vec<_>>());
     Json(value).into_response()
+}
+
+#[derive(Deserialize)]
+struct GoogleAuthRequest {
+    id_token: String,
+}
+
+#[derive(Deserialize)]
+struct GoogleTokenInfo {
+    aud: String,
+    email: String,
+    email_verified: Option<String>,
+    name: Option<String>,
+}
+
+async fn google_auth(
+    State(state): State<ProfileState>,
+    Json(request): Json<GoogleAuthRequest>,
+) -> axum::response::Response {
+    let client_id = match std::env::var("GOOGLE_CLIENT_ID") {
+        Ok(value) if !value.trim().is_empty() => value,
+        _ => return error(StatusCode::SERVICE_UNAVAILABLE, "Google sign-in is not configured"),
+    };
+
+    if request.id_token.trim().is_empty() {
+        return error(StatusCode::BAD_REQUEST, "Google token is required");
+    }
+
+    let response = match reqwest::Client::new()
+        .get("https://oauth2.googleapis.com/tokeninfo")
+        .query(&[("id_token", request.id_token.trim())])
+        .send()
+        .await
+    {
+        Ok(response) => response,
+        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Google verification unavailable"),
+    };
+
+    if !response.status().is_success() {
+        return error(StatusCode::UNAUTHORIZED, "Google sign-in failed");
+    }
+
+    let info: GoogleTokenInfo = match response.json().await {
+        Ok(info) => info,
+        Err(_) => return error(StatusCode::UNAUTHORIZED, "Google sign-in failed"),
+    };
+
+    if info.aud != client_id {
+        return error(StatusCode::UNAUTHORIZED, "Google token audience mismatch");
+    }
+    if info.email_verified.as_deref() != Some("true") {
+        return error(StatusCode::UNAUTHORIZED, "Google email is not verified");
+    }
+
+    let email = info.email.trim().to_lowercase();
+    let name = info.name.unwrap_or_else(|| email.split('@').next().unwrap_or("User").to_string());
+
+    let user_id: Uuid = match sqlx::query_scalar(
+        "INSERT INTO users (email, auth_provider) VALUES ($1, 'google')
+         ON CONFLICT (lower(email)) DO UPDATE SET email = EXCLUDED.email
+         RETURNING id",
+    )
+    .bind(&email)
+    .fetch_one(&state.pool)
+    .await
+    {
+        Ok(id) => id,
+        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Could not create account"),
+    };
+
+    if ensure_profile(&state.pool, user_id, &email).await.is_err() {
+        return error(StatusCode::SERVICE_UNAVAILABLE, "Could not create profile");
+    }
+
+    let _ = sqlx::query("UPDATE user_profiles SET name = $2 WHERE user_id = $1 AND (name IS NULL OR name = '')")
+        .bind(user_id)
+        .bind(&name)
+        .execute(&state.pool)
+        .await;
+
+    match issue_session(user_id, email, &state.jwt_secret) {
+        Ok(session) => Json(json!({
+            "token": session.token,
+            "expires_at": session.expires_at,
+            "refresh_token": null,
+        }))
+        .into_response(),
+        Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Could not create session"),
+    }
 }
 
 #[derive(sqlx::FromRow)]
