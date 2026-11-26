@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import '../api/api_client.dart';
@@ -449,11 +450,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         crossAxisCount: 2,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
-        childAspectRatio: 0.78,
+        childAspectRatio: 0.72,
       ),
       itemBuilder: (context, index) {
         final listing = _listings[index];
         final deleted = listing['status'] == 'deleted';
+        final code = listing['code'] as String?;
         return InkWell(
           onTap: () => Navigator.push(
             context,
@@ -523,6 +525,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(fontSize: 11, color: dark ? Colors.white60 : Colors.black54),
                       ),
+                      if (code != null && code.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        InkWell(
+                          onTap: () async {
+                            await Clipboard.setData(ClipboardData(text: code));
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Code $code copied')),
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              Icon(Icons.qr_code_2, size: 12, color: dark ? Colors.white54 : Colors.black54),
+                              const SizedBox(width: 4),
+                              Text(
+                                code,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: dark ? Colors.white70 : const Color(0xFF15803D),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(Icons.copy, size: 11, color: dark ? Colors.white38 : Colors.black38),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
