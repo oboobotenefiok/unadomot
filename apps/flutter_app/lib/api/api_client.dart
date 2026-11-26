@@ -299,6 +299,50 @@ class ApiClient {
     );
   }
 
+  Future<Map<String, dynamic>> startCall(
+    String conversationId, {
+    required String kind,
+    required String offerSdp,
+  }) async {
+    final result = await _request(
+      'POST',
+      '/api/conversations/${Uri.encodeComponent(conversationId)}/calls',
+      body: {'kind': kind, 'offer_sdp': offerSdp},
+      authenticated: true,
+    );
+    return Map<String, dynamic>.from(result as Map);
+  }
+
+  Future<Map<String, dynamic>> getCall(String callId) async {
+    final result = await _request(
+      'GET',
+      '/api/calls/${Uri.encodeComponent(callId)}',
+      authenticated: true,
+    );
+    return Map<String, dynamic>.from(result as Map);
+  }
+
+  Future<Map<String, dynamic>> answerCall(
+    String callId, {
+    required String answerSdp,
+  }) async {
+    final result = await _request(
+      'POST',
+      '/api/calls/${Uri.encodeComponent(callId)}/answer',
+      body: {'answer_sdp': answerSdp},
+      authenticated: true,
+    );
+    return Map<String, dynamic>.from(result as Map);
+  }
+
+  Future<void> endCall(String callId) async {
+    await _request(
+      'POST',
+      '/api/calls/${Uri.encodeComponent(callId)}/end',
+      authenticated: true,
+    );
+  }
+
   Future<void> markRead(String conversationId) async {
     await _request(
       'POST',
