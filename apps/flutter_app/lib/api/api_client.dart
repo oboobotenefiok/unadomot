@@ -79,6 +79,19 @@ class ApiClient {
     };
 
     final data = await _request('POST', path, body: body);
+    _applySession(data);
+  }
+
+  Future<void> googleSignIn(String idToken) async {
+    final data = await _request(
+      'POST',
+      '/api/auth/google',
+      body: {'id_token': idToken},
+    );
+    _applySession(data);
+  }
+
+  Future<void> _applySession(dynamic data) async {
     final session = Map<String, dynamic>.from(data as Map);
     final token = session['token'] as String;
     final refreshToken = session['refresh_token'] as String?;
