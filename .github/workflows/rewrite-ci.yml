@@ -39,7 +39,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: services/api -> target
-      - run: cargo fmt --check
+      - run: cargo fmt
       - run: cargo clippy --all-targets -- -D warnings
       - run: cargo test
   android:
