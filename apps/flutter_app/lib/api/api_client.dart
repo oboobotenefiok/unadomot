@@ -31,6 +31,9 @@ class ApiClient {
   String? _refreshToken;
   DateTime? _expiresAt;
 
+  Future<void> Function(String token, String? refreshToken, DateTime expiresAt)?
+      onSessionChanged;
+
   ApiClient({required String baseUrl, http.Client? client})
       : baseUrl = Uri.parse(baseUrl),
         _client = client ?? http.Client() {
@@ -90,6 +93,7 @@ class ApiClient {
     _token = token;
     _refreshToken = refreshToken;
     _expiresAt = expiresAt;
+    await onSessionChanged?.call(token, refreshToken, expiresAt);
   }
 
   Future<bool> _refreshSession() async {
@@ -112,12 +116,16 @@ class ApiClient {
       }
 
       final session = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
-      _token = session['token'] as String;
-      _refreshToken = session['refresh_token'] as String?;
-      _expiresAt = DateTime.fromMillisecondsSinceEpoch(
+      final token = session['token'] as String;
+      final nextRefresh = session['refresh_token'] as String?;
+      final expiresAt = DateTime.fromMillisecondsSinceEpoch(
         (session['expires_at'] as num).toInt() * 1000,
         isUtc: true,
       );
+      _token = token;
+      _refreshToken = nextRefresh;
+      _expiresAt = expiresAt;
+      await onSessionChanged?.call(token, nextRefresh, expiresAt);
       return true;
     } catch (_) {
       return false;

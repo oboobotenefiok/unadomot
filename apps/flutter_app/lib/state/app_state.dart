@@ -16,7 +16,9 @@ class AppState extends ChangeNotifier {
     required this.api,
     required this.cache,
     FlutterSecureStorage? storage,
-  }) : _storage = storage ?? const FlutterSecureStorage();
+  }) : _storage = storage ?? const FlutterSecureStorage() {
+    api.onSessionChanged = _persistSession;
+  }
 
   bool get signedIn => api.signedIn;
 
@@ -37,17 +39,21 @@ class AppState extends ChangeNotifier {
     String? name,
   }) async {
     await api.authenticate(email: email, password: password, name: name);
-    final token = api.token;
-    final refresh = api.refreshToken;
-    final expiresAt = api.expiresAt;
-    if (token != null && expiresAt != null) {
-      await _storage.write(key: _tokenKey, value: token);
-      await _storage.write(key: _expiryKey, value: expiresAt.toIso8601String());
-      if (refresh != null) {
-        await _storage.write(key: _refreshKey, value: refresh);
-      }
-    }
     notifyListeners();
+  }
+
+  Future<void> _persistSession(
+    String token,
+    String? refreshToken,
+    DateTime expiresAt,
+  ) async {
+    await _storage.write(key: _tokenKey, value: token);
+    await _storage.write(key: _expiryKey, value: expiresAt.toIso8601String());
+    if (refreshToken != null) {
+      await _storage.write(key: _refreshKey, value: refreshToken);
+    } else {
+      await _storage.delete(key: _refreshKey);
+    }
   }
 
   Future<void> signOut() async {
