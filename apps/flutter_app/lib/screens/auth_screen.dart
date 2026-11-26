@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../state/app_state.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -40,6 +41,32 @@ class _AuthScreenState extends State<AuthScreen> {
         password: _password.text,
         name: _register ? _name.text : null,
       );
+    } catch (error) {
+      if (mounted) setState(() => _error = error.toString());
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _google() async {
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      const clientId = String.fromEnvironment('GOOGLE_CLIENT_ID');
+      final google = GoogleSignIn(
+        scopes: const ['email', 'profile'],
+        serverClientId: clientId.isEmpty ? null : clientId,
+      );
+      final account = await google.signIn();
+      if (account == null) return;
+      final auth = await account.authentication;
+      final idToken = auth.idToken;
+      if (idToken == null || idToken.isEmpty) {
+        throw StateError('Google did not return an ID token');
+      }
+      await widget.appState.googleSignIn(idToken);
     } catch (error) {
       if (mounted) setState(() => _error = error.toString());
     } finally {
@@ -96,6 +123,12 @@ class _AuthScreenState extends State<AuthScreen> {
                     child: Text(
                       _busy ? 'Please wait' : _register ? 'Create account' : 'Sign in',
                     ),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: _busy ? null : _google,
+                    icon: const Icon(Icons.g_mobiledata, size: 28),
+                    label: const Text('Continue with Google'),
                   ),
                   TextButton(
                     onPressed: _busy
