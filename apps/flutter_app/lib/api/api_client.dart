@@ -320,6 +320,17 @@ class ApiClient {
         .toList();
   }
 
+  Future<List<Map<String, dynamic>>> callHistory(String conversationId) async {
+    final result = await _request(
+      'GET',
+      '/api/conversations/${Uri.encodeComponent(conversationId)}/calls/history',
+      authenticated: true,
+    );
+    return (result as List)
+        .map((item) => Map<String, dynamic>.from(item as Map))
+        .toList();
+  }
+
   Future<Map<String, dynamic>> getCall(String callId) async {
     final result = await _request(
       'GET',
