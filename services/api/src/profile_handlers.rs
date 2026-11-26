@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::{header, HeaderMap, StatusCode},
     response::IntoResponse,
     routing::{get, post},
@@ -24,6 +24,8 @@ pub fn router(state: ProfileState) -> Router {
         .route("/api/profile/me/listings", get(my_listings))
         .route("/api/profile/{username}", get(public_profile))
         .route("/api/auth/google", post(google_auth))
+        .route("/api/admin/users/search", get(admin_user_search))
+        .route("/api/admin/audit", get(admin_audit))
         .with_state(state)
 }
 
@@ -41,6 +43,25 @@ fn authorize(state: &ProfileState, headers: &HeaderMap) -> Result<Uuid, axum::re
     verify_session(header, &state.jwt_secret)
         .map(|user| user.id)
         .map_err(|_| error(StatusCode::UNAUTHORIZED, "Session expired"))
+}
+
+async fn authorize_admin(
+    state: &ProfileState,
+    headers: &HeaderMap,
+) -> Result<Uuid, axum::response::Response> {
+    let user_id = authorize(state, headers)?;
+    let is_admin: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM admin_roles WHERE user_id = $1)",
+    )
+    .bind(user_id)
+    .fetch_one(&state.pool)
+    .await
+    .unwrap_or(false);
+
+    if !is_admin {
+        return Err(error(StatusCode::FORBIDDEN, "Admin access is required"));
+    }
+    Ok(user_id)
 }
 
 fn username_base(name: &str) -> String {
@@ -250,6 +271,92 @@ async fn public_profile(
     let mut value = profile.into_json();
     value["listings"] = json!(listings.into_iter().map(ListingRow::into_json).collect::<Vec<_>>());
     Json(value).into_response()
+}
+
+#[derive(Deserialize, Default)]
+struct UserSearchQuery {
+    q: Option<String>,
+}
+
+async fn admin_user_search(
+    State(state): State<ProfileState>,
+    headers: HeaderMap,
+    Query(query): Query<UserSearchQuery>,
+) -> axum::response::Response {
+    if let Err(response) = authorize_admin(&state, &headers).await {
+        return response;
+    }
+
+    let term = query.q.unwrap_or_default().trim().to_lowercase();
+    if term.len() < 2 {
+        return Json(json!([])).into_response();
+    }
+    let pattern = format!("%{term}%");
+
+    let rows = sqlx::query_as::<_, (Uuid, String, Option<String>, Option<String>, String, bool, String)>(
+        "SELECT u.id, u.email, p.name, p.username, u.status, p.verified, p.user_type
+         FROM users u LEFT JOIN user_profiles p ON p.user_id = u.id
+         WHERE lower(u.email) LIKE $1 OR lower(COALESCE(p.name, '')) LIKE $1 OR lower(COALESCE(p.username, '')) LIKE $1
+         ORDER BY u.created_at DESC LIMIT 25",
+    )
+    .bind(&pattern)
+    .fetch_all(&state.pool)
+    .await;
+
+    match rows {
+        Ok(rows) => Json(
+            rows.into_iter()
+                .map(|(id, email, name, username, status, verified, user_type)| {
+                    json!({
+                        "id": id,
+                        "email": email,
+                        "name": name,
+                        "username": username,
+                        "status": status,
+                        "verified": verified,
+                        "user_type": user_type,
+                    })
+                })
+                .collect::<Vec<_>>(),
+        )
+        .into_response(),
+        Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "User search unavailable"),
+    }
+}
+
+async fn admin_audit(
+    State(state): State<ProfileState>,
+    headers: HeaderMap,
+) -> axum::response::Response {
+    if let Err(response) = authorize_admin(&state, &headers).await {
+        return response;
+    }
+
+    let rows = sqlx::query_as::<_, (Uuid, Uuid, String, Uuid, Value, chrono::DateTime<chrono::Utc>)>(
+        "SELECT id, admin_user_id, action, target_id, metadata, created_at
+         FROM admin_audit_log ORDER BY created_at DESC LIMIT 100",
+    )
+    .fetch_all(&state.pool)
+    .await;
+
+    match rows {
+        Ok(rows) => Json(
+            rows.into_iter()
+                .map(|(id, admin_user_id, action, target_id, metadata, created_at)| {
+                    json!({
+                        "id": id,
+                        "admin_user_id": admin_user_id,
+                        "action": action,
+                        "target_id": target_id,
+                        "metadata": metadata,
+                        "created_at": created_at,
+                    })
+                })
+                .collect::<Vec<_>>(),
+        )
+        .into_response(),
+        Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Audit log unavailable"),
+    }
 }
 
 #[derive(Deserialize)]
