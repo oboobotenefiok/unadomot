@@ -1,6 +1,5 @@
 use crate::domain::listing::{
-    Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing,
-    NewListingMedia,
+    Listing, ListingFilter, ListingMedia, ListingUpdate, NewListing, NewListingMedia,
 };
 use async_trait::async_trait;
 use rust_decimal::Decimal;

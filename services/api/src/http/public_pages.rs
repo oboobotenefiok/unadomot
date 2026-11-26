@@ -61,7 +61,7 @@ async fn listing_page(
 <meta name="twitter:title" content="{title}">
 <meta name="twitter:description" content="{description}">
 <meta name="twitter:image" content="{image}">
-<script type="application/ld+json">{{json_ld}}</script>
+<script type="application/ld+json">{json_ld}</script>
 </head>
 <body>
 <main>
