@@ -173,6 +173,11 @@ pub struct RefreshRequest {
     pub refresh_token: String,
 }
 
+#[derive(Deserialize)]
+pub struct LogoutRequest {
+    pub refresh_token: String,
+}
+
 #[derive(Serialize)]
 pub struct SessionResponse {
     pub token: String,
@@ -472,6 +477,7 @@ pub fn router(state: AppState) -> Router {
         .route("/api/auth/register", post(register_handler))
         .route("/api/auth/login", post(login_handler))
         .route("/api/auth/refresh", post(refresh_handler))
+        .route("/api/auth/logout", post(logout_handler))
         .route(
             "/api/listings",
             get(list_listings).post(create_listing_handler),
@@ -643,6 +649,18 @@ async fn refresh_handler(
         refresh_token: new_token,
         expires_at: session.expires_at,
     }))
+}
+
+async fn logout_handler(
+    State(state): State<AppState>,
+    Json(request): Json<LogoutRequest>,
+) -> Result<StatusCode, ApiError> {
+    state
+        .users
+        .revoke_refresh_token(&hash_refresh_token(&request.refresh_token))
+        .await
+        .map_err(auth_error)?;
+    Ok(StatusCode::NO_CONTENT)
 }
 
 #[derive(Deserialize, Default)]
