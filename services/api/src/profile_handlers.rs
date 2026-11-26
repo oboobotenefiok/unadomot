@@ -5,11 +5,14 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
+use chrono::{Duration, Utc};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use sqlx::PgPool;
 use std::sync::Arc;
-use unadomot_api::application::auth::{issue_session, verify_session};
+use unadomot_api::application::auth::{
+    hash_refresh_token, issue_session, new_refresh_token, verify_session,
+};
 use uuid::Uuid;
 
 #[derive(Clone)]
@@ -433,17 +436,53 @@ async fn google_auth(
     let email = info.email.trim().to_lowercase();
     let name = info.name.unwrap_or_else(|| email.split('@').next().unwrap_or("User").to_string());
 
-    let user_id: Uuid = match sqlx::query_scalar(
-        "INSERT INTO users (email, auth_provider) VALUES ($1, 'google')
-         ON CONFLICT (lower(email)) DO UPDATE SET email = EXCLUDED.email
-         RETURNING id",
+    let existing = sqlx::query_as::<_, (Uuid, Option<String>, String)>(
+        "SELECT id, password_hash, status FROM users WHERE lower(email) = lower($1)",
     )
     .bind(&email)
-    .fetch_one(&state.pool)
-    .await
-    {
-        Ok(id) => id,
-        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Could not create account"),
+    .fetch_optional(&state.pool)
+    .await;
+
+    let user_id = match existing {
+        Ok(Some((id, password_hash, status))) => {
+            if status != "active" {
+                return error(StatusCode::FORBIDDEN, "This account is suspended");
+            }
+
+            if password_hash.is_some() {
+                let _ = sqlx::query(
+                    "UPDATE users SET password_hash = NULL, auth_provider = 'google' WHERE id = $1",
+                )
+                .bind(id)
+                .execute(&state.pool)
+                .await;
+                let _ = sqlx::query(
+                    "UPDATE refresh_tokens SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL",
+                )
+                .bind(id)
+                .execute(&state.pool)
+                .await;
+            } else {
+                let _ = sqlx::query("UPDATE users SET auth_provider = 'google' WHERE id = $1")
+                    .bind(id)
+                    .execute(&state.pool)
+                    .await;
+            }
+            id
+        }
+        Ok(None) => {
+            match sqlx::query_scalar::<_, Uuid>(
+                "INSERT INTO users (email, auth_provider) VALUES ($1, 'google') RETURNING id",
+            )
+            .bind(&email)
+            .fetch_one(&state.pool)
+            .await
+            {
+                Ok(id) => id,
+                Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Could not create account"),
+            }
+        }
+        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Could not verify account"),
     };
 
     if ensure_profile(&state.pool, user_id, &email).await.is_err() {
@@ -456,11 +495,26 @@ async fn google_auth(
         .execute(&state.pool)
         .await;
 
+    let refresh_token = new_refresh_token();
+    let refresh_hash = hash_refresh_token(&refresh_token);
+    if sqlx::query(
+        "INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3)",
+    )
+    .bind(user_id)
+    .bind(&refresh_hash)
+    .bind(Utc::now() + Duration::days(30))
+    .execute(&state.pool)
+    .await
+    .is_err()
+    {
+        return error(StatusCode::SERVICE_UNAVAILABLE, "Could not create session");
+    }
+
     match issue_session(user_id, email, &state.jwt_secret) {
         Ok(session) => Json(json!({
             "token": session.token,
             "expires_at": session.expires_at,
-            "refresh_token": null,
+            "refresh_token": refresh_token,
         }))
         .into_response(),
         Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Could not create session"),
