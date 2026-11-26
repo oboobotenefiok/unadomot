@@ -23,16 +23,37 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   final _address = TextEditingController();
   final _state = TextEditingController(text: 'Rivers');
   final _lga = TextEditingController();
+  final _bedrooms = TextEditingController();
+  final _bathrooms = TextEditingController();
+  String? _propertyType;
+  bool _isAgent = false;
   Uint8List? _photoBytes;
   String? _photoName;
   bool _busy = false;
   String? _error;
 
+  static const _propertyTypes = [
+    'Apartment',
+    'House',
+    'Self Contain',
+    'Room',
+    'Duplex',
+  ];
+
   @override
   void initState() {
     super.initState();
     _restoreDraft();
-    for (final controller in [_title, _description, _price, _address, _state, _lga]) {
+    for (final controller in [
+      _title,
+      _description,
+      _price,
+      _address,
+      _state,
+      _lga,
+      _bedrooms,
+      _bathrooms,
+    ]) {
       controller.addListener(_saveDraft);
     }
   }
@@ -47,6 +68,10 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       _address.text = draft['address'] as String? ?? '';
       _state.text = draft['state'] as String? ?? 'Rivers';
       _lga.text = draft['lga'] as String? ?? '';
+      _bedrooms.text = draft['bedrooms'] as String? ?? '';
+      _bathrooms.text = draft['bathrooms'] as String? ?? '';
+      _propertyType = draft['property_type'] as String?;
+      _isAgent = draft['is_agent_listing'] as bool? ?? false;
     });
   }
 
@@ -58,6 +83,10 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       'address': _address.text,
       'state': _state.text,
       'lga': _lga.text,
+      'bedrooms': _bedrooms.text,
+      'bathrooms': _bathrooms.text,
+      'property_type': _propertyType,
+      'is_agent_listing': _isAgent,
     });
   }
 
@@ -79,7 +108,16 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
 
   @override
   void dispose() {
-    for (final controller in [_title, _description, _price, _address, _state, _lga]) {
+    for (final controller in [
+      _title,
+      _description,
+      _price,
+      _address,
+      _state,
+      _lga,
+      _bedrooms,
+      _bathrooms,
+    ]) {
       controller.removeListener(_saveDraft);
       controller.dispose();
     }
@@ -101,7 +139,12 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         'address': _address.text.trim(),
         'state': _state.text.trim(),
         'lga': _lga.text.trim(),
-        'is_agent_listing': false,
+        'is_agent_listing': _isAgent,
+        if (_bedrooms.text.trim().isNotEmpty)
+          'bedrooms': int.tryParse(_bedrooms.text.trim()),
+        if (_bathrooms.text.trim().isNotEmpty)
+          'bathrooms': int.tryParse(_bathrooms.text.trim()),
+        if (_propertyType != null) 'property_type': _propertyType,
       });
 
       if (_photoBytes != null) {
@@ -120,7 +163,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       }
 
       await widget.cache.clearDraft(_draftId);
-      if (mounted) Navigator.pop(context);
+      if (mounted) Navigator.pop(context, true);
     } catch (error) {
       if (mounted) setState(() => _error = error.toString());
     } finally {
@@ -130,7 +173,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Post listing')),
+        appBar: AppBar(title: const Text('Post a listing')),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
@@ -159,10 +202,16 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                   TextFormField(
                     controller: _price,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'Price per year'),
-                    validator: (value) => double.tryParse(value ?? '') == null
-                        ? 'Enter a valid price'
-                        : null,
+                    decoration: const InputDecoration(
+                      labelText: 'Monthly rent (₦)',
+                      prefixText: '₦ ',
+                    ),
+                    validator: (value) {
+                      final price = double.tryParse(value ?? '');
+                      return price == null || price <= 0
+                          ? 'Enter a valid monthly rent'
+                          : null;
+                    },
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
@@ -185,7 +234,53 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                         ? 'Enter an area'
                         : null,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    initialValue: _propertyType,
+                    decoration: const InputDecoration(labelText: 'Property type'),
+                    items: _propertyTypes
+                        .map((type) => DropdownMenuItem(
+                              value: type,
+                              child: Text(type),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() => _propertyType = value);
+                      _saveDraft();
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _bedrooms,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(labelText: 'Bedrooms'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _bathrooms,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(labelText: 'Bathrooms'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Post as an agent'),
+                    subtitle: const Text('Shown with an Agent badge on your listing'),
+                    value: _isAgent,
+                    onChanged: (value) {
+                      setState(() => _isAgent = value);
+                      _saveDraft();
+                    },
+                  ),
+                  const SizedBox(height: 8),
                   OutlinedButton.icon(
                     onPressed: _busy ? null : _pickPhoto,
                     icon: const Icon(Icons.photo_library_outlined),

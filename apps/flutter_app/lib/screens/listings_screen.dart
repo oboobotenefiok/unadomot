@@ -5,6 +5,7 @@ import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import 'auth_sheet.dart';
+import 'create_listing_screen.dart';
 import 'listing_detail_screen.dart';
 import 'messages_screen.dart';
 import 'verification_screen.dart';
@@ -88,6 +89,21 @@ class _ListingsScreenState extends State<ListingsScreen> {
     );
   }
 
+  Future<void> _openPost() async {
+    if (!await requireAuth(context, widget.appState, register: true)) return;
+    if (!mounted) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CreateListingScreen(
+          api: widget.api,
+          cache: widget.cache,
+        ),
+      ),
+    );
+    if (mounted) _load();
+  }
+
   List<Listing> get _visibleListings {
     final query = _query.trim().toLowerCase();
     if (query.isEmpty) return _listings;
@@ -120,6 +136,13 @@ class _ListingsScreenState extends State<ListingsScreen> {
             ],
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _openPost,
+        backgroundColor: UnaColors.primary,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add_home_work_outlined),
+        label: const Text('Post listing'),
       ),
       body: RefreshIndicator(
         onRefresh: _load,
@@ -161,7 +184,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                         child: listings.isEmpty
                             ? const Center(child: Text('No listings match your search'))
                             : ListView.builder(
-                                padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                                padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
                                 itemCount: listings.length,
                                 itemBuilder: (context, index) {
                                   final listing = listings[index];
