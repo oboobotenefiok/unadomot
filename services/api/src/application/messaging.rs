@@ -41,6 +41,16 @@ pub trait MessagingRepository: Send + Sync {
     ) -> Result<Message, MessagingError>;
     async fn mark_read(&self, conversation_id: Uuid, user_id: Uuid) -> Result<(), MessagingError>;
 
+    async fn list_rich_messages(
+        &self,
+        _conversation_id: Uuid,
+        _viewer_id: Uuid,
+        _before: Option<String>,
+        _limit: i64,
+    ) -> Result<Vec<serde_json::Value>, MessagingError> {
+        Ok(Vec::new())
+    }
+
     async fn send_rich_message(
         &self,
         _conversation_id: Uuid,

@@ -178,6 +178,50 @@ impl MessagingRepository for PostgresMessagingRepository {
         Ok(row.into())
     }
 
+    async fn list_rich_messages(
+        &self,
+        conversation_id: Uuid,
+        viewer_id: Uuid,
+        before: Option<String>,
+        limit: i64,
+    ) -> Result<Vec<serde_json::Value>, MessagingError> {
+        let rows = sqlx::query_scalar::<_, serde_json::Value>(
+            "SELECT jsonb_build_object(
+                'id', m.id,
+                'conversation_id', m.conversation_id,
+                'sender_id', m.sender_id,
+                'body', m.body,
+                'media_url', m.media_url,
+                'media_type', m.media_type,
+                'duration_seconds', m.duration_seconds,
+                'reply_to_id', m.reply_to_id,
+                'reply_to_body', r.body,
+                'reactions', COALESCE((
+                  SELECT jsonb_agg(jsonb_build_object('emoji', x.emoji, 'count', x.count, 'reacted_by_me', x.reacted_by_me))
+                  FROM (
+                    SELECT emoji, COUNT(*) AS count, BOOL_OR(user_id = $2) AS reacted_by_me
+                    FROM message_reactions WHERE message_id = m.id GROUP BY emoji
+                  ) x
+                ), '[]'::jsonb),
+                'created_at', m.created_at,
+                'read_at', m.read_at
+             )
+             FROM messages m
+             LEFT JOIN messages r ON r.id = m.reply_to_id
+             WHERE m.conversation_id = $1 AND ($3::timestamptz IS NULL OR m.created_at < $3::timestamptz)
+             ORDER BY m.created_at DESC, m.id DESC LIMIT $4",
+        )
+        .bind(conversation_id)
+        .bind(viewer_id)
+        .bind(before)
+        .bind(limit)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(|e| MessagingError::Repository(e.to_string()))?;
+
+        Ok(rows)
+    }
+
     async fn send_rich_message(
         &self,
         conversation_id: Uuid,
