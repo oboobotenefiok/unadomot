@@ -25,6 +25,7 @@ pub fn router(state: CommentState) -> Router {
             get(list_comments).post(create_comment),
         )
         .route("/api/comments/{id}/reactions", post(toggle_reaction))
+        .route("/api/listings/code/{code}", get(find_by_code))
         .with_state(state)
 }
 
@@ -52,6 +53,29 @@ struct CreateCommentRequest {
 #[derive(Deserialize)]
 struct ReactionRequest {
     emoji: String,
+}
+
+async fn find_by_code(
+    State(state): State<CommentState>,
+    Path(code): Path<String>,
+) -> axum::response::Response {
+    let code = code.trim().to_uppercase();
+    if code.len() < 4 || code.len() > 32 {
+        return error(StatusCode::BAD_REQUEST, "Enter a valid listing code");
+    }
+
+    let id = sqlx::query_scalar::<_, Uuid>(
+        "SELECT id FROM listings WHERE upper(code) = $1 AND deleted_at IS NULL",
+    )
+    .bind(&code)
+    .fetch_optional(&state.pool)
+    .await;
+
+    match id {
+        Ok(Some(id)) => Json(json!({ "id": id, "code": code })).into_response(),
+        Ok(None) => error(StatusCode::NOT_FOUND, "No listing matches that code"),
+        Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Listing lookup unavailable"),
+    }
 }
 
 async fn list_comments(
