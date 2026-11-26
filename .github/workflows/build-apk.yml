@@ -3,6 +3,9 @@ name: Build APK
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,6 +27,7 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
+          set -e
           flutter create --platforms=android --org com.unadomot --project-name unadomot .
           mkdir -p assets
           cp ../../vault/img/unadomot.jpg assets/unadomot.jpg
@@ -135,3 +139,24 @@ jobs:
         with:
           name: unadomot-release-apk
           path: apps/flutter_app/build/app/outputs/flutter-apk/app-release.apk
+      - name: Publish release failure
+        if: failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan ci-logs-apk
+          git rm -rf . >/dev/null 2>&1 || true
+          git clean -fdx >/dev/null 2>&1 || true
+          {
+            echo "# Release APK failure"
+            echo
+            echo "- Commit: ${GITHUB_SHA}"
+            echo "- Ref: ${GITHUB_REF_NAME}"
+            echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "- Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo
+            echo "Open the failed job log for the full Gradle output. This branch records the failure marker so it is visible without copying from Termux."
+          } > status.md
+          git add status.md
+          git commit -m "Release APK failure for ${GITHUB_SHA}"
+          git push --force origin ci-logs-apk
