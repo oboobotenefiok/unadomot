@@ -8,8 +8,16 @@ import '../data/local_cache.dart';
 class CreateListingScreen extends StatefulWidget {
   final ApiClient api;
   final LocalCache cache;
+  final bool showAppBar;
+  final VoidCallback? onExit;
 
-  const CreateListingScreen({super.key, required this.api, required this.cache});
+  const CreateListingScreen({
+    super.key,
+    required this.api,
+    required this.cache,
+    this.showAppBar = true,
+    this.onExit,
+  });
 
   @override
   State<CreateListingScreen> createState() => _CreateListingScreenState();
@@ -151,7 +159,11 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
 
   void _back() {
     if (_step == 0) {
-      Navigator.pop(context);
+      if (widget.onExit != null) {
+        widget.onExit!();
+      } else {
+        Navigator.pop(context);
+      }
     } else {
       setState(() => _step -= 1);
     }
@@ -222,7 +234,13 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       }
 
       await widget.cache.clearDraft(_draftId);
-      if (mounted) Navigator.pop(context, true);
+      if (mounted) {
+        if (widget.onExit != null) {
+          widget.onExit!();
+        } else {
+          Navigator.pop(context, true);
+        }
+      }
     } catch (error) {
       if (mounted) setState(() => _error = error.toString());
     } finally {
@@ -232,7 +250,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Post a listing')),
+        appBar: widget.showAppBar ? AppBar(title: const Text('Post a listing')) : null,
         body: SafeArea(
           child: Column(
             children: [
