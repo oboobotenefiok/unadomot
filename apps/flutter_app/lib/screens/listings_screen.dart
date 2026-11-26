@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../api/api_client.dart';
+import '../app_settings.dart';
 import '../data/local_cache.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
@@ -10,7 +11,6 @@ import 'favorites_screen.dart';
 import 'listing_detail_screen.dart';
 import 'messages_screen.dart';
 import 'profile_screen.dart';
-import 'verification_screen.dart';
 
 class ListingsScreen extends StatefulWidget {
   final ApiClient api;
@@ -132,15 +132,6 @@ class _ListingsScreenState extends State<ListingsScreen> {
     );
   }
 
-  Future<void> _openVerification() async {
-    if (!await requireAuth(context, widget.appState)) return;
-    if (!mounted) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => VerificationScreen(api: widget.api)),
-    );
-  }
-
   Future<void> _openFavorites() async {
     if (!await requireAuth(context, widget.appState)) return;
     if (!mounted) return;
@@ -197,6 +188,62 @@ class _ListingsScreenState extends State<ListingsScreen> {
     _load();
   }
 
+  Future<void> _openAccessibility() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Accessibility',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            ValueListenableBuilder<ThemeMode>(
+              valueListenable: appThemeMode,
+              builder: (context, mode, _) => SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Dark mode'),
+                subtitle: const Text('Use a darker palette across the app'),
+                value: mode == ThemeMode.dark,
+                onChanged: (value) {
+                  appThemeMode.value = value ? ThemeMode.dark : ThemeMode.light;
+                },
+              ),
+            ),
+            const ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.text_fields),
+              title: Text('Larger text'),
+              subtitle: Text('Use your device text size setting'),
+            ),
+            const ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.contrast),
+              title: Text('High contrast'),
+              subtitle: Text('Coming soon'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   List<Listing> get _visibleListings {
     final query = _query.trim().toLowerCase();
     if (query.isEmpty) return _listings;
@@ -213,44 +260,37 @@ class _ListingsScreenState extends State<ListingsScreen> {
     final listings = _visibleListings;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('UnaDomot'),
+        leading: IconButton(
+          tooltip: 'Filters',
+          icon: Badge(
+            isLabelVisible: _filters.isNotEmpty,
+            child: const Icon(Icons.tune),
+          ),
+          onPressed: _openFilters,
+        ),
+        titleSpacing: 0,
+        title: TextField(
+          onChanged: (value) => setState(() => _query = value),
+          decoration: const InputDecoration(
+            hintText: 'Search homes, states, LGAs',
+            prefixIcon: Icon(Icons.search),
+            isDense: true,
+          ),
+        ),
         actions: [
           IconButton(
-            tooltip: 'Filters',
-            icon: Badge(
-              isLabelVisible: _filters.isNotEmpty,
-              child: const Icon(Icons.tune),
-            ),
-            onPressed: _openFilters,
-          ),
-          IconButton(
-            tooltip: 'Favorites',
-            icon: const Icon(Icons.favorite_border),
-            onPressed: _openFavorites,
-          ),
-          IconButton(
-            tooltip: 'Messages',
-            icon: const Icon(Icons.chat_bubble_outline),
-            onPressed: _openMessages,
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'verification') _openVerification();
-              if (value == 'profile') _openProfile();
-            },
-            itemBuilder: (context) => const [
-              PopupMenuItem(value: 'profile', child: Text('Profile')),
-              PopupMenuItem(value: 'verification', child: Text('Verification')),
-            ],
+            tooltip: 'Accessibility',
+            icon: const Icon(Icons.accessibility_new),
+            onPressed: _openAccessibility,
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _openPost,
-        backgroundColor: UnaColors.primary,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add_home_work_outlined),
-        label: const Text('Post listing'),
+      bottomNavigationBar: _BottomNav(
+        onHome: () {},
+        onFavorites: _openFavorites,
+        onPost: _openPost,
+        onMessages: _openMessages,
+        onProfile: _openProfile,
       ),
       body: RefreshIndicator(
         onRefresh: _load,
@@ -274,18 +314,22 @@ class _ListingsScreenState extends State<ListingsScreen> {
                             ),
                           ),
                         ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                        child: TextField(
-                          onChanged: (value) => setState(() => _query = value),
-                          decoration: const InputDecoration(
-                            hintText: 'Search by title, state or LGA',
-                            prefixIcon: Icon(Icons.search),
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(16, 16, 16, 4),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Welcome home 💚',
+                            style: TextStyle(
+                              color: UnaColors.green900,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                       ),
                       const Padding(
-                        padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
                         child: _SectionHeading('Available rentals'),
                       ),
                       Expanded(
@@ -293,7 +337,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                             ? const Center(child: Text('No listings match your search'))
                             : ListView.builder(
                                 controller: _scrollController,
-                                padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
+                                padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                                 itemCount: listings.length + (_loadingMore ? 1 : 0),
                                 itemBuilder: (context, index) {
                                   if (index >= listings.length) {
@@ -336,6 +380,75 @@ class _ListingsScreenState extends State<ListingsScreen> {
     if (difference.inDays < 1) return '${difference.inHours}h ago';
     return '${difference.inDays}d ago';
   }
+}
+
+class _BottomNav extends StatelessWidget {
+  final VoidCallback onHome;
+  final VoidCallback onFavorites;
+  final VoidCallback onPost;
+  final VoidCallback onMessages;
+  final VoidCallback onProfile;
+
+  const _BottomNav({
+    required this.onHome,
+    required this.onFavorites,
+    required this.onPost,
+    required this.onMessages,
+    required this.onProfile,
+  });
+
+  @override
+  Widget build(BuildContext context) => BottomAppBar(
+        height: 64,
+        padding: EdgeInsets.zero,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _NavIcon(icon: Icons.home, label: 'Home', selected: true, onTap: onHome),
+            _NavIcon(icon: Icons.favorite_border, label: 'Favorites', onTap: onFavorites),
+            GestureDetector(
+              onTap: onPost,
+              child: Container(
+                width: 44,
+                height: 44,
+                decoration: const BoxDecoration(
+                  color: UnaColors.green700,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.add, color: Colors.white, size: 28),
+              ),
+            ),
+            _NavIcon(icon: Icons.chat_bubble_outline, label: 'Messages', onTap: onMessages),
+            _NavIcon(icon: Icons.person_outline, label: 'Profile', onTap: onProfile),
+          ],
+        ),
+      );
+}
+
+class _NavIcon extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _NavIcon({
+    required this.icon,
+    required this.label,
+    this.selected = false,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+        tooltip: label,
+        onPressed: onTap,
+        icon: Icon(
+          icon,
+          color: selected
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      );
 }
 
 class _FilterSheet extends StatefulWidget {

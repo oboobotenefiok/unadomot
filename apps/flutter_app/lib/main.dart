@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'api/api_client.dart';
+import 'app_settings.dart';
 import 'data/local_cache.dart';
 import 'screens/listings_screen.dart';
 import 'state/app_state.dart';
@@ -41,13 +42,18 @@ class UnaDomotApp extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-        title: 'UnaDomot',
-        theme: unaTheme(),
-        home: ListingsScreen(
-          api: api,
-          cache: cache,
-          appState: state,
+  Widget build(BuildContext context) => ValueListenableBuilder<ThemeMode>(
+        valueListenable: appThemeMode,
+        builder: (context, mode, _) => MaterialApp(
+          title: 'UnaDomot',
+          theme: unaTheme(),
+          darkTheme: unaDarkTheme(),
+          themeMode: mode,
+          home: ListingsScreen(
+            api: api,
+            cache: cache,
+            appState: state,
+          ),
         ),
       );
 }

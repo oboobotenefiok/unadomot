@@ -95,3 +95,32 @@ ThemeData unaTheme() {
     dividerColor: UnaColors.border,
   );
 }
+
+ThemeData unaDarkTheme() {
+  final scheme = ColorScheme.fromSeed(
+    seedColor: UnaColors.green600,
+    brightness: Brightness.dark,
+  );
+
+  return ThemeData(
+    useMaterial3: true,
+    colorScheme: scheme,
+    scaffoldBackgroundColor: const Color(0xFF0B1120),
+    fontFamily: 'Roboto',
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xFF111827),
+      foregroundColor: Colors.white,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      centerTitle: false,
+    ),
+    cardTheme: CardThemeData(
+      color: const Color(0xFF111827),
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+    ),
+  );
+}
