@@ -119,6 +119,10 @@ impl UserRepository for UnconfiguredUserRepository {
     async fn is_admin(&self, _user_id: Uuid) -> Result<bool, AuthError> {
         Ok(false)
     }
+
+    async fn suspend_user(&self, _user_id: Uuid) -> Result<bool, AuthError> {
+        Err(AuthError::Repository("Persistence not configured".into()))
+    }
 }
 
 pub struct UnconfiguredMessagingRepository;
