@@ -42,6 +42,11 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> googleSignIn(String idToken) async {
+    await api.googleSignIn(idToken);
+    notifyListeners();
+  }
+
   Future<void> _persistSession(
     String token,
     String? refreshToken,
