@@ -44,10 +44,7 @@ class ApiClient {
     }
   }
 
-  bool get signedIn =>
-      _token != null &&
-      _expiresAt != null &&
-      _expiresAt!.isAfter(DateTime.now());
+  bool get signedIn => _token != null;
 
   String? get token => _token;
   String? get refreshToken => _refreshToken;
@@ -147,6 +144,8 @@ class ApiClient {
       body: {'token': token.trim(), 'new_password': newPassword},
     );
   }
+
+  Future<bool> refreshSession() => _refreshSession();
 
   Future<bool> _refreshSession() {
     final inFlight = _refreshInFlight;

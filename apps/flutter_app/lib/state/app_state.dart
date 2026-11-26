@@ -30,6 +30,11 @@ class AppState extends ChangeNotifier {
     final expiresAt = DateTime.tryParse(expiry);
     if (expiresAt == null) return;
     api.restoreSession(token, expiresAt, refreshToken: refresh);
+
+    if (refresh != null &&
+        expiresAt.isBefore(DateTime.now().toUtc().add(const Duration(minutes: 2)))) {
+      await api.refreshSession();
+    }
     notifyListeners();
   }
 
