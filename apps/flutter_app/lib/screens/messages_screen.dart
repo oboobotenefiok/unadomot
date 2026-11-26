@@ -41,7 +41,19 @@ class _MessagesScreenState extends State<MessagesScreen> {
       _error = null;
     });
     try {
-      final conversations = await widget.api.conversations();
+      final response = await http.get(
+        widget.api.baseUrl.resolve('/api/conversations/presence'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${widget.api.token}',
+        },
+      ).timeout(const Duration(seconds: 20));
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw ApiException(response.statusCode, 'Could not load conversations.');
+      }
+      final conversations = (jsonDecode(response.body) as List)
+          .map((item) => Map<String, dynamic>.from(item as Map))
+          .toList();
       if (mounted) setState(() => _conversations = conversations);
     } catch (error) {
       if (mounted) setState(() => _error = error.toString());
@@ -121,6 +133,16 @@ class _ConversationTile extends StatelessWidget {
     final photo = conversation['listing_photo_url'] as String?;
     final time = _formatRelative(conversation['last_message_at'] as String?);
     final verified = conversation['counterpart_verified'] == true;
+    final lastActive =
+        DateTime.tryParse(conversation['counterpart_last_active'] as String? ?? '')
+            ?.toLocal();
+    final isOnline = lastActive != null &&
+        DateTime.now().difference(lastActive).inMinutes < 5;
+    final presence = isOnline
+        ? 'Active now'
+        : lastActive == null
+            ? null
+            : 'Last active ${_relative(lastActive)}';
 
     return Material(
       color: Theme.of(context).colorScheme.surface,
@@ -142,6 +164,23 @@ class _ConversationTile extends StatelessWidget {
                         ? const Icon(Icons.home_work_outlined, color: UnaColors.green900)
                         : null,
                   ),
+                  if (isOnline)
+                    Positioned(
+                      right: 1,
+                      bottom: 1,
+                      child: Container(
+                        width: 13,
+                        height: 13,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF22C55E),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.surface,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                    ),
                   if (unread > 0)
                     Positioned(
                       right: 0,
@@ -235,6 +274,21 @@ class _ConversationTile extends StatelessWidget {
                           ),
                       ],
                     ),
+                    if (presence != null) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        presence,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isOnline
+                              ? const Color(0xFF15803D)
+                              : Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontWeight: isOnline ? FontWeight.w600 : FontWeight.w400,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -1246,6 +1300,14 @@ String _formatRelative(String? value) {
   if (diff.inHours < 1) return '${diff.inMinutes}m';
   if (diff.inDays < 1) return '${diff.inHours}h';
   if (diff.inDays < 7) return '${diff.inDays}d';
+  return '${time.day}/${time.month}';
+}
+
+String _relative(DateTime time) {
+  final diff = DateTime.now().difference(time);
+  if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+  if (diff.inHours < 24) return '${diff.inHours}h ago';
+  if (diff.inDays < 7) return '${diff.inDays}d ago';
   return '${time.day}/${time.month}';
 }
 
