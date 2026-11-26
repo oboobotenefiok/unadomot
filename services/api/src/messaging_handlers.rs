@@ -1,8 +1,8 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::{header, HeaderMap, StatusCode},
     response::IntoResponse,
-    routing::post,
+    routing::{get, post},
     Json, Router,
 };
 use serde::Deserialize;
@@ -16,7 +16,7 @@ pub fn router(state: AppState) -> Router {
     Router::new()
         .route(
             "/api/conversations/{id}/rich-messages",
-            post(send_rich_message_handler),
+            get(list_rich_messages_handler).post(send_rich_message_handler),
         )
         .route("/api/messages/{id}/reactions", post(react_handler))
         .with_state(state)
@@ -34,6 +34,12 @@ struct RichMessageRequest {
 #[derive(Deserialize)]
 struct ReactionRequest {
     emoji: String,
+}
+
+#[derive(Deserialize, Default)]
+struct RichMessageQuery {
+    before: Option<String>,
+    limit: Option<i64>,
 }
 
 fn error(status: StatusCode, message: &str) -> axum::response::Response {
@@ -61,6 +67,32 @@ fn messaging_error(error_value: MessagingError) -> axum::response::Response {
             StatusCode::SERVICE_UNAVAILABLE,
             "The service is temporarily unavailable",
         ),
+    }
+}
+
+async fn list_rich_messages_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(conversation_id): Path<Uuid>,
+    Query(query): Query<RichMessageQuery>,
+) -> axum::response::Response {
+    let user_id = match authorize(&state, &headers) {
+        Ok(id) => id,
+        Err(response) => return response,
+    };
+
+    match state
+        .messaging
+        .list_rich_messages(
+            conversation_id,
+            user_id,
+            query.before,
+            query.limit.unwrap_or(50).clamp(1, 50),
+        )
+        .await
+    {
+        Ok(messages) => Json(messages).into_response(),
+        Err(error_value) => messaging_error(error_value),
     }
 }
 

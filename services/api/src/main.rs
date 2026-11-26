@@ -1,3 +1,5 @@
+mod messaging_handlers;
+
 use sqlx::postgres::PgPoolOptions;
 use std::sync::Arc;
 use unadomot_api::adapters::{
@@ -96,7 +98,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
                 (
                     Arc::new(UnconfiguredUserRepository),
-                    Arc::new(UnconfiguredListingRepository),
+                    Arc::new(UnconfiguredRepository),
                     Arc::new(UnconfiguredMessagingRepository),
                     Arc::new(UnconfiguredReportRepository),
                     Arc::new(UnconfiguredVerificationRepository),
