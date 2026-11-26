@@ -118,6 +118,10 @@ impl UserRepository for UnconfiguredUserRepository {
         Err(AuthError::Repository("Persistence not configured".into()))
     }
 
+    async fn revoke_refresh_token(&self, _token_hash: &str) -> Result<bool, AuthError> {
+        Err(AuthError::Repository("Persistence not configured".into()))
+    }
+
     async fn is_admin(&self, _user_id: Uuid) -> Result<bool, AuthError> {
         Ok(false)
     }
