@@ -2,11 +2,13 @@ use crate::application::auth::{AuthenticatedUser, AuthError, StoredUser, UserRep
 use crate::application::listings::{ListingError, ListingPage, ListingRepository};
 use crate::application::media::{MediaError, MediaSigner, UploadSignature};
 use crate::application::messaging::{MessagingError, MessagingRepository};
+use crate::application::reports::{ReportError, ReportRepository};
 use crate::application::verification::{VerificationError, VerificationRepository};
 use crate::domain::listing::{
     Listing, ListingFilter, ListingMedia, ListingUpdate, NewListing, NewListingMedia,
 };
 use crate::domain::messaging::{Conversation, ConversationSummary, Message};
+use crate::domain::report::Report;
 use crate::domain::verification::VerificationRequest;
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
@@ -172,6 +174,35 @@ impl MessagingRepository for UnconfiguredMessagingRepository {
 
     async fn mark_read(&self, _conversation_id: Uuid, _user_id: Uuid) -> Result<(), MessagingError> {
         Err(MessagingError::Repository("Persistence not configured".into()))
+    }
+}
+
+pub struct UnconfiguredReportRepository;
+
+#[async_trait]
+impl ReportRepository for UnconfiguredReportRepository {
+    async fn create(
+        &self,
+        _listing_id: Uuid,
+        _reporter_id: Uuid,
+        _reason: &str,
+        _details: Option<&str>,
+    ) -> Result<Report, ReportError> {
+        Err(ReportError::Repository("Persistence not configured".into()))
+    }
+
+    async fn list(&self, _status: &str) -> Result<Vec<Report>, ReportError> {
+        Err(ReportError::Repository("Persistence not configured".into()))
+    }
+
+    async fn resolve(
+        &self,
+        _id: Uuid,
+        _admin_id: Uuid,
+        _status: &str,
+        _notes: Option<&str>,
+    ) -> Result<Report, ReportError> {
+        Err(ReportError::Repository("Persistence not configured".into()))
     }
 }
 
