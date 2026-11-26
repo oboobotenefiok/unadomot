@@ -1,12 +1,15 @@
+mod call_handlers;
 mod messaging_handlers;
 
 use sqlx::postgres::PgPoolOptions;
 use std::sync::Arc;
 use unadomot_api::adapters::{
-    UnconfiguredMediaSigner, UnconfiguredMessagingRepository, UnconfiguredReportRepository,
-    UnconfiguredRepository, UnconfiguredUserRepository, UnconfiguredVerificationRepository,
+    UnconfiguredCallRepository, UnconfiguredMediaSigner, UnconfiguredMessagingRepository,
+    UnconfiguredReportRepository, UnconfiguredRepository, UnconfiguredUserRepository,
+    UnconfiguredVerificationRepository,
 };
 use unadomot_api::application::auth::UserRepository;
+use unadomot_api::application::calls::CallRepository;
 use unadomot_api::application::listings::ListingRepository;
 use unadomot_api::application::media::MediaSigner;
 use unadomot_api::application::messaging::MessagingRepository;
@@ -15,9 +18,8 @@ use unadomot_api::application::verification::VerificationRepository;
 use unadomot_api::http::{public_pages, router, verification, AppState, RateLimiter};
 use unadomot_api::infrastructure::cloudinary::CloudinarySigner;
 use unadomot_api::infrastructure::postgres::{
-    listing_repository::PostgresListingRepository,
-    messaging_repository::PostgresMessagingRepository,
-    report_repository::PostgresReportRepository,
+    call_repository::PostgresCallRepository, listing_repository::PostgresListingRepository,
+    messaging_repository::PostgresMessagingRepository, report_repository::PostgresReportRepository,
     user_repository::PostgresUserRepository,
     verification_repository::PostgresVerificationRepository,
 };
@@ -29,6 +31,7 @@ type Repositories = (
     Arc<dyn MessagingRepository>,
     Arc<dyn ReportRepository>,
     Arc<dyn VerificationRepository>,
+    Arc<dyn CallRepository>,
 );
 
 #[tokio::main]
@@ -70,7 +73,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Err("DATABASE_URL is required in production".into());
     }
 
-    let (users, listings, messaging, reports, verification_repo): Repositories =
+    let (users, listings, messaging, reports, verification_repo, calls): Repositories =
         match database_url {
             Some(url) => {
                 let pool = PgPoolOptions::new()
@@ -89,7 +92,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     Arc::new(PostgresListingRepository::new(pool.clone())),
                     Arc::new(PostgresMessagingRepository::new(pool.clone())),
                     Arc::new(PostgresReportRepository::new(pool.clone())),
-                    Arc::new(PostgresVerificationRepository::new(pool)),
+                    Arc::new(PostgresVerificationRepository::new(pool.clone())),
+                    Arc::new(PostgresCallRepository::new(pool)),
                 )
             }
             None => {
@@ -102,6 +106,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     Arc::new(UnconfiguredMessagingRepository),
                     Arc::new(UnconfiguredReportRepository),
                     Arc::new(UnconfiguredVerificationRepository),
+                    Arc::new(UnconfiguredCallRepository),
                 )
             }
         };
@@ -139,13 +144,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let verification_state = verification::VerificationState {
         repository: verification_repo,
         users,
-        jwt_secret,
+        jwt_secret: jwt_secret.clone(),
+    };
+
+    let call_state = call_handlers::CallState {
+        calls,
+        jwt_secret: jwt_secret.clone(),
     };
 
     let app = router(state.clone())
         .merge(public_pages::router(state.clone()))
         .merge(verification::router(verification_state))
-        .merge(messaging_handlers::router(state));
+        .merge(messaging_handlers::router(state))
+        .merge(call_handlers::router(call_state));
 
     let address = std::env::var("BIND_ADDR")
         .or_else(|_| std::env::var("PORT").map(|port| format!("0.0.0.0:{port}")))
