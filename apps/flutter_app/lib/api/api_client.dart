@@ -267,11 +267,22 @@ class ApiClient {
         .toList();
   }
 
-  Future<Map<String, dynamic>> sendMessage(String conversationId, String body) async {
+  Future<Map<String, dynamic>> sendMessage(
+    String conversationId,
+    String body, {
+    String? mediaUrl,
+    String? mediaType,
+    int? durationSeconds,
+  }) async {
     final result = await _request(
       'POST',
       '/api/conversations/${Uri.encodeComponent(conversationId)}/messages',
-      body: {'body': body},
+      body: {
+        'body': body,
+        if (mediaUrl != null) 'media_url': mediaUrl,
+        if (mediaType != null) 'media_type': mediaType,
+        if (durationSeconds != null) 'duration_seconds': durationSeconds,
+      },
       authenticated: true,
     );
     return Map<String, dynamic>.from(result as Map);
