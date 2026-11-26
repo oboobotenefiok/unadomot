@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:share_plus/share_plus.dart';
 import '../api/api_client.dart';
@@ -436,6 +437,42 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                   Text(
                                     '${_listing!.viewCount} views',
                                     style: const TextStyle(color: UnaColors.text500, fontSize: 12),
+                                  ),
+                                ],
+                                if (_listing!.code != null) ...[
+                                  const SizedBox(height: 8),
+                                  InkWell(
+                                    onTap: () async {
+                                      await Clipboard.setData(ClipboardData(text: _listing!.code!));
+                                      if (!context.mounted) return;
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Code ${_listing!.code} copied')),
+                                      );
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: UnaColors.green100,
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(Icons.qr_code_2, size: 14, color: UnaColors.green900),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            'Code ${_listing!.code}',
+                                            style: const TextStyle(
+                                              color: UnaColors.green900,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          const Icon(Icons.copy, size: 12, color: UnaColors.green900),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ],
                                 const SizedBox(height: 12),
