@@ -630,7 +630,13 @@ async fn login_handler(
         .find_by_email(&request.email)
         .await
         .map_err(auth_error)?
-        .ok_or_else(|| ApiError::new(StatusCode::UNAUTHORIZED, "invalid_credentials", "Invalid email or password"))?;
+        .ok_or_else(|| {
+            ApiError::new(
+                StatusCode::UNAUTHORIZED,
+                "invalid_credentials",
+                "Invalid email or password",
+            )
+        })?;
 
     let refresh_token = new_refresh_token();
     state
@@ -664,7 +670,13 @@ async fn refresh_handler(
         )
         .await
         .map_err(auth_error)?
-        .ok_or_else(|| ApiError::new(StatusCode::UNAUTHORIZED, "invalid_refresh_token", "Refresh token is invalid or expired"))?;
+        .ok_or_else(|| {
+            ApiError::new(
+                StatusCode::UNAUTHORIZED,
+                "invalid_refresh_token",
+                "Refresh token is invalid or expired",
+            )
+        })?;
 
     let session = issue_session(user.id, user.email, &state.jwt_secret).map_err(auth_error)?;
 
@@ -1191,7 +1203,11 @@ async fn authorize(
         .and_then(|value| value.strip_prefix("Bearer "))
         .ok_or_else(|| {
             tracing::warn!("authentication failed: missing bearer token");
-            ApiError::new(StatusCode::UNAUTHORIZED, "unauthorized", "Missing bearer token")
+            ApiError::new(
+                StatusCode::UNAUTHORIZED,
+                "unauthorized",
+                "Missing bearer token",
+            )
         })?;
 
     let user = verify_session(token, &state.jwt_secret).map_err(|error| {
