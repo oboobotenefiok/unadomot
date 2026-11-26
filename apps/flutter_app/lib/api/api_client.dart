@@ -175,10 +175,18 @@ class ApiClient {
         .toList();
   }
 
-  Future<List<Map<String, dynamic>>> messages(String conversationId) async {
+  Future<List<Map<String, dynamic>>> messages(
+    String conversationId, {
+    String? before,
+    int limit = 50,
+  }) async {
     final result = await _request(
       'GET',
       '/api/conversations/${Uri.encodeComponent(conversationId)}/messages',
+      query: {
+        'limit': '$limit',
+        if (before != null) 'before': before,
+      },
       authenticated: true,
     );
     return (result as List)
@@ -196,14 +204,18 @@ class ApiClient {
     return Map<String, dynamic>.from(result as Map);
   }
 
-  Future<Map<String, dynamic>> startConversation({
-    required String listingId,
-    required String otherUserId,
-  }) async {
+  Future<void> markRead(String conversationId) async {
+    await _request(
+      'POST',
+      '/api/conversations/${Uri.encodeComponent(conversationId)}/read',
+      authenticated: true,
+    );
+  }
+
+  Future<Map<String, dynamic>> startConversation({required String listingId}) async {
     final result = await _request(
       'POST',
-      '/api/conversations',
-      body: {'listing_id': listingId, 'other_user_id': otherUserId},
+      '/api/listings/${Uri.encodeComponent(listingId)}/conversations',
       authenticated: true,
     );
     return Map<String, dynamic>.from(result as Map);

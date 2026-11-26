@@ -51,15 +51,17 @@ class _MessagesScreenState extends State<MessagesScreen> {
                           itemCount: _conversations.length,
                           itemBuilder: (context, index) {
                             final conversation = _conversations[index];
+                            final unread = (conversation['unread_count'] as num?)?.toInt() ?? 0;
                             return ListTile(
                               leading: const CircleAvatar(child: Icon(Icons.chat_bubble_outline)),
-                              title: Text('Listing ${conversation['listing_id']}'),
+                              title: Text(conversation['listing_title'] as String? ?? 'Listing'),
                               subtitle: Text(
-                                conversation['last_message_at'] == null
-                                    ? 'No messages yet'
-                                    : 'Last message ${conversation['last_message_at']}',
+                                conversation['last_message_preview'] as String? ??
+                                    'Start the conversation',
                               ),
-                              trailing: const Icon(Icons.chevron_right),
+                              trailing: unread > 0
+                                  ? CircleAvatar(child: Text('$unread'))
+                                  : const Icon(Icons.chevron_right),
                               onTap: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -108,7 +110,10 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _load() async {
     try {
       final messages = await widget.api.messages(widget.conversationId);
-      if (mounted) setState(() => _messages = messages);
+      if (mounted) {
+        setState(() => _messages = messages.reversed.toList());
+      }
+      await widget.api.markRead(widget.conversationId);
     } catch (error) {
       if (mounted) setState(() => _error = error.toString());
     } finally {
