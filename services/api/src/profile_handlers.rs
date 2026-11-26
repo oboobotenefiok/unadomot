@@ -159,8 +159,20 @@ async fn me(
     .fetch_one(&state.pool)
     .await;
 
+    let is_admin: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM admin_roles WHERE user_id = $1)",
+    )
+    .bind(user_id)
+    .fetch_one(&state.pool)
+    .await
+    .unwrap_or(false);
+
     match row {
-        Ok(row) => Json(row.into_json()).into_response(),
+        Ok(row) => {
+            let mut value = row.into_json();
+            value["is_admin"] = json!(is_admin);
+            Json(value).into_response()
+        }
         Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Profile unavailable"),
     }
 }
