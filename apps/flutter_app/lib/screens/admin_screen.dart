@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../api/api_client.dart';
 import '../theme.dart';
+import 'admin_audit_screen.dart';
+import 'admin_users_screen.dart';
 import 'admin_verification_screen.dart';
 
 class AdminScreen extends StatefulWidget {
@@ -237,9 +239,29 @@ class _AdminScreenState extends State<AdminScreen> {
                   label: const Text('Verification queue'),
                 ),
                 OutlinedButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AdminUsersScreen(api: widget.api),
+                    ),
+                  ),
+                  icon: const Icon(Icons.manage_search),
+                  label: const Text('User search'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AdminAuditScreen(api: widget.api),
+                    ),
+                  ),
+                  icon: const Icon(Icons.receipt_long_outlined),
+                  label: const Text('Audit log'),
+                ),
+                OutlinedButton.icon(
                   onPressed: _suspendUser,
                   icon: const Icon(Icons.person_off_outlined),
-                  label: const Text('Suspend user'),
+                  label: const Text('Suspend by ID'),
                 ),
                 OutlinedButton.icon(
                   onPressed: () => _moderateListing(remove: true),
