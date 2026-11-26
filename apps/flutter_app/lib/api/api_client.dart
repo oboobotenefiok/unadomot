@@ -255,7 +255,7 @@ class ApiClient {
   }) async {
     final result = await _request(
       'GET',
-      '/api/conversations/${Uri.encodeComponent(conversationId)}/messages',
+      '/api/conversations/${Uri.encodeComponent(conversationId)}/rich-messages',
       query: {
         'limit': '$limit',
         if (before != null) 'before': before,
@@ -277,7 +277,7 @@ class ApiClient {
   }) async {
     final result = await _request(
       'POST',
-      '/api/conversations/${Uri.encodeComponent(conversationId)}/messages',
+      '/api/conversations/${Uri.encodeComponent(conversationId)}/rich-messages',
       body: {
         'body': body,
         if (mediaUrl != null) 'media_url': mediaUrl,

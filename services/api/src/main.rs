@@ -96,7 +96,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
                 (
                     Arc::new(UnconfiguredUserRepository),
-                    Arc::new(UnconfiguredRepository),
+                    Arc::new(UnconfiguredListingRepository),
                     Arc::new(UnconfiguredMessagingRepository),
                     Arc::new(UnconfiguredReportRepository),
                     Arc::new(UnconfiguredVerificationRepository),
@@ -141,8 +141,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     let app = router(state.clone())
-        .merge(public_pages::router(state))
-        .merge(verification::router(verification_state));
+        .merge(public_pages::router(state.clone()))
+        .merge(verification::router(verification_state))
+        .merge(messaging_handlers::router(state));
 
     let address = std::env::var("BIND_ADDR")
         .or_else(|_| std::env::var("PORT").map(|port| format!("0.0.0.0:{port}")))
