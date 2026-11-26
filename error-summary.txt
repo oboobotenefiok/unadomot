@@ -1,0 +1,42 @@
+         .map_err(auth_error)?;
+         .map_err(messaging_error)
+ fn report_error(error: ReportError) -> ApiError {
+     match error {
+             ApiError::new(StatusCode::BAD_REQUEST, "validation_error", message)
+         .map_err(verification_error)
+         Ok(None) => error(StatusCode::NOT_FOUND, "No listing matches that code"),
+-        Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Listing lookup unavailable"),
++        Err(_) => error(
+         Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Comment unavailable"),
+         return error(StatusCode::FORBIDDEN, "You cannot delete this comment");
+-        return error(StatusCode::BAD_REQUEST, "Comment must be 1 to 1000 characters");
++        return error(
+         Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Could not post comment"),
+         return error(StatusCode::BAD_REQUEST, "Unsupported reaction");
+         return error(StatusCode::NOT_FOUND, "Comment not found");
+ async fn main() -> Result<(), Box<dyn std::error::Error>> {
+-        return error(StatusCode::BAD_REQUEST, "A message or attachment is required");
++        return error(
+         return error(StatusCode::BAD_REQUEST, "Message is too long");
+         return Err(error(StatusCode::FORBIDDEN, "Admin access is required"));
+-        return error(StatusCode::BAD_REQUEST, "Bio must be 500 characters or less");
++        return error(
+         Ok(_) => error(StatusCode::NOT_FOUND, "Profile not found"),
+         Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Profile unavailable"),
+         Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Listings unavailable"),
+-        _ => return error(StatusCode::SERVICE_UNAVAILABLE, "Google sign-in is not configured"),
++            return error(
+-        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Google verification unavailable"),
++            return error(
+-                Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Could not create account"),
++                    return error(StatusCode::SERVICE_UNAVAILABLE, "Could not create account")
+         Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Could not verify account"),
+         return error(StatusCode::SERVICE_UNAVAILABLE, "Could not create profile");
+  Downloaded thiserror-impl v2.0.21
+  Downloaded serde_path_to_error v0.1.20
+  Downloaded thiserror v2.0.21
+   Compiling thiserror v2.0.21
+   Compiling thiserror-impl v2.0.21
+    Checking serde_path_to_error v0.1.20
+   Compiling thiserror v2.0.21
+   Compiling serde_path_to_error v0.1.20
