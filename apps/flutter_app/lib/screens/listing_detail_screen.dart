@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 import '../api/api_client.dart';
 import '../data/local_cache.dart';
 import '../models/listing.dart';
@@ -121,12 +121,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
     if (listing == null) return;
     final link = 'https://unadomot.fly.dev/listings/${widget.listingId}';
     final text = '${naijaShareText(listing)}\n$link';
-    await Clipboard.setData(ClipboardData(text: text));
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Link copied to clipboard!')),
-      );
-    }
+    await Share.share(text, subject: listing.title);
   }
 
   Future<void> _report() async {
@@ -198,7 +193,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                               color: UnaColors.green100,
                               padding: const EdgeInsets.all(8),
                               child: Text(
-                                'Offline view • updated ${_cachedAt!.toLocal()}',
+                                'Offline view - updated ${_cachedAt!.toLocal()}',
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
                                   color: UnaColors.green900,
@@ -217,7 +212,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        '₦${_listing!.price.toStringAsFixed(0)}',
+                                        'N${_listing!.price.toStringAsFixed(0)}',
                                         style: const TextStyle(
                                           color: UnaColors.primary,
                                           fontSize: 24,
