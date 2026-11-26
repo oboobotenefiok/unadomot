@@ -57,6 +57,7 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
+    await api.logout();
     api.signOut();
     await _storage.delete(key: _tokenKey);
     await _storage.delete(key: _refreshKey);

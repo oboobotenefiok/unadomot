@@ -30,6 +30,7 @@ class ApiClient {
   String? _token;
   String? _refreshToken;
   DateTime? _expiresAt;
+  Future<bool>? _refreshInFlight;
 
   Future<void> Function(String token, String? refreshToken, DateTime expiresAt)?
       onSessionChanged;
@@ -96,7 +97,36 @@ class ApiClient {
     await onSessionChanged?.call(token, refreshToken, expiresAt);
   }
 
-  Future<bool> _refreshSession() async {
+  Future<void> logout() async {
+    final refreshToken = _refreshToken;
+    if (refreshToken == null) return;
+    try {
+      await _client
+          .post(
+            baseUrl.resolve('/api/auth/logout'),
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({'refresh_token': refreshToken}),
+          )
+          .timeout(const Duration(seconds: 10));
+    } catch (_) {
+      // Local sign-out still proceeds if the server is unreachable.
+    }
+  }
+
+  Future<bool> _refreshSession() {
+    final inFlight = _refreshInFlight;
+    if (inFlight != null) return inFlight;
+
+    final future = _performRefresh();
+    _refreshInFlight = future;
+    future.whenComplete(() => _refreshInFlight = null);
+    return future;
+  }
+
+  Future<bool> _performRefresh() async {
     final refreshToken = _refreshToken;
     if (refreshToken == null) return false;
 
