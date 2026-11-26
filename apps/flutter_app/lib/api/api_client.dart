@@ -116,6 +116,25 @@ class ApiClient {
     }
   }
 
+  Future<void> requestPasswordReset(String email) async {
+    await _request(
+      'POST',
+      '/api/auth/password-reset/request',
+      body: {'email': email.trim()},
+    );
+  }
+
+  Future<void> confirmPasswordReset({
+    required String token,
+    required String newPassword,
+  }) async {
+    await _request(
+      'POST',
+      '/api/auth/password-reset/confirm',
+      body: {'token': token.trim(), 'new_password': newPassword},
+    );
+  }
+
   Future<bool> _refreshSession() {
     final inFlight = _refreshInFlight;
     if (inFlight != null) return inFlight;

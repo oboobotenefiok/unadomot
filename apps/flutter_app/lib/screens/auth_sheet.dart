@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../api/api_client.dart';
 import '../state/app_state.dart';
+import 'reset_password_screen.dart';
 
 Future<bool> requireAuth(
   BuildContext context,
@@ -98,6 +99,15 @@ class _AuthSheetState extends State<AuthSheet> {
     return 'Something went wrong. Please try again.';
   }
 
+  void _openForgotPassword() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ResetPasswordScreen(api: widget.appState.api),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
@@ -164,6 +174,14 @@ class _AuthSheetState extends State<AuthSheet> {
                     ? 'Use at least 8 characters'
                     : null,
               ),
+              if (!_register)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: _busy ? null : _openForgotPassword,
+                    child: const Text('Forgot password?'),
+                  ),
+                ),
               if (_error != null) ...[
                 const SizedBox(height: 12),
                 Text(
