@@ -5,6 +5,7 @@ import '../data/local_cache.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import '../widgets/home_carousel.dart';
 import 'auth_sheet.dart';
 import 'create_listing_screen.dart';
 import 'favorites_screen.dart';
@@ -31,9 +32,11 @@ class ListingsScreen extends StatefulWidget {
 class _ListingsScreenState extends State<ListingsScreen> {
   final _scrollController = ScrollController();
   List<Listing> _listings = [];
+  Set<String> _favoriteIds = {};
   bool _loading = true;
   bool _loadingMore = false;
   bool _hasMore = false;
+  bool _showScrollTop = false;
   int _offset = 0;
   String? _error;
   DateTime? _cachedAt;
@@ -45,6 +48,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
     super.initState();
     _scrollController.addListener(_onScroll);
     _load();
+    _loadFavorites();
   }
 
   @override
@@ -53,12 +57,29 @@ class _ListingsScreenState extends State<ListingsScreen> {
     super.dispose();
   }
 
+  Future<void> _loadFavorites() async {
+    final ids = await widget.cache.readFavoriteIds();
+    if (mounted) setState(() => _favoriteIds = ids);
+  }
+
   void _onScroll() {
     if (!_scrollController.hasClients) return;
     final position = _scrollController.position;
     if (position.pixels >= position.maxScrollExtent - 300) {
       _loadMore();
     }
+    final show = position.pixels > 400;
+    if (show != _showScrollTop) {
+      setState(() => _showScrollTop = show);
+    }
+  }
+
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
   }
 
   Future<void> _load() async {
@@ -120,6 +141,52 @@ class _ListingsScreenState extends State<ListingsScreen> {
       // Keep the already loaded pages visible.
     } finally {
       if (mounted) setState(() => _loadingMore = false);
+    }
+  }
+
+  Future<void> _toggleFavorite(Listing listing) async {
+    if (!await requireAuth(context, widget.appState)) return;
+    final next = !_favoriteIds.contains(listing.id);
+    await widget.cache.setFavorite(listing.id, next);
+    if (!mounted) return;
+    setState(() {
+      if (next) {
+        _favoriteIds = {..._favoriteIds, listing.id};
+      } else {
+        _favoriteIds = {..._favoriteIds}..remove(listing.id);
+      }
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(next ? '✓ Saved to favorites' : '✓ Removed from favorites'),
+      ),
+    );
+  }
+
+  Future<void> _messageListing(Listing listing) async {
+    if (!await requireAuth(context, widget.appState)) return;
+    if (!mounted) return;
+    try {
+      final conversation = await widget.api.startConversation(
+        listingId: listing.id,
+      );
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChatScreen(
+            api: widget.api,
+            conversationId: conversation['id'] as String,
+            initialMessage: 'Is this still available?',
+          ),
+        ),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())),
+        );
+      }
     }
   }
 
@@ -255,6 +322,20 @@ class _ListingsScreenState extends State<ListingsScreen> {
     }).toList();
   }
 
+  void _openDetail(Listing listing) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ListingDetailScreen(
+          api: widget.api,
+          cache: widget.cache,
+          appState: widget.appState,
+          listingId: listing.id,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final listings = _visibleListings;
@@ -285,6 +366,13 @@ class _ListingsScreenState extends State<ListingsScreen> {
           ),
         ],
       ),
+      floatingActionButton: _showScrollTop
+          ? FloatingActionButton.small(
+              tooltip: 'Back to top',
+              onPressed: _scrollToTop,
+              child: const Icon(Icons.keyboard_arrow_up),
+            )
+          : null,
       bottomNavigationBar: _BottomNav(
         onHome: () {},
         onFavorites: _openFavorites,
@@ -328,6 +416,14 @@ class _ListingsScreenState extends State<ListingsScreen> {
                           ),
                         ),
                       ),
+                      if (listings.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: HomeCarousel(
+                            listings: listings.take(5).toList(),
+                            onTap: _openDetail,
+                          ),
+                        ),
                       const Padding(
                         padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
                         child: _SectionHeading('Available rentals'),
@@ -351,17 +447,10 @@ class _ListingsScreenState extends State<ListingsScreen> {
                                     padding: const EdgeInsets.only(bottom: 12),
                                     child: _ListingCard(
                                       listing: listing,
-                                      onTap: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => ListingDetailScreen(
-                                            api: widget.api,
-                                            cache: widget.cache,
-                                            appState: widget.appState,
-                                            listingId: listing.id,
-                                          ),
-                                        ),
-                                      ),
+                                      isFavorite: _favoriteIds.contains(listing.id),
+                                      onFavorite: () => _toggleFavorite(listing),
+                                      onMessage: () => _messageListing(listing),
+                                      onTap: () => _openDetail(listing),
                                     ),
                                   );
                                 },
@@ -653,9 +742,18 @@ class _SectionHeading extends StatelessWidget {
 
 class _ListingCard extends StatelessWidget {
   final Listing listing;
+  final bool isFavorite;
+  final VoidCallback onFavorite;
+  final VoidCallback onMessage;
   final VoidCallback onTap;
 
-  const _ListingCard({required this.listing, required this.onTap});
+  const _ListingCard({
+    required this.listing,
+    required this.isFavorite,
+    required this.onFavorite,
+    required this.onMessage,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -780,6 +878,27 @@ class _ListingCard extends StatelessWidget {
                           ),
                         ),
                       ],
+                      const Spacer(),
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        tooltip: isFavorite ? 'Remove favorite' : 'Save favorite',
+                        onPressed: onFavorite,
+                        icon: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          size: 20,
+                          color: isFavorite ? Colors.red : UnaColors.text500,
+                        ),
+                      ),
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        tooltip: 'Message lister',
+                        onPressed: onMessage,
+                        icon: const Icon(
+                          Icons.chat_bubble_outline,
+                          size: 20,
+                          color: UnaColors.text500,
+                        ),
+                      ),
                     ],
                   ),
                 ],
