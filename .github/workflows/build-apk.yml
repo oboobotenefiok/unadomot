@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -16,6 +16,14 @@ jobs:
         with:
           channel: stable
           cache: true
+      - name: Ensure Android platform files
+        run: |
+          if [ ! -d apps/flutter_app/android ]; then
+            flutter create --project-name unadomot --org com.unadomot --platforms android apps/flutter_app
+          fi
+      - name: Get dependencies
+        working-directory: apps/flutter_app
+        run: flutter pub get
       - name: Build debug APK
         working-directory: apps/flutter_app
         run: flutter build apk --debug --dart-define=API_BASE_URL=https://unadomot.fly.dev
@@ -23,3 +31,4 @@ jobs:
         with:
           name: unadomot-debug-apk
           path: apps/flutter_app/build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
