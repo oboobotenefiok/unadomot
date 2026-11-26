@@ -1,5 +1,5 @@
 app = "unadomot-api"
-primary_region = "jnb"
+primary_region = "fra"
 
 [build]
   dockerfile = "Dockerfile"
