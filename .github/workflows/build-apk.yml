@@ -23,7 +23,40 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: bash ../../scripts/prepare_android.sh
+        run: |
+          flutter create --platforms=android --org com.unadomot --project-name unadomot .
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/upload-keystore.jks
+          cat > android/key.properties <<EOF
+          storePassword=$ANDROID_KEYSTORE_PASSWORD
+          keyPassword=$ANDROID_KEY_PASSWORD
+          keyAlias=$ANDROID_KEY_ALIAS
+          storeFile=upload-keystore.jks
+          EOF
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('android/app/build.gradle.kts')
+          s = p.read_text()
+          if 'signingConfigs {' not in s:
+              marker = '    buildTypes {'
+              block = '''    signingConfigs {
+                  create("release") {
+                      val keystoreProperties = java.util.Properties()
+                      val keystorePropertiesFile = rootProject.file("key.properties")
+                      if (keystorePropertiesFile.exists()) {
+                          keystoreProperties.load(java.io.FileInputStream(keystorePropertiesFile))
+                      }
+                      storeFile = file(keystoreProperties["storeFile"] as String)
+                      storePassword = keystoreProperties["storePassword"] as String
+                      keyAlias = keystoreProperties["keyAlias"] as String
+                      keyPassword = keystoreProperties["keyPassword"] as String
+                  }
+              }
+
+          '''
+              s = s.replace(marker, block + marker, 1)
+          s = s.replace('signingConfig = signingConfigs.getByName("debug")', 'signingConfig = signingConfigs.getByName("release")')
+          p.write_text(s)
+          PY
       - name: Build release APK
         working-directory: apps/flutter_app
         run: flutter build apk --release --dart-define=API_BASE_URL=https://unadomot.fly.dev --dart-define=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
