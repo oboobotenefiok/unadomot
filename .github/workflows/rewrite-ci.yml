@@ -85,6 +85,12 @@ jobs:
           [ -f rust-full.log ] && git add rust-full.log
           git commit -m "Rust CI failure for ${GITHUB_SHA}"
           git push --force origin ci-logs-rust
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build API image
+        run: docker build -t unadomot-api:ci services/api
   android:
     runs-on: ubuntu-latest
     steps:
