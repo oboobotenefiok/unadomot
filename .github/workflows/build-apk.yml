@@ -34,6 +34,11 @@ jobs:
           EOF
           python3 - <<'PY'
           from pathlib import Path
+          manifest = Path('android/app/src/main/AndroidManifest.xml')
+          text = manifest.read_text()
+          text = text.replace('android:label="unadomot"', 'android:label="UnaDomot"')
+          manifest.write_text(text)
+
           app = Path('android/app/build.gradle.kts')
           s = app.read_text()
           s = s.replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 36')
@@ -60,6 +65,47 @@ jobs:
           s = s.replace('signingConfig = signingConfigs.getByName("debug")', 'signingConfig = signingConfigs.getByName("release")')
           app.write_text(s)
           PY
+          mkdir -p android/app/src/main/res/values android/app/src/main/res/values-v31 android/app/src/main/res/drawable
+          cat > android/app/src/main/res/values/colors.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <color name="splash_background">#0F5132</color>
+          </resources>
+          EOF
+          cat > android/app/src/main/res/drawable/launch_background.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+              <item android:drawable="@color/splash_background" />
+              <item>
+                  <bitmap android:gravity="center" android:src="@mipmap/ic_launcher" />
+              </item>
+          </layer-list>
+          EOF
+          cat > android/app/src/main/res/values/styles.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+                  <item name="android:windowBackground">@drawable/launch_background</item>
+              </style>
+              <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+                  <item name="android:windowBackground">?android:colorBackground</item>
+              </style>
+          </resources>
+          EOF
+          cat > android/app/src/main/res/values-v31/styles.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+                  <item name="android:windowSplashScreenBackground">@color/splash_background</item>
+                  <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+                  <item name="android:windowSplashScreenIconBackgroundColor">@color/splash_background</item>
+                  <item name="android:postSplashScreenTheme">@style/NormalTheme</item>
+              </style>
+              <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+                  <item name="android:windowBackground">?android:colorBackground</item>
+              </style>
+          </resources>
+          EOF
       - name: Patch plugin compileSdk
         working-directory: apps/flutter_app
         run: |
@@ -74,6 +120,9 @@ jobs:
               if s2 != s:
                   p.write_text(s2)
           PY
+      - name: Generate launcher icon
+        working-directory: apps/flutter_app
+        run: dart run flutter_launcher_icons
       - name: Analyze Dart
         working-directory: apps/flutter_app
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
