@@ -106,6 +106,14 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
     final replyRate = (profile['reply_rate'] as num?)?.toInt() ?? 98;
     final isLandlord = userType == 'landlord' || userType == 'agency';
     final isAgent = userType == 'agent';
+    final lastActive = DateTime.tryParse(profile['last_active'] as String? ?? '')?.toLocal();
+    final isOnline = lastActive != null &&
+        DateTime.now().difference(lastActive).inMinutes < 5;
+    final presence = isOnline
+        ? 'Active now'
+        : lastActive == null
+            ? 'Offline'
+            : 'Last active ${_relative(lastActive)}';
 
     return Scaffold(
       backgroundColor: background,
@@ -168,6 +176,28 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
                         Text(name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
                         const SizedBox(height: 2),
                         Text('@$username', style: TextStyle(color: dark ? Colors.white60 : Colors.black54, fontSize: 13)),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: isOnline ? const Color(0xFF22C55E) : Colors.grey,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              presence,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: isOnline ? const Color(0xFF15803D) : Colors.grey,
+                                fontWeight: isOnline ? FontWeight.w600 : FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 8),
                         Wrap(
                           spacing: 6,
@@ -280,7 +310,7 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
                                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                           color: const Color(0xFF052E16),
                                           child: Text(
-                                            '₦${(listing['price'] as num?)?.toStringAsFixed(0) ?? '0'}',
+                                            'N${(listing['price'] as num?)?.toStringAsFixed(0) ?? '0'}',
                                             style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12),
                                           ),
                                         ),
@@ -396,6 +426,14 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
           ),
         ],
       );
+
+  String _relative(DateTime time) {
+    final diff = DateTime.now().difference(time);
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    return '${time.day}/${time.month};
+  }
 
   String _memberSince(String? value) {
     if (value == null) return 'Recently';
