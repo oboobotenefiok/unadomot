@@ -3,6 +3,7 @@ set -euo pipefail
 
 REPO="${1:-$HOME/unadomot}"
 TAG="v0.1.0"
+WORKFLOW="rewrite-ci.yml"
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   cd "$REPO"
@@ -10,7 +11,6 @@ fi
 
 BRANCH="$(git branch --show-current)"
 
-# Restore generated logs instead of deleting them, so stashing never records a deletion.
 git checkout -- error.txt error-summary.txt 2>/dev/null || true
 
 STASHED=0
@@ -22,31 +22,44 @@ fi
 
 git pull --rebase
 
-RUN_ID="$(gh run list --branch "$BRANCH" --limit 1 --json databaseId --jq '.[0].databaseId')"
-if [ -n "$RUN_ID" ] && [ "$RUN_ID" != "null" ]; then
+# Log-only commits do not match the workflow path filter, so dispatch explicitly.
+gh workflow run "$WORKFLOW" --ref "$BRANCH" >/dev/null
+sleep 5
+
+RUN_ID="$(gh run list --workflow "$WORKFLOW" --branch "$BRANCH" --limit 1 --json databaseId --jq '.[0].databaseId')"
+if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ]; then
+  echo "Could not find a workflow run"
+  exit 1
+fi
+
+echo "Watching run $RUN_ID"
+gh run watch "$RUN_ID" --exit-status >/dev/null 2>&1 || true
+
+STATUS="$(gh run view "$RUN_ID" --json conclusion --jq '.conclusion')"
+if [ "$STATUS" = "failure" ]; then
   gh run view "$RUN_ID" --log-failed > error.txt || true
-  if [ -s error.txt ]; then
-    sed -E 's/\x1B\[[0-9;]*[mK]//g' error.txt \
-      | grep -n -E 'error(\[|:)|warning:' \
-      > error-summary.txt || true
-    git add error.txt error-summary.txt
-    git commit -m "chore: capture CI failure $RUN_ID" || true
-    git pull --rebase
+  sed -E 's/\x1B\[[0-9;]*[mK]//g' error.txt \
+    | grep -n -E 'error(\[|:)|warning:' \
+    > error-summary.txt || true
+  git add error.txt error-summary.txt
+  if ! git diff --cached --quiet; then
+    git commit -m "chore: capture CI failure $RUN_ID"
     git push origin "$BRANCH"
     echo "Pushed error.txt and error-summary.txt for run $RUN_ID"
-  else
-    git rm -f error.txt error-summary.txt >/dev/null 2>&1 || true
-    git commit -m "chore: clear CI logs for green run $RUN_ID" || true
-    git push origin "$BRANCH" || true
-    echo "Run $RUN_ID has no failed steps"
   fi
+else
+  git rm -f error.txt error-summary.txt >/dev/null 2>&1 || true
+  if ! git diff --cached --quiet; then
+    git commit -m "chore: clear CI logs for run $RUN_ID"
+    git push origin "$BRANCH"
+  fi
+  echo "Run $RUN_ID is $STATUS"
 fi
 
 if [ "$STASHED" = "1" ]; then
   git stash pop || echo "Warning: could not restore stashed changes"
 fi
 
-STATUS="$(gh run view "$RUN_ID" --json conclusion --jq '.conclusion')"
 if [ "$STATUS" != "success" ]; then
   echo "Run $RUN_ID is $STATUS; skipping release"
   exit 0
