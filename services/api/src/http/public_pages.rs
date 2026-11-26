@@ -1,4 +1,4 @@
-use crate::application::listings::get_listing;
+use crate::application::listings::get_public_listing;
 use crate::http::{AppState, ApiError};
 use axum::{
     extract::{Path, State},
@@ -20,7 +20,7 @@ async fn listing_page(
     State(state): State<AppState>,
     Path(id): Path<Uuid>,
 ) -> Result<Html<String>, ApiError> {
-    let listing = get_listing(state.listings.as_ref(), id)
+    let listing = get_public_listing(state.listings.as_ref(), id)
         .await
         .map_err(|_| ApiError::new(StatusCode::SERVICE_UNAVAILABLE, "service_unavailable", "The service is temporarily unavailable"))?
         .ok_or_else(|| ApiError::new(StatusCode::NOT_FOUND, "not_found", "Listing not found"))?;
@@ -32,7 +32,7 @@ async fn listing_page(
         listing.title, listing.lga, listing.state, listing.price
     );
     let description = format!(
-        "{} • {} bedrooms • {} bathrooms • Verified listing on UnaDomot.",
+        "{} • {} bedrooms • {} bathrooms • Listed on UnaDomot.",
         listing.title,
         listing.bedrooms.map(|v| v.to_string()).unwrap_or_else(|| "—".into()),
         listing.bathrooms.map(|v| v.to_string()).unwrap_or_else(|| "—".into())
