@@ -434,6 +434,7 @@ pub fn router(state: AppState) -> Router {
         .route("/api/listings/{id}/conversations", post(start_conversation_handler))
         .route("/api/admin/listings/{id}/remove", post(admin_remove_listing_handler))
         .route("/api/admin/listings/{id}/restore", post(admin_restore_listing_handler))
+        .route("/api/admin/users/{id}/suspend", post(admin_suspend_user_handler))
         .route("/api/media/signature", post(signature_handler))
         .route("/api/conversations", get(conversations_handler))
         .route(
@@ -760,6 +761,32 @@ async fn admin_restore_listing_handler(
         .await
         .map(|listing| Json(ListingResponse::from(listing)))
         .map_err(listing_error)
+}
+
+async fn admin_suspend_user_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<Uuid>,
+) -> Result<StatusCode, ApiError> {
+    let user = authorize(&state, &headers)?;
+    if !state.users.is_admin(user.id).await.map_err(auth_error)? {
+        return Err(ApiError::new(
+            StatusCode::FORBIDDEN,
+            "forbidden",
+            "Admin access is required",
+        ));
+    }
+
+    let suspended = state.users.suspend_user(id).await.map_err(auth_error)?;
+    if !suspended {
+        return Err(ApiError::new(
+            StatusCode::NOT_FOUND,
+            "not_found",
+            "User not found or already suspended",
+        ));
+    }
+
+    Ok(StatusCode::NO_CONTENT)
 }
 
 async fn add_media_handler(
