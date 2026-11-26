@@ -4,7 +4,7 @@ on:
   push:
     tags: ['v*']
 permissions:
-  contents: read
+  contents: write
 jobs:
   bundle:
     runs-on: ubuntu-latest
@@ -18,13 +18,19 @@ jobs:
         with:
           channel: stable
           cache: true
+      - name: Start log
+        run: : > /tmp/release.log
       - name: Ensure Android platform files
         run: |
+          exec > >(tee -a /tmp/release.log) 2>&1
+          set -e
           if [ ! -d apps/flutter_app/android ]; then
             flutter create --project-name unadomot --org com.unadomot --platforms android apps/flutter_app
           fi
       - name: Apply Android permissions and deep links
         run: |
+          exec > >(tee -a /tmp/release.log) 2>&1
+          set -e
           bash scripts/apply_android_permissions.sh
           bash scripts/apply_android_deep_links.sh
       - name: Configure release signing
@@ -33,10 +39,15 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: bash scripts/configure_android_signing.sh
+        run: |
+          exec > >(tee -a /tmp/release.log) 2>&1
+          set -e
+          bash scripts/configure_android_signing.sh
       - name: Build app bundle
         working-directory: apps/flutter_app
         run: |
+          exec > >(tee -a /tmp/release.log) 2>&1
+          set -e
           flutter pub get
           flutter build appbundle --release \
             --dart-define=API_BASE_URL=https://unadomot.fly.dev \
@@ -47,3 +58,25 @@ jobs:
           path: apps/flutter_app/build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
           retention-days: 30
+      - name: Publish release failure
+        if: failure()
+        run: |
+          cp /tmp/release.log /tmp/release-full.log 2>/dev/null || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan ci-logs-release
+          git rm -rf . >/dev/null 2>&1 || true
+          git clean -fdx >/dev/null 2>&1 || true
+          cp /tmp/release-full.log release-full.log 2>/dev/null || true
+          {
+            echo "# Release bundle failure"
+            echo
+            echo "- Commit: ${GITHUB_SHA}"
+            echo "- Ref: ${GITHUB_REF_NAME}"
+            echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "- Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > status.md
+          git add status.md
+          [ -f release-full.log ] && git add release-full.log
+          git commit -m "Release bundle failure for ${GITHUB_SHA}"
+          git push --force origin ci-logs-release

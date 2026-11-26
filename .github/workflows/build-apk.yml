@@ -19,6 +19,8 @@ jobs:
         with:
           channel: stable
           cache: true
+      - name: Start log
+        run: : > /tmp/apk.log
       - name: Prepare Android project
         working-directory: apps/flutter_app
         env:
@@ -27,6 +29,7 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
+          exec > >(tee -a /tmp/apk.log) 2>&1
           set -e
           flutter create --platforms=android --org com.unadomot --project-name unadomot .
           mkdir -p assets
@@ -115,6 +118,8 @@ jobs:
       - name: Patch plugin compileSdk
         working-directory: apps/flutter_app
         run: |
+          exec > >(tee -a /tmp/apk.log) 2>&1
+          set -e
           flutter pub get
           python3 - <<'PY'
           from pathlib import Path
@@ -128,13 +133,22 @@ jobs:
           PY
       - name: Generate launcher icon
         working-directory: apps/flutter_app
-        run: dart run flutter_launcher_icons
+        run: |
+          exec > >(tee -a /tmp/apk.log) 2>&1
+          set -e
+          dart run flutter_launcher_icons
       - name: Analyze Dart
         working-directory: apps/flutter_app
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+        run: |
+          exec > >(tee -a /tmp/apk.log) 2>&1
+          set -e
+          flutter analyze --no-fatal-infos --no-fatal-warnings
       - name: Build release APK
         working-directory: apps/flutter_app
-        run: flutter build apk --release --dart-define=API_BASE_URL=https://unadomot.fly.dev --dart-define=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+        run: |
+          exec > >(tee -a /tmp/apk.log) 2>&1
+          set -e
+          flutter build apk --release --dart-define=API_BASE_URL=https://unadomot.fly.dev --dart-define=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
       - uses: actions/upload-artifact@v4
         with:
           name: unadomot-release-apk
@@ -142,11 +156,13 @@ jobs:
       - name: Publish release failure
         if: failure()
         run: |
+          cp /tmp/apk.log /tmp/apk-full.log 2>/dev/null || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout --orphan ci-logs-apk
           git rm -rf . >/dev/null 2>&1 || true
           git clean -fdx >/dev/null 2>&1 || true
+          cp /tmp/apk-full.log apk-full.log 2>/dev/null || true
           {
             echo "# Release APK failure"
             echo
@@ -154,9 +170,8 @@ jobs:
             echo "- Ref: ${GITHUB_REF_NAME}"
             echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
             echo "- Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-            echo
-            echo "Open the failed job log for the full Gradle output. This branch records the failure marker so it is visible without copying from Termux."
           } > status.md
           git add status.md
+          [ -f apk-full.log ] && git add apk-full.log
           git commit -m "Release APK failure for ${GITHUB_SHA}"
           git push --force origin ci-logs-apk
