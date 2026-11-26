@@ -273,6 +273,7 @@ class ApiClient {
     String? mediaUrl,
     String? mediaType,
     int? durationSeconds,
+    String? replyToId,
   }) async {
     final result = await _request(
       'POST',
@@ -282,10 +283,20 @@ class ApiClient {
         if (mediaUrl != null) 'media_url': mediaUrl,
         if (mediaType != null) 'media_type': mediaType,
         if (durationSeconds != null) 'duration_seconds': durationSeconds,
+        if (replyToId != null) 'reply_to_id': replyToId,
       },
       authenticated: true,
     );
     return Map<String, dynamic>.from(result as Map);
+  }
+
+  Future<void> reactToMessage(String messageId, String emoji) async {
+    await _request(
+      'POST',
+      '/api/messages/${Uri.encodeComponent(messageId)}/reactions',
+      body: {'emoji': emoji},
+      authenticated: true,
+    );
   }
 
   Future<void> markRead(String conversationId) async {

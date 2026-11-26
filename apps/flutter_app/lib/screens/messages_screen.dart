@@ -107,6 +107,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final _recorder = AudioRecorder();
   final _player = AudioPlayer();
   List<Map<String, dynamic>> _messages = [];
+  Map<String, dynamic>? _replyTo;
   bool _loading = true;
   bool _sending = false;
   bool _recording = false;
@@ -151,9 +152,18 @@ class _ChatScreenState extends State<ChatScreen> {
     if (body.isEmpty || _sending) return;
     setState(() => _sending = true);
     try {
-      final message = await widget.api.sendMessage(widget.conversationId, body);
+      final message = await widget.api.sendMessage(
+        widget.conversationId,
+        body,
+        replyToId: _replyTo?['id'] as String?,
+      );
       _controller.clear();
-      if (mounted) setState(() => _messages = [..._messages, message]);
+      if (mounted) {
+        setState(() {
+          _messages = [..._messages, message];
+          _replyTo = null;
+        });
+      }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
@@ -190,8 +200,14 @@ class _ChatScreenState extends State<ChatScreen> {
         mediaUrl: uploaded['secure_url'] as String,
         mediaType: mediaType,
         durationSeconds: durationSeconds,
+        replyToId: _replyTo?['id'] as String?,
       );
-      if (mounted) setState(() => _messages = [..._messages, message]);
+      if (mounted) {
+        setState(() {
+          _messages = [..._messages, message];
+          _replyTo = null;
+        });
+      }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
@@ -308,30 +324,54 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  void _showReactions(Map<String, dynamic> message) {
+    const emojis = ['👍', '❤️', '😂', '😮', '😢'];
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: emojis
+                .map((emoji) => IconButton(
+                      onPressed: () async {
+                        Navigator.pop(context);
+                        await widget.api.reactToMessage(message['id'] as String, emoji);
+                      },
+                      icon: Text(emoji, style: const TextStyle(fontSize: 28)),
+                    ))
+                .toList(),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _messageBubble(Map<String, dynamic> message) {
     final mediaUrl = message['media_url'] as String?;
     final mediaType = message['media_type'] as String?;
     final body = message['body'] as String? ?? '';
+    final replyBody = message['reply_to_body'] as String?;
 
+    Widget content;
     if (mediaUrl != null && mediaType == 'image') {
-      return ClipRRect(
+      content = ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: Image.network(mediaUrl, width: 220, fit: BoxFit.cover),
       );
-    }
-    if (mediaUrl != null && mediaType == 'video') {
-      return Row(
+    } else if (mediaUrl != null && mediaType == 'video') {
+      content = const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.play_circle_outline),
-          const SizedBox(width: 8),
-          const Text('Video'),
+          Icon(Icons.play_circle_outline),
+          SizedBox(width: 8),
+          Text('Video'),
         ],
       );
-    }
-    if (mediaUrl != null && mediaType == 'audio') {
+    } else if (mediaUrl != null && mediaType == 'audio') {
       final seconds = (message['duration_seconds'] as num?)?.toInt() ?? 0;
-      return Row(
+      content = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
@@ -342,18 +382,40 @@ class _ChatScreenState extends State<ChatScreen> {
           Text('Voice note  ${seconds}s'),
         ],
       );
-    }
-    if (mediaUrl != null && mediaType == 'document') {
-      return Row(
+    } else if (mediaUrl != null && mediaType == 'document') {
+      content = const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.description_outlined),
-          const SizedBox(width: 8),
-          const Text('Document'),
+          Icon(Icons.description_outlined),
+          SizedBox(width: 8),
+          Text('Document'),
         ],
       );
+    } else {
+      content = Text(body);
     }
-    return Text(body);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (replyBody != null)
+          Container(
+            margin: const EdgeInsets.only(bottom: 6),
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              border: Border(left: BorderSide(color: Theme.of(context).colorScheme.primary, width: 3)),
+              color: Theme.of(context).colorScheme.surface,
+            ),
+            child: Text(
+              replyBody,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+        content,
+      ],
+    );
   }
 
   @override
@@ -371,21 +433,58 @@ class _ChatScreenState extends State<ChatScreen> {
                           itemCount: _messages.length,
                           itemBuilder: (context, index) {
                             final message = _messages[index];
-                            return Align(
-                              alignment: Alignment.centerLeft,
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(vertical: 4),
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                  borderRadius: BorderRadius.circular(12),
+                            return Dismissible(
+                              key: ValueKey(message['id']),
+                              direction: DismissDirection.startToEnd,
+                              confirmDismiss: (_) async {
+                                setState(() => _replyTo = message);
+                                return false;
+                              },
+                              background: Container(
+                                alignment: Alignment.centerLeft,
+                                padding: const EdgeInsets.only(left: 16),
+                                child: const Icon(Icons.reply),
+                              ),
+                              child: GestureDetector(
+                                onLongPress: () => _showReactions(message),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(vertical: 4),
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: _messageBubble(message),
+                                  ),
                                 ),
-                                child: _messageBubble(message),
                               ),
                             );
                           },
                         ),
             ),
+            if (_replyTo != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    const Icon(Icons.reply, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _replyTo!['body'] as String? ?? 'Attachment',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => setState(() => _replyTo = null),
+                      icon: const Icon(Icons.close, size: 18),
+                    ),
+                  ],
+                ),
+              ),
             if (_recording)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
