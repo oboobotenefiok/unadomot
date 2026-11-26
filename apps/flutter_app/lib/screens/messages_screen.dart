@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
@@ -14,8 +16,9 @@ import 'call_screen.dart';
 
 class MessagesScreen extends StatefulWidget {
   final ApiClient api;
+  final bool showAppBar;
 
-  const MessagesScreen({super.key, required this.api});
+  const MessagesScreen({super.key, required this.api, this.showAppBar = true});
 
   @override
   State<MessagesScreen> createState() => _MessagesScreenState();
@@ -49,16 +52,18 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Messages'),
-          actions: [
-            IconButton(
-              tooltip: 'Refresh',
-              onPressed: _load,
-              icon: const Icon(Icons.refresh),
-            ),
-          ],
-        ),
+        appBar: widget.showAppBar
+            ? AppBar(
+                title: const Text('Messages'),
+                actions: [
+                  IconButton(
+                    tooltip: 'Refresh',
+                    onPressed: _load,
+                    icon: const Icon(Icons.refresh),
+                  ),
+                ],
+              )
+            : null,
         body: RefreshIndicator(
           onRefresh: _load,
           child: _loading
@@ -335,9 +340,12 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _sending = false;
   bool _recording = false;
   bool _showingIncoming = false;
+  bool _isTyping = false;
   int _recordSeconds = 0;
+  DateTime? _lastTypingPing;
   Timer? _recordTimer;
   Timer? _incomingTimer;
+  Timer? _typingTimer;
   String? _error;
 
   @override
@@ -349,12 +357,14 @@ class _ChatScreenState extends State<ChatScreen> {
     _load();
     _loadMe();
     _incomingTimer = Timer.periodic(const Duration(seconds: 5), (_) => _checkIncoming());
+    _typingTimer = Timer.periodic(const Duration(seconds: 2), (_) => _checkTyping());
   }
 
   @override
   void dispose() {
     _recordTimer?.cancel();
     _incomingTimer?.cancel();
+    _typingTimer?.cancel();
     _recorder.dispose();
     _player.dispose();
     _controller.dispose();
@@ -368,6 +378,46 @@ class _ChatScreenState extends State<ChatScreen> {
       if (mounted) setState(() => _myId = profile['id'] as String?);
     } catch (_) {
       // Messages still render, aligned to the left.
+    }
+  }
+
+  Future<void> _checkTyping() async {
+    if (!widget.api.signedIn) return;
+    try {
+      final response = await http.get(
+        widget.api.baseUrl.resolve('/api/conversations/${widget.conversationId}/typing'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${widget.api.token}',
+        },
+      ).timeout(const Duration(seconds: 5));
+      if (response.statusCode != 200 || !mounted) return;
+      final data = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      final typing = data['typing'] == true;
+      if (typing != _isTyping) setState(() => _isTyping = typing);
+    } catch (_) {
+      // Ignore transient typing failures.
+    }
+  }
+
+  Future<void> _notifyTyping() async {
+    if (!widget.api.signedIn) return;
+    final now = DateTime.now();
+    if (_lastTypingPing != null &&
+        now.difference(_lastTypingPing!) < const Duration(seconds: 3)) {
+      return;
+    }
+    _lastTypingPing = now;
+    try {
+      await http.post(
+        widget.api.baseUrl.resolve('/api/conversations/${widget.conversationId}/typing'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${widget.api.token}',
+        },
+      ).timeout(const Duration(seconds: 5));
+    } catch (_) {
+      // Typing is best-effort.
     }
   }
 
@@ -894,11 +944,18 @@ class _ChatScreenState extends State<ChatScreen> {
       backgroundColor: dark ? const Color(0xFF0B1510) : const Color(0xFFF6F8F6),
       appBar: AppBar(
         titleSpacing: 0,
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Conversation', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-            Text('Tap for call history', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w400)),
+            const Text('Conversation', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            Text(
+              _isTyping ? 'typing...' : 'Tap for call history',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w400,
+                color: _isTyping ? UnaColors.green700 : null,
+              ),
+            ),
           ],
         ),
         actions: [
@@ -1053,6 +1110,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       minLines: 1,
                       maxLines: 5,
                       textInputAction: TextInputAction.newline,
+                      onChanged: (value) {
+                        if (value.trim().isNotEmpty) _notifyTyping();
+                      },
                       decoration: InputDecoration(
                         hintText: 'Write a message',
                         filled: true,
