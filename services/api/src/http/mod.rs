@@ -234,6 +234,10 @@ pub struct MessageQuery {
 #[derive(Serialize)]
 pub struct ListingResponse {
     pub id: Uuid,
+    pub landlord_id: Uuid,
+    pub landlord_name: String,
+    pub landlord_verified: bool,
+    pub landlord_photo_url: Option<String>,
     pub title: String,
     pub description: String,
     pub price: String,
@@ -246,6 +250,7 @@ pub struct ListingResponse {
     pub bathrooms: Option<i32>,
     pub property_type: Option<String>,
     pub furnishing: Option<String>,
+    pub created_at: chrono::DateTime<Utc>,
     pub media: Vec<MediaResponse>,
 }
 
@@ -306,6 +311,10 @@ impl From<Listing> for ListingResponse {
     fn from(listing: Listing) -> Self {
         Self {
             id: listing.id,
+            landlord_id: listing.landlord_id,
+            landlord_name: listing.landlord_name,
+            landlord_verified: listing.landlord_verified,
+            landlord_photo_url: listing.landlord_photo_url,
             title: listing.title,
             description: listing.description,
             price: listing.price.to_string(),
@@ -318,6 +327,7 @@ impl From<Listing> for ListingResponse {
             bathrooms: listing.bathrooms,
             property_type: listing.property_type,
             furnishing: listing.furnishing,
+            created_at: listing.created_at,
             media: listing.media.into_iter().map(MediaResponse::from).collect(),
         }
     }
