@@ -606,6 +606,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
+          ValueListenableBuilder<bool>(
+            valueListenable: appLargeText,
+            builder: (context, enabled, _) => ListTile(
+              leading: const Icon(Icons.format_size, color: Color(0xFF15803D)),
+              title: const Text('Larger text', style: TextStyle(fontWeight: FontWeight.w500)),
+              subtitle: const Text('Increase text size across the app'),
+              trailing: Switch(
+                value: enabled,
+                onChanged: (value) async {
+                  appLargeText.value = value;
+                  await widget.cache.setSetting('large_text', value.toString());
+                },
+              ),
+            ),
+          ),
           _settingsRow(Icons.info_outline, 'About UnaDomot', () => showAboutDialog(
             context: context,
             applicationName: 'UnaDomot',
