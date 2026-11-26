@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:http/http.dart' as http;
 import '../api/api_client.dart';
 
 class CallScreen extends StatefulWidget {
@@ -56,9 +58,7 @@ class _CallScreenState extends State<CallScreen> {
       await _remoteRenderer.initialize();
 
       _peer = await createPeerConnection({
-        'iceServers': [
-          {'urls': 'stun:stun.l.google.com:19302'},
-        ],
+        'iceServers': await _iceServers(widget.api),
       });
 
       _peer!.onTrack = (event) {
@@ -305,9 +305,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
       await _remoteRenderer.initialize();
 
       _peer = await createPeerConnection({
-        'iceServers': [
-          {'urls': 'stun:stun.l.google.com:19302'},
-        ],
+        'iceServers': await _iceServers(widget.api),
       });
       _peer!.onTrack = (event) {
         if (event.streams.isNotEmpty) {
@@ -528,6 +526,27 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
       ),
     );
   }
+}
+
+Future<List<Map<String, dynamic>>> _iceServers(ApiClient api) async {
+  try {
+    final response = await http.get(
+      api.baseUrl.resolve('/api/calls/ice'),
+      headers: {'Accept': 'application/json'},
+    ).timeout(const Duration(seconds: 10));
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final data = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      final servers = (data['ice_servers'] as List)
+          .map((item) => Map<String, dynamic>.from(item as Map))
+          .toList();
+      if (servers.isNotEmpty) return servers;
+    }
+  } catch (_) {
+    // Fall back to public STUN.
+  }
+  return [
+    {'urls': 'stun:stun.l.google.com:19302'},
+  ];
 }
 
 Future<void> _waitForIce(RTCPeerConnection peer) async {
