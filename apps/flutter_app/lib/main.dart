@@ -4,6 +4,7 @@ import 'api/api_client.dart';
 import 'app_settings.dart';
 import 'data/local_cache.dart';
 import 'screens/listings_screen.dart';
+import 'screens/public_profile_screen.dart';
 import 'state/app_state.dart';
 import 'theme.dart';
 
@@ -41,6 +42,21 @@ class UnaDomotApp extends StatelessWidget {
     required this.cache,
   });
 
+  Route<dynamic>? _route(RouteSettings settings) {
+    final name = settings.name ?? '/';
+    final match = RegExp(r'^/([a-z0-9_]{3,20})$').firstMatch(name);
+    if (match == null) return null;
+    return MaterialPageRoute(
+      settings: settings,
+      builder: (_) => PublicProfileScreen(
+        api: api,
+        cache: cache,
+        appState: state,
+        username: match.group(1)!,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => ValueListenableBuilder<ThemeMode>(
         valueListenable: appThemeMode,
@@ -49,6 +65,7 @@ class UnaDomotApp extends StatelessWidget {
           theme: unaTheme(),
           darkTheme: unaDarkTheme(),
           themeMode: mode,
+          onGenerateRoute: _route,
           home: ListingsScreen(
             api: api,
             cache: cache,
