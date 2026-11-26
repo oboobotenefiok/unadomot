@@ -21,6 +21,8 @@ dependencies:
   latlong2: ^0.9.1
   google_sign_in: ^6.2.1
   app_links: ^6.3.2
+dependency_overrides:
+  record_linux: ^1.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
