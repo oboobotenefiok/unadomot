@@ -111,7 +111,10 @@ pub async fn register(
         return Err(AuthError::EmailTaken);
     }
 
-    let hash = hash_password(password)?;
+    let password = password.to_string();
+    let hash = tokio::task::spawn_blocking(move || hash_password(&password))
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))??;
     repository.create_user(&email, Some(&hash), name).await
 }
 
@@ -121,12 +124,15 @@ pub async fn login(
     password: &str,
     jwt_secret: &str,
 ) -> Result<Session, AuthError> {
-    let user = repository
-        .find_by_email(email.trim())
-        .await?
-        .ok_or(AuthError::InvalidCredentials)?;
+    let user = repository.find_by_email(email.trim()).await?;
+
+    let Some(user) = user else {
+        dummy_verify(password).await?;
+        return Err(AuthError::InvalidCredentials);
+    };
 
     if user.status != "active" {
+        dummy_verify(password).await?;
         return Err(AuthError::InvalidCredentials);
     }
 
@@ -136,11 +142,31 @@ pub async fn login(
         .and_then(|hash| PasswordHash::new(hash).ok())
         .ok_or(AuthError::InvalidCredentials)?;
 
-    Argon2::default()
-        .verify_password(password.as_bytes(), &parsed)
-        .map_err(|_| AuthError::InvalidCredentials)?;
+    let password = password.to_string();
+    let valid = tokio::task::spawn_blocking(move || {
+        Argon2::default()
+            .verify_password(password.as_bytes(), &parsed)
+            .is_ok()
+    })
+    .await
+    .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+    if !valid {
+        return Err(AuthError::InvalidCredentials);
+    }
 
     issue_session(user.id, user.email, jwt_secret)
+}
+
+async fn dummy_verify(password: &str) -> Result<(), AuthError> {
+    let password = password.to_string();
+    tokio::task::spawn_blocking(move || {
+        let salt = SaltString::generate(&mut OsRng);
+        let _ = Argon2::default().hash_password(password.as_bytes(), &salt);
+    })
+    .await
+    .map_err(|e| AuthError::Repository(e.to_string()))?;
+    Ok(())
 }
 
 pub fn hash_password(password: &str) -> Result<String, AuthError> {
