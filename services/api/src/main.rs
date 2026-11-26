@@ -1,3 +1,5 @@
+#![allow(clippy::result_large_err)]
+
 mod call_handlers;
 mod comment_handlers;
 mod messaging_handlers;
