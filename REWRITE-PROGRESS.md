@@ -46,9 +46,25 @@
 - [x] Structured API error messages in the Flutter client
 - [x] Authentication failure logging
 - [x] Ownership, media and validation integration tests
+- [x] Neon Postgres provisioned in Frankfurt
+- [x] Fly.io API deployed in `fra`
+- [x] Fly secrets configured for database and JWT signing
+- [x] GitHub Actions API deploy workflow
+- [x] GitHub Actions debug APK workflow
+- [x] Live health and registration smoke test
 - [ ] Password reset email delivery
 - [ ] Full state-to-LGA mapping
 - [ ] Prometheus metrics endpoint
+- [ ] Cloudinary secrets configured in production
+
+## Verified deployment
+
+- API: https://unadomot.fly.dev
+- Deploy workflow: `fly-deploy.yml`
+- Last successful deploy run: `45813849909`
+- Health check: passed
+- Registration against Neon: passed
+- APK workflow: `build-apk.yml` uploads `unadomot-debug-apk`
 
 ## Verified build
 

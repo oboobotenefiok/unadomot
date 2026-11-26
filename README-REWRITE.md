@@ -2,6 +2,15 @@
 
 This branch contains the Rust API and Flutter app rewrite. The legacy React and Firebase app has been removed from this branch and remains available on `main` as the rollback path.
 
+## Live deployment
+
+- API: https://unadomot.fly.dev
+- Fly app: `unadomot`, region `fra`, 512 MB shared CPU.
+- Database: Neon Postgres 16 in `aws-eu-central-1` (Frankfurt), direct connection with `sslmode=require`.
+- API deploy workflow: `.github/workflows/fly-deploy.yml`.
+- APK build workflow: `.github/workflows/build-apk.yml`.
+- Smoke test: `/health` returns `ok`; registration and login succeed against Neon.
+
 ## Layout
 
 - `services/api` - Rust API (axum, sqlx, Postgres, optional Redis).
@@ -10,6 +19,7 @@ This branch contains the Rust API and Flutter app rewrite. The legacy React and 
 - `scripts/migrate-firebase.mjs` - Firebase to Postgres migration.
 - `data/nigeria-states.js` - state and LGA source data, pending port to the API.
 - `vault/img`, `vault/aud` - preserved brand and notification assets.
+- `Dockerfile`, `fly.toml` - root-level copies used only by Fly's GUI detection. Production deploys use `services/api/Dockerfile` and `services/api/fly.toml`.
 
 ## API
 
@@ -23,9 +33,10 @@ Required environment:
 - `DATABASE_URL`
 - `JWT_SECRET` (at least 32 random bytes)
 - `REFRESH_TOKEN_SECRET` (at least 32 random bytes, different from JWT)
-- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` (optional until photo uploads are enabled)
 - `PUBLIC_WEB_URL`
 - `BIND_ADDR` (default `0.0.0.0:3000`)
+- `PORT` (Fly sets this to `8080`)
 - `RUST_LOG`
 - `ALLOWED_ORIGINS`
 - `REDIS_URL` (optional)
@@ -43,7 +54,14 @@ flutter test
 flutter run
 ```
 
-The Android platform folder is generated in CI. A release build requires `API_BASE_URL` to be set to an HTTPS URL.
+Build against the deployed API:
+
+```bash
+flutter build apk --debug \
+  --dart-define=API_BASE_URL=https://unadomot.fly.dev
+```
+
+The **Build APK** workflow does this on GitHub and uploads `unadomot-debug-apk`.
 
 ## Tests
 

@@ -2,9 +2,12 @@
 
 ## Current build status
 
-- CI workflow `rewrite-ci.yml` passes on `rewrite/flutter-rust-postgres`.
-- Verified run `45739501106` at commit `113373e`.
-- `v0.1.0` prerelease is published with a debug APK for testing.
+- API is deployed at https://unadomot.fly.dev on Fly.io in `fra`.
+- Database is Neon Postgres 16 in `aws-eu-central-1` (Frankfurt).
+- `fly-deploy.yml` deploys the API from `services/api`.
+- `build-apk.yml` builds a debug APK against the live API and uploads `unadomot-debug-apk`.
+- `/health` returns `ok`.
+- Registration and login succeed against Neon, confirming migrations and connectivity.
 - The debug APK is not Play Store-ready; complete the signing steps below for a release build.
 
 ## Required environment
@@ -12,9 +15,9 @@
 - `DATABASE_URL` Postgres connection string.
 - `JWT_SECRET` at least 32 random bytes.
 - `REFRESH_TOKEN_SECRET` at least 32 random bytes, separate from JWT.
-- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`.
+- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` for photo uploads.
 - `PUBLIC_WEB_URL` canonical public URL.
-- `BIND_ADDR` e.g. `0.0.0.0:3000`.
+- `BIND_ADDR` e.g. `0.0.0.0:3000` locally; Fly sets `PORT=8080`.
 - `RUST_LOG` e.g. `info,tower_http=info`.
 - `ADMIN_EMAILS` bootstrap admins; persistent rights live in `users.is_admin`.
 - `ALLOWED_ORIGINS` comma-separated production origins.
@@ -25,11 +28,21 @@ Secrets should be injected by the platform secret manager, not committed. The AP
 
 ## Deploy
 
+Fly.io:
+
+```bash
+gh workflow run fly-deploy.yml \
+  --repo oboobotenefiok/unadomot \
+  --ref rewrite/flutter-rust-postgres
+```
+
+Local Docker:
+
 ```bash
 docker compose up --build
 ```
 
-Or build `services/api/Dockerfile` and run it behind a TLS-terminating load balancer. Migrations run at startup. The process handles `SIGTERM` gracefully.
+Migrations run at startup. The process handles `SIGTERM` gracefully.
 
 ## Health and monitoring
 
@@ -80,9 +93,12 @@ Users migrate without passwords; they must use password reset or social login. L
 
 ## Known limitations
 
+- Cloudinary secrets are not configured in production yet, so photo uploads are disabled.
+- The production API runs on a single Fly machine; there is no multi-region failover.
 - Rate limiting falls back to per-process memory when `REDIS_URL` is absent.
 - Admin rights can be bootstrapped with `ADMIN_EMAILS`; persistent rights use `users.is_admin`.
 - Offset pagination is used instead of cursors.
 - No automated zero-downtime migration; cut-over is scripted and manual.
 - Release APK signing requires a keystore configured outside the repo.
+- The test account `test@example.com` should be removed or rotated before public launch.
 - Business metrics are currently derived from structured logs; a Prometheus endpoint is a follow-up.
