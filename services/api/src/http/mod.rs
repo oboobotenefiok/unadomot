@@ -1,6 +1,6 @@
 use crate::application::auth::{
-    hash_refresh_token, issue_session, login, new_refresh_token, register, verify_session,
-    AuthError, UserRepository,
+    hash_password, hash_refresh_token, issue_session, login, new_refresh_token, register,
+    verify_session, AuthError, UserRepository,
 };
 use crate::application::listings::{
     add_listing_media, admin_remove_listing, admin_restore_listing, browse_listings,
@@ -178,6 +178,17 @@ pub struct RefreshRequest {
 #[derive(Deserialize)]
 pub struct LogoutRequest {
     pub refresh_token: String,
+}
+
+#[derive(Deserialize)]
+pub struct PasswordResetRequest {
+    pub email: String,
+}
+
+#[derive(Deserialize)]
+pub struct PasswordResetConfirm {
+    pub token: String,
+    pub new_password: String,
 }
 
 #[derive(Serialize)]
@@ -481,6 +492,14 @@ pub fn router(state: AppState) -> Router {
         .route("/api/auth/refresh", post(refresh_handler))
         .route("/api/auth/logout", post(logout_handler))
         .route(
+            "/api/auth/password-reset/request",
+            post(password_reset_request_handler),
+        )
+        .route(
+            "/api/auth/password-reset/confirm",
+            post(password_reset_confirm_handler),
+        )
+        .route(
             "/api/listings",
             get(list_listings).post(create_listing_handler),
         )
@@ -662,6 +681,52 @@ async fn logout_handler(
         .revoke_refresh_token(&hash_refresh_token(&request.refresh_token))
         .await
         .map_err(auth_error)?;
+    Ok(StatusCode::NO_CONTENT)
+}
+
+async fn password_reset_request_handler(
+    State(state): State<AppState>,
+    Json(request): Json<PasswordResetRequest>,
+) -> Result<StatusCode, ApiError> {
+    let token = new_refresh_token();
+    let user_id = state
+        .users
+        .create_password_reset(
+            request.email.trim(),
+            &hash_refresh_token(&token),
+            Utc::now() + Duration::minutes(30),
+        )
+        .await
+        .map_err(auth_error)?;
+
+    if user_id.is_some()
+        && std::env::var("PASSWORD_RESET_DEBUG").ok().as_deref() == Some("1")
+    {
+        tracing::info!("password reset token for {}: {}", request.email, token);
+    }
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+async fn password_reset_confirm_handler(
+    State(state): State<AppState>,
+    Json(request): Json<PasswordResetConfirm>,
+) -> Result<StatusCode, ApiError> {
+    let password_hash = hash_password(&request.new_password).map_err(auth_error)?;
+    let updated = state
+        .users
+        .reset_password(&hash_refresh_token(&request.token), &password_hash)
+        .await
+        .map_err(auth_error)?;
+
+    if !updated {
+        return Err(ApiError::new(
+            StatusCode::BAD_REQUEST,
+            "invalid_reset_token",
+            "Reset token is invalid or expired",
+        ));
+    }
+
     Ok(StatusCode::NO_CONTENT)
 }
 
