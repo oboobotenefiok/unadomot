@@ -1,4 +1,4 @@
-use crate::domain::messaging::{Conversation, Message};
+use crate::domain::messaging::{Conversation, ConversationSummary, Message};
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
@@ -18,7 +18,10 @@ pub trait MessagingRepository: Send + Sync {
         listing_id: Uuid,
         initiator: Uuid,
     ) -> Result<Conversation, MessagingError>;
-    async fn list_conversations(&self, user_id: Uuid) -> Result<Vec<Conversation>, MessagingError>;
+    async fn list_conversations(
+        &self,
+        user_id: Uuid,
+    ) -> Result<Vec<ConversationSummary>, MessagingError>;
     async fn find_conversation(
         &self,
         id: Uuid,
@@ -50,7 +53,7 @@ pub async fn start_conversation(
 pub async fn list_conversations(
     repository: &dyn MessagingRepository,
     user_id: Uuid,
-) -> Result<Vec<Conversation>, MessagingError> {
+) -> Result<Vec<ConversationSummary>, MessagingError> {
     repository.list_conversations(user_id).await
 }
 

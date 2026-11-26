@@ -1,5 +1,5 @@
 use crate::application::messaging::{MessagingError, MessagingRepository};
-use crate::domain::messaging::{Conversation, Message};
+use crate::domain::messaging::{Conversation, ConversationSummary, Message};
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use sqlx::PgPool;
@@ -69,16 +69,34 @@ impl MessagingRepository for PostgresMessagingRepository {
         Ok(row.into())
     }
 
-    async fn list_conversations(&self, user_id: Uuid) -> Result<Vec<Conversation>, MessagingError> {
-        let rows = sqlx::query_as::<_, ConversationRow>(
-            "SELECT id, listing_id, participant_a, participant_b, last_message_preview, last_message_at, last_sender_id, created_at FROM conversations WHERE participant_a = $1 OR participant_b = $1 ORDER BY COALESCE(last_message_at, created_at) DESC",
+    async fn list_conversations(
+        &self,
+        user_id: Uuid,
+    ) -> Result<Vec<ConversationSummary>, MessagingError> {
+        let rows = sqlx::query_as::<_, ConversationSummaryRow>(
+            "SELECT c.id, c.listing_id, l.title AS listing_title,
+                    (SELECT lm.url FROM listing_media lm WHERE lm.listing_id = c.listing_id ORDER BY lm.position LIMIT 1) AS listing_photo_url,
+                    CASE WHEN c.participant_a = $1 THEN c.participant_b ELSE c.participant_a END AS counterpart_id,
+                    up.name AS counterpart_name, up.verified AS counterpart_verified,
+                    c.last_message_preview, c.last_message_at,
+                    CASE WHEN c.participant_a = $1 THEN
+                      (SELECT COUNT(*) FROM messages m WHERE m.conversation_id = c.id AND m.sender_id <> $1 AND (c.last_read_at_a IS NULL OR m.created_at > c.last_read_at_a))
+                    ELSE
+                      (SELECT COUNT(*) FROM messages m WHERE m.conversation_id = c.id AND m.sender_id <> $1 AND (c.last_read_at_b IS NULL OR m.created_at > c.last_read_at_b))
+                    END AS unread_count,
+                    c.created_at
+             FROM conversations c
+             JOIN listings l ON l.id = c.listing_id
+             JOIN user_profiles up ON up.user_id = CASE WHEN c.participant_a = $1 THEN c.participant_b ELSE c.participant_a END
+             WHERE c.participant_a = $1 OR c.participant_b = $1
+             ORDER BY COALESCE(c.last_message_at, c.created_at) DESC",
         )
         .bind(user_id)
         .fetch_all(&self.pool)
         .await
         .map_err(|e| MessagingError::Repository(e.to_string()))?;
 
-        Ok(rows.into_iter().map(Conversation::from).collect())
+        Ok(rows.into_iter().map(ConversationSummary::from).collect())
     }
 
     async fn find_conversation(
@@ -217,6 +235,39 @@ impl From<ConversationRow> for Conversation {
             last_message_preview: row.last_message_preview,
             last_message_at: row.last_message_at,
             last_sender_id: row.last_sender_id,
+            created_at: row.created_at,
+        }
+    }
+}
+
+#[derive(sqlx::FromRow)]
+struct ConversationSummaryRow {
+    id: Uuid,
+    listing_id: Uuid,
+    listing_title: String,
+    listing_photo_url: Option<String>,
+    counterpart_id: Uuid,
+    counterpart_name: String,
+    counterpart_verified: bool,
+    last_message_preview: Option<String>,
+    last_message_at: Option<chrono::DateTime<chrono::Utc>>,
+    unread_count: i64,
+    created_at: chrono::DateTime<chrono::Utc>,
+}
+
+impl From<ConversationSummaryRow> for ConversationSummary {
+    fn from(row: ConversationSummaryRow) -> Self {
+        Self {
+            id: row.id,
+            listing_id: row.listing_id,
+            listing_title: row.listing_title,
+            listing_photo_url: row.listing_photo_url,
+            counterpart_id: row.counterpart_id,
+            counterpart_name: row.counterpart_name,
+            counterpart_verified: row.counterpart_verified,
+            last_message_preview: row.last_message_preview,
+            last_message_at: row.last_message_at,
+            unread_count: row.unread_count,
             created_at: row.created_at,
         }
     }

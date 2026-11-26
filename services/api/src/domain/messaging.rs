@@ -14,6 +14,21 @@ pub struct Conversation {
 }
 
 #[derive(Clone, Debug)]
+pub struct ConversationSummary {
+    pub id: Uuid,
+    pub listing_id: Uuid,
+    pub listing_title: String,
+    pub listing_photo_url: Option<String>,
+    pub counterpart_id: Uuid,
+    pub counterpart_name: String,
+    pub counterpart_verified: bool,
+    pub last_message_preview: Option<String>,
+    pub last_message_at: Option<DateTime<Utc>>,
+    pub unread_count: i64,
+    pub created_at: DateTime<Utc>,
+}
+
+#[derive(Clone, Debug)]
 pub struct Message {
     pub id: Uuid,
     pub conversation_id: Uuid,
