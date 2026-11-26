@@ -27,6 +27,7 @@ class _CallScreenState extends State<CallScreen> {
   String? _callId;
   Timer? _poll;
   bool _muted = false;
+  bool _speaker = false;
   bool _connected = false;
   bool _ending = false;
   String? _error;
@@ -140,6 +141,12 @@ class _CallScreenState extends State<CallScreen> {
     setState(() => _muted = !_muted);
   }
 
+  Future<void> _toggleSpeaker() async {
+    final next = !_speaker;
+    await Helper.setSpeakerphoneOn(next);
+    if (mounted) setState(() => _speaker = next);
+  }
+
   Future<void> _switchCamera() async {
     final tracks = _localStream?.getVideoTracks() ?? [];
     if (tracks.isNotEmpty) await Helper.switchCamera(tracks.first);
@@ -203,6 +210,11 @@ class _CallScreenState extends State<CallScreen> {
                       onTap: _toggleMute,
                     ),
                     _CallButton(
+                      icon: _speaker ? Icons.volume_up : Icons.volume_down,
+                      label: _speaker ? 'Speaker' : 'Earpiece',
+                      onTap: _toggleSpeaker,
+                    ),
+                    _CallButton(
                       icon: Icons.call_end,
                       label: 'End',
                       color: Colors.red,
@@ -250,6 +262,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
   Timer? _ringTimer;
   bool _accepted = false;
   bool _muted = false;
+  bool _speaker = false;
   bool _connected = false;
   bool _ending = false;
   String? _error;
@@ -369,6 +382,12 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
     setState(() => _muted = !_muted);
   }
 
+  Future<void> _toggleSpeaker() async {
+    final next = !_speaker;
+    await Helper.setSpeakerphoneOn(next);
+    if (mounted) setState(() => _speaker = next);
+  }
+
   Future<void> _switchCamera() async {
     final tracks = _localStream?.getVideoTracks() ?? [];
     if (tracks.isNotEmpty) await Helper.switchCamera(tracks.first);
@@ -483,6 +502,11 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
                     icon: _muted ? Icons.mic_off : Icons.mic,
                     label: _muted ? 'Unmute' : 'Mute',
                     onTap: _toggleMute,
+                  ),
+                  _CallButton(
+                    icon: _speaker ? Icons.volume_up : Icons.volume_down,
+                    label: _speaker ? 'Speaker' : 'Earpiece',
+                    onTap: _toggleSpeaker,
                   ),
                   _CallButton(
                     icon: Icons.call_end,
