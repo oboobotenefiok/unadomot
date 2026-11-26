@@ -15,6 +15,7 @@ use crate::application::messaging::{
 use crate::application::reports::{
     create_report, list_reports, resolve_report, ReportError, ReportRepository,
 };
+use crate::application::verification::VerificationRepository;
 use crate::domain::listing::{
     Listing, ListingFilter, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
 };
@@ -118,6 +119,7 @@ pub struct AppState {
     pub listings: Arc<dyn ListingRepository>,
     pub messaging: Arc<dyn MessagingRepository>,
     pub reports: Arc<dyn ReportRepository>,
+    pub audit: Arc<dyn VerificationRepository>,
     pub media: Arc<dyn MediaSigner>,
     pub jwt_secret: Arc<String>,
     pub limiter: Arc<RateLimiter>,
@@ -811,10 +813,27 @@ async fn admin_remove_listing_handler(
         ));
     }
 
-    admin_remove_listing(state.listings.as_ref(), id, user.id, &request.reason)
+    let listing = admin_remove_listing(state.listings.as_ref(), id, user.id, &request.reason)
         .await
-        .map(|listing| Json(ListingResponse::from(listing)))
-        .map_err(listing_error)
+        .map_err(listing_error)?;
+    state
+        .audit
+        .record_audit(
+            user.id,
+            "listing.remove",
+            id,
+            json!({"reason": request.reason}),
+        )
+        .await
+        .map_err(|_| {
+            ApiError::new(
+                StatusCode::SERVICE_UNAVAILABLE,
+                "service_unavailable",
+                "Could not record the moderation action",
+            )
+        })?;
+
+    Ok(Json(ListingResponse::from(listing)))
 }
 
 async fn admin_restore_listing_handler(
@@ -831,10 +850,22 @@ async fn admin_restore_listing_handler(
         ));
     }
 
-    admin_restore_listing(state.listings.as_ref(), id, user.id)
+    let listing = admin_restore_listing(state.listings.as_ref(), id, user.id)
         .await
-        .map(|listing| Json(ListingResponse::from(listing)))
-        .map_err(listing_error)
+        .map_err(listing_error)?;
+    state
+        .audit
+        .record_audit(user.id, "listing.restore", id, json!({}))
+        .await
+        .map_err(|_| {
+            ApiError::new(
+                StatusCode::SERVICE_UNAVAILABLE,
+                "service_unavailable",
+                "Could not record the moderation action",
+            )
+        })?;
+
+    Ok(Json(ListingResponse::from(listing)))
 }
 
 async fn admin_suspend_user_handler(
@@ -859,6 +890,18 @@ async fn admin_suspend_user_handler(
             "User not found or already suspended",
         ));
     }
+
+    state
+        .audit
+        .record_audit(user.id, "user.suspend", id, json!({}))
+        .await
+        .map_err(|_| {
+            ApiError::new(
+                StatusCode::SERVICE_UNAVAILABLE,
+                "service_unavailable",
+                "Could not record the moderation action",
+            )
+        })?;
 
     Ok(StatusCode::NO_CONTENT)
 }
@@ -920,7 +963,7 @@ async fn admin_resolve_report_handler(
         ));
     }
 
-    resolve_report(
+    let report = resolve_report(
         state.reports.as_ref(),
         id,
         user.id,
@@ -928,8 +971,25 @@ async fn admin_resolve_report_handler(
         request.notes.as_deref(),
     )
     .await
-    .map(|report| Json(ReportResponse::from(report)))
-    .map_err(report_error)
+    .map_err(report_error)?;
+    state
+        .audit
+        .record_audit(
+            user.id,
+            "report.resolve",
+            id,
+            json!({"status": request.status, "notes": request.notes}),
+        )
+        .await
+        .map_err(|_| {
+            ApiError::new(
+                StatusCode::SERVICE_UNAVAILABLE,
+                "service_unavailable",
+                "Could not record the moderation action",
+            )
+        })?;
+
+    Ok(Json(ReportResponse::from(report)))
 }
 
 async fn add_media_handler(
