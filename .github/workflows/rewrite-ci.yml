@@ -2,9 +2,14 @@ name: Rewrite CI
 on:
   workflow_dispatch:
   push:
+    branches: [rewrite/flutter-rust-postgres]
     tags: ['ci']
 permissions:
   contents: write
+env:
+  CARGO_TERM_COLOR: never
+  NO_COLOR: 1
+  RUST_BACKTRACE: 1
 jobs:
   rust:
     runs-on: ubuntu-latest
@@ -39,13 +44,14 @@ jobs:
       - name: Rust checks
         run: |
           set +e
+          : > /tmp/rust.log
           # Formatting gate temporarily disabled. Re-enable when requested.
           fmt=0
           cargo clippy --all-targets -- -D warnings >> /tmp/rust.log 2>&1; clippy=$?
           cargo test >> /tmp/rust.log 2>&1; tests=$?
           if [ $fmt -ne 0 ] || [ $clippy -ne 0 ] || [ $tests -ne 0 ]; then
             grep -E "error|warning|FAILED|panicked|assertion|expected|left|right" /tmp/rust.log > error-summary.txt || true
-            if [ ! -s error-summary.txt ]; then tail -n 200 /tmp/rust.log > error-summary.txt; fi
+            if [ ! -s error-summary.txt ]; then tail -n 300 /tmp/rust.log > error-summary.txt; fi
             exit 1
           fi
       - name: Publish error summary
@@ -55,14 +61,25 @@ jobs:
           if [ -f services/api/error-summary.txt ]; then cp services/api/error-summary.txt error-summary.txt; fi
           if [ ! -f error-summary.txt ]; then echo "CI failed before an error summary was generated." > error-summary.txt; fi
           cp error-summary.txt /tmp/error-summary.txt
+          cp /tmp/rust.log /tmp/rust-full.log 2>/dev/null || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout --orphan ci-logs-rust
           git rm -rf . >/dev/null 2>&1 || true
           git clean -fdx >/dev/null 2>&1 || true
           cp /tmp/error-summary.txt error-summary.txt
-          git add error-summary.txt
-          git commit -m "CI error summary for ${GITHUB_SHA}"
+          cp /tmp/rust-full.log rust-full.log 2>/dev/null || true
+          {
+            echo "# Rust CI failure"
+            echo
+            echo "- Commit: ${GITHUB_SHA}"
+            echo "- Ref: ${GITHUB_REF_NAME}"
+            echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "- Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > status.md
+          git add error-summary.txt status.md
+          [ -f rust-full.log ] && git add rust-full.log
+          git commit -m "Rust CI failure for ${GITHUB_SHA}"
           git push --force origin ci-logs-rust
   android:
     runs-on: ubuntu-latest
@@ -96,13 +113,14 @@ jobs:
         working-directory: apps/flutter_app
         run: |
           set +e
-          flutter pub get > /tmp/flutter.log 2>&1; pub=$?
+          : > /tmp/flutter.log
+          flutter pub get >> /tmp/flutter.log 2>&1; pub=$?
           flutter analyze --no-fatal-infos >> /tmp/flutter.log 2>&1; analyze=$?
           flutter test >> /tmp/flutter.log 2>&1; tests=$?
           flutter build apk --debug --dart-define=API_BASE_URL=https://unadomot.fly.dev >> /tmp/flutter.log 2>&1; build=$?
           if [ $pub -ne 0 ] || [ $analyze -ne 0 ] || [ $tests -ne 0 ] || [ $build -ne 0 ]; then
             grep -E "error|warning|FAILED|Exception|failed|Error:" /tmp/flutter.log > ../../error-summary.txt || true
-            if [ ! -s ../../error-summary.txt ]; then tail -n 200 /tmp/flutter.log > ../../error-summary.txt; fi
+            if [ ! -s ../../error-summary.txt ]; then tail -n 300 /tmp/flutter.log > ../../error-summary.txt; fi
             exit 1
           fi
       - name: Publish error summary
@@ -110,14 +128,25 @@ jobs:
         run: |
           if [ ! -f error-summary.txt ]; then echo "CI failed before an error summary was generated." > error-summary.txt; fi
           cp error-summary.txt /tmp/error-summary.txt
+          cp /tmp/flutter.log /tmp/flutter-full.log 2>/dev/null || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout --orphan ci-logs-android
           git rm -rf . >/dev/null 2>&1 || true
           git clean -fdx >/dev/null 2>&1 || true
           cp /tmp/error-summary.txt error-summary.txt
-          git add error-summary.txt
-          git commit -m "CI error summary for ${GITHUB_SHA}"
+          cp /tmp/flutter-full.log flutter-full.log 2>/dev/null || true
+          {
+            echo "# Android CI failure"
+            echo
+            echo "- Commit: ${GITHUB_SHA}"
+            echo "- Ref: ${GITHUB_REF_NAME}"
+            echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "- Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > status.md
+          git add error-summary.txt status.md
+          [ -f flutter-full.log ] && git add flutter-full.log
+          git commit -m "Android CI failure for ${GITHUB_SHA}"
           git push --force origin ci-logs-android
       - uses: actions/upload-artifact@v7
         if: success()
