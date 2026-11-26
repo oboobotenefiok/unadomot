@@ -122,6 +122,10 @@ impl UserRepository for UnconfiguredUserRepository {
         Ok(false)
     }
 
+    async fn is_active(&self, _user_id: Uuid) -> Result<bool, AuthError> {
+        Ok(false)
+    }
+
     async fn suspend_user(&self, _user_id: Uuid) -> Result<bool, AuthError> {
         Err(AuthError::Repository("Persistence not configured".into()))
     }
