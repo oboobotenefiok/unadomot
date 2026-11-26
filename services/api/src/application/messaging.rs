@@ -30,7 +30,6 @@ pub trait MessagingRepository: Send + Sync {
     async fn list_messages(
         &self,
         conversation_id: Uuid,
-        viewer_id: Uuid,
         before: Option<DateTime<Utc>>,
         limit: i64,
     ) -> Result<Vec<Message>, MessagingError>;
@@ -38,18 +37,8 @@ pub trait MessagingRepository: Send + Sync {
         &self,
         conversation_id: Uuid,
         sender_id: Uuid,
-        body: Option<&str>,
-        media_url: Option<&str>,
-        media_type: Option<&str>,
-        duration_seconds: Option<i32>,
-        reply_to_id: Option<Uuid>,
+        body: &str,
     ) -> Result<Message, MessagingError>;
-    async fn react_to_message(
-        &self,
-        message_id: Uuid,
-        user_id: Uuid,
-        emoji: &str,
-    ) -> Result<(), MessagingError>;
     async fn mark_read(&self, conversation_id: Uuid, user_id: Uuid) -> Result<(), MessagingError>;
 }
 
@@ -80,7 +69,7 @@ pub async fn list_messages(
         .await?
         .ok_or(MessagingError::NotFound)?;
     repository
-        .list_messages(conversation.id, user_id, before, limit.clamp(1, 50))
+        .list_messages(conversation.id, before, limit.clamp(1, 50))
         .await
 }
 
@@ -88,21 +77,12 @@ pub async fn send_message(
     repository: &dyn MessagingRepository,
     user_id: Uuid,
     conversation_id: Uuid,
-    body: Option<&str>,
-    media_url: Option<&str>,
-    media_type: Option<&str>,
-    duration_seconds: Option<i32>,
-    reply_to_id: Option<Uuid>,
+    body: &str,
 ) -> Result<Message, MessagingError> {
-    let body = body.map(str::trim).filter(|value| !value.is_empty());
-    if body.is_none() && media_url.is_none() {
+    let body = body.trim();
+    if body.is_empty() || body.len() > 2000 {
         return Err(MessagingError::InvalidInput(
-            "A message or attachment is required".into(),
-        ));
-    }
-    if body.is_some_and(|value| value.len() > 2000) {
-        return Err(MessagingError::InvalidInput(
-            "Message must be 2000 characters or fewer".into(),
+            "Message must be between 1 and 2000 characters".into(),
         ));
     }
 
@@ -112,29 +92,8 @@ pub async fn send_message(
         .ok_or(MessagingError::NotFound)?;
 
     repository
-        .send_message(
-            conversation_id,
-            user_id,
-            body,
-            media_url,
-            media_type,
-            duration_seconds,
-            reply_to_id,
-        )
+        .send_message(conversation_id, user_id, body)
         .await
-}
-
-pub async fn react_to_message(
-    repository: &dyn MessagingRepository,
-    user_id: Uuid,
-    message_id: Uuid,
-    emoji: &str,
-) -> Result<(), MessagingError> {
-    let emoji = emoji.trim();
-    if emoji.is_empty() || emoji.chars().count() > 8 {
-        return Err(MessagingError::InvalidInput("Invalid reaction".into()));
-    }
-    repository.react_to_message(message_id, user_id, emoji).await
 }
 
 pub async fn mark_read(
