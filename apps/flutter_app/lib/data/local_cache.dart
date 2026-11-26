@@ -133,6 +133,12 @@ class LocalCache {
     return rows.isNotEmpty;
   }
 
+  Future<Set<String>> readFavoriteIds() async {
+    final db = await _db;
+    final rows = await db.query('favorites', orderBy: 'created_at DESC');
+    return rows.map((row) => row['listing_id'] as String).toSet();
+  }
+
   Future<void> setFavorite(String listingId, bool favorite) async {
     final db = await _db;
     if (favorite) {
