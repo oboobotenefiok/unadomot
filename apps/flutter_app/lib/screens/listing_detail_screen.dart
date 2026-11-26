@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:share_plus/share_plus.dart';
 import '../api/api_client.dart';
 import '../data/local_cache.dart';
@@ -32,7 +34,11 @@ class ListingDetailScreen extends StatefulWidget {
 class _ListingDetailScreenState extends State<ListingDetailScreen> {
   Listing? _listing;
   List<Listing> _similar = [];
+  List<Map<String, dynamic>> _comments = [];
+  final _commentController = TextEditingController();
   bool _loading = true;
+  bool _loadingComments = true;
+  bool _postingComment = false;
   String? _error;
   DateTime? _cachedAt;
   bool _favorite = false;
@@ -43,6 +49,12 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -79,6 +91,97 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
 
     final favorite = await widget.cache.isFavorite(widget.listingId);
     if (mounted) setState(() => _favorite = favorite);
+    _loadComments();
+  }
+
+  Future<void> _loadComments() async {
+    try {
+      final response = await http.get(
+        widget.api.baseUrl.resolve('/api/listings/${widget.listingId}/comments'),
+        headers: {'Accept': 'application/json'},
+      ).timeout(const Duration(seconds: 20));
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw ApiException(response.statusCode, 'Comments unavailable.');
+      }
+      final comments = (jsonDecode(response.body) as List)
+          .map((item) => Map<String, dynamic>.from(item as Map))
+          .toList();
+      if (mounted) setState(() => _comments = comments);
+    } catch (_) {
+      // Comments are optional if the request fails.
+    } finally {
+      if (mounted) setState(() => _loadingComments = false);
+    }
+  }
+
+  Future<void> _postComment() async {
+    if (!await requireAuth(context, widget.appState)) return;
+    final body = _commentController.text.trim();
+    if (body.isEmpty || _postingComment) return;
+    setState(() => _postingComment = true);
+    try {
+      final response = await http.post(
+        widget.api.baseUrl.resolve('/api/listings/${widget.listingId}/comments'),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.api.token}',
+        },
+        body: jsonEncode({'body': body}),
+      ).timeout(const Duration(seconds: 20));
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw ApiException(response.statusCode, 'Could not post comment.');
+      }
+      final comment = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      if (!mounted) return;
+      setState(() {
+        _comments = [..._comments, comment];
+        _commentController.clear();
+      });
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _postingComment = false);
+    }
+  }
+
+  Future<void> _react(Map<String, dynamic> comment, String emoji) async {
+    if (!await requireAuth(context, widget.appState)) return;
+    try {
+      final response = await http.post(
+        widget.api.baseUrl.resolve('/api/comments/${comment['id']}/reactions'),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.api.token}',
+        },
+        body: jsonEncode({'emoji': emoji}),
+      ).timeout(const Duration(seconds: 20));
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw ApiException(response.statusCode, 'Could not react.');
+      }
+      final data = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      if (!mounted) return;
+      setState(() {
+        final index = _comments.indexWhere((item) => item['id'] == comment['id']);
+        if (index >= 0) {
+          _comments[index] = {
+            ..._comments[index],
+            'reactions': data['reactions'],
+          };
+        }
+      });
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())),
+        );
+      }
+    }
   }
 
   Future<void> _loadSimilar(Listing listing) async {
@@ -345,6 +448,8 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                 ),
                                 const SizedBox(height: 20),
                                 _mapCard(),
+                                const SizedBox(height: 20),
+                                _commentsSection(),
                                 if (_similar.isNotEmpty) ...[
                                   const SizedBox(height: 20),
                                   _similarSection(),
@@ -371,6 +476,160 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                         ],
                       ),
       );
+
+  Widget _commentsSection() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text(
+                'Comments',
+                style: TextStyle(
+                  color: UnaColors.text900,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '${_comments.length}',
+                style: const TextStyle(color: UnaColors.text500, fontSize: 13),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _commentController,
+                  maxLength: 1000,
+                  minLines: 1,
+                  maxLines: 4,
+                  decoration: const InputDecoration(
+                    hintText: 'Ask a question or leave a note',
+                    counterText: '',
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton.filled(
+                onPressed: _postingComment ? null : _postComment,
+                icon: _postingComment
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.send),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (_loadingComments)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (_comments.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Text('No comments yet. Start the conversation.', style: TextStyle(color: UnaColors.text500)),
+            )
+          else
+            ..._comments.map(_commentTile),
+        ],
+      );
+
+  Widget _commentTile(Map<String, dynamic> comment) {
+    final reactions = (comment['reactions'] as List? ?? [])
+        .map((item) => Map<String, dynamic>.from(item as Map))
+        .toList();
+    final photo = comment['photo_url'] as String?;
+    final name = comment['name'] as String? ?? 'User';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: UnaColors.surface,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: UnaColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 16,
+                backgroundColor: UnaColors.green100,
+                backgroundImage: photo == null ? null : NetworkImage(photo),
+                child: photo == null
+                    ? Text(
+                        name.characters.first.toUpperCase(),
+                        style: const TextStyle(color: UnaColors.green900, fontWeight: FontWeight.w700),
+                      )
+                    : null,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  name,
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(comment['body'] as String? ?? '', style: const TextStyle(height: 1.4)),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 6,
+            children: [
+              for (final emoji in const ['like', 'love', 'fire', 'clap'])
+                _reactionChip(
+                  comment,
+                  emoji,
+                  reactions
+                      .where((item) => item['emoji'] == emoji)
+                      .fold<int>(0, (sum, item) => sum + ((item['count'] as num?)?.toInt() ?? 0)),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _reactionChip(Map<String, dynamic> comment, String emoji, int count) {
+    final icon = switch (emoji) {
+      'like' => Icons.thumb_up_alt_outlined,
+      'love' => Icons.favorite_border,
+      'fire' => Icons.local_fire_department_outlined,
+      _ => Icons.waving_hand_outlined,
+    };
+    return InkWell(
+      onTap: () => _react(comment, emoji),
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: UnaColors.green100,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: UnaColors.green900),
+            if (count > 0) ...[
+              const SizedBox(width: 4),
+              Text('$count', style: const TextStyle(fontSize: 11, color: UnaColors.green900)),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _similarSection() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
