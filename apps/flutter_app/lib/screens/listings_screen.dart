@@ -5,6 +5,7 @@ import '../data/local_cache.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import '../utils/feed_ranker.dart';
 import '../widgets/home_carousel.dart';
 import 'auth_sheet.dart';
 import 'create_listing_screen.dart';
@@ -33,6 +34,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
   final _scrollController = ScrollController();
   List<Listing> _listings = [];
   Set<String> _favoriteIds = {};
+  Map<String, double> _affinity = {};
   bool _loading = true;
   bool _loadingMore = false;
   bool _hasMore = false;
@@ -49,6 +51,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
     _scrollController.addListener(_onScroll);
     _load();
     _loadFavorites();
+    _loadAffinity();
   }
 
   @override
@@ -60,6 +63,11 @@ class _ListingsScreenState extends State<ListingsScreen> {
   Future<void> _loadFavorites() async {
     final ids = await widget.cache.readFavoriteIds();
     if (mounted) setState(() => _favoriteIds = ids);
+  }
+
+  Future<void> _loadAffinity() async {
+    final affinity = await widget.cache.readAffinity();
+    if (mounted) setState(() => _affinity = affinity);
   }
 
   void _onScroll() {
@@ -313,16 +321,32 @@ class _ListingsScreenState extends State<ListingsScreen> {
 
   List<Listing> get _visibleListings {
     final query = _query.trim().toLowerCase();
-    if (query.isEmpty) return _listings;
-    return _listings.where((listing) {
-      return listing.title.toLowerCase().contains(query) ||
-          listing.state.toLowerCase().contains(query) ||
-          listing.lga.toLowerCase().contains(query) ||
-          listing.address.toLowerCase().contains(query);
-    }).toList();
+    final filtered = query.isEmpty
+        ? _listings
+        : _listings.where((listing) {
+            return listing.title.toLowerCase().contains(query) ||
+                listing.state.toLowerCase().contains(query) ||
+                listing.lga.toLowerCase().contains(query) ||
+                listing.address.toLowerCase().contains(query);
+          }).toList();
+    return FeedRanker.rank(
+      listings: filtered,
+      affinity: _affinity,
+      favorites: _favoriteIds,
+    );
   }
 
-  void _openDetail(Listing listing) {
+  Future<void> _openDetail(Listing listing) async {
+    await widget.cache.addAffinity(FeedRanker.affinityFor(listing));
+    if (mounted) {
+      setState(() {
+        _affinity = {
+          ..._affinity,
+          ...FeedRanker.affinityFor(listing),
+        };
+      });
+    }
+    if (!mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(

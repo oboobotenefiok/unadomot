@@ -28,7 +28,7 @@ class LocalCache {
         p.join(await getDatabasesPath(), 'unadomot_cache.db');
     _database = await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE cached_listings (
@@ -57,6 +57,24 @@ class LocalCache {
             updated_at INTEGER NOT NULL
           )
         ''');
+        await db.execute('''
+          CREATE TABLE affinity (
+            key TEXT PRIMARY KEY,
+            score REAL NOT NULL,
+            updated_at INTEGER NOT NULL
+          )
+        ''');
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute('''
+            CREATE TABLE affinity (
+              key TEXT PRIMARY KEY,
+              score REAL NOT NULL,
+              updated_at INTEGER NOT NULL
+            )
+          ''');
+        }
       },
     );
     return _database!;
@@ -153,6 +171,35 @@ class LocalCache {
     } else {
       await db.delete('favorites', where: 'listing_id = ?', whereArgs: [listingId]);
     }
+  }
+
+  Future<Map<String, double>> readAffinity() async {
+    final db = await _db;
+    final rows = await db.query('affinity');
+    return {
+      for (final row in rows)
+        row['key'] as String: (row['score'] as num).toDouble(),
+    };
+  }
+
+  Future<void> addAffinity(Map<String, double> deltas) async {
+    if (deltas.isEmpty) return;
+    final db = await _db;
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final batch = db.batch();
+    for (final entry in deltas.entries) {
+      batch.rawInsert(
+        '''
+        INSERT INTO affinity (key, score, updated_at)
+        VALUES (?, ?, ?)
+        ON CONFLICT(key) DO UPDATE SET
+          score = score + excluded.score,
+          updated_at = excluded.updated_at
+        ''',
+        [entry.key, entry.value, now],
+      );
+    }
+    await batch.commit(noResult: true);
   }
 
   Future<void> saveDraft(String id, Map<String, dynamic> draft) async {
