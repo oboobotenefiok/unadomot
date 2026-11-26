@@ -7,10 +7,19 @@ use axum::{
 };
 use serde::Deserialize;
 use serde_json::json;
+use std::collections::HashMap;
+use std::sync::{Mutex, OnceLock};
+use std::time::{Duration, Instant};
 use unadomot_api::application::auth::verify_session;
 use unadomot_api::application::messaging::MessagingError;
 use unadomot_api::http::AppState;
 use uuid::Uuid;
+
+static TYPING: OnceLock<Mutex<HashMap<(Uuid, Uuid), Instant>>> = OnceLock::new();
+
+fn typing_store() -> &'static Mutex<HashMap<(Uuid, Uuid), Instant>> {
+    TYPING.get_or_init(|| Mutex::new(HashMap::new()))
+}
 
 pub fn router(state: AppState) -> Router {
     Router::new()
@@ -19,6 +28,10 @@ pub fn router(state: AppState) -> Router {
             get(list_rich_messages_handler).post(send_rich_message_handler),
         )
         .route("/api/messages/{id}/reactions", post(react_handler))
+        .route(
+            "/api/conversations/{id}/typing",
+            post(typing_ping_handler).get(typing_status_handler),
+        )
         .with_state(state)
 }
 
@@ -68,6 +81,47 @@ fn messaging_error(error_value: MessagingError) -> axum::response::Response {
             "The service is temporarily unavailable",
         ),
     }
+}
+
+async fn typing_ping_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(conversation_id): Path<Uuid>,
+) -> axum::response::Response {
+    let user_id = match authorize(&state, &headers) {
+        Ok(id) => id,
+        Err(response) => return response,
+    };
+
+    if let Ok(mut store) = typing_store().lock() {
+        store.insert((conversation_id, user_id), Instant::now());
+        store.retain(|_, at| at.elapsed() < Duration::from_secs(30));
+    }
+    StatusCode::NO_CONTENT.into_response()
+}
+
+async fn typing_status_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(conversation_id): Path<Uuid>,
+) -> axum::response::Response {
+    let user_id = match authorize(&state, &headers) {
+        Ok(id) => id,
+        Err(response) => return response,
+    };
+
+    let typing = typing_store()
+        .lock()
+        .map(|store| {
+            store.iter().any(|((cid, uid), at)| {
+                *cid == conversation_id
+                    && *uid != user_id
+                    && at.elapsed() < Duration::from_secs(5)
+            })
+        })
+        .unwrap_or(false);
+
+    Json(json!({ "typing": typing })).into_response()
 }
 
 async fn list_rich_messages_handler(
