@@ -173,7 +173,7 @@ impl ListingRepository for PostgresListingRepository {
         update: &ListingUpdate,
     ) -> Result<Listing, ListingError> {
         let updated = sqlx::query_scalar::<_, Uuid>(
-            "UPDATE listings SET title = COALESCE($3, title), description = COALESCE($4, description), price = COALESCE($5, price), address = COALESCE($6, address), state = COALESCE($7, state), lga = COALESCE($8, lga), is_agent_listing = COALESCE($9, is_agent_listing), status = COALESCE($10, status), bedrooms = COALESCE($11, bedrooms), bathrooms = COALESCE($12, bathrooms), property_type = COALESCE($13, property_type), furnishing = COALESCE($14, furnishing), updated_at = now() WHERE id = $1 AND landlord_id = $2 AND deleted_at IS NULL RETURNING id",
+            "UPDATE listings SET title = COALESCE($3, title), description = COALESCE($4, description), price = COALESCE($5, price), address = COALESCE($6, address), state = COALESCE($7, state), lga = COALESCE($8, lga), is_agent_listing = COALESCE($9, is_agent_listing), status = COALESCE($10, status), bedrooms = CASE WHEN $11 THEN $12 ELSE bedrooms END, bathrooms = CASE WHEN $13 THEN $14 ELSE bathrooms END, property_type = CASE WHEN $15 THEN $16 ELSE property_type END, furnishing = CASE WHEN $17 THEN $18 ELSE furnishing END, updated_at = now() WHERE id = $1 AND landlord_id = $2 AND deleted_at IS NULL RETURNING id",
         )
         .bind(id)
         .bind(owner_id)
@@ -185,10 +185,14 @@ impl ListingRepository for PostgresListingRepository {
         .bind(update.lga.as_deref())
         .bind(update.is_agent_listing)
         .bind(update.status.map(|status| status.as_str().to_string()))
-        .bind(update.bedrooms.unwrap_or(None))
-        .bind(update.bathrooms.unwrap_or(None))
-        .bind(update.property_type.clone().unwrap_or(None))
-        .bind(update.furnishing.clone().unwrap_or(None))
+        .bind(update.bedrooms.is_some())
+        .bind(update.bedrooms.flatten())
+        .bind(update.bathrooms.is_some())
+        .bind(update.bathrooms.flatten())
+        .bind(update.property_type.is_some())
+        .bind(update.property_type.clone().flatten())
+        .bind(update.furnishing.is_some())
+        .bind(update.furnishing.clone().flatten())
         .fetch_optional(&self.pool)
         .await
         .map_err(|e| ListingError::Repository(e.to_string()))?;
