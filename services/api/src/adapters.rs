@@ -6,7 +6,7 @@ use crate::application::verification::{VerificationError, VerificationRepository
 use crate::domain::listing::{
     Listing, ListingFilter, ListingMedia, ListingUpdate, NewListing, NewListingMedia,
 };
-use crate::domain::messaging::{Conversation, Message};
+use crate::domain::messaging::{Conversation, ConversationSummary, Message};
 use crate::domain::verification::VerificationRequest;
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
@@ -26,6 +26,14 @@ impl ListingRepository for UnconfiguredRepository {
     }
 
     async fn get(&self, _id: Uuid) -> Result<Option<Listing>, ListingError> {
+        Err(ListingError::Repository("Persistence not configured".into()))
+    }
+
+    async fn get_public(&self, _id: Uuid) -> Result<Option<Listing>, ListingError> {
+        Err(ListingError::Repository("Persistence not configured".into()))
+    }
+
+    async fn list_by_owner(&self, _owner_id: Uuid) -> Result<Vec<Listing>, ListingError> {
         Err(ListingError::Repository("Persistence not configured".into()))
     }
 
@@ -104,16 +112,18 @@ pub struct UnconfiguredMessagingRepository;
 
 #[async_trait]
 impl MessagingRepository for UnconfiguredMessagingRepository {
-    async fn find_or_create_conversation(
+    async fn start_conversation(
         &self,
         _listing_id: Uuid,
         _initiator: Uuid,
-        _other: Uuid,
     ) -> Result<Conversation, MessagingError> {
         Err(MessagingError::Repository("Persistence not configured".into()))
     }
 
-    async fn list_conversations(&self, _user_id: Uuid) -> Result<Vec<Conversation>, MessagingError> {
+    async fn list_conversations(
+        &self,
+        _user_id: Uuid,
+    ) -> Result<Vec<ConversationSummary>, MessagingError> {
         Err(MessagingError::Repository("Persistence not configured".into()))
     }
 
@@ -128,8 +138,8 @@ impl MessagingRepository for UnconfiguredMessagingRepository {
     async fn list_messages(
         &self,
         _conversation_id: Uuid,
+        _before: Option<DateTime<Utc>>,
         _limit: i64,
-        _offset: i64,
     ) -> Result<Vec<Message>, MessagingError> {
         Err(MessagingError::Repository("Persistence not configured".into()))
     }
@@ -140,6 +150,10 @@ impl MessagingRepository for UnconfiguredMessagingRepository {
         _sender_id: Uuid,
         _body: &str,
     ) -> Result<Message, MessagingError> {
+        Err(MessagingError::Repository("Persistence not configured".into()))
+    }
+
+    async fn mark_read(&self, _conversation_id: Uuid, _user_id: Uuid) -> Result<(), MessagingError> {
         Err(MessagingError::Repository("Persistence not configured".into()))
     }
 }
