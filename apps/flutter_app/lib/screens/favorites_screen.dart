@@ -10,12 +10,14 @@ class FavoritesScreen extends StatefulWidget {
   final ApiClient api;
   final LocalCache cache;
   final AppState appState;
+  final bool showAppBar;
 
   const FavoritesScreen({
     super.key,
     required this.api,
     required this.cache,
     required this.appState,
+    this.showAppBar = true,
   });
 
   @override
@@ -49,7 +51,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Favorites')),
+        appBar: widget.showAppBar ? AppBar(title: const Text('Favorites')) : null,
         body: _loading
             ? const Center(child: CircularProgressIndicator())
             : _favorites.isEmpty
@@ -82,7 +84,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                           title: Text(listing.title),
                           subtitle: Text('${listing.lga}, ${listing.state}'),
                           trailing: Text(
-                            '₦${listing.price.toStringAsFixed(0)}',
+                            'N${listing.price.toStringAsFixed(0)}',
                             style: const TextStyle(
                               color: UnaColors.primary,
                               fontWeight: FontWeight.w700,
