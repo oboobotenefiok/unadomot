@@ -112,8 +112,10 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _loading = true;
   bool _sending = false;
   bool _recording = false;
+  bool _showingIncoming = false;
   int _recordSeconds = 0;
   Timer? _recordTimer;
+  Timer? _incomingTimer;
   String? _error;
 
   @override
@@ -123,15 +125,64 @@ class _ChatScreenState extends State<ChatScreen> {
       _controller.text = widget.initialMessage!;
     }
     _load();
+    _incomingTimer = Timer.periodic(const Duration(seconds: 5), (_) => _checkIncoming());
   }
 
   @override
   void dispose() {
     _recordTimer?.cancel();
+    _incomingTimer?.cancel();
     _recorder.dispose();
     _player.dispose();
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _checkIncoming() async {
+    if (_showingIncoming || !widget.api.signedIn) return;
+    try {
+      final calls = await widget.api.incomingCalls();
+      if (calls.isEmpty || !mounted) return;
+      final call = calls.first;
+      _showingIncoming = true;
+      final accept = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          title: Text(call['kind'] == 'video' ? 'Incoming video call' : 'Incoming voice call'),
+          content: const Text('Someone is calling you from this conversation.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Decline'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Accept'),
+            ),
+          ],
+        ),
+      );
+      _showingIncoming = false;
+      if (accept == true) {
+        if (!mounted) return;
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => IncomingCallScreen(
+              api: widget.api,
+              callId: call['id'] as String,
+              kind: call['kind'] as String,
+              offerSdp: call['offer_sdp'] as String,
+            ),
+          ),
+        );
+      } else {
+        await widget.api.endCall(call['id'] as String);
+      }
+    } catch (_) {
+      _showingIncoming = false;
+    }
   }
 
   Future<void> _load() async {
