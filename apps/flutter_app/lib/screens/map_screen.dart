@@ -70,7 +70,7 @@ class MapScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            '$state • ${stateListings.length} listing${stateListings.length == 1 ? '' : 's'}',
+            '$state - ${stateListings.length} listing${stateListings.length == 1 ? '' : 's'}',
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 12),
@@ -79,7 +79,7 @@ class MapScreen extends StatelessWidget {
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.home_work_outlined),
               title: Text(listing.title),
-              subtitle: Text('${listing.lga} • ₦${listing.price.toStringAsFixed(0)}'),
+              subtitle: Text('${listing.lga} - N${listing.price.toStringAsFixed(0)}'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.pop(context);
@@ -140,24 +140,31 @@ class MapScreen extends StatelessWidget {
       );
     }).toList();
 
+    final map = FlutterMap(
+      options: const MapOptions(
+        initialCenter: LatLng(9.0820, 8.6753),
+        initialZoom: 6,
+      ),
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.unadomot',
+        ),
+        MarkerLayer(markers: markers),
+      ],
+    );
+
     return Scaffold(
       appBar: AppBar(title: const Text('Map view')),
-      body: FlutterMap(
-        options: const MapOptions(
-          initialCenter: LatLng(9.0820, 8.6753),
-          initialZoom: 6,
-        ),
-        children: [
-          TileLayer(
-            urlTemplate: dark
-                ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            subdomains: const ['a', 'b', 'c'],
-            userAgentPackageName: 'com.unadomot',
-          ),
-          MarkerLayer(markers: markers),
-        ],
-      ),
+      body: dark
+          ? ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                const Color(0xFF0B1510).withValues(alpha: 0.55),
+                BlendMode.multiply,
+              ),
+              child: map,
+            )
+          : map,
     );
   }
 }
