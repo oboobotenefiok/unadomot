@@ -23,6 +23,7 @@ pub fn router(state: CallState) -> Router {
         .route("/api/conversations/{id}/calls", post(start_call_handler))
         .route("/api/conversations/{id}/calls/history", get(call_history_handler))
         .route("/api/calls/incoming", get(incoming_calls_handler))
+        .route("/api/calls/ice", get(ice_servers_handler))
         .route("/api/calls/{id}", get(get_call_handler))
         .route("/api/calls/{id}/answer", post(answer_call_handler))
         .route("/api/calls/{id}/end", post(end_call_handler))
@@ -66,6 +67,31 @@ fn call_error(error_value: CallError) -> axum::response::Response {
             "The service is temporarily unavailable",
         ),
     }
+}
+
+async fn ice_servers_handler() -> axum::response::Response {
+    let mut servers = vec![json!({
+        "urls": "stun:stun.l.google.com:19302"
+    })];
+
+    if let (Ok(urls), Ok(username), Ok(credential)) = (
+        std::env::var("TURN_URLS"),
+        std::env::var("TURN_USERNAME"),
+        std::env::var("TURN_CREDENTIAL"),
+    ) {
+        if !urls.trim().is_empty()
+            && !username.trim().is_empty()
+            && !credential.trim().is_empty()
+        {
+            servers.push(json!({
+                "urls": urls,
+                "username": username,
+                "credential": credential,
+            }));
+        }
+    }
+
+    Json(json!({ "ice_servers": servers })).into_response()
 }
 
 async fn start_call_handler(
