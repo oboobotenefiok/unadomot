@@ -158,6 +158,17 @@ impl UserRepository for PostgresUserRepository {
         Ok(row.map(|(is_admin,)| is_admin).unwrap_or(false))
     }
 
+    async fn is_active(&self, user_id: Uuid) -> Result<bool, AuthError> {
+        let row: Option<(bool,)> = sqlx::query_as(
+            "SELECT EXISTS(SELECT 1 FROM users WHERE id = $1 AND status = 'active')",
+        )
+        .bind(user_id)
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
+        Ok(row.map(|(is_active,)| is_active).unwrap_or(false))
+    }
+
     async fn suspend_user(&self, user_id: Uuid) -> Result<bool, AuthError> {
         let result = sqlx::query(
             "UPDATE users SET status = 'suspended', updated_at = now() WHERE id = $1 AND status = 'active'",
