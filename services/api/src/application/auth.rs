@@ -76,7 +76,11 @@ pub trait UserRepository: Send + Sync {
         token_hash: &str,
         expires_at: DateTime<Utc>,
     ) -> Result<Option<Uuid>, AuthError>;
-    async fn reset_password(&self, token_hash: &str, password_hash: &str) -> Result<bool, AuthError>;
+    async fn reset_password(
+        &self,
+        token_hash: &str,
+        password_hash: &str,
+    ) -> Result<bool, AuthError>;
     async fn is_admin(&self, user_id: Uuid) -> Result<bool, AuthError>;
     async fn is_active(&self, user_id: Uuid) -> Result<bool, AuthError>;
     async fn suspend_user(&self, user_id: Uuid) -> Result<bool, AuthError>;
