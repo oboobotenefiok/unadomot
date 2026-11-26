@@ -1,4 +1,4 @@
-use crate::application::auth::{verify_session, AuthError, UserRepository};
+use crate::application::auth::{verify_session, UserRepository};
 use crate::application::verification::{
     my_request, pending_requests, review_request, submit_request, VerificationError,
     VerificationRepository,
@@ -98,29 +98,41 @@ pub fn router(state: VerificationState) -> Router {
         .with_state(state)
 }
 
-fn authorize(state: &VerificationState, headers: &HeaderMap) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
+fn authorize(
+    state: &VerificationState,
+    headers: &HeaderMap,
+) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
     let token = headers
         .get("authorization")
         .and_then(|value| value.to_str().ok())
         .and_then(|value| value.strip_prefix("Bearer "))
-        .ok_or_else(|| VerificationApiError::new(StatusCode::UNAUTHORIZED, "unauthorized", "Missing bearer token"))?;
+        .ok_or_else(|| {
+            VerificationApiError::new(
+                StatusCode::UNAUTHORIZED,
+                "unauthorized",
+                "Missing bearer token",
+            )
+        })?;
 
     verify_session(token, &state.jwt_secret).map_err(|_| {
-        VerificationApiError::new(StatusCode::UNAUTHORIZED, "unauthorized", "Invalid or expired token")
+        VerificationApiError::new(
+            StatusCode::UNAUTHORIZED,
+            "unauthorized",
+            "Invalid or expired token",
+        )
     })
 }
 
-async fn authorize_admin(state: &VerificationState, headers: &HeaderMap) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
+async fn authorize_admin(
+    state: &VerificationState,
+    headers: &HeaderMap,
+) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
     let user = authorize(state, headers)?;
     let is_bootstrap_admin = state
         .admin_emails
         .iter()
         .any(|email| email.eq_ignore_ascii_case(&user.email));
-    let is_db_admin = state
-        .users
-        .is_admin(user.id)
-        .await
-        .unwrap_or(false);
+    let is_db_admin = state.users.is_admin(user.id).await.unwrap_or(false);
 
     if !is_bootstrap_admin && !is_db_admin {
         return Err(VerificationApiError::new(

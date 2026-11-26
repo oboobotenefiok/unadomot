@@ -19,6 +19,13 @@ use unadomot_api::infrastructure::postgres::{
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+type Repositories = (
+    Arc<dyn UserRepository>,
+    Arc<dyn ListingRepository>,
+    Arc<dyn MessagingRepository>,
+    Arc<dyn VerificationRepository>,
+);
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
@@ -35,32 +42,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let jwt_secret = Arc::new(jwt_secret);
 
-    let (users, listings, messaging, verification_repo): (
-        Arc<dyn UserRepository>,
-        Arc<dyn ListingRepository>,
-        Arc<dyn MessagingRepository>,
-        Arc<dyn VerificationRepository>,
-    ) = match std::env::var("DATABASE_URL").ok() {
-        Some(url) => {
-            let pool = PgPoolOptions::new()
-                .max_connections(10)
-                .connect(&url)
-                .await?;
-            sqlx::migrate!("./migrations").run(&pool).await?;
-            (
-                Arc::new(PostgresUserRepository::new(pool.clone())),
-                Arc::new(PostgresListingRepository::new(pool.clone())),
-                Arc::new(PostgresMessagingRepository::new(pool.clone())),
-                Arc::new(PostgresVerificationRepository::new(pool)),
-            )
-        }
-        None => (
-            Arc::new(UnconfiguredUserRepository),
-            Arc::new(UnconfiguredRepository),
-            Arc::new(UnconfiguredMessagingRepository),
-            Arc::new(UnconfiguredVerificationRepository),
-        ),
-    };
+    let (users, listings, messaging, verification_repo): Repositories =
+        match std::env::var("DATABASE_URL").ok() {
+            Some(url) => {
+                let pool = PgPoolOptions::new()
+                    .max_connections(10)
+                    .connect(&url)
+                    .await?;
+                sqlx::migrate!("./migrations").run(&pool).await?;
+                (
+                    Arc::new(PostgresUserRepository::new(pool.clone())),
+                    Arc::new(PostgresListingRepository::new(pool.clone())),
+                    Arc::new(PostgresMessagingRepository::new(pool.clone())),
+                    Arc::new(PostgresVerificationRepository::new(pool)),
+                )
+            }
+            None => (
+                Arc::new(UnconfiguredUserRepository),
+                Arc::new(UnconfiguredRepository),
+                Arc::new(UnconfiguredMessagingRepository),
+                Arc::new(UnconfiguredVerificationRepository),
+            ),
+        };
 
     let media: Arc<dyn MediaSigner> = match (
         std::env::var("CLOUDINARY_CLOUD_NAME"),
