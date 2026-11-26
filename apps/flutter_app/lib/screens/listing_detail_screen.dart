@@ -287,7 +287,8 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
     final listing = _listing;
     if (listing == null) return;
     final link = 'https://unadomot.fly.dev/listings/${widget.listingId}';
-    final text = '${naijaShareText(listing)}\n$link';
+    final code = listing.code == null ? '' : '\nCode: ${listing.code}';
+    final text = '${naijaShareText(listing)}$code\n$link';
     await Share.share(text, subject: listing.title);
   }
 
@@ -630,8 +631,9 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
             const SizedBox(height: 8),
             Wrap(
               spacing: 6,
+              runSpacing: 6,
               children: [
-                for (final emoji in const ['like', 'love', 'fire', 'clap'])
+                for (final emoji in const ['love', 'laugh', 'cry', 'dislike', 'hate'])
                   _reactionChip(
                     comment,
                     emoji,
@@ -649,10 +651,11 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
 
   Widget _reactionChip(Map<String, dynamic> comment, String emoji, int count) {
     final icon = switch (emoji) {
-      'like' => Icons.thumb_up_alt_outlined,
       'love' => Icons.favorite_border,
-      'fire' => Icons.local_fire_department_outlined,
-      _ => Icons.waving_hand_outlined,
+      'laugh' => Icons.sentiment_very_satisfied_outlined,
+      'cry' => Icons.sentiment_dissatisfied_outlined,
+      'dislike' => Icons.thumb_down_alt_outlined,
+      _ => Icons.sentiment_very_dissatisfied_outlined,
     };
     return InkWell(
       onTap: () => _react(comment, emoji),
