@@ -12,6 +12,9 @@ class Listing {
   final int? bathrooms;
   final String? propertyType;
   final String? furnishing;
+  final String landlordName;
+  final bool landlordVerified;
+  final String? landlordPhotoUrl;
   final List<ListingMedia> media;
 
   const Listing({
@@ -29,6 +32,9 @@ class Listing {
     this.bathrooms,
     this.propertyType,
     this.furnishing,
+    this.landlordName = '',
+    this.landlordVerified = false,
+    this.landlordPhotoUrl,
   });
 
   factory Listing.fromJson(Map<String, dynamic> json) => Listing(
@@ -45,6 +51,9 @@ class Listing {
         bathrooms: json['bathrooms'] as int?,
         propertyType: json['property_type'] as String?,
         furnishing: json['furnishing'] as String?,
+        landlordName: json['landlord_name'] as String? ?? '',
+        landlordVerified: json['landlord_verified'] as bool? ?? false,
+        landlordPhotoUrl: json['landlord_photo_url'] as String?,
         media: (json['media'] as List? ?? const [])
             .map((item) => ListingMedia.fromJson(
                 Map<String, dynamic>.from(item as Map)))

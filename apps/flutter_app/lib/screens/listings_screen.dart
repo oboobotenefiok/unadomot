@@ -114,15 +114,12 @@ class _ListingsScreenState extends State<ListingsScreen> {
                               ),
                             Expanded(
                               child: ListView.builder(
+                                padding: const EdgeInsets.symmetric(vertical: 8),
                                 itemCount: _listings.length,
                                 itemBuilder: (context, index) {
                                   final listing = _listings[index];
-                                  return ListTile(
-                                    title: Text(listing.title),
-                                    subtitle: Text(
-                                      '₦${listing.price.toStringAsFixed(0)} • ${listing.lga}, ${listing.state}',
-                                    ),
-                                    trailing: const Icon(Icons.chevron_right),
+                                  return _ListingCard(
+                                    listing: listing,
                                     onTap: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -148,5 +145,106 @@ class _ListingsScreenState extends State<ListingsScreen> {
     if (difference.inHours < 1) return '${difference.inMinutes}m ago';
     if (difference.inDays < 1) return '${difference.inHours}h ago';
     return '${difference.inDays}d ago';
+  }
+}
+
+class _ListingCard extends StatelessWidget {
+  final Listing listing;
+  final VoidCallback onTap;
+
+  const _ListingCard({required this.listing, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final landlordName =
+        listing.landlordName.trim().isEmpty ? 'Landlord' : listing.landlordName;
+    final initial = landlordName.characters.first.toUpperCase();
+
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: theme.colorScheme.secondaryContainer,
+                backgroundImage: listing.landlordPhotoUrl == null
+                    ? null
+                    : NetworkImage(listing.landlordPhotoUrl!),
+                child: listing.landlordPhotoUrl == null
+                    ? Text(initial)
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      listing.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '₦${listing.price.toStringAsFixed(0)} • ${listing.lga}, ${listing.state}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            landlordName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ),
+                        if (listing.landlordVerified) ...[
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.verified,
+                            size: 15,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ],
+                        if (listing.isAgentListing) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.secondaryContainer,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'Agent',
+                              style: theme.textTheme.labelSmall,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
