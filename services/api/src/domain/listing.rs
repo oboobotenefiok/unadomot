@@ -22,6 +22,7 @@ pub struct Listing {
     pub bathrooms: Option<i32>,
     pub property_type: Option<String>,
     pub furnishing: Option<String>,
+    pub code: Option<String>,
     pub created_at: DateTime<Utc>,
     #[serde(default)]
     pub media: Vec<ListingMedia>,

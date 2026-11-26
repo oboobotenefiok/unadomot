@@ -14,7 +14,7 @@ const LISTING_COLUMNS: &str = "l.id, l.landlord_id,
     COALESCE((SELECT verified FROM user_profiles WHERE user_id = l.landlord_id), false) AS landlord_verified,
     (SELECT photo_url FROM user_profiles WHERE user_id = l.landlord_id) AS landlord_photo_url,
     l.title, l.description, l.price, l.address, l.state, l.lga, l.is_agent_listing, l.status,
-    l.bedrooms, l.bathrooms, l.property_type, l.furnishing, l.created_at";
+    l.bedrooms, l.bathrooms, l.property_type, l.furnishing, l.code, l.created_at";
 
 pub struct PostgresListingRepository {
     pool: PgPool,
@@ -338,6 +338,7 @@ struct ListingRow {
     bathrooms: Option<i32>,
     property_type: Option<String>,
     furnishing: Option<String>,
+    code: Option<String>,
     created_at: chrono::DateTime<chrono::Utc>,
 }
 
@@ -365,6 +366,7 @@ impl From<ListingRow> for Listing {
             bathrooms: row.bathrooms,
             property_type: row.property_type,
             furnishing: row.furnishing,
+            code: row.code,
             created_at: row.created_at,
             media: Vec::new(),
         }
