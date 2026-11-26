@@ -7,7 +7,7 @@ on:
   pull_request:
     paths: ['apps/flutter_app/**', 'services/api/**', '.github/workflows/rewrite-ci.yml']
 permissions:
-  contents: read
+  contents: write
 jobs:
   rust:
     runs-on: ubuntu-latest
@@ -39,9 +39,32 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: services/api -> target
-      - run: cargo fmt
-      - run: cargo clippy --all-targets -- -D warnings
-      - run: cargo test
+      - name: Rust checks
+        run: |
+          set +e
+          cargo fmt --check > /tmp/rust.log 2>&1; fmt=$?
+          cargo clippy --all-targets -- -D warnings >> /tmp/rust.log 2>&1; clippy=$?
+          cargo test >> /tmp/rust.log 2>&1; tests=$?
+          if [ $fmt -ne 0 ] || [ $clippy -ne 0 ] || [ $tests -ne 0 ]; then
+            grep -E "error|warning|FAILED|panicked|assertion|expected|left|right" /tmp/rust.log > error-summary.txt || true
+            if [ ! -s error-summary.txt ]; then tail -n 200 /tmp/rust.log > error-summary.txt; fi
+            exit 1
+          fi
+      - name: Publish error summary
+        if: failure()
+        working-directory: .
+        run: |
+          if [ ! -f error-summary.txt ]; then echo "CI failed before an error summary was generated." > error-summary.txt; fi
+          cp error-summary.txt /tmp/error-summary.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan ci-logs-rust
+          git rm -rf . >/dev/null 2>&1 || true
+          git clean -fdx >/dev/null 2>&1 || true
+          cp /tmp/error-summary.txt error-summary.txt
+          git add error-summary.txt
+          git commit -m "CI error summary for ${GITHUB_SHA}"
+          git push --force origin ci-logs-rust
   android:
     runs-on: ubuntu-latest
     steps:
@@ -62,11 +85,32 @@ jobs:
       - name: Analyze, test and build
         working-directory: apps/flutter_app
         run: |
-          flutter pub get
-          flutter analyze --no-fatal-infos
-          flutter test
-          flutter build apk --debug
+          set +e
+          flutter pub get > /tmp/flutter.log 2>&1; pub=$?
+          flutter analyze --no-fatal-infos >> /tmp/flutter.log 2>&1; analyze=$?
+          flutter test >> /tmp/flutter.log 2>&1; tests=$?
+          flutter build apk --debug >> /tmp/flutter.log 2>&1; build=$?
+          if [ $pub -ne 0 ] || [ $analyze -ne 0 ] || [ $tests -ne 0 ] || [ $build -ne 0 ]; then
+            grep -E "error|warning|FAILED|Exception|failed|Error:" /tmp/flutter.log > ../../error-summary.txt || true
+            if [ ! -s ../../error-summary.txt ]; then tail -n 200 /tmp/flutter.log > ../../error-summary.txt; fi
+            exit 1
+          fi
+      - name: Publish error summary
+        if: failure()
+        run: |
+          if [ ! -f error-summary.txt ]; then echo "CI failed before an error summary was generated." > error-summary.txt; fi
+          cp error-summary.txt /tmp/error-summary.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan ci-logs-android
+          git rm -rf . >/dev/null 2>&1 || true
+          git clean -fdx >/dev/null 2>&1 || true
+          cp /tmp/error-summary.txt error-summary.txt
+          git add error-summary.txt
+          git commit -m "CI error summary for ${GITHUB_SHA}"
+          git push --force origin ci-logs-android
       - uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: unadomot-debug-apk
           path: apps/flutter_app/build/app/outputs/flutter-apk/app-debug.apk
