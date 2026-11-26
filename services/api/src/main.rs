@@ -1,4 +1,5 @@
 mod call_handlers;
+mod comment_handlers;
 mod messaging_handlers;
 mod profile_handlers;
 
@@ -171,10 +172,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .merge(call_handlers::router(call_state));
 
     if let Some(pool) = profile_pool {
-        app = app.merge(profile_handlers::router(profile_handlers::ProfileState {
-            pool,
-            jwt_secret: jwt_secret.clone(),
-        }));
+        app = app
+            .merge(profile_handlers::router(profile_handlers::ProfileState {
+                pool: pool.clone(),
+                jwt_secret: jwt_secret.clone(),
+            }))
+            .merge(comment_handlers::router(comment_handlers::CommentState {
+                pool,
+                jwt_secret: jwt_secret.clone(),
+            }));
     }
 
     let app = app
