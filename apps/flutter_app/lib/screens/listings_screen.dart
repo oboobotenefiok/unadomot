@@ -167,7 +167,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(next ? '✓ Saved to favorites' : '✓ Removed from favorites'),
+        content: Text(next ? 'Saved to favorites' : 'Removed from favorites'),
       ),
     );
   }
@@ -311,8 +311,9 @@ class _ListingsScreenState extends State<ListingsScreen> {
                 title: const Text('Dark mode'),
                 subtitle: const Text('Use a darker palette across the app'),
                 value: mode == ThemeMode.dark,
-                onChanged: (value) {
+                onChanged: (value) async {
                   appThemeMode.value = value ? ThemeMode.dark : ThemeMode.light;
+                  await widget.cache.setSetting('theme_mode', value ? 'dark' : 'light');
                 },
               ),
             ),
@@ -438,7 +439,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                           color: UnaColors.green100,
                           padding: const EdgeInsets.all(8),
                           child: Text(
-                            'Offline view • updated ${_relative(_cachedAt!)}',
+                            'Offline view - updated ${_relative(_cachedAt!)}',
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: UnaColors.green900,
@@ -451,7 +452,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            'Welcome home 💚',
+                            'Welcome home',
                             style: TextStyle(
                               color: UnaColors.green900,
                               fontSize: 20,
@@ -859,7 +860,7 @@ class _ListingCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          '₦${listing.price.toStringAsFixed(0)}',
+                          'N${listing.price.toStringAsFixed(0)}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
@@ -882,32 +883,34 @@ class _ListingCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Flexible(
+                      const Icon(Icons.person_outline, size: 14, color: UnaColors.text500),
+                      const SizedBox(width: 4),
+                      Expanded(
                         child: Text(
                           landlordName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: UnaColors.text500,
-                            fontSize: 12,
+                            fontSize: 11,
                           ),
                         ),
                       ),
-                      const Spacer(),
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        tooltip: 'Message lister',
+                        onPressed: onMessage,
+                        icon: const Icon(Icons.chat_bubble_outline, size: 18),
+                      ),
                       IconButton(
                         visualDensity: VisualDensity.compact,
                         tooltip: isFavorite ? 'Remove favorite' : 'Save favorite',
                         onPressed: onFavorite,
                         icon: Icon(
                           isFavorite ? Icons.favorite : Icons.favorite_border,
+                          size: 18,
                           color: isFavorite ? Colors.red : UnaColors.text500,
                         ),
-                      ),
-                      IconButton(
-                        visualDensity: VisualDensity.compact,
-                        tooltip: 'Message landlord',
-                        onPressed: onMessage,
-                        icon: const Icon(Icons.chat_bubble_outline),
                       ),
                     ],
                   ),

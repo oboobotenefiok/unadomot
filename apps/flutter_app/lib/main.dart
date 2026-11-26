@@ -5,6 +5,7 @@ import 'api/api_client.dart';
 import 'app_settings.dart';
 import 'data/local_cache.dart';
 import 'screens/listings_screen.dart';
+import 'screens/onboarding_screen.dart';
 import 'screens/public_profile_screen.dart';
 import 'state/app_state.dart';
 import 'theme.dart';
@@ -41,11 +42,17 @@ Future<void> main() async {
   final cache = LocalCache();
   final state = AppState(api: api, cache: cache);
   await state.restore();
+
+  final onboardingSeen = await cache.getSetting('onboarding_seen') == 'true';
+  final savedTheme = await cache.getSetting('theme_mode');
+  if (savedTheme == 'dark') appThemeMode.value = ThemeMode.dark;
+
   runApp(UnaDomotApp(
     state: state,
     api: api,
     cache: cache,
     initialUsername: initialUsername,
+    showOnboarding: !onboardingSeen,
   ));
 }
 
@@ -54,6 +61,7 @@ class UnaDomotApp extends StatelessWidget {
   final ApiClient api;
   final LocalCache cache;
   final String? initialUsername;
+  final bool showOnboarding;
 
   const UnaDomotApp({
     super.key,
@@ -61,6 +69,7 @@ class UnaDomotApp extends StatelessWidget {
     required this.api,
     required this.cache,
     this.initialUsername,
+    this.showOnboarding = false,
   });
 
   Route<dynamic>? _route(RouteSettings settings) {
@@ -87,14 +96,20 @@ class UnaDomotApp extends StatelessWidget {
           darkTheme: unaDarkTheme(),
           themeMode: mode,
           onGenerateRoute: _route,
-          home: initialUsername == null
-              ? ListingsScreen(api: api, cache: cache, appState: state)
-              : PublicProfileScreen(
-                  api: api,
+          home: showOnboarding
+              ? OnboardingScreen(
                   cache: cache,
+                  api: api,
                   appState: state,
-                  username: initialUsername!,
-                ),
+                )
+              : initialUsername == null
+                  ? ListingsScreen(api: api, cache: cache, appState: state)
+                  : PublicProfileScreen(
+                      api: api,
+                      cache: cache,
+                      appState: state,
+                      username: initialUsername!,
+                    ),
         ),
       );
 }
