@@ -27,30 +27,53 @@ class ListingsScreen extends StatefulWidget {
 }
 
 class _ListingsScreenState extends State<ListingsScreen> {
+  final _scrollController = ScrollController();
   List<Listing> _listings = [];
   bool _loading = true;
+  bool _loadingMore = false;
+  bool _hasMore = false;
+  int _offset = 0;
   String? _error;
   DateTime? _cachedAt;
   String _query = '';
+  Map<String, String> _filters = {};
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     _load();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final position = _scrollController.position;
+    if (position.pixels >= position.maxScrollExtent - 300) {
+      _loadMore();
+    }
   }
 
   Future<void> _load() async {
     setState(() {
       _loading = true;
       _error = null;
+      _offset = 0;
     });
 
     try {
-      final page = await widget.api.browse();
+      final page = await widget.api.browse(filters: _filters);
       await widget.cache.cacheListings(page.items);
       if (mounted) {
         setState(() {
           _listings = page.items.map(Listing.fromJson).toList();
+          _hasMore = page.hasMore;
+          _offset = page.nextOffset;
           _cachedAt = null;
         });
       }
@@ -61,6 +84,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
           if (cached != null) {
             _listings = cached.listings.map(Listing.fromJson).toList();
             _cachedAt = cached.updatedAt;
+            _hasMore = false;
           } else {
             _error = error.toString();
           }
@@ -68,6 +92,32 @@ class _ListingsScreenState extends State<ListingsScreen> {
       }
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (_loadingMore || !_hasMore || _loading) return;
+    setState(() => _loadingMore = true);
+    try {
+      final page = await widget.api.browse(
+        filters: _filters,
+        offset: _offset,
+      );
+      await widget.cache.cacheListings(page.items);
+      if (mounted) {
+        setState(() {
+          _listings = [
+            ..._listings,
+            ...page.items.map(Listing.fromJson),
+          ];
+          _hasMore = page.hasMore;
+          _offset = page.nextOffset;
+        });
+      }
+    } catch (_) {
+      // Keep the already loaded pages visible.
+    } finally {
+      if (mounted) setState(() => _loadingMore = false);
     }
   }
 
@@ -104,6 +154,18 @@ class _ListingsScreenState extends State<ListingsScreen> {
     if (mounted) _load();
   }
 
+  Future<void> _openFilters() async {
+    final result = await showModalBottomSheet<Map<String, String>>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (_) => _FilterSheet(initial: _filters),
+    );
+    if (result == null) return;
+    setState(() => _filters = result);
+    _load();
+  }
+
   List<Listing> get _visibleListings {
     final query = _query.trim().toLowerCase();
     if (query.isEmpty) return _listings;
@@ -122,6 +184,14 @@ class _ListingsScreenState extends State<ListingsScreen> {
       appBar: AppBar(
         title: const Text('UnaDomot'),
         actions: [
+          IconButton(
+            tooltip: 'Filters',
+            icon: Badge(
+              isLabelVisible: _filters.isNotEmpty,
+              child: const Icon(Icons.tune),
+            ),
+            onPressed: _openFilters,
+          ),
           IconButton(
             tooltip: 'Messages',
             icon: const Icon(Icons.chat_bubble_outline),
@@ -184,9 +254,16 @@ class _ListingsScreenState extends State<ListingsScreen> {
                         child: listings.isEmpty
                             ? const Center(child: Text('No listings match your search'))
                             : ListView.builder(
+                                controller: _scrollController,
                                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
-                                itemCount: listings.length,
+                                itemCount: listings.length + (_loadingMore ? 1 : 0),
                                 itemBuilder: (context, index) {
+                                  if (index >= listings.length) {
+                                    return const Padding(
+                                      padding: EdgeInsets.all(16),
+                                      child: Center(child: CircularProgressIndicator()),
+                                    );
+                                  }
                                   final listing = listings[index];
                                   return Padding(
                                     padding: const EdgeInsets.only(bottom: 12),
@@ -221,6 +298,177 @@ class _ListingsScreenState extends State<ListingsScreen> {
     if (difference.inDays < 1) return '${difference.inHours}h ago';
     return '${difference.inDays}d ago';
   }
+}
+
+class _FilterSheet extends StatefulWidget {
+  final Map<String, String> initial;
+
+  const _FilterSheet({required this.initial});
+
+  @override
+  State<_FilterSheet> createState() => _FilterSheetState();
+}
+
+class _FilterSheetState extends State<_FilterSheet> {
+  static const _states = [
+    'Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue',
+    'Borno', 'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu',
+    'FCT', 'Gombe', 'Imo', 'Jigawa', 'Kaduna', 'Kano', 'Katsina', 'Kebbi',
+    'Kogi', 'Kwara', 'Lagos', 'Nasarawa', 'Niger', 'Ogun', 'Ondo', 'Osun',
+    'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba', 'Yobe', 'Zamfara',
+  ];
+
+  static const _types = [
+    'Apartment', 'House', 'Self Contain', 'Room', 'Duplex',
+  ];
+
+  late String? _state;
+  late String? _type;
+  late String? _bedrooms;
+  final _minPrice = TextEditingController();
+  final _maxPrice = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _state = widget.initial['state'];
+    _type = widget.initial['property_type'];
+    _bedrooms = widget.initial['bedrooms'];
+    _minPrice.text = widget.initial['min_price'] ?? '';
+    _maxPrice.text = widget.initial['max_price'] ?? '';
+  }
+
+  @override
+  void dispose() {
+    _minPrice.dispose();
+    _maxPrice.dispose();
+    super.dispose();
+  }
+
+  void _apply() {
+    final filters = <String, String>{};
+    if (_state != null) filters['state'] = _state!;
+    if (_type != null) filters['property_type'] = _type!;
+    if (_bedrooms != null) filters['bedrooms'] = _bedrooms!;
+    if (_minPrice.text.trim().isNotEmpty) filters['min_price'] = _minPrice.text.trim();
+    if (_maxPrice.text.trim().isNotEmpty) filters['max_price'] = _maxPrice.text.trim();
+    Navigator.pop(context, filters);
+  }
+
+  void _clear() {
+    setState(() {
+      _state = null;
+      _type = null;
+      _bedrooms = null;
+      _minPrice.clear();
+      _maxPrice.clear();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: EdgeInsets.fromLTRB(
+          24,
+          16,
+          24,
+          24 + MediaQuery.viewInsetsOf(context).bottom,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: UnaColors.border,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Filter listings',
+                style: TextStyle(
+                  color: UnaColors.text900,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                initialValue: _state,
+                decoration: const InputDecoration(labelText: 'State'),
+                items: _states
+                    .map((state) => DropdownMenuItem(value: state, child: Text(state)))
+                    .toList(),
+                onChanged: (value) => setState(() => _state = value),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue: _type,
+                decoration: const InputDecoration(labelText: 'Property type'),
+                items: _types
+                    .map((type) => DropdownMenuItem(value: type, child: Text(type)))
+                    .toList(),
+                onChanged: (value) => setState(() => _type = value),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue: _bedrooms,
+                decoration: const InputDecoration(labelText: 'Bedrooms'),
+                items: const [
+                  DropdownMenuItem(value: '1', child: Text('1+')),
+                  DropdownMenuItem(value: '2', child: Text('2+')),
+                  DropdownMenuItem(value: '3', child: Text('3+')),
+                  DropdownMenuItem(value: '4', child: Text('4+')),
+                ],
+                onChanged: (value) => setState(() => _bedrooms = value),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _minPrice,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: 'Min price'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: _maxPrice,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: 'Max price'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _clear,
+                      child: const Text('Clear'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: _apply,
+                      child: const Text('Apply filters'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
 }
 
 class _SectionHeading extends StatelessWidget {
