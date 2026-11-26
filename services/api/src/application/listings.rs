@@ -30,6 +30,7 @@ pub trait ListingRepository: Send + Sync {
     ) -> Result<ListingPage, ListingError>;
     async fn get(&self, id: Uuid) -> Result<Option<Listing>, ListingError>;
     async fn get_public(&self, id: Uuid) -> Result<Option<Listing>, ListingError>;
+    async fn list_by_owner(&self, owner_id: Uuid) -> Result<Vec<Listing>, ListingError>;
     async fn create(&self, listing: &NewListing) -> Result<Listing, ListingError>;
     async fn update(
         &self,
@@ -70,6 +71,13 @@ pub async fn get_public_listing(
     id: Uuid,
 ) -> Result<Option<Listing>, ListingError> {
     repository.get_public(id).await
+}
+
+pub async fn list_my_listings(
+    repository: &dyn ListingRepository,
+    owner_id: Uuid,
+) -> Result<Vec<Listing>, ListingError> {
+    repository.list_by_owner(owner_id).await
 }
 
 pub async fn create_listing(
