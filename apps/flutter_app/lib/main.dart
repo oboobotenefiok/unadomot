@@ -7,53 +7,103 @@ import 'data/local_cache.dart';
 import 'screens/main_shell.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/public_profile_screen.dart';
+import 'screens/splash_screen.dart';
 import 'state/app_state.dart';
 import 'theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  const configuredBaseUrl = String.fromEnvironment('API_BASE_URL');
-  const fallbackBaseUrl = 'http://10.0.2.2:3000';
-  final baseUrl = configuredBaseUrl.isNotEmpty
-      ? configuredBaseUrl
-      : (kReleaseMode ? '' : fallbackBaseUrl);
+  runApp(const BootstrapApp());
+}
 
-  if (baseUrl.isEmpty) {
-    throw StateError(
-      'API_BASE_URL must be provided for release builds, for example '
-      '--dart-define=API_BASE_URL=https://unadomot.fly.dev',
+class BootstrapApp extends StatefulWidget {
+  const BootstrapApp({super.key});
+
+  @override
+  State<BootstrapApp> createState() => _BootstrapAppState();
+}
+
+class _BootstrapAppState extends State<BootstrapApp> {
+  ApiClient? _api;
+  LocalCache? _cache;
+  AppState? _state;
+  String? _initialUsername;
+  bool _showOnboarding = false;
+  bool _ready = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _boot();
+  }
+
+  Future<void> _boot() async {
+    const configuredBaseUrl = String.fromEnvironment('API_BASE_URL');
+    const fallbackBaseUrl = 'http://10.0.2.2:3000';
+    final baseUrl = configuredBaseUrl.isNotEmpty
+        ? configuredBaseUrl
+        : (kReleaseMode ? '' : fallbackBaseUrl);
+
+    if (baseUrl.isEmpty) {
+      throw StateError(
+        'API_BASE_URL must be provided for release builds, for example '
+        '--dart-define=API_BASE_URL=https://unadomot.fly.dev',
+      );
+    }
+
+    String? initialUsername;
+    try {
+      final uri = await AppLinks().getInitialLink();
+      if (uri != null) {
+        final segment = uri.pathSegments.isEmpty ? '' : uri.pathSegments.first;
+        if (RegExp(r'^[a-z0-9_]{3,20}$').hasMatch(segment)) {
+          initialUsername = segment;
+        }
+      }
+    } catch (_) {
+      // Normal launch when no link is present.
+    }
+
+    final api = ApiClient(baseUrl: baseUrl);
+    final cache = LocalCache();
+    final state = AppState(api: api, cache: cache);
+    await state.restore();
+
+    final onboardingSeen = await cache.getSetting('onboarding_seen') == 'true';
+    final savedTheme = await cache.getSetting('theme_mode');
+    if (savedTheme == 'dark') appThemeMode.value = ThemeMode.dark;
+
+    if (!mounted) return;
+    setState(() {
+      _api = api;
+      _cache = cache;
+      _state = state;
+      _initialUsername = initialUsername;
+      _showOnboarding = !onboardingSeen;
+      _ready = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_ready) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: unaTheme(),
+        darkTheme: unaDarkTheme(),
+        themeMode: appThemeMode.value,
+        home: const SplashScreen(),
+      );
+    }
+
+    return UnaDomotApp(
+      state: _state!,
+      api: _api!,
+      cache: _cache!,
+      initialUsername: _initialUsername,
+      showOnboarding: _showOnboarding,
     );
   }
-
-  String? initialUsername;
-  try {
-    final uri = await AppLinks().getInitialLink();
-    if (uri != null) {
-      final segment = uri.pathSegments.isEmpty ? '' : uri.pathSegments.first;
-      if (RegExp(r'^[a-z0-9_]{3,20}$').hasMatch(segment)) {
-        initialUsername = segment;
-      }
-    }
-  } catch (_) {
-    // Normal launch when no link is present.
-  }
-
-  final api = ApiClient(baseUrl: baseUrl);
-  final cache = LocalCache();
-  final state = AppState(api: api, cache: cache);
-  await state.restore();
-
-  final onboardingSeen = await cache.getSetting('onboarding_seen') == 'true';
-  final savedTheme = await cache.getSetting('theme_mode');
-  if (savedTheme == 'dark') appThemeMode.value = ThemeMode.dark;
-
-  runApp(UnaDomotApp(
-    state: state,
-    api: api,
-    cache: cache,
-    initialUsername: initialUsername,
-    showOnboarding: !onboardingSeen,
-  ));
 }
 
 class UnaDomotApp extends StatelessWidget {
