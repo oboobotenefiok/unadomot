@@ -3,6 +3,7 @@ import 'api/api_client.dart';
 import 'data/local_cache.dart';
 import 'screens/listings_screen.dart';
 import 'state/app_state.dart';
+import 'theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +33,7 @@ class UnaDomotApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
         title: 'UnaDomot',
-        theme: ThemeData(colorSchemeSeed: Colors.green, useMaterial3: true),
+        theme: unaTheme(),
         home: ListingsScreen(
           api: api,
           cache: cache,

@@ -3,6 +3,7 @@ import '../api/api_client.dart';
 import '../data/local_cache.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
+import '../theme.dart';
 import 'auth_sheet.dart';
 import 'listing_detail_screen.dart';
 import 'messages_screen.dart';
@@ -29,6 +30,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
   bool _loading = true;
   String? _error;
   DateTime? _cachedAt;
+  String _query = '';
 
   @override
   void initState() {
@@ -86,73 +88,108 @@ class _ListingsScreenState extends State<ListingsScreen> {
     );
   }
 
+  List<Listing> get _visibleListings {
+    final query = _query.trim().toLowerCase();
+    if (query.isEmpty) return _listings;
+    return _listings.where((listing) {
+      return listing.title.toLowerCase().contains(query) ||
+          listing.state.toLowerCase().contains(query) ||
+          listing.lga.toLowerCase().contains(query) ||
+          listing.address.toLowerCase().contains(query);
+    }).toList();
+  }
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Find a rental'),
-          actions: [
-            IconButton(
-              tooltip: 'Messages',
-              icon: const Icon(Icons.chat_bubble_outline),
-              onPressed: _openMessages,
-            ),
-            PopupMenuButton<String>(
-              onSelected: (value) {
-                if (value == 'verification') _openVerification();
-              },
-              itemBuilder: (context) => const [
-                PopupMenuItem(value: 'verification', child: Text('Verification')),
-              ],
-            ),
-          ],
-        ),
-        body: RefreshIndicator(
-          onRefresh: _load,
-          child: _loading
-              ? const Center(child: CircularProgressIndicator())
-              : _error != null
-                  ? Center(child: Text(_error!))
-                  : _listings.isEmpty
-                      ? const Center(child: Text('No listings yet'))
-                      : Column(
-                          children: [
-                            if (_cachedAt != null)
-                              Container(
-                                width: double.infinity,
-                                color: Theme.of(context).colorScheme.secondaryContainer,
-                                padding: const EdgeInsets.all(8),
-                                child: Text(
-                                  'Offline view • updated ${_relative(_cachedAt!)}',
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            Expanded(
-                              child: ListView.builder(
-                                padding: const EdgeInsets.symmetric(vertical: 8),
-                                itemCount: _listings.length,
+  Widget build(BuildContext context) {
+    final listings = _visibleListings;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('UnaDomot'),
+        actions: [
+          IconButton(
+            tooltip: 'Messages',
+            icon: const Icon(Icons.chat_bubble_outline),
+            onPressed: _openMessages,
+          ),
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'verification') _openVerification();
+            },
+            itemBuilder: (context) => const [
+              PopupMenuItem(value: 'verification', child: Text('Verification')),
+            ],
+          ),
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: _load,
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : _error != null
+                ? Center(child: Text(_error!))
+                : Column(
+                    children: [
+                      if (_cachedAt != null)
+                        Container(
+                          width: double.infinity,
+                          color: UnaColors.green100,
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                            'Offline view • updated ${_relative(_cachedAt!)}',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: UnaColors.green900,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                        child: TextField(
+                          onChanged: (value) => setState(() => _query = value),
+                          decoration: const InputDecoration(
+                            hintText: 'Search by title, state or LGA',
+                            prefixIcon: Icon(Icons.search),
+                          ),
+                        ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        child: _SectionHeading('Available rentals'),
+                      ),
+                      Expanded(
+                        child: listings.isEmpty
+                            ? const Center(child: Text('No listings match your search'))
+                            : ListView.builder(
+                                padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                                itemCount: listings.length,
                                 itemBuilder: (context, index) {
-                                  final listing = _listings[index];
-                                  return _ListingCard(
-                                    listing: listing,
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => ListingDetailScreen(
-                                          api: widget.api,
-                                          cache: widget.cache,
-                                          appState: widget.appState,
-                                          listingId: listing.id,
+                                  final listing = listings[index];
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: _ListingCard(
+                                      listing: listing,
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => ListingDetailScreen(
+                                            api: widget.api,
+                                            cache: widget.cache,
+                                            appState: widget.appState,
+                                            listingId: listing.id,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   );
                                 },
                               ),
-                            ),
-                          ],
-                        ),
-        ),
-      );
+                      ),
+                    ],
+                  ),
+      ),
+    );
+  }
 
   String _relative(DateTime time) {
     final difference = DateTime.now().difference(time);
@@ -163,6 +200,35 @@ class _ListingsScreenState extends State<ListingsScreen> {
   }
 }
 
+class _SectionHeading extends StatelessWidget {
+  final String text;
+
+  const _SectionHeading(this.text);
+
+  @override
+  Widget build(BuildContext context) => Row(
+        children: [
+          Container(
+            width: 4,
+            height: 24,
+            decoration: BoxDecoration(
+              color: UnaColors.primary,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            text,
+            style: const TextStyle(
+              color: UnaColors.text900,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      );
+}
+
 class _ListingCard extends StatelessWidget {
   final Listing listing;
   final VoidCallback onTap;
@@ -171,93 +237,133 @@ class _ListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final landlordName =
         listing.landlordName.trim().isEmpty ? 'Landlord' : listing.landlordName;
-    final initial = landlordName.characters.first.toUpperCase();
+    final imageUrl = listing.media.isEmpty ? null : listing.media.first.url;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    return Material(
+      color: UnaColors.surface,
+      borderRadius: BorderRadius.circular(8),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: theme.colorScheme.secondaryContainer,
-                backgroundImage: listing.landlordPhotoUrl == null
-                    ? null
-                    : NetworkImage(listing.landlordPhotoUrl!),
-                child: listing.landlordPhotoUrl == null
-                    ? Text(initial)
-                    : null,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      listing.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '₦${listing.price.toStringAsFixed(0)} • ${listing.lga}, ${listing.state}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            landlordName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 170,
+              width: double.infinity,
+              child: imageUrl == null
+                  ? Container(
+                      color: UnaColors.green100,
+                      child: const Icon(
+                        Icons.home_work_outlined,
+                        size: 48,
+                        color: UnaColors.green700,
+                      ),
+                    )
+                  : Image.network(imageUrl, fit: BoxFit.cover),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          listing.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: UnaColors.text900,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                        if (listing.landlordVerified) ...[
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.verified,
-                            size: 15,
-                            color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: UnaColors.primary,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          '₦${listing.price.toStringAsFixed(0)}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
                           ),
-                        ],
-                        if (listing.isAgentListing) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.secondaryContainer,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'Agent',
-                              style: theme.textTheme.labelSmall,
-                            ),
-                          ),
-                        ],
-                      ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${listing.lga}, ${listing.state}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: UnaColors.text600,
+                      fontSize: 12,
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          landlordName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: UnaColors.text500,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      if (listing.landlordVerified) ...[
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons.verified,
+                          size: 15,
+                          color: UnaColors.green700,
+                        ),
+                      ],
+                      if (listing.isAgentListing) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: UnaColors.green100,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Text(
+                            'Agent',
+                            style: TextStyle(
+                              color: UnaColors.green900,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
               ),
-              const Icon(Icons.chevron_right),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
