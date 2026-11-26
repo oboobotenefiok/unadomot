@@ -38,11 +38,12 @@ class _SplashScreenState extends State<SplashScreen>
           child: ScaleTransition(
             scale: _scale,
             child: Container(
-              width: 120,
-              height: 120,
+              width: 132,
+              height: 132,
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(28),
+                borderRadius: BorderRadius.circular(30),
                 boxShadow: const [
                   BoxShadow(
                     color: Colors.black26,
@@ -51,10 +52,12 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                 ],
               ),
-              child: const Icon(
-                Icons.home_work_rounded,
-                size: 64,
-                color: UnaColors.green900,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: Image.asset(
+                  'assets/unadomot.jpg',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
