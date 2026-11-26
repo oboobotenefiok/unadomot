@@ -3,6 +3,7 @@ import '../api/api_client.dart';
 import '../data/local_cache.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import 'admin_screen.dart';
 import 'auth_sheet.dart';
 import 'favorites_screen.dart';
 import 'listing_detail_screen.dart';
@@ -449,6 +450,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _settingsRow(Icons.verified_outlined, 'Get Verified', () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => VerificationScreen(api: widget.api)),
+            )),
+            _settingsRow(Icons.admin_panel_settings_outlined, 'Admin', () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => AdminScreen(api: widget.api)),
             )),
             _settingsRow(Icons.favorite_border, 'Favorites', () => Navigator.push(
               context,
