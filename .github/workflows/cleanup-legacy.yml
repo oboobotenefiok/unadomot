@@ -1,0 +1,22 @@
+name: cleanup-legacy
+on:
+  push:
+    paths:
+      - .github/workflows/cleanup-legacy.yml
+permissions:
+  contents: write
+jobs:
+  remove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rewrite/flutter-rust-postgres
+      - name: Remove legacy app
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -r --ignore-unmatch components pages contexts hooks utils styles vault/css vault/js
+          git rm --ignore-unmatch services/firebase.js app.js index.html offline.html service-worker.js manifest.json netlify.toml _redirects firestore.rules storage.rules env-loader.js env-loader.local.example.js inject-env.js verify-email.html version.js README.md android-error.txt .github/workflows/cleanup-legacy.yml
+          git commit -m "chore: remove legacy React and Firebase app"
+          git push origin HEAD:rewrite/flutter-rust-postgres
