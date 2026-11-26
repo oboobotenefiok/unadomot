@@ -90,6 +90,8 @@ jobs:
           if [ ! -d apps/flutter_app/android ]; then
             flutter create --project-name unadomot --org com.unadomot --platforms android apps/flutter_app
           fi
+      - name: Apply Android permissions
+        run: bash scripts/apply_android_permissions.sh
       - name: Analyze, test and build
         working-directory: apps/flutter_app
         run: |
