@@ -34,7 +34,8 @@ class ApiClient {
   ApiClient({required String baseUrl, http.Client? client})
       : baseUrl = Uri.parse(baseUrl),
         _client = client ?? http.Client() {
-    if (!['http', 'https'].contains(baseUrl.scheme) || baseUrl.host.isEmpty) {
+    if (!['http', 'https'].contains(this.baseUrl.scheme) ||
+        this.baseUrl.host.isEmpty) {
       throw ArgumentError('An HTTP(S) API URL is required');
     }
   }
@@ -312,7 +313,7 @@ class ApiClient {
 
       if (response.statusCode == 401 && authenticated && !retried) {
         if (await _refreshSession()) {
-          return _request(
+          return await _request(
             method,
             path,
             query: query,
