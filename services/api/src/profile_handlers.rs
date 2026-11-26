@@ -239,7 +239,7 @@ async fn my_listings(
     };
 
     let rows = sqlx::query_as::<_, ListingRow>(
-        "SELECT id, title, price, address, state, lga, status, property_type, bedrooms, bathrooms,
+        "SELECT id, title, price, address, state, lga, status, property_type, bedrooms, bathrooms, code,
                 (SELECT url FROM listing_media WHERE listing_id = listings.id ORDER BY position LIMIT 1) AS image_url
          FROM listings
          WHERE landlord_id = $1 AND deleted_at IS NULL
@@ -276,7 +276,7 @@ async fn public_profile(
     };
 
     let listings = sqlx::query_as::<_, ListingRow>(
-        "SELECT id, title, price, address, state, lga, status, property_type, bedrooms, bathrooms,
+        "SELECT id, title, price, address, state, lga, status, property_type, bedrooms, bathrooms, code,
                 (SELECT url FROM listing_media WHERE listing_id = listings.id ORDER BY position LIMIT 1) AS image_url
          FROM listings
          WHERE landlord_id = $1 AND deleted_at IS NULL AND status = 'available'
@@ -516,6 +516,7 @@ struct ListingRow {
     property_type: Option<String>,
     bedrooms: Option<i32>,
     bathrooms: Option<i32>,
+    code: Option<String>,
     image_url: Option<String>,
 }
 
@@ -532,6 +533,7 @@ impl ListingRow {
             "property_type": self.property_type,
             "bedrooms": self.bedrooms,
             "bathrooms": self.bathrooms,
+            "code": self.code,
             "image_url": self.image_url,
         })
     }
