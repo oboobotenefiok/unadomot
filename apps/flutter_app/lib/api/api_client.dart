@@ -361,6 +361,39 @@ class ApiClient {
     );
   }
 
+  Future<Map<String, dynamic>> myProfile() async {
+    final result = await _request('GET', '/api/profile/me', authenticated: true);
+    return Map<String, dynamic>.from(result as Map);
+  }
+
+  Future<void> updateProfile({
+    required String name,
+    String? phone,
+    String? bio,
+  }) async {
+    await _request(
+      'PATCH',
+      '/api/profile/me',
+      body: {'name': name, 'phone': phone, 'bio': bio},
+      authenticated: true,
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> myListings() async {
+    final result = await _request('GET', '/api/profile/me/listings', authenticated: true);
+    return (result as List)
+        .map((item) => Map<String, dynamic>.from(item as Map))
+        .toList();
+  }
+
+  Future<Map<String, dynamic>> publicProfile(String username) async {
+    final result = await _request(
+      'GET',
+      '/api/profile/${Uri.encodeComponent(username)}',
+    );
+    return Map<String, dynamic>.from(result as Map);
+  }
+
   Future<void> markRead(String conversationId) async {
     await _request(
       'POST',
