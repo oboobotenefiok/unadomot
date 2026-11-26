@@ -32,6 +32,10 @@ pub fn router(state: AppState) -> Router {
             "/api/conversations/{id}/typing",
             post(typing_ping_handler).get(typing_status_handler),
         )
+        .route(
+            "/api/conversations/presence",
+            get(conversations_presence_handler),
+        )
         .with_state(state)
 }
 
@@ -80,6 +84,42 @@ fn messaging_error(error_value: MessagingError) -> axum::response::Response {
             StatusCode::SERVICE_UNAVAILABLE,
             "The service is temporarily unavailable",
         ),
+    }
+}
+
+async fn conversations_presence_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+) -> axum::response::Response {
+    let user_id = match authorize(&state, &headers) {
+        Ok(id) => id,
+        Err(response) => return response,
+    };
+
+    match state.messaging.list_conversations(user_id).await {
+        Ok(items) => Json(
+            items
+                .into_iter()
+                .map(|conversation| {
+                    json!({
+                        "id": conversation.id,
+                        "listing_id": conversation.listing_id,
+                        "listing_title": conversation.listing_title,
+                        "listing_photo_url": conversation.listing_photo_url,
+                        "counterpart_id": conversation.counterpart_id,
+                        "counterpart_name": conversation.counterpart_name,
+                        "counterpart_verified": conversation.counterpart_verified,
+                        "counterpart_last_active": conversation.counterpart_last_active,
+                        "last_message_preview": conversation.last_message_preview,
+                        "last_message_at": conversation.last_message_at,
+                        "unread_count": conversation.unread_count,
+                        "created_at": conversation.created_at,
+                    })
+                })
+                .collect::<Vec<_>>(),
+        )
+        .into_response(),
+        Err(error_value) => messaging_error(error_value),
     }
 }
 
