@@ -147,6 +147,18 @@ impl UserRepository for PostgresUserRepository {
         }))
     }
 
+    async fn revoke_refresh_token(&self, token_hash: &str) -> Result<bool, AuthError> {
+        let result = sqlx::query(
+            "UPDATE refresh_tokens SET revoked_at = now() WHERE token_hash = $1 AND revoked_at IS NULL",
+        )
+        .bind(token_hash)
+        .execute(&self.pool)
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        Ok(result.rows_affected() > 0)
+    }
+
     async fn is_admin(&self, user_id: Uuid) -> Result<bool, AuthError> {
         let row: Option<(bool,)> = sqlx::query_as(
             "SELECT EXISTS(SELECT 1 FROM admin_roles WHERE user_id = $1)",
