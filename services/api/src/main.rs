@@ -1,5 +1,6 @@
 mod call_handlers;
 mod messaging_handlers;
+mod profile_handlers;
 
 use sqlx::postgres::PgPoolOptions;
 use std::sync::Arc;
@@ -73,6 +74,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Err("DATABASE_URL is required in production".into());
     }
 
+    let mut profile_pool: Option<sqlx::PgPool> = None;
+
     let (users, listings, messaging, reports, verification_repo, calls): Repositories =
         match database_url {
             Some(url) => {
@@ -86,6 +89,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     tracing::info!("database migrations applied");
                     return Ok(());
                 }
+
+                profile_pool = Some(pool.clone());
 
                 (
                     Arc::new(PostgresUserRepository::new(pool.clone())),
@@ -152,11 +157,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         jwt_secret: jwt_secret.clone(),
     };
 
-    let app = router(state.clone())
+    let mut app = router(state.clone())
         .merge(public_pages::router(state.clone()))
         .merge(verification::router(verification_state))
         .merge(messaging_handlers::router(state))
         .merge(call_handlers::router(call_state));
+
+    if let Some(pool) = profile_pool {
+        app = app.merge(profile_handlers::router(profile_handlers::ProfileState {
+            pool,
+            jwt_secret: jwt_secret.clone(),
+        }));
+    }
 
     let address = std::env::var("BIND_ADDR")
         .or_else(|_| std::env::var("PORT").map(|port| format!("0.0.0.0:{port}")))
