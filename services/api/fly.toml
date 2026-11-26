@@ -1,4 +1,4 @@
-app = "unadomot-api"
+app = "unadomot"
 primary_region = "fra"
 
 [build]
