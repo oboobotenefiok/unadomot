@@ -418,13 +418,6 @@ class _ListingsScreenState extends State<ListingsScreen> {
               child: const Icon(Icons.keyboard_arrow_up),
             )
           : null,
-      bottomNavigationBar: _BottomNav(
-        onHome: () {},
-        onFavorites: _openFavorites,
-        onPost: _openPost,
-        onMessages: _openMessages,
-        onProfile: _openProfile,
-      ),
       body: RefreshIndicator(
         onRefresh: _load,
         child: _loading
@@ -514,75 +507,6 @@ class _ListingsScreenState extends State<ListingsScreen> {
     if (difference.inDays < 1) return '${difference.inHours}h ago';
     return '${difference.inDays}d ago';
   }
-}
-
-class _BottomNav extends StatelessWidget {
-  final VoidCallback onHome;
-  final VoidCallback onFavorites;
-  final VoidCallback onPost;
-  final VoidCallback onMessages;
-  final VoidCallback onProfile;
-
-  const _BottomNav({
-    required this.onHome,
-    required this.onFavorites,
-    required this.onPost,
-    required this.onMessages,
-    required this.onProfile,
-  });
-
-  @override
-  Widget build(BuildContext context) => BottomAppBar(
-        height: 64,
-        padding: EdgeInsets.zero,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _NavIcon(icon: Icons.home, label: 'Home', selected: true, onTap: onHome),
-            _NavIcon(icon: Icons.favorite_border, label: 'Favorites', onTap: onFavorites),
-            GestureDetector(
-              onTap: onPost,
-              child: Container(
-                width: 44,
-                height: 44,
-                decoration: const BoxDecoration(
-                  color: UnaColors.green700,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.add, color: Colors.white, size: 28),
-              ),
-            ),
-            _NavIcon(icon: Icons.chat_bubble_outline, label: 'Messages', onTap: onMessages),
-            _NavIcon(icon: Icons.person_outline, label: 'Profile', onTap: onProfile),
-          ],
-        ),
-      );
-}
-
-class _NavIcon extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _NavIcon({
-    required this.icon,
-    required this.label,
-    this.selected = false,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) => IconButton(
-        tooltip: label,
-        onPressed: onTap,
-        icon: Icon(
-          icon,
-          color: selected
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
-      );
 }
 
 class _FilterSheet extends StatefulWidget {
