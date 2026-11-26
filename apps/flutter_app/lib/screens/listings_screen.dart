@@ -7,6 +7,7 @@ import '../state/app_state.dart';
 import '../theme.dart';
 import '../utils/feed_ranker.dart';
 import '../widgets/home_carousel.dart';
+import '../widgets/skeletons.dart';
 import 'auth_sheet.dart';
 import 'create_listing_screen.dart';
 import 'favorites_screen.dart';
@@ -421,7 +422,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
       body: RefreshIndicator(
         onRefresh: _load,
         child: _loading
-            ? const Center(child: CircularProgressIndicator())
+            ? const ListingSkeletonList()
             : _error != null
                 ? Center(child: Text(_error!))
                 : Column(
