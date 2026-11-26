@@ -744,7 +744,11 @@ async fn signature_handler(
         .filter(|value| !value.trim().is_empty())
         .unwrap_or_else(|| "unadomot/listings".into());
 
-    state.media.sign_upload(&folder).map(Json).map_err(media_error)
+    state
+        .media
+        .sign_upload(&folder)
+        .map(Json)
+        .map_err(media_error)
 }
 
 async fn conversations_handler(
