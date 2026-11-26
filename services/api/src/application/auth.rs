@@ -70,6 +70,13 @@ pub trait UserRepository: Send + Sync {
         expires_at: DateTime<Utc>,
     ) -> Result<Option<AuthenticatedUser>, AuthError>;
     async fn revoke_refresh_token(&self, token_hash: &str) -> Result<bool, AuthError>;
+    async fn create_password_reset(
+        &self,
+        email: &str,
+        token_hash: &str,
+        expires_at: DateTime<Utc>,
+    ) -> Result<Option<Uuid>, AuthError>;
+    async fn reset_password(&self, token_hash: &str, password_hash: &str) -> Result<bool, AuthError>;
     async fn is_admin(&self, user_id: Uuid) -> Result<bool, AuthError>;
     async fn is_active(&self, user_id: Uuid) -> Result<bool, AuthError>;
     async fn suspend_user(&self, user_id: Uuid) -> Result<bool, AuthError>;
@@ -100,12 +107,7 @@ pub async fn register(
         return Err(AuthError::EmailTaken);
     }
 
-    let salt = SaltString::generate(&mut OsRng);
-    let hash = Argon2::default()
-        .hash_password(password.as_bytes(), &salt)
-        .map_err(|e| AuthError::Repository(e.to_string()))?
-        .to_string();
-
+    let hash = hash_password(password)?;
     repository.create_user(&email, Some(&hash), name).await
 }
 
@@ -135,6 +137,19 @@ pub async fn login(
         .map_err(|_| AuthError::InvalidCredentials)?;
 
     issue_session(user.id, user.email, jwt_secret)
+}
+
+pub fn hash_password(password: &str) -> Result<String, AuthError> {
+    if password.len() < 8 || password.len() > 128 {
+        return Err(AuthError::Validation(
+            "Password must be between 8 and 128 characters".into(),
+        ));
+    }
+    let salt = SaltString::generate(&mut OsRng);
+    Ok(Argon2::default()
+        .hash_password(password.as_bytes(), &salt)
+        .map_err(|e| AuthError::Repository(e.to_string()))?
+        .to_string())
 }
 
 pub fn issue_session(user_id: Uuid, email: String, jwt_secret: &str) -> Result<Session, AuthError> {
