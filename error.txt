@@ -1,0 +1,525 @@
+rust	Run cargo fmt --check	﻿2026-11-25T23:48:23.5942271Z ##[group]Run cargo fmt --check
+rust	Run cargo fmt --check	2026-11-25T23:48:23.5942593Z ^[[36;1mcargo fmt --check^[[0m
+rust	Run cargo fmt --check	2026-11-25T23:48:23.5974681Z shell: /usr/bin/bash -e {0}
+rust	Run cargo fmt --check	2026-11-25T23:48:23.5974938Z env:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.5975730Z   DATABASE_URL: ***localhost:5432/unadomot_test
+rust	Run cargo fmt --check	2026-11-25T23:48:23.5976116Z   JWT_SECRET: test-secret-that-is-at-least-32-bytes-long
+rust	Run cargo fmt --check	2026-11-25T23:48:23.5976565Z   REFRESH_TOKEN_SECRET: test-refresh-secret-that-is-at-least-32-bytes
+rust	Run cargo fmt --check	2026-11-25T23:48:23.5976953Z   CARGO_HOME: /home/runner/.cargo
+rust	Run cargo fmt --check	2026-11-25T23:48:23.5977200Z   CARGO_INCREMENTAL: 0
+rust	Run cargo fmt --check	2026-11-25T23:48:23.5977727Z   CARGO_TERM_COLOR: always
+rust	Run cargo fmt --check	2026-11-25T23:48:23.5977957Z   CACHE_ON_FAILURE: false
+rust	Run cargo fmt --check	2026-11-25T23:48:23.5978173Z ##[endgroup]
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6921634Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:1:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6928786Z -use crate::application::auth::{AuthenticatedUser, AuthError, StoredUser, UserRepository};
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6930121Z +use crate::application::auth::{AuthError, AuthenticatedUser, StoredUser, UserRepository};
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6931349Z  use crate::application::listings::{ListingError, ListingPage, ListingRepository};
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6932272Z  use crate::application::media::{MediaError, MediaSigner, UploadSignature};
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6932845Z  use crate::application::messaging::{MessagingError, MessagingRepository};
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6933515Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:22:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6934284Z          _limit: i64,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6934708Z          _offset: i64,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6935182Z      ) -> Result<ListingPage, ListingError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6936045Z -        Err(ListingError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6936877Z +        Err(ListingError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6937685Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6938281Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6938625Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6938972Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6939526Z      async fn get(&self, _id: Uuid) -> Result<Option<Listing>, ListingError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6940439Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:29:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6941355Z -        Err(ListingError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6942059Z +        Err(ListingError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6942565Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6943057Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6943364Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6943661Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6944207Z      async fn create(&self, _listing: &NewListing) -> Result<Listing, ListingError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6945155Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:33:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6946067Z -        Err(ListingError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6946776Z +        Err(ListingError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6947533Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6948068Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6948377Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6948662Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6948951Z      async fn update(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6949534Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:39:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6950236Z          _owner_id: Uuid,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6950644Z          _update: &ListingUpdate,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6951103Z      ) -> Result<Listing, ListingError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6951796Z -        Err(ListingError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6952514Z +        Err(ListingError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6953029Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6953519Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6953826Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6954123Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6954663Z      async fn delete(&self, _id: Uuid, _owner_id: Uuid) -> Result<(), ListingError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6955621Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:46:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6956983Z -        Err(ListingError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6958156Z +        Err(ListingError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6958691Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6959181Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6959468Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6959766Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6960068Z      async fn add_media(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6960670Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:52:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6961360Z          _owner_id: Uuid,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6961763Z          _media: &NewListingMedia,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6962260Z      ) -> Result<ListingMedia, ListingError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6962968Z -        Err(ListingError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6963692Z +        Err(ListingError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6964202Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6964701Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6965024Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6965321Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6965766Z      async fn health_check(&self) -> Result<(), ListingError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6966586Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:59:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6967671Z -        Err(ListingError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6968399Z +        Err(ListingError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6968912Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6969424Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6969723Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6970014Z  }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6970306Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6970849Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:110:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6971545Z          _initiator: Uuid,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6971942Z          _other: Uuid,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6972374Z      ) -> Result<Conversation, MessagingError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6973105Z -        Err(MessagingError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6973554Z +        Err(MessagingError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6973862Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6974142Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6974314Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6974478Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6974850Z -    async fn list_conversations(&self, _user_id: Uuid) -> Result<Vec<Conversation>, MessagingError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6975554Z -        Err(MessagingError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6976253Z +    async fn list_conversations(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6976516Z +        &self,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6976718Z +        _user_id: Uuid,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6976987Z +    ) -> Result<Vec<Conversation>, MessagingError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6977551Z +        Err(MessagingError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6977867Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6978146Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6978323Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6978494Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6978741Z      async fn find_conversation(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6979423Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:122:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6980152Z          _id: Uuid,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6980510Z          _user_id: Uuid,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6980976Z      ) -> Result<Option<Conversation>, MessagingError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6981715Z -        Err(MessagingError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6982424Z +        Err(MessagingError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6982942Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6983429Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6983721Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6984011Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6984318Z      async fn list_messages(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6984949Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:131:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6985641Z          _limit: i64,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6986004Z          _offset: i64,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6986430Z      ) -> Result<Vec<Message>, MessagingError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6987665Z -        Err(MessagingError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6988647Z +        Err(MessagingError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6989188Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6989682Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6989992Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6990287Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6990596Z      async fn send_message(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6991226Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:140:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6991949Z          _sender_id: Uuid,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6992344Z          _body: &str,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6992742Z      ) -> Result<Message, MessagingError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6993370Z -        Err(MessagingError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6993787Z +        Err(MessagingError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6994083Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6994372Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6994546Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6994713Z  }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6994882Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6995261Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:154:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6995892Z          _document_url: &str,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6996142Z          _notes: Option<&str>,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6996446Z      ) -> Result<VerificationRequest, VerificationError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6996914Z -        Err(VerificationError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6997624Z +        Err(VerificationError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6998205Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6998629Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6998815Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6998983Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6999167Z      async fn find_for_user(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6999530Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:161:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.6999918Z          &self,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7000121Z          _user_id: Uuid,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7000565Z      ) -> Result<Option<VerificationRequest>, VerificationError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7001302Z -        Err(VerificationError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7001724Z +        Err(VerificationError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7002021Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7002288Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7002456Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7002620Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7002800Z      async fn list_by_status(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7003398Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:168:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7003959Z          &self,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7004154Z          _status: &str,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7004436Z      ) -> Result<Vec<VerificationRequest>, VerificationError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7004901Z -        Err(VerificationError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7005308Z +        Err(VerificationError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7005611Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7005885Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7006127Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7006427Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7006731Z      async fn review(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7007127Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:177:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7007788Z          _status: &str,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7008020Z          _review_notes: Option<&str>,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7008336Z      ) -> Result<VerificationRequest, VerificationError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7008819Z -        Err(VerificationError::Repository("Persistence not configured".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7009389Z +        Err(VerificationError::Repository(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7009917Z +            "Persistence not configured".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7010266Z +        ))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7010439Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7010610Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7010792Z      async fn record_audit(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7011417Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/application/auth.rs:81:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7011975Z      let name = name.trim();
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7012202Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7012409Z      if name.is_empty() || name.len() > 120 {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7013151Z -        return Err(AuthError::Validation("Name is required (max 120 characters)".into()));
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7013607Z +        return Err(AuthError::Validation(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7013920Z +            "Name is required (max 120 characters)".into(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7014213Z +        ));
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7014389Z      }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7014658Z      if !email.contains('@') || !email.contains('.') || email.len() > 254 {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7015263Z          return Err(AuthError::Validation("A valid email is required".into()));
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7016069Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/application/auth.rs:178:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7016528Z          .or_else(|_| std::env::var("JWT_SECRET"))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7016928Z          .unwrap_or_else(|_| "development-refresh-secret-change-me".into());
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7017503Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7017784Z -    let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_bytes())
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7018155Z -        .expect("HMAC accepts keys of any size");
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7018543Z +    let mut mac =
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7019206Z +        Hmac::<Sha256>::new_from_slice(secret.as_bytes()).expect("HMAC accepts keys of any size");
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7019682Z      mac.update(token.as_bytes());
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7019972Z      hex::encode(mac.finalize().into_bytes())
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7020240Z  }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7020582Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/application/listings.rs:1:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7021028Z  use crate::domain::listing::{
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7021411Z -    Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7022137Z -    NewListingMedia,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7022583Z +    Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7023051Z  };
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7023245Z  use async_trait::async_trait;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7023489Z  use rust_decimal::Decimal;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7089049Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/mod.rs:482:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7089803Z          .find_by_email(&request.email)
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7090249Z          .await
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7090593Z          .map_err(auth_error)?
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7091516Z -        .ok_or_else(|| ApiError::new(StatusCode::UNAUTHORIZED, "invalid_credentials", "Invalid email or password"))?;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7092442Z +        .ok_or_else(|| {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7092828Z +            ApiError::new(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7093249Z +                StatusCode::UNAUTHORIZED,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7093729Z +                "invalid_credentials",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7094182Z +                "Invalid email or password",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7094682Z +            )
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7095011Z +        })?;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7095339Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7095787Z      let refresh_token = new_refresh_token();
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7096118Z      state
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7096457Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/mod.rs:516:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7096872Z          )
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7097058Z          .await
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7097522Z          .map_err(auth_error)?
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7098587Z -        .ok_or_else(|| ApiError::new(StatusCode::UNAUTHORIZED, "invalid_refresh_token", "Refresh token is invalid or expired"))?;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7099603Z +        .ok_or_else(|| {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7100019Z +            ApiError::new(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7100441Z +                StatusCode::UNAUTHORIZED,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7100939Z +                "invalid_refresh_token",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7101466Z +                "Refresh token is invalid or expired",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7101956Z +            )
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7102608Z +        })?;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7102924Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7103735Z      let session = issue_session(user.id, user.email, &state.jwt_secret).map_err(auth_error)?;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7104497Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7105037Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/mod.rs:680:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7105785Z          .filter(|value| !value.trim().is_empty())
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7106343Z          .unwrap_or_else(|| "unadomot/listings".into());
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7106812Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7107498Z -    state.media.sign_upload(&folder).map(Json).map_err(media_error)
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7108125Z +    state
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7108428Z +        .media
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7108757Z +        .sign_upload(&folder)
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7109170Z +        .map(Json)
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7109518Z +        .map_err(media_error)
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7109890Z  }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7110159Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7110473Z  async fn conversations_handler(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7111155Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/mod.rs:736:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7111887Z          .map_err(messaging_error)
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7112303Z  }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7112590Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7113365Z -fn authorize(state: &AppState, headers: &HeaderMap) -> Result<crate::application::auth::AuthenticatedUser, ApiError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7114305Z +fn authorize(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7114635Z +    state: &AppState,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7115001Z +    headers: &HeaderMap,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7115552Z +) -> Result<crate::application::auth::AuthenticatedUser, ApiError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7116190Z      let token = headers
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7116577Z          .get("authorization")
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7117025Z          .and_then(|value| value.to_str().ok())
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7117956Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/mod.rs:743:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7118804Z          .and_then(|value| value.strip_prefix("Bearer "))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7119810Z -        .ok_or_else(|| ApiError::new(StatusCode::UNAUTHORIZED, "unauthorized", "Missing bearer token"))?;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7120671Z +        .ok_or_else(|| {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7121077Z +            ApiError::new(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7121486Z +                StatusCode::UNAUTHORIZED,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7121977Z +                "unauthorized",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7122406Z +                "Missing bearer token",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7122837Z +            )
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7123165Z +        })?;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7123462Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7123902Z      verify_session(token, &state.jwt_secret).map_err(auth_error)
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7124470Z  }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7125066Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/public_pages.rs:1:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7125900Z  use crate::application::listings::get_listing;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7126461Z -use crate::http::{AppState, ApiError};
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7126974Z +use crate::http::{ApiError, AppState};
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7127634Z  use axum::{
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7127984Z      extract::{Path, State},
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7128414Z      http::StatusCode,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7129087Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/public_pages.rs:22:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7129955Z  ) -> Result<Html<String>, ApiError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7130562Z      let listing = get_listing(state.listings.as_ref(), id)
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7131129Z          .await
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7131998Z -        .map_err(|_| ApiError::new(StatusCode::SERVICE_UNAVAILABLE, "service_unavailable", "The service is temporarily unavailable"))?
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7133024Z +        .map_err(|_| {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7133411Z +            ApiError::new(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7133860Z +                StatusCode::SERVICE_UNAVAILABLE,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7134373Z +                "service_unavailable",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7134888Z +                "The service is temporarily unavailable",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7135377Z +            )
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7135900Z +        })?
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7136502Z          .ok_or_else(|| ApiError::new(StatusCode::NOT_FOUND, "not_found", "Listing not found"))?;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7137583Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7138213Z      let base = std::env::var("PUBLIC_WEB_URL").unwrap_or_else(|_| "https://unadomot.com".into());
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7139280Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/public_pages.rs:34:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7140081Z      let description = format!(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7140957Z          "{} • {} bedrooms • {} bathrooms • Verified listing on UnaDomot.",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7141586Z          listing.title,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7142309Z -        listing.bedrooms.map(|v| v.to_string()).unwrap_or_else(|| "—".into()),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7143324Z -        listing.bathrooms.map(|v| v.to_string()).unwrap_or_else(|| "—".into())
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7143998Z +        listing
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7144329Z +            .bedrooms
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7144695Z +            .map(|v| v.to_string())
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7145279Z +            .unwrap_or_else(|| "—".into()),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7145766Z +        listing
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7146108Z +            .bathrooms
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7146498Z +            .map(|v| v.to_string())
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7147021Z +            .unwrap_or_else(|| "—".into())
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7147681Z      );
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7148013Z      let image = listing
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7148395Z          .media
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7149041Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/public_pages.rs:95:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7149779Z          0,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7150067Z      )
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7150361Z      .await
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7151227Z -    .map_err(|_| ApiError::new(StatusCode::SERVICE_UNAVAILABLE, "service_unavailable", "The service is temporarily unavailable"))?;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7152251Z +    .map_err(|_| {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7152605Z +        ApiError::new(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7153008Z +            StatusCode::SERVICE_UNAVAILABLE,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7153516Z +            "service_unavailable",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7154020Z +            "The service is temporarily unavailable",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7154512Z +        )
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7154804Z +    })?;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7155098Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7155735Z      let base = std::env::var("PUBLIC_WEB_URL").unwrap_or_else(|_| "https://unadomot.com".into());
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7156535Z      let urls = page
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7157438Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/verification.rs:94:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7158323Z          .route("/api/verification", post(submit_handler))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7158960Z          .route("/api/verification/me", get(my_handler))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7159615Z          .route("/api/admin/verification", get(admin_list_handler))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7160433Z -        .route("/api/admin/verification/{id}/review", post(admin_review_handler))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7161131Z +        .route(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7161534Z +            "/api/admin/verification/{id}/review",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7162082Z +            post(admin_review_handler),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7162556Z +        )
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7162892Z          .with_state(state)
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7163278Z  }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7163573Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7164172Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/verification.rs:101:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7165554Z -fn authorize(state: &VerificationState, headers: &HeaderMap) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7166648Z +fn authorize(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7167002Z +    state: &VerificationState,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7167610Z +    headers: &HeaderMap,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7168269Z +) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7168996Z      let token = headers
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7169408Z          .get("authorization")
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7169868Z          .and_then(|value| value.to_str().ok())
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7170926Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/verification.rs:105:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7172004Z          .and_then(|value| value.strip_prefix("Bearer "))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7173021Z -        .ok_or_else(|| VerificationApiError::new(StatusCode::UNAUTHORIZED, "unauthorized", "Missing bearer token"))?;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7173973Z +        .ok_or_else(|| {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7174393Z +            VerificationApiError::new(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7174888Z +                StatusCode::UNAUTHORIZED,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7175369Z +                "unauthorized",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7175813Z +                "Missing bearer token",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7176266Z +            )
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7176593Z +        })?;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7176907Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7177531Z      verify_session(token, &state.jwt_secret).map_err(|_| {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7178481Z -        VerificationApiError::new(StatusCode::UNAUTHORIZED, "unauthorized", "Invalid or expired token")
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7179368Z +        VerificationApiError::new(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7179855Z +            StatusCode::UNAUTHORIZED,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7180327Z +            "unauthorized",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7180750Z +            "Invalid or expired token",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7181204Z +        )
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7181515Z      })
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7181820Z  }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7182104Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7182704Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/verification.rs:113:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7184228Z -async fn authorize_admin(state: &VerificationState, headers: &HeaderMap) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7185457Z +async fn authorize_admin(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7185879Z +    state: &VerificationState,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7186316Z +    headers: &HeaderMap,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7186969Z +) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7187932Z      let user = authorize(state, headers)?;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7188462Z      let is_bootstrap_admin = state
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7188926Z          .admin_emails
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7189593Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/verification.rs:117:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7190374Z          .iter()
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7190823Z          .any(|email| email.eq_ignore_ascii_case(&user.email));
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7191389Z -    let is_db_admin = state
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7191781Z -        .users
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7192135Z -        .is_admin(user.id)
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7192528Z -        .await
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7192874Z -        .unwrap_or(false);
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7193469Z +    let is_db_admin = state.users.is_admin(user.id).await.unwrap_or(false);
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7194112Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7194467Z      if !is_bootstrap_admin && !is_db_admin {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7195024Z          return Err(VerificationApiError::new(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7195790Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/verification.rs:167:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7196604Z      authorize_admin(&state, &headers).await?;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7197177Z      pending_requests(state.repository.as_ref())
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7197856Z          .await
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7198507Z -        .map(|requests| Json(requests.into_iter().map(VerificationResponse::from).collect()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7199287Z +        .map(|requests| {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7199672Z +            Json(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7200014Z +                requests
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7200396Z +                    .into_iter()
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7200880Z +                    .map(VerificationResponse::from)
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7201476Z +                    .collect(),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7202138Z +            )
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7218713Z +        })
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7218978Z          .map_err(verification_error)
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7219261Z  }
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7219433Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7219900Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/infrastructure/postgres/listing_repository.rs:1:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7221437Z  use crate::application::listings::{ListingError, ListingPage, ListingRepository};
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7222225Z  use crate::domain::listing::{
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7222627Z -    Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7223047Z -    NewListingMedia,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7223466Z +    Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7223923Z  };
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7224119Z  use async_trait::async_trait;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7224366Z  use rust_decimal::Decimal;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7225005Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/infrastructure/postgres/user_repository.rs:1:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7226255Z -use crate::application::auth::{AuthenticatedUser, AuthError, StoredUser, UserRepository};
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7227579Z +use crate::application::auth::{AuthError, AuthenticatedUser, StoredUser, UserRepository};
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7228403Z  use async_trait::async_trait;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7228859Z  use chrono::{DateTime, Utc};
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7229283Z  use sqlx::PgPool;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7241786Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/main.rs:1:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7242536Z  use sqlx::postgres::PgPoolOptions;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7242980Z  use std::sync::Arc;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7243568Z +use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7244284Z  use unadomot_api::adapters::{
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7245062Z      UnconfiguredMediaSigner, UnconfiguredMessagingRepository, UnconfiguredRepository,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7245657Z      UnconfiguredUserRepository, UnconfiguredVerificationRepository,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7246147Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/main.rs:13:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7246634Z  use unadomot_api::infrastructure::cloudinary::CloudinarySigner;
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7247046Z  use unadomot_api::infrastructure::postgres::{
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7247903Z      listing_repository::PostgresListingRepository,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7248598Z -    messaging_repository::PostgresMessagingRepository,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7249242Z -    user_repository::PostgresUserRepository,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7250152Z +    messaging_repository::PostgresMessagingRepository, user_repository::PostgresUserRepository,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7251187Z      verification_repository::PostgresVerificationRepository,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7251871Z  };
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7252399Z -use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7253086Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7253372Z  #[tokio::main]
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7253793Z  async fn main() -> Result<(), Box<dyn std::error::Error>> {
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7254531Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/main.rs:24:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7255222Z      dotenvy::dotenv().ok();
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7255669Z      tracing_subscriber::registry()
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7256267Z -        .with(tracing_subscriber::EnvFilter::try_from_default_env()
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7256972Z -            .unwrap_or_else(|_| "info,tower_http=info".into()))
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7257749Z +        .with(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7258217Z +            tracing_subscriber::EnvFilter::try_from_default_env()
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7258917Z +                .unwrap_or_else(|_| "info,tower_http=info".into()),
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7259264Z +        )
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7259489Z          .with(tracing_subscriber::fmt::layer())
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7259768Z          .init();
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7259958Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7260292Z Diff in /home/runner/work/unadomot/unadomot/services/api/tests/api_flow.rs:31:
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7260772Z      let user = register(&users, &email, "password123", "Test User")
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7261105Z          .await
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7261307Z          .expect("register");
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7261686Z -    login(&users, &email, "password123", "test-secret-that-is-at-least-32-bytes")
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7262268Z -        .await
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7262577Z -        .expect("login");
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7262798Z +    login(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7262983Z +        &users,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7263173Z +        &email,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7263373Z +        "password123",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7263751Z +        "test-secret-that-is-at-least-32-bytes",
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7264227Z +    )
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7264515Z +    .await
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7264808Z +    .expect("login");
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7265156Z  
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7265459Z      let listing = create_listing(
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7265869Z          &listings,
+rust	Run cargo fmt --check	2026-11-25T23:48:23.7298036Z ##[error]Process completed with exit code 1.
+android	Analyze, test and build	﻿2026-11-25T23:48:44.6637121Z ##[group]Run flutter pub get
+android	Analyze, test and build	2026-11-25T23:48:44.6637366Z ^[[36;1mflutter pub get^[[0m
+android	Analyze, test and build	2026-11-25T23:48:44.6637540Z ^[[36;1mflutter analyze^[[0m
+android	Analyze, test and build	2026-11-25T23:48:44.6637706Z ^[[36;1mflutter test^[[0m
+android	Analyze, test and build	2026-11-25T23:48:44.6637886Z ^[[36;1mflutter build apk --debug^[[0m
+android	Analyze, test and build	2026-11-25T23:48:44.6668707Z shell: /usr/bin/bash -e {0}
+android	Analyze, test and build	2026-11-25T23:48:44.6668930Z env:
+android	Analyze, test and build	2026-11-25T23:48:44.6669164Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-2/x64
+android	Analyze, test and build	2026-11-25T23:48:44.6669518Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-2/x64
+android	Analyze, test and build	2026-11-25T23:48:44.6669862Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.50.1-x64/flutter
+android	Analyze, test and build	2026-11-25T23:48:44.6670125Z   PUB_CACHE: /home/runner/.pub-cache
+android	Analyze, test and build	2026-11-25T23:48:44.6670321Z ##[endgroup]
+android	Analyze, test and build	2026-11-25T23:48:44.7928554Z Resolving dependencies...
+android	Analyze, test and build	2026-11-25T23:48:44.8536235Z Downloading packages...
+android	Analyze, test and build	2026-11-25T23:48:44.8558856Z   cross_file 0.3.5+5 (0.4.0 available)
+android	Analyze, test and build	2026-11-25T23:48:44.8559248Z   flutter_secure_storage 9.2.4 (11.2.0 available)
+android	Analyze, test and build	2026-11-25T23:48:44.8559634Z   flutter_secure_storage_linux 1.2.3 (3.0.3 available)
+android	Analyze, test and build	2026-11-25T23:48:44.8559960Z   flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+android	Analyze, test and build	2026-11-25T23:48:44.8560311Z   flutter_secure_storage_platform_interface 1.1.2 (2.1.1 available)
+android	Analyze, test and build	2026-11-25T23:48:44.8560868Z   flutter_secure_storage_web 1.2.1 (2.1.1 available)
+android	Analyze, test and build	2026-11-25T23:48:44.8561127Z   flutter_secure_storage_windows 3.1.2 (4.2.2 available)
+android	Analyze, test and build	2026-11-25T23:48:44.8561356Z   js 0.6.7 (0.7.2 available)
+android	Analyze, test and build	2026-11-25T23:48:44.8561557Z   material_color_utilities 0.13.0 (0.13.1 available)
+android	Analyze, test and build	2026-11-25T23:48:44.8561781Z   test_api 0.7.14 (0.7.15 available)
+android	Analyze, test and build	2026-11-25T23:48:44.8561979Z   vector_math 2.4.3 (2.4.4 available)
+android	Analyze, test and build	2026-11-25T23:48:44.8562171Z   win32 5.15.0 (6.4.0 available)
+android	Analyze, test and build	2026-11-25T23:48:44.8562388Z Got dependencies!
+android	Analyze, test and build	2026-11-25T23:48:44.8562634Z 12 packages have newer versions incompatible with dependency constraints.
+android	Analyze, test and build	2026-11-25T23:48:44.8563199Z Try `flutter pub outdated` for more information.
+android	Analyze, test and build	2026-11-25T23:48:49.7840825Z Analyzing flutter_app...                                        
+android	Analyze, test and build	2026-11-25T23:48:49.7844986Z 
+android	Analyze, test and build	2026-11-25T23:48:49.7859688Z warning • The URI 'package:flutter_lints/flutter.yaml' included in '/home/runner/work/unadomot/unadomot/apps/flutter_app/analysis_options.yaml' can't be found when analyzing '/home/runner/work/unadomot/unadomot/apps/flutter_app' • analysis_options.yaml:10:10 • include_file_not_found
+android	Analyze, test and build	2026-11-25T23:48:49.7862011Z   error • The getter 'scheme' isn't defined for the type 'String'. Try importing the library that defines 'scheme', correcting the name to the name of an existing getter, or defining a getter or field named 'scheme' • lib/api/api_client.dart:37:45 • undefined_getter
+android	Analyze, test and build	2026-11-25T23:48:49.7863914Z   error • The getter 'host' isn't defined for the type 'String'. Try importing the library that defines 'host', correcting the name to the name of an existing getter, or defining a getter or field named 'host' • lib/api/api_client.dart:37:64 • undefined_getter
+android	Analyze, test and build	2026-11-25T23:48:49.7865457Z warning • Returning a 'Future' without 'await' inside a try block. Try adding an 'await' • lib/api/api_client.dart:315:11 • unawaited_return_in_try_block
+android	Analyze, test and build	2026-11-25T23:48:49.7867177Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/main.dart:1:1 • deprecated_member_use
+android	Analyze, test and build	2026-11-25T23:48:49.7869374Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/auth_screen.dart:1:1 • deprecated_member_use
+android	Analyze, test and build	2026-11-25T23:48:49.7871840Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/create_listing_screen.dart:2:1 • deprecated_member_use
+android	Analyze, test and build	2026-11-25T23:48:49.7874442Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/listing_detail_screen.dart:1:1 • deprecated_member_use
+android	Analyze, test and build	2026-11-25T23:48:49.7876684Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/listings_screen.dart:1:1 • deprecated_member_use
+android	Analyze, test and build	2026-11-25T23:48:49.7878901Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/messages_screen.dart:1:1 • deprecated_member_use
+android	Analyze, test and build	2026-11-25T23:48:49.7881230Z    info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/messages_screen.dart:157:72 • deprecated_member_use
+android	Analyze, test and build	2026-11-25T23:48:49.7883484Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/verification_screen.dart:1:1 • deprecated_member_use
+android	Analyze, test and build	2026-11-25T23:48:49.7884614Z 
+android	Analyze, test and build	2026-11-25T23:48:49.7911480Z 12 issues found. (ran in 4.3s)
+android	Analyze, test and build	2026-11-25T23:48:49.7969711Z ##[error]Process completed with exit code 1.
