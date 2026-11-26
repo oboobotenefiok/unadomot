@@ -620,7 +620,10 @@ async fn login_handler(
         &state.jwt_secret,
     )
     .await
-    .map_err(auth_error)?;
+    .map_err(|error| {
+        tracing::warn!(email = %request.email, "login failed");
+        auth_error(error)
+    })?;
 
     let user = state
         .users
@@ -1186,10 +1189,18 @@ async fn authorize(
         .get("authorization")
         .and_then(|value| value.to_str().ok())
         .and_then(|value| value.strip_prefix("Bearer "))
-        .ok_or_else(|| ApiError::new(StatusCode::UNAUTHORIZED, "unauthorized", "Missing bearer token"))?;
+        .ok_or_else(|| {
+            tracing::warn!("authentication failed: missing bearer token");
+            ApiError::new(StatusCode::UNAUTHORIZED, "unauthorized", "Missing bearer token")
+        })?;
 
-    let user = verify_session(token, &state.jwt_secret).map_err(auth_error)?;
+    let user = verify_session(token, &state.jwt_secret).map_err(|error| {
+        tracing::warn!("authentication failed: invalid or expired token");
+        auth_error(error)
+    })?;
+
     if !state.users.is_active(user.id).await.map_err(auth_error)? {
+        tracing::warn!(user_id = %user.id, "authentication failed: inactive account");
         return Err(ApiError::new(
             StatusCode::UNAUTHORIZED,
             "unauthorized",
