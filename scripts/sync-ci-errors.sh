@@ -9,6 +9,17 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 fi
 
 BRANCH="$(git branch --show-current)"
+
+# Discard generated log files left from a previous run so pull --rebase can proceed.
+git restore error.txt error-summary.txt 2>/dev/null || true
+rm -f error.txt error-summary.txt
+
+STASHED=0
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  git stash push -u -m "ci-autostash-$(date +%s)" >/dev/null
+  STASHED=1
+fi
+
 git pull --rebase
 
 RUN_ID="$(gh run list --branch "$BRANCH" --limit 1 --json databaseId --jq '.[0].databaseId')"
@@ -27,6 +38,16 @@ if [ -n "$RUN_ID" ] && [ "$RUN_ID" != "null" ]; then
     rm -f error.txt error-summary.txt
     echo "Run $RUN_ID has no failed steps"
   fi
+fi
+
+if [ "$STASHED" = "1" ]; then
+  git stash pop || echo "Warning: could not restore stashed changes"
+fi
+
+STATUS="$(gh run view "$RUN_ID" --json conclusion --jq '.conclusion')"
+if [ "$STATUS" != "success" ]; then
+  echo "Run $RUN_ID is $STATUS; skipping release"
+  exit 0
 fi
 
 gh release delete "$TAG" --yes --cleanup-tag 2>/dev/null || true
