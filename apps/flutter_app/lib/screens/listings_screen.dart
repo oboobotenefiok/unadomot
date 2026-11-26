@@ -9,6 +9,7 @@ import 'create_listing_screen.dart';
 import 'favorites_screen.dart';
 import 'listing_detail_screen.dart';
 import 'messages_screen.dart';
+import 'profile_screen.dart';
 import 'verification_screen.dart';
 
 class ListingsScreen extends StatefulWidget {
@@ -155,6 +156,20 @@ class _ListingsScreenState extends State<ListingsScreen> {
     );
   }
 
+  Future<void> _openProfile() async {
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProfileScreen(
+          api: widget.api,
+          cache: widget.cache,
+          appState: widget.appState,
+        ),
+      ),
+    );
+  }
+
   Future<void> _openPost() async {
     if (!await requireAuth(context, widget.appState, register: true)) return;
     if (!mounted) return;
@@ -221,8 +236,10 @@ class _ListingsScreenState extends State<ListingsScreen> {
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'verification') _openVerification();
+              if (value == 'profile') _openProfile();
             },
             itemBuilder: (context) => const [
+              PopupMenuItem(value: 'profile', child: Text('Profile')),
               PopupMenuItem(value: 'verification', child: Text('Verification')),
             ],
           ),
