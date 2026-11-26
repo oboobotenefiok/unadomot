@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../api/api_client.dart';
 import '../data/local_cache.dart';
 import '../models/listing.dart';
+import '../state/app_state.dart';
+import 'auth_sheet.dart';
 import 'listing_detail_screen.dart';
 import 'messages_screen.dart';
 import 'verification_screen.dart';
@@ -9,8 +11,14 @@ import 'verification_screen.dart';
 class ListingsScreen extends StatefulWidget {
   final ApiClient api;
   final LocalCache cache;
+  final AppState appState;
 
-  const ListingsScreen({super.key, required this.api, required this.cache});
+  const ListingsScreen({
+    super.key,
+    required this.api,
+    required this.cache,
+    required this.appState,
+  });
 
   @override
   State<ListingsScreen> createState() => _ListingsScreenState();
@@ -60,6 +68,24 @@ class _ListingsScreenState extends State<ListingsScreen> {
     }
   }
 
+  Future<void> _openMessages() async {
+    if (!await requireAuth(context, widget.appState)) return;
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => MessagesScreen(api: widget.api)),
+    );
+  }
+
+  Future<void> _openVerification() async {
+    if (!await requireAuth(context, widget.appState)) return;
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => VerificationScreen(api: widget.api)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -68,23 +94,11 @@ class _ListingsScreenState extends State<ListingsScreen> {
             IconButton(
               tooltip: 'Messages',
               icon: const Icon(Icons.chat_bubble_outline),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => MessagesScreen(api: widget.api),
-                ),
-              ),
+              onPressed: _openMessages,
             ),
             PopupMenuButton<String>(
               onSelected: (value) {
-                if (value == 'verification') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => VerificationScreen(api: widget.api),
-                    ),
-                  );
-                }
+                if (value == 'verification') _openVerification();
               },
               itemBuilder: (context) => const [
                 PopupMenuItem(value: 'verification', child: Text('Verification')),
@@ -126,6 +140,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                                         builder: (_) => ListingDetailScreen(
                                           api: widget.api,
                                           cache: widget.cache,
+                                          appState: widget.appState,
                                           listingId: listing.id,
                                         ),
                                       ),

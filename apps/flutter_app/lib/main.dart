@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'api/api_client.dart';
 import 'data/local_cache.dart';
-import 'screens/auth_screen.dart';
 import 'screens/listings_screen.dart';
 import 'state/app_state.dart';
 
@@ -34,11 +33,10 @@ class UnaDomotApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
         title: 'UnaDomot',
         theme: ThemeData(colorSchemeSeed: Colors.green, useMaterial3: true),
-        home: ListenableBuilder(
-          listenable: state,
-          builder: (context, _) => state.signedIn
-              ? ListingsScreen(api: api, cache: cache)
-              : AuthScreen(appState: state),
+        home: ListingsScreen(
+          api: api,
+          cache: cache,
+          appState: state,
         ),
       );
 }

@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 import '../api/api_client.dart';
 import '../data/local_cache.dart';
 import '../models/listing.dart';
+import '../state/app_state.dart';
+import 'auth_sheet.dart';
+import 'messages_screen.dart';
 
 class ListingDetailScreen extends StatefulWidget {
   final ApiClient api;
   final LocalCache cache;
+  final AppState appState;
   final String listingId;
 
   const ListingDetailScreen({
     super.key,
     required this.api,
     required this.cache,
+    required this.appState,
     required this.listingId,
   });
 
@@ -25,6 +30,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
   String? _error;
   DateTime? _cachedAt;
   bool _favorite = false;
+  bool _startingChat = false;
 
   @override
   void initState() {
@@ -68,9 +74,39 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
   }
 
   Future<void> _toggleFavorite() async {
+    if (!await requireAuth(context, widget.appState)) return;
     final next = !_favorite;
     await widget.cache.setFavorite(widget.listingId, next);
     if (mounted) setState(() => _favorite = next);
+  }
+
+  Future<void> _openChat() async {
+    if (!await requireAuth(context, widget.appState)) return;
+    if (!mounted || _startingChat) return;
+    setState(() => _startingChat = true);
+    try {
+      final conversation = await widget.api.startConversation(
+        listingId: widget.listingId,
+      );
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChatScreen(
+            api: widget.api,
+            conversationId: conversation['id'] as String,
+          ),
+        ),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _startingChat = false);
+    }
   }
 
   @override
@@ -120,9 +156,11 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                           Text(_listing!.description),
                           const SizedBox(height: 24),
                           FilledButton.icon(
-                            onPressed: () {},
+                            onPressed: _startingChat ? null : _openChat,
                             icon: const Icon(Icons.chat_bubble_outline),
-                            label: const Text('Chat with lister'),
+                            label: Text(
+                              _startingChat ? 'Opening chat...' : 'Chat with lister',
+                            ),
                           ),
                         ],
                       ),
