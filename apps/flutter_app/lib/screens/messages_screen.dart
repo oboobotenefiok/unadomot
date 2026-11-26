@@ -338,6 +338,25 @@ class _ChatScreenState extends State<ChatScreen> {
                       onPressed: () async {
                         Navigator.pop(context);
                         await widget.api.reactToMessage(message['id'] as String, emoji);
+                        if (!mounted) return;
+                        setState(() {
+                          final reactions = List<Map<String, dynamic>>.from(
+                            (message['reactions'] as List?) ?? const [],
+                          );
+                          final index = reactions.indexWhere((item) => item['emoji'] == emoji);
+                          if (index >= 0) {
+                            reactions[index]['count'] =
+                                ((reactions[index]['count'] as num?)?.toInt() ?? 0) + 1;
+                            reactions[index]['reacted_by_me'] = true;
+                          } else {
+                            reactions.add({
+                              'emoji': emoji,
+                              'count': 1,
+                              'reacted_by_me': true,
+                            });
+                          }
+                          message['reactions'] = reactions;
+                        });
                       },
                       icon: Text(emoji, style: const TextStyle(fontSize: 28)),
                     ))
@@ -353,6 +372,11 @@ class _ChatScreenState extends State<ChatScreen> {
     final mediaType = message['media_type'] as String?;
     final body = message['body'] as String? ?? '';
     final replyBody = message['reply_to_body'] as String?;
+    final reactions = (message['reactions'] as List?)
+            ?.whereType<Map>()
+            .map((item) => Map<String, dynamic>.from(item))
+            .toList() ??
+        const <Map<String, dynamic>>[];
 
     Widget content;
     if (mediaUrl != null && mediaType == 'image') {
@@ -414,6 +438,28 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         content,
+        if (reactions.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Wrap(
+              spacing: 4,
+              children: reactions
+                  .map(
+                    (reaction) => Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        '${reaction['emoji']} ${reaction['count']}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
       ],
     );
   }
