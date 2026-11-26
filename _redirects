@@ -1,5 +1,0 @@
-# Email verification — must precede the SPA wildcard
-/verify-email     /verify-email.html  200
-/verify-email/*   /verify-email.html  200
-# SPA fallback
-/*                /index.html         200
