@@ -51,6 +51,7 @@ pub trait MessagingRepository: Send + Sync {
         Ok(Vec::new())
     }
 
+    #[allow(clippy::too_many_arguments)]
     async fn send_rich_message(
         &self,
         _conversation_id: Uuid,

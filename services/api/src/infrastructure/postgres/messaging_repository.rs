@@ -222,6 +222,7 @@ impl MessagingRepository for PostgresMessagingRepository {
         Ok(rows)
     }
 
+    #[allow(clippy::too_many_arguments)]
     async fn send_rich_message(
         &self,
         conversation_id: Uuid,
