@@ -9,6 +9,13 @@ use sqlx::PgPool;
 use std::collections::HashMap;
 use uuid::Uuid;
 
+const LISTING_COLUMNS: &str = "l.id, l.landlord_id,
+    COALESCE((SELECT name FROM user_profiles WHERE user_id = l.landlord_id), '') AS landlord_name,
+    COALESCE((SELECT verified FROM user_profiles WHERE user_id = l.landlord_id), false) AS landlord_verified,
+    (SELECT photo_url FROM user_profiles WHERE user_id = l.landlord_id) AS landlord_photo_url,
+    l.title, l.description, l.price, l.address, l.state, l.lga, l.is_agent_listing, l.status,
+    l.bedrooms, l.bathrooms, l.property_type, l.furnishing, l.created_at";
+
 pub struct PostgresListingRepository {
     pool: PgPool,
 }
@@ -27,21 +34,22 @@ impl ListingRepository for PostgresListingRepository {
         limit: i64,
         offset: i64,
     ) -> Result<ListingPage, ListingError> {
-        let rows = sqlx::query_as::<_, ListingRow>(
-            "SELECT id, landlord_id, title, description, price, address, state, lga, is_agent_listing, status, bedrooms, bathrooms, property_type, furnishing FROM listings WHERE deleted_at IS NULL AND status = 'available' AND ($1::text IS NULL OR state = $1) AND ($2::text IS NULL OR lga = $2) AND ($3::text IS NULL OR property_type = $3) AND ($4::numeric IS NULL OR price >= $4) AND ($5::numeric IS NULL OR price <= $5) AND ($6::integer IS NULL OR bedrooms >= $6) AND ($7::text IS NULL OR furnishing = $7) ORDER BY created_at DESC LIMIT $8 OFFSET $9",
-        )
-        .bind(filter.state.as_deref())
-        .bind(filter.lga.as_deref())
-        .bind(filter.property_type.as_deref())
-        .bind(filter.min_price)
-        .bind(filter.max_price)
-        .bind(filter.bedrooms)
-        .bind(filter.furnishing.as_deref())
-        .bind(limit + 1)
-        .bind(offset)
-        .fetch_all(&self.pool)
-        .await
-        .map_err(|e| ListingError::Repository(e.to_string()))?;
+        let query = format!(
+            "SELECT {LISTING_COLUMNS} FROM listings l WHERE l.deleted_at IS NULL AND l.status = 'available' AND ($1::text IS NULL OR l.state = $1) AND ($2::text IS NULL OR l.lga = $2) AND ($3::text IS NULL OR l.property_type = $3) AND ($4::numeric IS NULL OR l.price >= $4) AND ($5::numeric IS NULL OR l.price <= $5) AND ($6::integer IS NULL OR l.bedrooms >= $6) AND ($7::text IS NULL OR l.furnishing = $7) ORDER BY l.created_at DESC LIMIT $8 OFFSET $9"
+        );
+        let rows = sqlx::query_as::<_, ListingRow>(&query)
+            .bind(filter.state.as_deref())
+            .bind(filter.lga.as_deref())
+            .bind(filter.property_type.as_deref())
+            .bind(filter.min_price)
+            .bind(filter.max_price)
+            .bind(filter.bedrooms)
+            .bind(filter.furnishing.as_deref())
+            .bind(limit + 1)
+            .bind(offset)
+            .fetch_all(&self.pool)
+            .await
+            .map_err(|e| ListingError::Repository(e.to_string()))?;
 
         let has_more = rows.len() as i64 > limit;
         let rows: Vec<ListingRow> = rows.into_iter().take(limit as usize).collect();
@@ -66,13 +74,14 @@ impl ListingRepository for PostgresListingRepository {
     }
 
     async fn get(&self, id: Uuid) -> Result<Option<Listing>, ListingError> {
-        let row = sqlx::query_as::<_, ListingRow>(
-            "SELECT id, landlord_id, title, description, price, address, state, lga, is_agent_listing, status, bedrooms, bathrooms, property_type, furnishing FROM listings WHERE id = $1 AND deleted_at IS NULL",
-        )
-        .bind(id)
-        .fetch_optional(&self.pool)
-        .await
-        .map_err(|e| ListingError::Repository(e.to_string()))?;
+        let query = format!(
+            "SELECT {LISTING_COLUMNS} FROM listings l WHERE l.id = $1 AND l.deleted_at IS NULL"
+        );
+        let row = sqlx::query_as::<_, ListingRow>(&query)
+            .bind(id)
+            .fetch_optional(&self.pool)
+            .await
+            .map_err(|e| ListingError::Repository(e.to_string()))?;
 
         let Some(row) = row else {
             return Ok(None);
@@ -88,13 +97,14 @@ impl ListingRepository for PostgresListingRepository {
     }
 
     async fn get_public(&self, id: Uuid) -> Result<Option<Listing>, ListingError> {
-        let row = sqlx::query_as::<_, ListingRow>(
-            "SELECT id, landlord_id, title, description, price, address, state, lga, is_agent_listing, status, bedrooms, bathrooms, property_type, furnishing FROM listings WHERE id = $1 AND deleted_at IS NULL AND status = 'available'",
-        )
-        .bind(id)
-        .fetch_optional(&self.pool)
-        .await
-        .map_err(|e| ListingError::Repository(e.to_string()))?;
+        let query = format!(
+            "SELECT {LISTING_COLUMNS} FROM listings l WHERE l.id = $1 AND l.deleted_at IS NULL AND l.status = 'available'"
+        );
+        let row = sqlx::query_as::<_, ListingRow>(&query)
+            .bind(id)
+            .fetch_optional(&self.pool)
+            .await
+            .map_err(|e| ListingError::Repository(e.to_string()))?;
 
         let Some(row) = row else {
             return Ok(None);
@@ -110,8 +120,8 @@ impl ListingRepository for PostgresListingRepository {
     }
 
     async fn create(&self, input: &NewListing) -> Result<Listing, ListingError> {
-        let row = sqlx::query_as::<_, ListingRow>(
-            "INSERT INTO listings (landlord_id, title, description, price, address, state, lga, is_agent_listing, bedrooms, bathrooms, property_type, furnishing) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id, landlord_id, title, description, price, address, state, lga, is_agent_listing, status, bedrooms, bathrooms, property_type, furnishing",
+        let id = sqlx::query_scalar::<_, Uuid>(
+            "INSERT INTO listings (landlord_id, title, description, price, address, state, lga, is_agent_listing, bedrooms, bathrooms, property_type, furnishing) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id",
         )
         .bind(input.landlord_id)
         .bind(input.title.trim())
@@ -129,9 +139,7 @@ impl ListingRepository for PostgresListingRepository {
         .await
         .map_err(|e| ListingError::Repository(e.to_string()))?;
 
-        let mut listing: Listing = row.into();
-        listing.media = Vec::new();
-        Ok(listing)
+        self.get(id).await?.ok_or(ListingError::NotFound)
     }
 
     async fn update(
@@ -140,8 +148,8 @@ impl ListingRepository for PostgresListingRepository {
         owner_id: Uuid,
         update: &ListingUpdate,
     ) -> Result<Listing, ListingError> {
-        let row = sqlx::query_as::<_, ListingRow>(
-            "UPDATE listings SET title = COALESCE($3, title), description = COALESCE($4, description), price = COALESCE($5, price), address = COALESCE($6, address), state = COALESCE($7, state), lga = COALESCE($8, lga), is_agent_listing = COALESCE($9, is_agent_listing), status = COALESCE($10, status), bedrooms = COALESCE($11, bedrooms), bathrooms = COALESCE($12, bathrooms), property_type = COALESCE($13, property_type), furnishing = COALESCE($14, furnishing), updated_at = now() WHERE id = $1 AND landlord_id = $2 AND deleted_at IS NULL RETURNING id, landlord_id, title, description, price, address, state, lga, is_agent_listing, status, bedrooms, bathrooms, property_type, furnishing",
+        let updated = sqlx::query_scalar::<_, Uuid>(
+            "UPDATE listings SET title = COALESCE($3, title), description = COALESCE($4, description), price = COALESCE($5, price), address = COALESCE($6, address), state = COALESCE($7, state), lga = COALESCE($8, lga), is_agent_listing = COALESCE($9, is_agent_listing), status = COALESCE($10, status), bedrooms = COALESCE($11, bedrooms), bathrooms = COALESCE($12, bathrooms), property_type = COALESCE($13, property_type), furnishing = COALESCE($14, furnishing), updated_at = now() WHERE id = $1 AND landlord_id = $2 AND deleted_at IS NULL RETURNING id",
         )
         .bind(id)
         .bind(owner_id)
@@ -161,7 +169,8 @@ impl ListingRepository for PostgresListingRepository {
         .await
         .map_err(|e| ListingError::Repository(e.to_string()))?;
 
-        row.map(ListingRow::into).ok_or(ListingError::NotFound)
+        let id = updated.ok_or(ListingError::NotFound)?;
+        self.get(id).await?.ok_or(ListingError::NotFound)
     }
 
     async fn delete(&self, id: Uuid, owner_id: Uuid) -> Result<(), ListingError> {
@@ -253,6 +262,9 @@ impl PostgresListingRepository {
 struct ListingRow {
     id: Uuid,
     landlord_id: Uuid,
+    landlord_name: String,
+    landlord_verified: bool,
+    landlord_photo_url: Option<String>,
     title: String,
     description: String,
     price: Decimal,
@@ -265,6 +277,7 @@ struct ListingRow {
     bathrooms: Option<i32>,
     property_type: Option<String>,
     furnishing: Option<String>,
+    created_at: chrono::DateTime<chrono::Utc>,
 }
 
 impl From<ListingRow> for Listing {
@@ -272,6 +285,9 @@ impl From<ListingRow> for Listing {
         Self {
             id: row.id,
             landlord_id: row.landlord_id,
+            landlord_name: row.landlord_name,
+            landlord_verified: row.landlord_verified,
+            landlord_photo_url: row.landlord_photo_url,
             title: row.title,
             description: row.description,
             price: row.price,
@@ -288,6 +304,7 @@ impl From<ListingRow> for Listing {
             bathrooms: row.bathrooms,
             property_type: row.property_type,
             furnishing: row.furnishing,
+            created_at: row.created_at,
             media: Vec::new(),
         }
     }
