@@ -22,7 +22,7 @@ class MapScreen extends StatelessWidget {
   });
 
   static const _stateCenters = <String, LatLng>{
-    'Abia': LatLng(5.4527, 7.5248),
+    'Abia': LatLng(5.4167, 7.5000),
     'Adamawa': LatLng(9.3265, 12.3984),
     'Akwa Ibom': LatLng(5.0378, 7.9128),
     'Anambra': LatLng(6.2209, 6.9370),
@@ -61,34 +61,84 @@ class MapScreen extends StatelessWidget {
     'Zamfara': LatLng(12.1700, 6.6600),
   };
 
+  void _openState(BuildContext context, String state, List<Listing> stateListings) {
+    showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      builder: (context) => ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.all(16),
+        children: [
+          Text(
+            '$state • ${stateListings.length} listing${stateListings.length == 1 ? '' : 's'}',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 12),
+          ...stateListings.map(
+            (listing) => ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.home_work_outlined),
+              title: Text(listing.title),
+              subtitle: Text('${listing.lga} • ₦${listing.price.toStringAsFixed(0)}'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ListingDetailScreen(
+                      api: api,
+                      cache: cache,
+                      appState: appState,
+                      listingId: listing.id,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final markers = <Marker>[];
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final byState = <String, List<Listing>>{};
     for (final listing in listings) {
-      final center = _stateCenters[listing.state];
-      if (center == null) continue;
-      markers.add(
-        Marker(
-          point: center,
-          width: 44,
-          height: 44,
-          child: GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => ListingDetailScreen(
-                  api: api,
-                  cache: cache,
-                  appState: appState,
-                  listingId: listing.id,
-                ),
+      if (!_stateCenters.containsKey(listing.state)) continue;
+      byState.putIfAbsent(listing.state, () => []).add(listing);
+    }
+
+    final markers = byState.entries.map((entry) {
+      final count = entry.value.length;
+      return Marker(
+        point: _stateCenters[entry.key]!,
+        width: 48,
+        height: 48,
+        child: GestureDetector(
+          onTap: () => _openState(context, entry.key, entry.value),
+          child: Container(
+            decoration: BoxDecoration(
+              color: dark ? const Color(0xFF22C55E) : const Color(0xFF166534),
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 2),
+              boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 6)],
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              '$count',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
               ),
             ),
-            child: const Icon(Icons.location_on, color: Colors.red, size: 40),
           ),
         ),
       );
-    }
+    }).toList();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Map view')),
@@ -99,7 +149,10 @@ class MapScreen extends StatelessWidget {
         ),
         children: [
           TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            urlTemplate: dark
+                ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+                : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            subdomains: const ['a', 'b', 'c'],
             userAgentPackageName: 'com.unadomot',
           ),
           MarkerLayer(markers: markers),
