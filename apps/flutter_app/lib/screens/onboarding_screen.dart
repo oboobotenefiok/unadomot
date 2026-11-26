@@ -3,7 +3,7 @@ import '../api/api_client.dart';
 import '../data/local_cache.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
-import 'listings_screen.dart';
+import 'main_shell.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final LocalCache cache;
@@ -58,7 +58,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (_) => ListingsScreen(
+        builder: (_) => MainShell(
           api: widget.api,
           cache: widget.cache,
           appState: widget.appState,

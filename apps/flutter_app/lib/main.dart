@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'api/api_client.dart';
 import 'app_settings.dart';
 import 'data/local_cache.dart';
-import 'screens/listings_screen.dart';
+import 'screens/main_shell.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/public_profile_screen.dart';
 import 'state/app_state.dart';
@@ -103,7 +103,7 @@ class UnaDomotApp extends StatelessWidget {
                   appState: state,
                 )
               : initialUsername == null
-                  ? ListingsScreen(api: api, cache: cache, appState: state)
+                  ? MainShell(api: api, cache: cache, appState: state)
                   : PublicProfileScreen(
                       api: api,
                       cache: cache,
