@@ -45,6 +45,7 @@ pub struct StoredUser {
     pub id: Uuid,
     pub email: String,
     pub password_hash: Option<String>,
+    pub status: String,
 }
 
 #[async_trait]
@@ -69,6 +70,7 @@ pub trait UserRepository: Send + Sync {
         expires_at: DateTime<Utc>,
     ) -> Result<Option<AuthenticatedUser>, AuthError>;
     async fn is_admin(&self, user_id: Uuid) -> Result<bool, AuthError>;
+    async fn suspend_user(&self, user_id: Uuid) -> Result<bool, AuthError>;
 }
 
 pub async fn register(
@@ -115,6 +117,10 @@ pub async fn login(
         .find_by_email(email.trim())
         .await?
         .ok_or(AuthError::InvalidCredentials)?;
+
+    if user.status != "active" {
+        return Err(AuthError::InvalidCredentials);
+    }
 
     let parsed = user
         .password_hash
