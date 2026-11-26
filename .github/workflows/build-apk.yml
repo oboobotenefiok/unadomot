@@ -36,14 +36,16 @@ jobs:
           from pathlib import Path
           p = Path('android/app/build.gradle.kts')
           s = p.read_text()
+          if 'import java.util.Properties' not in s:
+              s = 'import java.util.Properties\nimport java.io.FileInputStream\n\n' + s
           if 'signingConfigs {' not in s:
               marker = '    buildTypes {'
               block = '''    signingConfigs {
                   create("release") {
-                      val keystoreProperties = java.util.Properties()
+                      val keystoreProperties = Properties()
                       val keystorePropertiesFile = rootProject.file("key.properties")
                       if (keystorePropertiesFile.exists()) {
-                          keystoreProperties.load(java.io.FileInputStream(keystorePropertiesFile))
+                          keystoreProperties.load(FileInputStream(keystorePropertiesFile))
                       }
                       storeFile = file(keystoreProperties["storeFile"] as String)
                       storePassword = keystoreProperties["storePassword"] as String
