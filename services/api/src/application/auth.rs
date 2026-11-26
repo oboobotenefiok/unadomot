@@ -69,6 +69,7 @@ pub trait UserRepository: Send + Sync {
         new_hash: &str,
         expires_at: DateTime<Utc>,
     ) -> Result<Option<AuthenticatedUser>, AuthError>;
+    async fn revoke_refresh_token(&self, token_hash: &str) -> Result<bool, AuthError>;
     async fn is_admin(&self, user_id: Uuid) -> Result<bool, AuthError>;
     async fn is_active(&self, user_id: Uuid) -> Result<bool, AuthError>;
     async fn suspend_user(&self, user_id: Uuid) -> Result<bool, AuthError>;
