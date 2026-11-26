@@ -29,14 +29,17 @@ if gh run watch "$run_id" --exit-status; then
   exit 0
 fi
 
+log_dir="${TMPDIR:-$HOME/.cache}/unadomot-ci"
+mkdir -p "$log_dir"
+
 echo "CI failed. Fetching error summaries..." >&2
 git fetch origin ci-logs-rust ci-logs-android >/dev/null 2>&1 || true
-if git show origin/ci-logs-rust:error-summary.txt >/tmp/ci-rust.txt 2>/dev/null; then
+if git show origin/ci-logs-rust:error-summary.txt >"$log_dir/rust.txt" 2>/dev/null; then
   echo "--- Rust ---" >&2
-  cat /tmp/ci-rust.txt >&2
+  cat "$log_dir/rust.txt" >&2
 fi
-if git show origin/ci-logs-android:error-summary.txt >/tmp/ci-android.txt 2>/dev/null; then
+if git show origin/ci-logs-android:error-summary.txt >"$log_dir/android.txt" 2>/dev/null; then
   echo "--- Android ---" >&2
-  cat /tmp/ci-android.txt >&2
+  cat "$log_dir/android.txt" >&2
 fi
 exit 1
