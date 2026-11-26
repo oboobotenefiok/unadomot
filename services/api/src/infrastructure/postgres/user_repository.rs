@@ -159,6 +159,79 @@ impl UserRepository for PostgresUserRepository {
         Ok(result.rows_affected() > 0)
     }
 
+    async fn create_password_reset(
+        &self,
+        email: &str,
+        token_hash: &str,
+        expires_at: DateTime<Utc>,
+    ) -> Result<Option<Uuid>, AuthError> {
+        let user_id = sqlx::query_scalar::<_, Uuid>(
+            "SELECT id FROM users WHERE lower(email) = lower($1) AND status = 'active'",
+        )
+        .bind(email)
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        let Some(user_id) = user_id else {
+            return Ok(None);
+        };
+
+        sqlx::query(
+            "INSERT INTO password_reset_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3)",
+        )
+        .bind(user_id)
+        .bind(token_hash)
+        .bind(expires_at)
+        .execute(&self.pool)
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        Ok(Some(user_id))
+    }
+
+    async fn reset_password(&self, token_hash: &str, password_hash: &str) -> Result<bool, AuthError> {
+        let mut transaction = self
+            .pool
+            .begin()
+            .await
+            .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        let user_id = sqlx::query_scalar::<_, Uuid>(
+            "UPDATE password_reset_tokens SET used_at = now() WHERE token_hash = $1 AND used_at IS NULL AND expires_at > now() RETURNING user_id",
+        )
+        .bind(token_hash)
+        .fetch_optional(&mut *transaction)
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        let Some(user_id) = user_id else {
+            return Ok(false);
+        };
+
+        sqlx::query("UPDATE users SET password_hash = $2, updated_at = now() WHERE id = $1")
+            .bind(user_id)
+            .bind(password_hash)
+            .execute(&mut *transaction)
+            .await
+            .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        sqlx::query(
+            "UPDATE refresh_tokens SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL",
+        )
+        .bind(user_id)
+        .execute(&mut *transaction)
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        transaction
+            .commit()
+            .await
+            .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        Ok(true)
+    }
+
     async fn is_admin(&self, user_id: Uuid) -> Result<bool, AuthError> {
         let row: Option<(bool,)> = sqlx::query_as(
             "SELECT EXISTS(SELECT 1 FROM admin_roles WHERE user_id = $1)",
