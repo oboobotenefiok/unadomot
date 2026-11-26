@@ -62,13 +62,21 @@ jobs:
 
           root = Path('android/build.gradle.kts')
           r = root.read_text()
-          if 'compileSdk = 36' not in r:
+          marker = '\nsubprojects {\n    afterEvaluate {'
+          if marker in r:
+              r = r.split(marker)[0]
+          if 'plugins.withId("com.android.library")' not in r:
               r += '''
 
           subprojects {
-              afterEvaluate {
-                  extensions.findByName("android")?.let { ext ->
-                      (ext as com.android.build.gradle.BaseExtension).compileSdkVersion(36)
+              plugins.withId("com.android.library") {
+                  extensions.configure<com.android.build.gradle.BaseExtension> {
+                      compileSdkVersion(36)
+                  }
+              }
+              plugins.withId("com.android.application") {
+                  extensions.configure<com.android.build.gradle.BaseExtension> {
+                      compileSdkVersion(36)
                   }
               }
           }
