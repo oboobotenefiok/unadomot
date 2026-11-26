@@ -31,6 +31,7 @@ class ListingDetailScreen extends StatefulWidget {
 
 class _ListingDetailScreenState extends State<ListingDetailScreen> {
   Listing? _listing;
+  List<Listing> _similar = [];
   bool _loading = true;
   String? _error;
   DateTime? _cachedAt;
@@ -59,6 +60,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
           _cachedAt = null;
         });
       }
+      _loadSimilar(Listing.fromJson(data));
     } catch (error) {
       final cached = await widget.cache.readDetail(widget.listingId);
       if (mounted) {
@@ -77,6 +79,25 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
 
     final favorite = await widget.cache.isFavorite(widget.listingId);
     if (mounted) setState(() => _favorite = favorite);
+  }
+
+  Future<void> _loadSimilar(Listing listing) async {
+    try {
+      final page = await widget.api.browse(
+        filters: {'state': listing.state, 'lga': listing.lga},
+        limit: 8,
+      );
+      if (!mounted) return;
+      setState(() {
+        _similar = page.items
+            .map(Listing.fromJson)
+            .where((item) => item.id != listing.id)
+            .take(6)
+            .toList();
+      });
+    } catch (_) {
+      // Similar listings are optional.
+    }
   }
 
   Future<void> _toggleFavorite() async {
@@ -324,6 +345,10 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                 ),
                                 const SizedBox(height: 20),
                                 _mapCard(),
+                                if (_similar.isNotEmpty) ...[
+                                  const SizedBox(height: 20),
+                                  _similarSection(),
+                                ],
                                 const SizedBox(height: 20),
                                 _landlordCard(),
                                 const SizedBox(height: 20),
@@ -345,6 +370,95 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                           ),
                         ],
                       ),
+      );
+
+  Widget _similarSection() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Similar listings',
+            style: TextStyle(
+              color: UnaColors.text900,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 190,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _similar.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              itemBuilder: (context, index) {
+                final item = _similar[index];
+                return InkWell(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ListingDetailScreen(
+                        api: widget.api,
+                        cache: widget.cache,
+                        appState: widget.appState,
+                        listingId: item.id,
+                      ),
+                    ),
+                  ),
+                  child: Container(
+                    width: 150,
+                    decoration: BoxDecoration(
+                      color: UnaColors.surface,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: UnaColors.border),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: item.media.isEmpty
+                              ? Container(
+                                  color: UnaColors.green100,
+                                  child: const Icon(Icons.home_work_outlined, color: UnaColors.green700),
+                                )
+                              : Image.network(item.media.first.url, fit: BoxFit.cover, width: double.infinity),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'N${item.price.toStringAsFixed(0)}',
+                                style: const TextStyle(
+                                  color: UnaColors.primary,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              Text(
+                                item.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                              Text(
+                                item.lga,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 11, color: UnaColors.text500),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       );
 
   Widget _mapCard() => InkWell(
