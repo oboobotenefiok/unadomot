@@ -39,13 +39,23 @@
 - [x] Database-backed admin roles with env bootstrap
 - [x] Admin audit logging for verification reviews
 - [x] Release signing documentation
-- [x] Confirm CI passes on GitHub
+- [x] Password reset request and confirm endpoints
+- [x] Single-use, expiring, hashed password reset tokens
+- [x] Session revocation after password reset
+- [x] Persist rotated refresh tokens in secure storage
+- [x] Structured API error messages in the Flutter client
+- [x] Authentication failure logging
+- [x] Ownership, media and validation integration tests
+- [ ] Password reset email delivery
+- [ ] Full state-to-LGA mapping
 - [ ] Prometheus metrics endpoint
 
 ## Verified build
 
 - Workflow: `rewrite-ci.yml`
-- Run: `45739501106`
-- Commit: `113373e`
-- Result: Flutter analyze, Rust fmt and clippy all passed
+- Last verified run: `45739501106`
+- Last verified commit: `113373e`
+- Result at that commit: Flutter analyze, Rust fmt and clippy all passed
 - Release: `v0.1.0` prerelease published with `app-debug.apk`
+
+Recent auth, admin, report and test changes are not covered by that run. Trigger CI explicitly before treating the branch as verified.
