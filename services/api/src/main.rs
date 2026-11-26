@@ -120,7 +120,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .merge(public_pages::router(state))
         .merge(verification::router(verification_state));
 
-    let address = std::env::var("BIND_ADDR").unwrap_or_else(|_| "127.0.0.1:3000".into());
+    let address = std::env::var("BIND_ADDR")
+        .or_else(|_| std::env::var("PORT").map(|port| format!("0.0.0.0:{port}")))
+        .unwrap_or_else(|_| "127.0.0.1:3000".into());
     let listener = tokio::net::TcpListener::bind(address).await?;
     tracing::info!("UnaDomot API listening on {}", listener.local_addr()?);
 
