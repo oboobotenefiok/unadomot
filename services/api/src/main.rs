@@ -2,8 +2,15 @@ mod call_handlers;
 mod messaging_handlers;
 mod profile_handlers;
 
+use axum::{
+    http::{header, HeaderName, HeaderValue, StatusCode},
+    middleware::{self, Next},
+    response::Response,
+    extract::Request,
+};
 use sqlx::postgres::PgPoolOptions;
 use std::sync::Arc;
+use tower_http::set_header::SetResponseHeaderLayer;
 use unadomot_api::adapters::{
     UnconfiguredCallRepository, UnconfiguredMediaSigner, UnconfiguredMessagingRepository,
     UnconfiguredReportRepository, UnconfiguredRepository, UnconfiguredUserRepository,
@@ -170,6 +177,35 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }));
     }
 
+    let app = app
+        .layer(SetResponseHeaderLayer::overriding(
+            header::STRICT_TRANSPORT_SECURITY,
+            HeaderValue::from_static("max-age=31536000; includeSubDomains; preload"),
+        ))
+        .layer(SetResponseHeaderLayer::overriding(
+            HeaderName::from_static("content-security-policy"),
+            HeaderValue::from_static(
+                "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+            ),
+        ))
+        .layer(SetResponseHeaderLayer::overriding(
+            HeaderName::from_static("permissions-policy"),
+            HeaderValue::from_static("camera=(), microphone=(), geolocation=()"),
+        ))
+        .layer(SetResponseHeaderLayer::overriding(
+            HeaderName::from_static("cross-origin-opener-policy"),
+            HeaderValue::from_static("same-origin"),
+        ))
+        .layer(SetResponseHeaderLayer::overriding(
+            HeaderName::from_static("cross-origin-resource-policy"),
+            HeaderValue::from_static("same-origin"),
+        ))
+        .layer(SetResponseHeaderLayer::overriding(
+            HeaderName::from_static("x-permitted-cross-domain-policies"),
+            HeaderValue::from_static("none"),
+        ))
+        .layer(middleware::from_fn(origin_guard));
+
     let address = std::env::var("BIND_ADDR")
         .or_else(|_| std::env::var("PORT").map(|port| format!("0.0.0.0:{port}")))
         .unwrap_or_else(|_| "127.0.0.1:3000".into());
@@ -180,6 +216,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with_graceful_shutdown(shutdown_signal())
         .await?;
     Ok(())
+}
+
+async fn origin_guard(request: Request, next: Next) -> Result<Response, StatusCode> {
+    if let Some(origin) = request.headers().get(header::ORIGIN) {
+        let origin = origin.to_str().unwrap_or_default();
+        let allowed = std::env::var("ALLOWED_ORIGINS").unwrap_or_default();
+        let is_allowed = allowed
+            .split(',')
+            .map(|value| value.trim())
+            .any(|value| !value.is_empty() && value == origin);
+        if !is_allowed {
+            return Err(StatusCode::FORBIDDEN);
+        }
+    }
+    Ok(next.run(request).await)
 }
 
 async fn shutdown_signal() {
