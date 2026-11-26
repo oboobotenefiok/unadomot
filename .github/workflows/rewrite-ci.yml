@@ -97,7 +97,7 @@ jobs:
           flutter pub get > /tmp/flutter.log 2>&1; pub=$?
           flutter analyze --no-fatal-infos >> /tmp/flutter.log 2>&1; analyze=$?
           flutter test >> /tmp/flutter.log 2>&1; tests=$?
-          flutter build apk --debug >> /tmp/flutter.log 2>&1; build=$?
+          flutter build apk --debug --dart-define=API_BASE_URL=https://unadomot.fly.dev >> /tmp/flutter.log 2>&1; build=$?
           if [ $pub -ne 0 ] || [ $analyze -ne 0 ] || [ $tests -ne 0 ] || [ $build -ne 0 ]; then
             grep -E "error|warning|FAILED|Exception|failed|Error:" /tmp/flutter.log > ../../error-summary.txt || true
             if [ ! -s ../../error-summary.txt ]; then tail -n 200 /tmp/flutter.log > ../../error-summary.txt; fi

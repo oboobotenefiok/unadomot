@@ -53,7 +53,7 @@ class ApiClient {
   DateTime? get expiresAt => _expiresAt;
 
   void restoreSession(String token, DateTime expiresAt, {String? refreshToken}) {
-    if (token.isEmpty || !expiresAt.isAfter(DateTime.now())) return;
+    if (token.isEmpty) return;
     _token = token;
     _expiresAt = expiresAt;
     _refreshToken = refreshToken;
@@ -86,7 +86,7 @@ class ApiClient {
       isUtc: true,
     );
 
-    if (token.isEmpty || !expiresAt.isAfter(DateTime.now())) {
+    if (token.isEmpty) {
       throw const FormatException('Invalid session response');
     }
 
