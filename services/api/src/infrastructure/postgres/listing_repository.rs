@@ -119,6 +119,30 @@ impl ListingRepository for PostgresListingRepository {
         Ok(Some(listing))
     }
 
+    async fn list_by_owner(&self, owner_id: Uuid) -> Result<Vec<Listing>, ListingError> {
+        let query = format!(
+            "SELECT {LISTING_COLUMNS} FROM listings l WHERE l.landlord_id = $1 AND l.deleted_at IS NULL ORDER BY l.created_at DESC"
+        );
+        let rows = sqlx::query_as::<_, ListingRow>(&query)
+            .bind(owner_id)
+            .fetch_all(&self.pool)
+            .await
+            .map_err(|e| ListingError::Repository(e.to_string()))?;
+
+        let ids: Vec<Uuid> = rows.iter().map(|row| row.id).collect();
+        let media = self.load_media_for(&ids).await?;
+
+        Ok(rows
+            .into_iter()
+            .map(|row| {
+                let id = row.id;
+                let mut listing: Listing = row.into();
+                listing.media = media.get(&id).cloned().unwrap_or_default();
+                listing
+            })
+            .collect())
+    }
+
     async fn create(&self, input: &NewListing) -> Result<Listing, ListingError> {
         let id = sqlx::query_scalar::<_, Uuid>(
             "INSERT INTO listings (landlord_id, title, description, price, address, state, lga, is_agent_listing, bedrooms, bathrooms, property_type, furnishing) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id",
