@@ -248,7 +248,7 @@ async fn toggle_reaction(
     };
 
     let emoji = request.emoji.trim();
-    if !matches!(emoji, "like" | "love" | "fire" | "clap") {
+    if !matches!(emoji, "love" | "laugh" | "cry" | "dislike" | "hate") {
         return error(StatusCode::BAD_REQUEST, "Unsupported reaction");
     }
 
