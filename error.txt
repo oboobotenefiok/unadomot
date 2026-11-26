@@ -1,525 +1,534 @@
-rust	Run cargo fmt --check	﻿2026-11-25T23:48:23.5942271Z ##[group]Run cargo fmt --check
-rust	Run cargo fmt --check	2026-11-25T23:48:23.5942593Z ^[[36;1mcargo fmt --check^[[0m
-rust	Run cargo fmt --check	2026-11-25T23:48:23.5974681Z shell: /usr/bin/bash -e {0}
-rust	Run cargo fmt --check	2026-11-25T23:48:23.5974938Z env:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.5975730Z   DATABASE_URL: ***localhost:5432/unadomot_test
-rust	Run cargo fmt --check	2026-11-25T23:48:23.5976116Z   JWT_SECRET: test-secret-that-is-at-least-32-bytes-long
-rust	Run cargo fmt --check	2026-11-25T23:48:23.5976565Z   REFRESH_TOKEN_SECRET: test-refresh-secret-that-is-at-least-32-bytes
-rust	Run cargo fmt --check	2026-11-25T23:48:23.5976953Z   CARGO_HOME: /home/runner/.cargo
-rust	Run cargo fmt --check	2026-11-25T23:48:23.5977200Z   CARGO_INCREMENTAL: 0
-rust	Run cargo fmt --check	2026-11-25T23:48:23.5977727Z   CARGO_TERM_COLOR: always
-rust	Run cargo fmt --check	2026-11-25T23:48:23.5977957Z   CACHE_ON_FAILURE: false
-rust	Run cargo fmt --check	2026-11-25T23:48:23.5978173Z ##[endgroup]
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6921634Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:1:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6928786Z -use crate::application::auth::{AuthenticatedUser, AuthError, StoredUser, UserRepository};
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6930121Z +use crate::application::auth::{AuthError, AuthenticatedUser, StoredUser, UserRepository};
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6931349Z  use crate::application::listings::{ListingError, ListingPage, ListingRepository};
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6932272Z  use crate::application::media::{MediaError, MediaSigner, UploadSignature};
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6932845Z  use crate::application::messaging::{MessagingError, MessagingRepository};
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6933515Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:22:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6934284Z          _limit: i64,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6934708Z          _offset: i64,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6935182Z      ) -> Result<ListingPage, ListingError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6936045Z -        Err(ListingError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6936877Z +        Err(ListingError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6937685Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6938281Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6938625Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6938972Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6939526Z      async fn get(&self, _id: Uuid) -> Result<Option<Listing>, ListingError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6940439Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:29:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6941355Z -        Err(ListingError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6942059Z +        Err(ListingError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6942565Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6943057Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6943364Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6943661Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6944207Z      async fn create(&self, _listing: &NewListing) -> Result<Listing, ListingError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6945155Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:33:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6946067Z -        Err(ListingError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6946776Z +        Err(ListingError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6947533Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6948068Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6948377Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6948662Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6948951Z      async fn update(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6949534Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:39:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6950236Z          _owner_id: Uuid,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6950644Z          _update: &ListingUpdate,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6951103Z      ) -> Result<Listing, ListingError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6951796Z -        Err(ListingError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6952514Z +        Err(ListingError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6953029Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6953519Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6953826Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6954123Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6954663Z      async fn delete(&self, _id: Uuid, _owner_id: Uuid) -> Result<(), ListingError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6955621Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:46:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6956983Z -        Err(ListingError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6958156Z +        Err(ListingError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6958691Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6959181Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6959468Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6959766Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6960068Z      async fn add_media(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6960670Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:52:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6961360Z          _owner_id: Uuid,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6961763Z          _media: &NewListingMedia,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6962260Z      ) -> Result<ListingMedia, ListingError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6962968Z -        Err(ListingError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6963692Z +        Err(ListingError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6964202Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6964701Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6965024Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6965321Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6965766Z      async fn health_check(&self) -> Result<(), ListingError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6966586Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:59:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6967671Z -        Err(ListingError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6968399Z +        Err(ListingError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6968912Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6969424Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6969723Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6970014Z  }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6970306Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6970849Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:110:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6971545Z          _initiator: Uuid,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6971942Z          _other: Uuid,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6972374Z      ) -> Result<Conversation, MessagingError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6973105Z -        Err(MessagingError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6973554Z +        Err(MessagingError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6973862Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6974142Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6974314Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6974478Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6974850Z -    async fn list_conversations(&self, _user_id: Uuid) -> Result<Vec<Conversation>, MessagingError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6975554Z -        Err(MessagingError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6976253Z +    async fn list_conversations(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6976516Z +        &self,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6976718Z +        _user_id: Uuid,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6976987Z +    ) -> Result<Vec<Conversation>, MessagingError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6977551Z +        Err(MessagingError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6977867Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6978146Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6978323Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6978494Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6978741Z      async fn find_conversation(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6979423Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:122:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6980152Z          _id: Uuid,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6980510Z          _user_id: Uuid,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6980976Z      ) -> Result<Option<Conversation>, MessagingError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6981715Z -        Err(MessagingError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6982424Z +        Err(MessagingError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6982942Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6983429Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6983721Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6984011Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6984318Z      async fn list_messages(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6984949Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:131:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6985641Z          _limit: i64,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6986004Z          _offset: i64,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6986430Z      ) -> Result<Vec<Message>, MessagingError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6987665Z -        Err(MessagingError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6988647Z +        Err(MessagingError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6989188Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6989682Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6989992Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6990287Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6990596Z      async fn send_message(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6991226Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:140:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6991949Z          _sender_id: Uuid,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6992344Z          _body: &str,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6992742Z      ) -> Result<Message, MessagingError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6993370Z -        Err(MessagingError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6993787Z +        Err(MessagingError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6994083Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6994372Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6994546Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6994713Z  }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6994882Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6995261Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:154:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6995892Z          _document_url: &str,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6996142Z          _notes: Option<&str>,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6996446Z      ) -> Result<VerificationRequest, VerificationError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6996914Z -        Err(VerificationError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6997624Z +        Err(VerificationError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6998205Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6998629Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6998815Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6998983Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6999167Z      async fn find_for_user(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6999530Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:161:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.6999918Z          &self,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7000121Z          _user_id: Uuid,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7000565Z      ) -> Result<Option<VerificationRequest>, VerificationError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7001302Z -        Err(VerificationError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7001724Z +        Err(VerificationError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7002021Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7002288Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7002456Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7002620Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7002800Z      async fn list_by_status(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7003398Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:168:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7003959Z          &self,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7004154Z          _status: &str,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7004436Z      ) -> Result<Vec<VerificationRequest>, VerificationError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7004901Z -        Err(VerificationError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7005308Z +        Err(VerificationError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7005611Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7005885Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7006127Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7006427Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7006731Z      async fn review(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7007127Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/adapters.rs:177:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7007788Z          _status: &str,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7008020Z          _review_notes: Option<&str>,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7008336Z      ) -> Result<VerificationRequest, VerificationError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7008819Z -        Err(VerificationError::Repository("Persistence not configured".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7009389Z +        Err(VerificationError::Repository(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7009917Z +            "Persistence not configured".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7010266Z +        ))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7010439Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7010610Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7010792Z      async fn record_audit(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7011417Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/application/auth.rs:81:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7011975Z      let name = name.trim();
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7012202Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7012409Z      if name.is_empty() || name.len() > 120 {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7013151Z -        return Err(AuthError::Validation("Name is required (max 120 characters)".into()));
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7013607Z +        return Err(AuthError::Validation(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7013920Z +            "Name is required (max 120 characters)".into(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7014213Z +        ));
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7014389Z      }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7014658Z      if !email.contains('@') || !email.contains('.') || email.len() > 254 {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7015263Z          return Err(AuthError::Validation("A valid email is required".into()));
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7016069Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/application/auth.rs:178:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7016528Z          .or_else(|_| std::env::var("JWT_SECRET"))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7016928Z          .unwrap_or_else(|_| "development-refresh-secret-change-me".into());
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7017503Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7017784Z -    let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_bytes())
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7018155Z -        .expect("HMAC accepts keys of any size");
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7018543Z +    let mut mac =
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7019206Z +        Hmac::<Sha256>::new_from_slice(secret.as_bytes()).expect("HMAC accepts keys of any size");
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7019682Z      mac.update(token.as_bytes());
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7019972Z      hex::encode(mac.finalize().into_bytes())
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7020240Z  }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7020582Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/application/listings.rs:1:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7021028Z  use crate::domain::listing::{
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7021411Z -    Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7022137Z -    NewListingMedia,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7022583Z +    Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7023051Z  };
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7023245Z  use async_trait::async_trait;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7023489Z  use rust_decimal::Decimal;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7089049Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/mod.rs:482:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7089803Z          .find_by_email(&request.email)
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7090249Z          .await
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7090593Z          .map_err(auth_error)?
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7091516Z -        .ok_or_else(|| ApiError::new(StatusCode::UNAUTHORIZED, "invalid_credentials", "Invalid email or password"))?;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7092442Z +        .ok_or_else(|| {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7092828Z +            ApiError::new(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7093249Z +                StatusCode::UNAUTHORIZED,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7093729Z +                "invalid_credentials",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7094182Z +                "Invalid email or password",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7094682Z +            )
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7095011Z +        })?;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7095339Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7095787Z      let refresh_token = new_refresh_token();
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7096118Z      state
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7096457Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/mod.rs:516:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7096872Z          )
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7097058Z          .await
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7097522Z          .map_err(auth_error)?
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7098587Z -        .ok_or_else(|| ApiError::new(StatusCode::UNAUTHORIZED, "invalid_refresh_token", "Refresh token is invalid or expired"))?;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7099603Z +        .ok_or_else(|| {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7100019Z +            ApiError::new(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7100441Z +                StatusCode::UNAUTHORIZED,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7100939Z +                "invalid_refresh_token",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7101466Z +                "Refresh token is invalid or expired",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7101956Z +            )
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7102608Z +        })?;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7102924Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7103735Z      let session = issue_session(user.id, user.email, &state.jwt_secret).map_err(auth_error)?;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7104497Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7105037Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/mod.rs:680:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7105785Z          .filter(|value| !value.trim().is_empty())
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7106343Z          .unwrap_or_else(|| "unadomot/listings".into());
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7106812Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7107498Z -    state.media.sign_upload(&folder).map(Json).map_err(media_error)
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7108125Z +    state
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7108428Z +        .media
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7108757Z +        .sign_upload(&folder)
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7109170Z +        .map(Json)
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7109518Z +        .map_err(media_error)
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7109890Z  }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7110159Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7110473Z  async fn conversations_handler(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7111155Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/mod.rs:736:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7111887Z          .map_err(messaging_error)
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7112303Z  }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7112590Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7113365Z -fn authorize(state: &AppState, headers: &HeaderMap) -> Result<crate::application::auth::AuthenticatedUser, ApiError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7114305Z +fn authorize(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7114635Z +    state: &AppState,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7115001Z +    headers: &HeaderMap,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7115552Z +) -> Result<crate::application::auth::AuthenticatedUser, ApiError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7116190Z      let token = headers
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7116577Z          .get("authorization")
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7117025Z          .and_then(|value| value.to_str().ok())
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7117956Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/mod.rs:743:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7118804Z          .and_then(|value| value.strip_prefix("Bearer "))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7119810Z -        .ok_or_else(|| ApiError::new(StatusCode::UNAUTHORIZED, "unauthorized", "Missing bearer token"))?;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7120671Z +        .ok_or_else(|| {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7121077Z +            ApiError::new(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7121486Z +                StatusCode::UNAUTHORIZED,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7121977Z +                "unauthorized",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7122406Z +                "Missing bearer token",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7122837Z +            )
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7123165Z +        })?;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7123462Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7123902Z      verify_session(token, &state.jwt_secret).map_err(auth_error)
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7124470Z  }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7125066Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/public_pages.rs:1:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7125900Z  use crate::application::listings::get_listing;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7126461Z -use crate::http::{AppState, ApiError};
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7126974Z +use crate::http::{ApiError, AppState};
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7127634Z  use axum::{
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7127984Z      extract::{Path, State},
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7128414Z      http::StatusCode,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7129087Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/public_pages.rs:22:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7129955Z  ) -> Result<Html<String>, ApiError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7130562Z      let listing = get_listing(state.listings.as_ref(), id)
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7131129Z          .await
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7131998Z -        .map_err(|_| ApiError::new(StatusCode::SERVICE_UNAVAILABLE, "service_unavailable", "The service is temporarily unavailable"))?
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7133024Z +        .map_err(|_| {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7133411Z +            ApiError::new(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7133860Z +                StatusCode::SERVICE_UNAVAILABLE,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7134373Z +                "service_unavailable",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7134888Z +                "The service is temporarily unavailable",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7135377Z +            )
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7135900Z +        })?
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7136502Z          .ok_or_else(|| ApiError::new(StatusCode::NOT_FOUND, "not_found", "Listing not found"))?;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7137583Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7138213Z      let base = std::env::var("PUBLIC_WEB_URL").unwrap_or_else(|_| "https://unadomot.com".into());
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7139280Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/public_pages.rs:34:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7140081Z      let description = format!(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7140957Z          "{} • {} bedrooms • {} bathrooms • Verified listing on UnaDomot.",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7141586Z          listing.title,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7142309Z -        listing.bedrooms.map(|v| v.to_string()).unwrap_or_else(|| "—".into()),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7143324Z -        listing.bathrooms.map(|v| v.to_string()).unwrap_or_else(|| "—".into())
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7143998Z +        listing
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7144329Z +            .bedrooms
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7144695Z +            .map(|v| v.to_string())
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7145279Z +            .unwrap_or_else(|| "—".into()),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7145766Z +        listing
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7146108Z +            .bathrooms
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7146498Z +            .map(|v| v.to_string())
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7147021Z +            .unwrap_or_else(|| "—".into())
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7147681Z      );
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7148013Z      let image = listing
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7148395Z          .media
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7149041Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/public_pages.rs:95:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7149779Z          0,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7150067Z      )
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7150361Z      .await
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7151227Z -    .map_err(|_| ApiError::new(StatusCode::SERVICE_UNAVAILABLE, "service_unavailable", "The service is temporarily unavailable"))?;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7152251Z +    .map_err(|_| {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7152605Z +        ApiError::new(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7153008Z +            StatusCode::SERVICE_UNAVAILABLE,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7153516Z +            "service_unavailable",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7154020Z +            "The service is temporarily unavailable",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7154512Z +        )
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7154804Z +    })?;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7155098Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7155735Z      let base = std::env::var("PUBLIC_WEB_URL").unwrap_or_else(|_| "https://unadomot.com".into());
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7156535Z      let urls = page
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7157438Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/verification.rs:94:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7158323Z          .route("/api/verification", post(submit_handler))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7158960Z          .route("/api/verification/me", get(my_handler))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7159615Z          .route("/api/admin/verification", get(admin_list_handler))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7160433Z -        .route("/api/admin/verification/{id}/review", post(admin_review_handler))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7161131Z +        .route(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7161534Z +            "/api/admin/verification/{id}/review",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7162082Z +            post(admin_review_handler),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7162556Z +        )
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7162892Z          .with_state(state)
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7163278Z  }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7163573Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7164172Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/verification.rs:101:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7165554Z -fn authorize(state: &VerificationState, headers: &HeaderMap) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7166648Z +fn authorize(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7167002Z +    state: &VerificationState,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7167610Z +    headers: &HeaderMap,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7168269Z +) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7168996Z      let token = headers
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7169408Z          .get("authorization")
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7169868Z          .and_then(|value| value.to_str().ok())
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7170926Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/verification.rs:105:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7172004Z          .and_then(|value| value.strip_prefix("Bearer "))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7173021Z -        .ok_or_else(|| VerificationApiError::new(StatusCode::UNAUTHORIZED, "unauthorized", "Missing bearer token"))?;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7173973Z +        .ok_or_else(|| {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7174393Z +            VerificationApiError::new(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7174888Z +                StatusCode::UNAUTHORIZED,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7175369Z +                "unauthorized",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7175813Z +                "Missing bearer token",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7176266Z +            )
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7176593Z +        })?;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7176907Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7177531Z      verify_session(token, &state.jwt_secret).map_err(|_| {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7178481Z -        VerificationApiError::new(StatusCode::UNAUTHORIZED, "unauthorized", "Invalid or expired token")
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7179368Z +        VerificationApiError::new(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7179855Z +            StatusCode::UNAUTHORIZED,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7180327Z +            "unauthorized",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7180750Z +            "Invalid or expired token",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7181204Z +        )
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7181515Z      })
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7181820Z  }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7182104Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7182704Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/verification.rs:113:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7184228Z -async fn authorize_admin(state: &VerificationState, headers: &HeaderMap) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7185457Z +async fn authorize_admin(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7185879Z +    state: &VerificationState,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7186316Z +    headers: &HeaderMap,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7186969Z +) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7187932Z      let user = authorize(state, headers)?;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7188462Z      let is_bootstrap_admin = state
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7188926Z          .admin_emails
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7189593Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/verification.rs:117:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7190374Z          .iter()
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7190823Z          .any(|email| email.eq_ignore_ascii_case(&user.email));
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7191389Z -    let is_db_admin = state
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7191781Z -        .users
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7192135Z -        .is_admin(user.id)
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7192528Z -        .await
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7192874Z -        .unwrap_or(false);
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7193469Z +    let is_db_admin = state.users.is_admin(user.id).await.unwrap_or(false);
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7194112Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7194467Z      if !is_bootstrap_admin && !is_db_admin {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7195024Z          return Err(VerificationApiError::new(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7195790Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/http/verification.rs:167:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7196604Z      authorize_admin(&state, &headers).await?;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7197177Z      pending_requests(state.repository.as_ref())
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7197856Z          .await
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7198507Z -        .map(|requests| Json(requests.into_iter().map(VerificationResponse::from).collect()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7199287Z +        .map(|requests| {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7199672Z +            Json(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7200014Z +                requests
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7200396Z +                    .into_iter()
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7200880Z +                    .map(VerificationResponse::from)
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7201476Z +                    .collect(),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7202138Z +            )
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7218713Z +        })
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7218978Z          .map_err(verification_error)
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7219261Z  }
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7219433Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7219900Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/infrastructure/postgres/listing_repository.rs:1:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7221437Z  use crate::application::listings::{ListingError, ListingPage, ListingRepository};
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7222225Z  use crate::domain::listing::{
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7222627Z -    Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7223047Z -    NewListingMedia,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7223466Z +    Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7223923Z  };
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7224119Z  use async_trait::async_trait;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7224366Z  use rust_decimal::Decimal;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7225005Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/infrastructure/postgres/user_repository.rs:1:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7226255Z -use crate::application::auth::{AuthenticatedUser, AuthError, StoredUser, UserRepository};
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7227579Z +use crate::application::auth::{AuthError, AuthenticatedUser, StoredUser, UserRepository};
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7228403Z  use async_trait::async_trait;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7228859Z  use chrono::{DateTime, Utc};
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7229283Z  use sqlx::PgPool;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7241786Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/main.rs:1:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7242536Z  use sqlx::postgres::PgPoolOptions;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7242980Z  use std::sync::Arc;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7243568Z +use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7244284Z  use unadomot_api::adapters::{
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7245062Z      UnconfiguredMediaSigner, UnconfiguredMessagingRepository, UnconfiguredRepository,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7245657Z      UnconfiguredUserRepository, UnconfiguredVerificationRepository,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7246147Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/main.rs:13:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7246634Z  use unadomot_api::infrastructure::cloudinary::CloudinarySigner;
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7247046Z  use unadomot_api::infrastructure::postgres::{
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7247903Z      listing_repository::PostgresListingRepository,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7248598Z -    messaging_repository::PostgresMessagingRepository,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7249242Z -    user_repository::PostgresUserRepository,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7250152Z +    messaging_repository::PostgresMessagingRepository, user_repository::PostgresUserRepository,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7251187Z      verification_repository::PostgresVerificationRepository,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7251871Z  };
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7252399Z -use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7253086Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7253372Z  #[tokio::main]
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7253793Z  async fn main() -> Result<(), Box<dyn std::error::Error>> {
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7254531Z Diff in /home/runner/work/unadomot/unadomot/services/api/src/main.rs:24:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7255222Z      dotenvy::dotenv().ok();
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7255669Z      tracing_subscriber::registry()
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7256267Z -        .with(tracing_subscriber::EnvFilter::try_from_default_env()
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7256972Z -            .unwrap_or_else(|_| "info,tower_http=info".into()))
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7257749Z +        .with(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7258217Z +            tracing_subscriber::EnvFilter::try_from_default_env()
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7258917Z +                .unwrap_or_else(|_| "info,tower_http=info".into()),
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7259264Z +        )
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7259489Z          .with(tracing_subscriber::fmt::layer())
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7259768Z          .init();
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7259958Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7260292Z Diff in /home/runner/work/unadomot/unadomot/services/api/tests/api_flow.rs:31:
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7260772Z      let user = register(&users, &email, "password123", "Test User")
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7261105Z          .await
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7261307Z          .expect("register");
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7261686Z -    login(&users, &email, "password123", "test-secret-that-is-at-least-32-bytes")
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7262268Z -        .await
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7262577Z -        .expect("login");
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7262798Z +    login(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7262983Z +        &users,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7263173Z +        &email,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7263373Z +        "password123",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7263751Z +        "test-secret-that-is-at-least-32-bytes",
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7264227Z +    )
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7264515Z +    .await
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7264808Z +    .expect("login");
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7265156Z  
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7265459Z      let listing = create_listing(
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7265869Z          &listings,
-rust	Run cargo fmt --check	2026-11-25T23:48:23.7298036Z ##[error]Process completed with exit code 1.
-android	Analyze, test and build	﻿2026-11-25T23:48:44.6637121Z ##[group]Run flutter pub get
-android	Analyze, test and build	2026-11-25T23:48:44.6637366Z ^[[36;1mflutter pub get^[[0m
-android	Analyze, test and build	2026-11-25T23:48:44.6637540Z ^[[36;1mflutter analyze^[[0m
-android	Analyze, test and build	2026-11-25T23:48:44.6637706Z ^[[36;1mflutter test^[[0m
-android	Analyze, test and build	2026-11-25T23:48:44.6637886Z ^[[36;1mflutter build apk --debug^[[0m
-android	Analyze, test and build	2026-11-25T23:48:44.6668707Z shell: /usr/bin/bash -e {0}
-android	Analyze, test and build	2026-11-25T23:48:44.6668930Z env:
-android	Analyze, test and build	2026-11-25T23:48:44.6669164Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-2/x64
-android	Analyze, test and build	2026-11-25T23:48:44.6669518Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-2/x64
-android	Analyze, test and build	2026-11-25T23:48:44.6669862Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.50.1-x64/flutter
-android	Analyze, test and build	2026-11-25T23:48:44.6670125Z   PUB_CACHE: /home/runner/.pub-cache
-android	Analyze, test and build	2026-11-25T23:48:44.6670321Z ##[endgroup]
-android	Analyze, test and build	2026-11-25T23:48:44.7928554Z Resolving dependencies...
-android	Analyze, test and build	2026-11-25T23:48:44.8536235Z Downloading packages...
-android	Analyze, test and build	2026-11-25T23:48:44.8558856Z   cross_file 0.3.5+5 (0.4.0 available)
-android	Analyze, test and build	2026-11-25T23:48:44.8559248Z   flutter_secure_storage 9.2.4 (11.2.0 available)
-android	Analyze, test and build	2026-11-25T23:48:44.8559634Z   flutter_secure_storage_linux 1.2.3 (3.0.3 available)
-android	Analyze, test and build	2026-11-25T23:48:44.8559960Z   flutter_secure_storage_macos 3.1.3 (4.0.0 available)
-android	Analyze, test and build	2026-11-25T23:48:44.8560311Z   flutter_secure_storage_platform_interface 1.1.2 (2.1.1 available)
-android	Analyze, test and build	2026-11-25T23:48:44.8560868Z   flutter_secure_storage_web 1.2.1 (2.1.1 available)
-android	Analyze, test and build	2026-11-25T23:48:44.8561127Z   flutter_secure_storage_windows 3.1.2 (4.2.2 available)
-android	Analyze, test and build	2026-11-25T23:48:44.8561356Z   js 0.6.7 (0.7.2 available)
-android	Analyze, test and build	2026-11-25T23:48:44.8561557Z   material_color_utilities 0.13.0 (0.13.1 available)
-android	Analyze, test and build	2026-11-25T23:48:44.8561781Z   test_api 0.7.14 (0.7.15 available)
-android	Analyze, test and build	2026-11-25T23:48:44.8561979Z   vector_math 2.4.3 (2.4.4 available)
-android	Analyze, test and build	2026-11-25T23:48:44.8562171Z   win32 5.15.0 (6.4.0 available)
-android	Analyze, test and build	2026-11-25T23:48:44.8562388Z Got dependencies!
-android	Analyze, test and build	2026-11-25T23:48:44.8562634Z 12 packages have newer versions incompatible with dependency constraints.
-android	Analyze, test and build	2026-11-25T23:48:44.8563199Z Try `flutter pub outdated` for more information.
-android	Analyze, test and build	2026-11-25T23:48:49.7840825Z Analyzing flutter_app...                                        
-android	Analyze, test and build	2026-11-25T23:48:49.7844986Z 
-android	Analyze, test and build	2026-11-25T23:48:49.7859688Z warning • The URI 'package:flutter_lints/flutter.yaml' included in '/home/runner/work/unadomot/unadomot/apps/flutter_app/analysis_options.yaml' can't be found when analyzing '/home/runner/work/unadomot/unadomot/apps/flutter_app' • analysis_options.yaml:10:10 • include_file_not_found
-android	Analyze, test and build	2026-11-25T23:48:49.7862011Z   error • The getter 'scheme' isn't defined for the type 'String'. Try importing the library that defines 'scheme', correcting the name to the name of an existing getter, or defining a getter or field named 'scheme' • lib/api/api_client.dart:37:45 • undefined_getter
-android	Analyze, test and build	2026-11-25T23:48:49.7863914Z   error • The getter 'host' isn't defined for the type 'String'. Try importing the library that defines 'host', correcting the name to the name of an existing getter, or defining a getter or field named 'host' • lib/api/api_client.dart:37:64 • undefined_getter
-android	Analyze, test and build	2026-11-25T23:48:49.7865457Z warning • Returning a 'Future' without 'await' inside a try block. Try adding an 'await' • lib/api/api_client.dart:315:11 • unawaited_return_in_try_block
-android	Analyze, test and build	2026-11-25T23:48:49.7867177Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/main.dart:1:1 • deprecated_member_use
-android	Analyze, test and build	2026-11-25T23:48:49.7869374Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/auth_screen.dart:1:1 • deprecated_member_use
-android	Analyze, test and build	2026-11-25T23:48:49.7871840Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/create_listing_screen.dart:2:1 • deprecated_member_use
-android	Analyze, test and build	2026-11-25T23:48:49.7874442Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/listing_detail_screen.dart:1:1 • deprecated_member_use
-android	Analyze, test and build	2026-11-25T23:48:49.7876684Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/listings_screen.dart:1:1 • deprecated_member_use
-android	Analyze, test and build	2026-11-25T23:48:49.7878901Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/messages_screen.dart:1:1 • deprecated_member_use
-android	Analyze, test and build	2026-11-25T23:48:49.7881230Z    info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/messages_screen.dart:157:72 • deprecated_member_use
-android	Analyze, test and build	2026-11-25T23:48:49.7883484Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/verification_screen.dart:1:1 • deprecated_member_use
-android	Analyze, test and build	2026-11-25T23:48:49.7884614Z 
-android	Analyze, test and build	2026-11-25T23:48:49.7911480Z 12 issues found. (ran in 4.3s)
-android	Analyze, test and build	2026-11-25T23:48:49.7969711Z ##[error]Process completed with exit code 1.
+rust	Run cargo clippy --all-targets -- -D warnings	﻿2026-11-26T00:06:28.8001539Z ##[group]Run cargo clippy --all-targets -- -D warnings
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:28.8002054Z ^[[36;1mcargo clippy --all-targets -- -D warnings^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:28.8037478Z shell: /usr/bin/bash -e {0}
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:28.8037727Z env:
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:28.8038195Z   DATABASE_URL: ***localhost:5432/unadomot_test
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:28.8038510Z   JWT_SECRET: test-secret-that-is-at-least-32-bytes-long
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:28.8038880Z   REFRESH_TOKEN_SECRET: test-refresh-secret-that-is-at-least-32-bytes
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:28.8039202Z   CARGO_HOME: /home/runner/.cargo
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:28.8039412Z   CARGO_INCREMENTAL: 0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:28.8039593Z   CARGO_TERM_COLOR: always
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:28.8039776Z   CACHE_ON_FAILURE: false
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:28.8039958Z ##[endgroup]
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:31.6970762Z ^[[1m^[[92m    Updating^[[0m crates.io index
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.2254821Z ^[[1m^[[92m     Locking^[[0m 274 packages to highest compatible versions
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.2266574Z ^[[1m^[[92m      Adding^[[0m argon2 v0.5.3 ^[[1m^[[33m(available: v0.6.0)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.2346536Z ^[[1m^[[92m      Adding^[[0m generic-array v0.14.7 ^[[1m^[[33m(available: v0.14.9)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.2360410Z ^[[1m^[[92m      Adding^[[0m hmac v0.12.1 ^[[1m^[[33m(available: v0.13.0)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.2401389Z ^[[1m^[[92m      Adding^[[0m jsonwebtoken v9.3.1 ^[[1m^[[33m(available: v12.0.0)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.2409861Z ^[[1m^[[92m      Adding^[[0m matchit v0.8.4 ^[[1m^[[33m(available: v0.8.6)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.2463133Z ^[[1m^[[92m      Adding^[[0m redis v0.27.6 ^[[1m^[[33m(available: v1.8.3)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.2516963Z ^[[1m^[[92m      Adding^[[0m sha2 v0.10.9 ^[[1m^[[33m(available: v0.11.2)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.2530122Z ^[[1m^[[92m      Adding^[[0m sqlx v0.8.6 ^[[1m^[[33m(available: v0.9.1)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.2649084Z ^[[1m^[[92m      Adding^[[0m tower-http v0.6.11 ^[[1m^[[33m(available: v0.7.1)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.2960069Z ^[[1m^[[92m Downloading^[[0m crates ...
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.4665932Z ^[[1m^[[92m  Downloaded^[[0m autocfg v1.5.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.4685071Z ^[[1m^[[92m  Downloaded^[[0m cpufeatures v0.2.17
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.4708637Z ^[[1m^[[92m  Downloaded^[[0m hmac v0.12.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.4721780Z ^[[1m^[[92m  Downloaded^[[0m allocator-api2 v0.2.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.4743081Z ^[[1m^[[92m  Downloaded^[[0m atomic-waker v1.1.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.4755341Z ^[[1m^[[92m  Downloaded^[[0m atoi v2.0.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.4766298Z ^[[1m^[[92m  Downloaded^[[0m aho-corasick v1.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.4811672Z ^[[1m^[[92m  Downloaded^[[0m arc-swap v1.9.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.4848405Z ^[[1m^[[92m  Downloaded^[[0m argon2 v0.5.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.4863937Z ^[[1m^[[92m  Downloaded^[[0m arrayvec v0.7.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.4881797Z ^[[1m^[[92m  Downloaded^[[0m async-trait v0.1.92
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.4915068Z ^[[1m^[[92m  Downloaded^[[0m combine v4.6.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.4948242Z ^[[1m^[[92m  Downloaded^[[0m zeroize v1.9.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.4968668Z ^[[1m^[[92m  Downloaded^[[0m equivalent v1.0.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.4981962Z ^[[1m^[[92m  Downloaded^[[0m futures-executor v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5003365Z ^[[1m^[[92m  Downloaded^[[0m getrandom v0.2.17
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5034135Z ^[[1m^[[92m  Downloaded^[[0m mio v1.2.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5090742Z ^[[1m^[[92m  Downloaded^[[0m form_urlencoded v1.2.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5098230Z ^[[1m^[[92m  Downloaded^[[0m generic-array v0.14.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5111938Z ^[[1m^[[92m  Downloaded^[[0m hyper-util v0.1.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5175322Z ^[[1m^[[92m  Downloaded^[[0m futures-core v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5189197Z ^[[1m^[[92m  Downloaded^[[0m hkdf v0.12.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5215302Z ^[[1m^[[92m  Downloaded^[[0m block-buffer v0.10.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5225078Z ^[[1m^[[92m  Downloaded^[[0m heck v0.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5240849Z ^[[1m^[[92m  Downloaded^[[0m hex v0.4.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5257035Z ^[[1m^[[92m  Downloaded^[[0m http-body v1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5267484Z ^[[1m^[[92m  Downloaded^[[0m crypto-common v0.1.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5277867Z ^[[1m^[[92m  Downloaded^[[0m md-5 v0.10.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5294350Z ^[[1m^[[92m  Downloaded^[[0m futures-channel v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5313536Z ^[[1m^[[92m  Downloaded^[[0m httpdate v1.0.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5324731Z ^[[1m^[[92m  Downloaded^[[0m itertools v0.13.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5394049Z ^[[1m^[[92m  Downloaded^[[0m pem-rfc7468 v0.7.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5419609Z ^[[1m^[[92m  Downloaded^[[0m mime v0.3.18
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5435024Z ^[[1m^[[92m  Downloaded^[[0m serde_derive v1.0.229
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5468062Z ^[[1m^[[92m  Downloaded^[[0m zerovec-derive v0.11.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5486050Z ^[[1m^[[92m  Downloaded^[[0m home v0.5.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5496234Z ^[[1m^[[92m  Downloaded^[[0m pem v3.0.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5510620Z ^[[1m^[[92m  Downloaded^[[0m pkcs1 v0.7.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5537538Z ^[[1m^[[92m  Downloaded^[[0m synstructure v0.14.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5547935Z ^[[1m^[[92m  Downloaded^[[0m num-iter v0.1.46
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5557947Z ^[[1m^[[92m  Downloaded^[[0m serde_path_to_error v0.1.20
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5574450Z ^[[1m^[[92m  Downloaded^[[0m rust_decimal v1.43.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5645943Z ^[[1m^[[92m  Downloaded^[[0m slab v0.4.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5659129Z ^[[1m^[[92m  Downloaded^[[0m sqlx-core v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5742962Z ^[[1m^[[92m  Downloaded^[[0m ppv-lite86 v0.2.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5756207Z ^[[1m^[[92m  Downloaded^[[0m signal-hook-registry v1.4.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5768132Z ^[[1m^[[92m  Downloaded^[[0m axum-core v0.5.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5791222Z ^[[1m^[[92m  Downloaded^[[0m displaydoc v0.2.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5811696Z ^[[1m^[[92m  Downloaded^[[0m fastrand v2.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5825651Z ^[[1m^[[92m  Downloaded^[[0m futures-io v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5834511Z ^[[1m^[[92m  Downloaded^[[0m num-traits v0.2.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5860560Z ^[[1m^[[92m  Downloaded^[[0m potential_utf v0.1.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5871070Z ^[[1m^[[92m  Downloaded^[[0m spin v0.9.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5896767Z ^[[1m^[[92m  Downloaded^[[0m num-bigint-dig v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5940018Z ^[[1m^[[92m  Downloaded^[[0m rand_core v0.6.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5952439Z ^[[1m^[[92m  Downloaded^[[0m rand_core v0.9.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.5964826Z ^[[1m^[[92m  Downloaded^[[0m vcpkg v0.2.15
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6471725Z ^[[1m^[[92m  Downloaded^[[0m num-bigint v0.4.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6531689Z ^[[1m^[[92m  Downloaded^[[0m parking_lot v0.12.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6559632Z ^[[1m^[[92m  Downloaded^[[0m proc-macro-crate v3.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6572000Z ^[[1m^[[92m  Downloaded^[[0m ryu v1.0.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6602301Z ^[[1m^[[92m  Downloaded^[[0m signature v2.2.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6615714Z ^[[1m^[[92m  Downloaded^[[0m errno v0.3.15
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6630017Z ^[[1m^[[92m  Downloaded^[[0m powerfmt v0.2.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6642439Z ^[[1m^[[92m  Downloaded^[[0m subtle v2.6.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6653397Z ^[[1m^[[92m  Downloaded^[[0m stringprep v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6667246Z ^[[1m^[[92m  Downloaded^[[0m untrusted v0.9.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6682262Z ^[[1m^[[92m  Downloaded^[[0m zerofrom v0.1.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6691012Z ^[[1m^[[92m  Downloaded^[[0m password-hash v0.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6707350Z ^[[1m^[[92m  Downloaded^[[0m pkg-config v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6721255Z ^[[1m^[[92m  Downloaded^[[0m sha1_smol v1.0.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6733118Z ^[[1m^[[92m  Downloaded^[[0m zmij v1.0.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6749346Z ^[[1m^[[92m  Downloaded^[[0m lazy_static v1.5.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6765347Z ^[[1m^[[92m  Downloaded^[[0m parking_lot_core v0.9.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6785040Z ^[[1m^[[92m  Downloaded^[[0m rand_chacha v0.3.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6795438Z ^[[1m^[[92m  Downloaded^[[0m rand_chacha v0.9.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6806223Z ^[[1m^[[92m  Downloaded^[[0m http-body-util v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6824420Z ^[[1m^[[92m  Downloaded^[[0m pkcs8 v0.10.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6853904Z ^[[1m^[[92m  Downloaded^[[0m rustversion v1.0.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6879823Z ^[[1m^[[92m  Downloaded^[[0m zerofrom-derive v0.1.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6889333Z ^[[1m^[[92m  Downloaded^[[0m crc-catalog v2.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6902248Z ^[[1m^[[92m  Downloaded^[[0m deranged v0.5.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6915099Z ^[[1m^[[92m  Downloaded^[[0m once_cell v1.21.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6938152Z ^[[1m^[[92m  Downloaded^[[0m version_check v0.9.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6949416Z ^[[1m^[[92m  Downloaded^[[0m itoa v1.0.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6962794Z ^[[1m^[[92m  Downloaded^[[0m matchers v0.2.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6972096Z ^[[1m^[[92m  Downloaded^[[0m sha1 v0.10.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6986082Z ^[[1m^[[92m  Downloaded^[[0m utf8_iter v1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.6997979Z ^[[1m^[[92m  Downloaded^[[0m crc v3.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7012895Z ^[[1m^[[92m  Downloaded^[[0m futures-macro v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7021956Z ^[[1m^[[92m  Downloaded^[[0m scopeguard v1.2.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7032526Z ^[[1m^[[92m  Downloaded^[[0m tower-service v0.3.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7039031Z ^[[1m^[[92m  Downloaded^[[0m unicode-normalization v0.1.26
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7071519Z ^[[1m^[[92m  Downloaded^[[0m unicode-properties v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7086949Z ^[[1m^[[92m  Downloaded^[[0m url v2.5.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7109815Z ^[[1m^[[92m  Downloaded^[[0m winnow v1.0.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7190137Z ^[[1m^[[92m  Downloaded^[[0m zerovec v0.11.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7239729Z ^[[1m^[[92m  Downloaded^[[0m blake2 v0.10.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7261697Z ^[[1m^[[92m  Downloaded^[[0m cfg-if v1.0.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7272823Z ^[[1m^[[92m  Downloaded^[[0m cfg_aliases v0.2.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7280863Z ^[[1m^[[92m  Downloaded^[[0m digest v0.10.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7296459Z ^[[1m^[[92m  Downloaded^[[0m dotenvy v0.15.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7320554Z ^[[1m^[[92m  Downloaded^[[0m futures-sink v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7327765Z ^[[1m^[[92m  Downloaded^[[0m futures-task v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7338310Z ^[[1m^[[92m  Downloaded^[[0m hashlink v0.10.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7354059Z ^[[1m^[[92m  Downloaded^[[0m idna_adapter v1.2.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7361775Z ^[[1m^[[92m  Downloaded^[[0m lock_api v0.4.14
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7373018Z ^[[1m^[[92m  Downloaded^[[0m quote v1.0.47
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7397002Z ^[[1m^[[92m  Downloaded^[[0m rsa v0.9.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7443584Z ^[[1m^[[92m  Downloaded^[[0m serde v1.0.229
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7475583Z ^[[1m^[[92m  Downloaded^[[0m socket2 v0.5.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7491214Z ^[[1m^[[92m  Downloaded^[[0m sqlx-mysql v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7541168Z ^[[1m^[[92m  Downloaded^[[0m sqlx-sqlite v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7579245Z ^[[1m^[[92m  Downloaded^[[0m thiserror-impl v2.0.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7590921Z ^[[1m^[[92m  Downloaded^[[0m thread_local v1.1.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7601673Z ^[[1m^[[92m  Downloaded^[[0m time-core v0.1.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7610976Z ^[[1m^[[92m  Downloaded^[[0m tokio-macros v2.7.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7619807Z ^[[1m^[[92m  Downloaded^[[0m toml_datetime v1.1.3+spec-1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7629975Z ^[[1m^[[92m  Downloaded^[[0m tower v0.5.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7712693Z ^[[1m^[[92m  Downloaded^[[0m tower-layer v0.3.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7719980Z ^[[1m^[[92m  Downloaded^[[0m borsh-derive v1.8.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7746011Z ^[[1m^[[92m  Downloaded^[[0m byteorder v1.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7759263Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-queue v0.3.14
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7769878Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-utils v0.8.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7792932Z ^[[1m^[[92m  Downloaded^[[0m either v1.19.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7804991Z ^[[1m^[[92m  Downloaded^[[0m find-msvc-tools v0.1.15
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7818488Z ^[[1m^[[92m  Downloaded^[[0m http v1.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7849143Z ^[[1m^[[92m  Downloaded^[[0m iana-time-zone v0.1.65
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7872477Z ^[[1m^[[92m  Downloaded^[[0m icu_locale_core v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7931230Z ^[[1m^[[92m  Downloaded^[[0m icu_provider v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7953506Z ^[[1m^[[92m  Downloaded^[[0m litemap v0.8.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7972860Z ^[[1m^[[92m  Downloaded^[[0m matchit v0.8.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7990630Z ^[[1m^[[92m  Downloaded^[[0m num-conv v0.2.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.7997730Z ^[[1m^[[92m  Downloaded^[[0m serde_core v1.0.229
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8020855Z ^[[1m^[[92m  Downloaded^[[0m serde_json v1.0.154
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8083174Z ^[[1m^[[92m  Downloaded^[[0m spki v0.7.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8097749Z ^[[1m^[[92m  Downloaded^[[0m sqlx v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8521020Z ^[[1m^[[92m  Downloaded^[[0m sqlx-macros-core v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8539391Z ^[[1m^[[92m  Downloaded^[[0m sqlx-postgres v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8609299Z ^[[1m^[[92m  Downloaded^[[0m thiserror v2.0.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8660775Z ^[[1m^[[92m  Downloaded^[[0m time-macros v0.2.32
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8680586Z ^[[1m^[[92m  Downloaded^[[0m tinystr v0.8.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8696829Z ^[[1m^[[92m  Downloaded^[[0m tokio-stream v0.1.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8738531Z ^[[1m^[[92m  Downloaded^[[0m tracing-log v0.2.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8749244Z ^[[1m^[[92m  Downloaded^[[0m whoami v1.6.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8764963Z ^[[1m^[[92m  Downloaded^[[0m base64ct v1.8.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8784998Z ^[[1m^[[92m  Downloaded^[[0m bitflags v2.13.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8821004Z ^[[1m^[[92m  Downloaded^[[0m const-oid v0.9.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8836832Z ^[[1m^[[92m  Downloaded^[[0m event-listener v5.4.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8851736Z ^[[1m^[[92m  Downloaded^[[0m foldhash v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8861742Z ^[[1m^[[92m  Downloaded^[[0m getrandom v0.3.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8888831Z ^[[1m^[[92m  Downloaded^[[0m getrandom v0.4.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8919213Z ^[[1m^[[92m  Downloaded^[[0m httparse v1.10.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8939009Z ^[[1m^[[92m  Downloaded^[[0m jsonwebtoken v9.3.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8972560Z ^[[1m^[[92m  Downloaded^[[0m log v0.4.35
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.8993630Z ^[[1m^[[92m  Downloaded^[[0m nu-ansi-term v0.50.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9013681Z ^[[1m^[[92m  Downloaded^[[0m pin-project-lite v0.2.18
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9061698Z ^[[1m^[[92m  Downloaded^[[0m redis v0.27.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9130523Z ^[[1m^[[92m  Downloaded^[[0m socket2 v0.6.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9146734Z ^[[1m^[[92m  Downloaded^[[0m syn v3.0.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9248132Z ^[[1m^[[92m  Downloaded^[[0m tinyvec v1.13.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9282166Z ^[[1m^[[92m  Downloaded^[[0m toml_parser v1.1.7+spec-1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9304598Z ^[[1m^[[92m  Downloaded^[[0m tracing-attributes v0.1.31
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9329793Z ^[[1m^[[92m  Downloaded^[[0m tracing-core v0.1.36
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9355216Z ^[[1m^[[92m  Downloaded^[[0m unicode-bidi v0.3.18
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9378040Z ^[[1m^[[92m  Downloaded^[[0m zerocopy v0.8.66
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9637296Z ^[[1m^[[92m  Downloaded^[[0m backon v1.6.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9662150Z ^[[1m^[[92m  Downloaded^[[0m base64 v0.22.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9697542Z ^[[1m^[[92m  Downloaded^[[0m bytes v1.12.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9728653Z ^[[1m^[[92m  Downloaded^[[0m flume v0.11.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9758401Z ^[[1m^[[92m  Downloaded^[[0m futures v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9803198Z ^[[1m^[[92m  Downloaded^[[0m indexmap v2.14.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9842494Z ^[[1m^[[92m  Downloaded^[[0m regex-automata v0.4.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:33.9981703Z ^[[1m^[[92m  Downloaded^[[0m uuid v1.29.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0010773Z ^[[1m^[[92m  Downloaded^[[0m writeable v0.6.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0029910Z ^[[1m^[[92m  Downloaded^[[0m yoke-derive v0.8.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0040561Z ^[[1m^[[92m  Downloaded^[[0m borsh v1.8.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0111731Z ^[[1m^[[92m  Downloaded^[[0m futures-intrusive v0.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0154189Z ^[[1m^[[92m  Downloaded^[[0m icu_collections v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0216299Z ^[[1m^[[92m  Downloaded^[[0m icu_normalizer_data v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0236895Z ^[[1m^[[92m  Downloaded^[[0m memchr v2.8.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0288738Z ^[[1m^[[92m  Downloaded^[[0m rand v0.8.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0319785Z ^[[1m^[[92m  Downloaded^[[0m sha2 v0.10.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0343061Z ^[[1m^[[92m  Downloaded^[[0m toml_edit v0.25.21+spec-1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0379008Z ^[[1m^[[92m  Downloaded^[[0m der v0.7.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0427160Z ^[[1m^[[92m  Downloaded^[[0m regex-syntax v0.8.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0492734Z ^[[1m^[[92m  Downloaded^[[0m syn v2.0.119
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0590957Z ^[[1m^[[92m  Downloaded^[[0m sync_wrapper v1.0.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0597433Z ^[[1m^[[92m  Downloaded^[[0m typenum v1.20.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0627869Z ^[[1m^[[92m  Downloaded^[[0m hashbrown v0.17.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0673639Z ^[[1m^[[92m  Downloaded^[[0m idna v1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0706844Z ^[[1m^[[92m  Downloaded^[[0m sharded-slab v0.1.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0736647Z ^[[1m^[[92m  Downloaded^[[0m simple_asn1 v0.6.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0747070Z ^[[1m^[[92m  Downloaded^[[0m tokio-util v0.7.20
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0810806Z ^[[1m^[[92m  Downloaded^[[0m hashbrown v0.15.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0850096Z ^[[1m^[[92m  Downloaded^[[0m libm v0.2.16
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0938598Z ^[[1m^[[92m  Downloaded^[[0m cc v1.11.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.0976756Z ^[[1m^[[92m  Downloaded^[[0m futures-util v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1083063Z ^[[1m^[[92m  Downloaded^[[0m hyper v1.13.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1141020Z ^[[1m^[[92m  Downloaded^[[0m icu_properties v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1173564Z ^[[1m^[[92m  Downloaded^[[0m num-integer v0.1.47
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1185393Z ^[[1m^[[92m  Downloaded^[[0m tower-http v0.6.11
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1257169Z ^[[1m^[[92m  Downloaded^[[0m axum v0.8.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1322075Z ^[[1m^[[92m  Downloaded^[[0m icu_properties_data v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1410627Z ^[[1m^[[92m  Downloaded^[[0m smallvec v1.16.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1421231Z ^[[1m^[[92m  Downloaded^[[0m tracing-subscriber v0.3.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1485047Z ^[[1m^[[92m  Downloaded^[[0m chrono v0.4.45
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1540921Z ^[[1m^[[92m  Downloaded^[[0m percent-encoding v2.3.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1550929Z ^[[1m^[[92m  Downloaded^[[0m proc-macro2 v1.0.107
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1570989Z ^[[1m^[[92m  Downloaded^[[0m ring v0.17.14
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1926077Z ^[[1m^[[92m  Downloaded^[[0m stable_deref_trait v1.2.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1933478Z ^[[1m^[[92m  Downloaded^[[0m utf_types v1.0.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1944252Z ^[[1m^[[92m  Downloaded^[[0m parking v2.2.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1953871Z ^[[1m^[[92m  Downloaded^[[0m rand v0.9.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.1989301Z ^[[1m^[[92m  Downloaded^[[0m serde_urlencoded v0.7.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.2005604Z ^[[1m^[[92m  Downloaded^[[0m shlex v2.0.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.2017444Z ^[[1m^[[92m  Downloaded^[[0m yoke v0.8.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.2033651Z ^[[1m^[[92m  Downloaded^[[0m time v0.3.55
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.2170774Z ^[[1m^[[92m  Downloaded^[[0m unicode-ident v1.0.27
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.2197152Z ^[[1m^[[92m  Downloaded^[[0m zerotrie v0.2.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.2233858Z ^[[1m^[[92m  Downloaded^[[0m sqlx-macros v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.2241388Z ^[[1m^[[92m  Downloaded^[[0m tracing v0.1.44
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.2398552Z ^[[1m^[[92m  Downloaded^[[0m icu_normalizer v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.2498005Z ^[[1m^[[92m  Downloaded^[[0m libc v0.2.191
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.2911579Z ^[[1m^[[92m  Downloaded^[[0m tokio v1.54.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.3287606Z ^[[1m^[[92m  Downloaded^[[0m libsqlite3-sys v0.30.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.5556477Z ^[[1m^[[92m   Compiling^[[0m proc-macro2 v1.0.107
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.5557210Z ^[[1m^[[92m   Compiling^[[0m unicode-ident v1.0.27
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.5558155Z ^[[1m^[[92m   Compiling^[[0m quote v1.0.47
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:34.5558535Z ^[[1m^[[92m   Compiling^[[0m libc v0.2.191
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:48.4808166Z ^[[1m^[[92m   Compiling^[[0m serde v1.0.229
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:59.6672609Z ^[[1m^[[92m   Compiling^[[0m serde_core v1.0.229
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:06:59.6781626Z ^[[1m^[[92m   Compiling^[[0m version_check v0.9.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:00.4543725Z ^[[1m^[[92m   Compiling^[[0m generic-array v0.14.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:00.5361283Z ^[[1m^[[92m   Compiling^[[0m autocfg v1.5.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:02.1265669Z ^[[1m^[[92m   Compiling^[[0m num-traits v0.2.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:02.1908063Z ^[[1m^[[92m    Checking^[[0m pin-project-lite v0.2.18
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:02.2704430Z ^[[1m^[[92m   Compiling^[[0m syn v3.0.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:02.4154154Z ^[[1m^[[92m    Checking^[[0m cfg-if v1.0.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:02.4716626Z ^[[1m^[[92m    Checking^[[0m futures-core v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:02.5072750Z ^[[1m^[[92m   Compiling^[[0m icu_properties_data v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:02.5875608Z ^[[1m^[[92m   Compiling^[[0m icu_normalizer_data v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:02.6249611Z ^[[1m^[[92m   Compiling^[[0m stable_deref_trait v1.2.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:02.6611583Z ^[[1m^[[92m    Checking^[[0m bytes v1.12.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:03.0602124Z ^[[1m^[[92m    Checking^[[0m itoa v1.0.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:03.1902705Z ^[[1m^[[92m   Compiling^[[0m syn v2.0.119
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:03.9202153Z ^[[1m^[[92m   Compiling^[[0m zmij v1.0.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:04.0872151Z ^[[1m^[[92m   Compiling^[[0m parking_lot_core v0.9.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:04.2352564Z ^[[1m^[[92m   Compiling^[[0m zerocopy v0.8.66
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:04.5501505Z ^[[1m^[[92m    Checking^[[0m errno v0.3.15
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:04.7092260Z ^[[1m^[[92m   Compiling^[[0m typenum v1.20.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:05.9382183Z ^[[1m^[[92m   Compiling^[[0m synstructure v0.14.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:06.0332008Z ^[[1m^[[92m    Checking^[[0m signal-hook-registry v1.4.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:06.2751709Z ^[[1m^[[92m    Checking^[[0m socket2 v0.6.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:06.3780981Z ^[[1m^[[92m    Checking^[[0m mio v1.2.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:06.5552396Z ^[[1m^[[92m   Compiling^[[0m writeable v0.6.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:06.5882100Z ^[[1m^[[92m   Compiling^[[0m thiserror v2.0.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:06.7605594Z ^[[1m^[[92m   Compiling^[[0m utf_types v1.0.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:06.8242635Z ^[[1m^[[92m   Compiling^[[0m crossbeam-utils v0.8.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:06.9490678Z ^[[1m^[[92m    Checking^[[0m memchr v2.8.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:06.9861904Z ^[[1m^[[92m   Compiling^[[0m serde_derive v1.0.229
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:07.0351622Z ^[[1m^[[92m   Compiling^[[0m zerofrom-derive v0.1.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:07.1571767Z ^[[1m^[[92m   Compiling^[[0m yoke-derive v0.8.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:07.5800475Z ^[[1m^[[92m   Compiling^[[0m zerovec-derive v0.11.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:08.6418361Z ^[[1m^[[92m   Compiling^[[0m displaydoc v0.2.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:08.6472922Z ^[[1m^[[92m   Compiling^[[0m zerofrom v0.1.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:08.7151758Z ^[[1m^[[92m   Compiling^[[0m yoke v0.8.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:08.9261607Z ^[[1m^[[92m   Compiling^[[0m zerovec v0.11.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:09.1242828Z ^[[1m^[[92m   Compiling^[[0m tracing-attributes v0.1.31
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:09.4954828Z ^[[1m^[[92m   Compiling^[[0m tinystr v0.8.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:09.6671848Z ^[[1m^[[92m   Compiling^[[0m tokio-macros v2.7.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:09.7781869Z ^[[1m^[[92m    Checking^[[0m smallvec v1.16.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:09.9031242Z ^[[1m^[[92m   Compiling^[[0m litemap v0.8.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:10.0382253Z ^[[1m^[[92m    Checking^[[0m futures-sink v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:10.0451609Z ^[[1m^[[92m   Compiling^[[0m serde_json v1.0.154
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:10.0521280Z ^[[1m^[[92m   Compiling^[[0m icu_locale_core v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:10.0825123Z ^[[1m^[[92m   Compiling^[[0m potential_utf v0.1.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:10.1199138Z ^[[1m^[[92m    Checking^[[0m tokio v1.54.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:10.1723682Z ^[[1m^[[92m   Compiling^[[0m zerotrie v0.2.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:10.2551501Z ^[[1m^[[92m   Compiling^[[0m utf8_iter v1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:10.4047908Z ^[[1m^[[92m   Compiling^[[0m thiserror-impl v2.0.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:11.1237965Z ^[[1m^[[92m    Checking^[[0m subtle v2.6.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:11.3076739Z ^[[1m^[[92m    Checking^[[0m once_cell v1.21.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:11.4114692Z ^[[1m^[[92m    Checking^[[0m tracing-core v0.1.36
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:11.5067186Z ^[[1m^[[92m   Compiling^[[0m icu_provider v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:11.7099674Z ^[[1m^[[92m   Compiling^[[0m icu_collections v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:11.9211580Z ^[[1m^[[92m   Compiling^[[0m crypto-common v0.1.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:11.9612295Z ^[[1m^[[92m   Compiling^[[0m block-buffer v0.10.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:12.0174640Z ^[[1m^[[92m    Checking^[[0m log v0.4.35
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:12.0962801Z ^[[1m^[[92m    Checking^[[0m digest v0.10.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:12.2451861Z ^[[1m^[[92m    Checking^[[0m futures-channel v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:12.2934793Z ^[[1m^[[92m   Compiling^[[0m futures-macro v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:12.4020653Z ^[[1m^[[92m    Checking^[[0m getrandom v0.2.17
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:12.4861563Z ^[[1m^[[92m    Checking^[[0m futures-task v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:12.5107861Z ^[[1m^[[92m    Checking^[[0m futures-io v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:12.5562066Z ^[[1m^[[92m    Checking^[[0m slab v0.4.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:12.5813354Z ^[[1m^[[92m   Compiling^[[0m icu_properties v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:12.6312203Z ^[[1m^[[92m   Compiling^[[0m icu_normalizer v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:12.7301263Z ^[[1m^[[92m    Checking^[[0m futures-util v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:13.0375588Z ^[[1m^[[92m    Checking^[[0m tracing v0.1.44
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:13.7131959Z ^[[1m^[[92m   Compiling^[[0m scopeguard v1.2.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:13.7548094Z ^[[1m^[[92m   Compiling^[[0m equivalent v1.0.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:13.7961718Z ^[[1m^[[92m    Checking^[[0m percent-encoding v2.3.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:13.8651840Z ^[[1m^[[92m    Checking^[[0m form_urlencoded v1.2.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:13.9042178Z ^[[1m^[[92m   Compiling^[[0m idna_adapter v1.2.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:13.9236468Z ^[[1m^[[92m   Compiling^[[0m lock_api v0.4.14
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:15.2352053Z ^[[1m^[[92m    Checking^[[0m http v1.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:15.2461461Z ^[[1m^[[92m   Compiling^[[0m allocator-api2 v0.2.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:15.5391717Z ^[[1m^[[92m   Compiling^[[0m foldhash v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:15.9121825Z ^[[1m^[[92m   Compiling^[[0m rust_decimal v1.43.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:16.3642262Z ^[[1m^[[92m    Checking^[[0m http-body v1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:16.4260376Z ^[[1m^[[92m   Compiling^[[0m hashbrown v0.15.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:16.5191964Z ^[[1m^[[92m   Compiling^[[0m rand_core v0.6.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:16.6941633Z ^[[1m^[[92m   Compiling^[[0m parking_lot v0.12.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:16.9078209Z ^[[1m^[[92m   Compiling^[[0m idna v1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:17.7792168Z ^[[1m^[[92m   Compiling^[[0m ppv-lite86 v0.2.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:18.1797429Z ^[[1m^[[92m   Compiling^[[0m getrandom v0.4.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:18.2914650Z ^[[1m^[[92m   Compiling^[[0m crc-catalog v2.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:18.3443499Z ^[[1m^[[92m   Compiling^[[0m iana-time-zone v0.1.65
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:18.4000765Z ^[[1m^[[92m   Compiling^[[0m arrayvec v0.7.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:18.4674814Z ^[[1m^[[92m   Compiling^[[0m cpufeatures v0.2.17
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:18.5045099Z ^[[1m^[[92m   Compiling^[[0m tinyvec v1.13.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:18.7362294Z ^[[1m^[[92m   Compiling^[[0m parking v2.2.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:18.7671641Z ^[[1m^[[92m   Compiling^[[0m hashbrown v0.17.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:18.8063024Z ^[[1m^[[92m   Compiling^[[0m event-listener v5.4.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:19.1701824Z ^[[1m^[[92m   Compiling^[[0m indexmap v2.14.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:19.1821724Z ^[[1m^[[92m   Compiling^[[0m tokio-stream v0.1.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:19.4898428Z ^[[1m^[[92m   Compiling^[[0m unicode-normalization v0.1.26
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:19.8411582Z ^[[1m^[[92m   Compiling^[[0m sha2 v0.10.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:20.2590946Z ^[[1m^[[92m   Compiling^[[0m chrono v0.4.45
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:20.8332997Z ^[[1m^[[92m   Compiling^[[0m crc v3.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:20.9945058Z ^[[1m^[[92m   Compiling^[[0m rand_chacha v0.3.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:21.1441641Z ^[[1m^[[92m   Compiling^[[0m crossbeam-queue v0.3.14
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:21.2072143Z ^[[1m^[[92m   Compiling^[[0m url v2.5.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:21.2361604Z ^[[1m^[[92m   Compiling^[[0m hashlink v0.10.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:21.4208639Z ^[[1m^[[92m   Compiling^[[0m futures-intrusive v0.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:21.6561616Z ^[[1m^[[92m   Compiling^[[0m hmac v0.12.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:21.7542286Z ^[[1m^[[92m   Compiling^[[0m either v1.19.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:21.8522358Z ^[[1m^[[92m   Compiling^[[0m base64 v0.22.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:21.9281830Z ^[[1m^[[92m    Checking^[[0m tower-service v0.3.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:21.9631426Z ^[[1m^[[92m   Compiling^[[0m find-msvc-tools v0.1.15
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:22.0811800Z ^[[1m^[[92m   Compiling^[[0m httparse v1.10.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:22.1721871Z ^[[1m^[[92m   Compiling^[[0m unicode-properties v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:22.1800815Z ^[[1m^[[92m   Compiling^[[0m uuid v1.29.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:22.3031709Z ^[[1m^[[92m   Compiling^[[0m unicode-bidi v0.3.18
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:22.4462460Z ^[[1m^[[92m   Compiling^[[0m shlex v2.0.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:22.5492043Z ^[[1m^[[92m   Compiling^[[0m cc v1.11.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:22.5752342Z ^[[1m^[[92m   Compiling^[[0m stringprep v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:22.6701921Z ^[[1m^[[92m   Compiling^[[0m sqlx-core v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:23.2983009Z ^[[1m^[[92m   Compiling^[[0m hkdf v0.12.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:23.6142441Z ^[[1m^[[92m   Compiling^[[0m rand v0.8.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:24.1662695Z ^[[1m^[[92m   Compiling^[[0m atoi v2.0.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:24.2071901Z ^[[1m^[[92m   Compiling^[[0m md-5 v0.10.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:24.2301576Z ^[[1m^[[92m    Checking^[[0m num-integer v0.1.47
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:24.3901920Z ^[[1m^[[92m   Compiling^[[0m bitflags v2.13.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:24.5161795Z ^[[1m^[[92m    Checking^[[0m tower-layer v0.3.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:24.6061687Z ^[[1m^[[92m   Compiling^[[0m num-conv v0.2.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:24.9281870Z ^[[1m^[[92m   Compiling^[[0m dotenvy v0.15.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:24.9548513Z ^[[1m^[[92m   Compiling^[[0m rustversion v1.0.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:25.1802002Z ^[[1m^[[92m   Compiling^[[0m byteorder v1.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:25.2497864Z ^[[1m^[[92m   Compiling^[[0m time-core v0.1.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:25.3130017Z ^[[1m^[[92m   Compiling^[[0m whoami v1.6.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:25.4030135Z ^[[1m^[[92m   Compiling^[[0m home v0.5.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:25.4312422Z ^[[1m^[[92m   Compiling^[[0m hex v0.4.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:25.4782334Z ^[[1m^[[92m   Compiling^[[0m time-macros v0.2.32
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:25.6101763Z ^[[1m^[[92m   Compiling^[[0m sqlx-postgres v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:26.6671594Z ^[[1m^[[92m    Checking^[[0m num-bigint v0.4.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:27.0541648Z ^[[1m^[[92m   Compiling^[[0m ring v0.17.14
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:27.5862427Z ^[[1m^[[92m    Checking^[[0m http-body-util v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:27.8861578Z ^[[1m^[[92m    Checking^[[0m deranged v0.5.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:27.9111856Z ^[[1m^[[92m    Checking^[[0m regex-syntax v0.8.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:28.0001832Z ^[[1m^[[92m    Checking^[[0m atomic-waker v1.1.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:28.2031802Z ^[[1m^[[92m   Compiling^[[0m heck v0.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:28.3482226Z ^[[1m^[[92m    Checking^[[0m powerfmt v0.2.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:28.4306139Z ^[[1m^[[92m    Checking^[[0m httpdate v1.0.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:28.5051918Z ^[[1m^[[92m    Checking^[[0m ryu v1.0.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:28.6836184Z ^[[1m^[[92m    Checking^[[0m sync_wrapper v1.0.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:28.7221760Z ^[[1m^[[92m    Checking^[[0m hyper v1.13.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:28.7305020Z ^[[1m^[[92m    Checking^[[0m regex-automata v0.4.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:28.9368842Z ^[[1m^[[92m    Checking^[[0m time v0.3.55
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:29.2341849Z ^[[1m^[[92m   Compiling^[[0m sqlx-macros-core v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:31.1769906Z ^[[1m^[[92m    Checking^[[0m tokio-util v0.7.20
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:31.4113407Z ^[[1m^[[92m    Checking^[[0m futures-executor v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:31.5151672Z ^[[1m^[[92m    Checking^[[0m mime v0.3.18
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:31.5274915Z ^[[1m^[[92m    Checking^[[0m base64ct v1.8.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:31.5847531Z ^[[1m^[[92m    Checking^[[0m untrusted v0.9.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:31.6611794Z ^[[1m^[[92m    Checking^[[0m fastrand v2.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:31.7270637Z ^[[1m^[[92m    Checking^[[0m lazy_static v1.5.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:31.7321544Z ^[[1m^[[92m    Checking^[[0m backon v1.6.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:31.7648165Z ^[[1m^[[92m    Checking^[[0m sharded-slab v0.1.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:31.8166920Z ^[[1m^[[92m    Checking^[[0m password-hash v0.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:31.9591401Z ^[[1m^[[92m    Checking^[[0m axum-core v0.5.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:32.0691859Z ^[[1m^[[92m    Checking^[[0m combine v4.6.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:32.9162272Z ^[[1m^[[92m    Checking^[[0m futures v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:32.9502687Z ^[[1m^[[92m   Compiling^[[0m sqlx-macros v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:33.7182275Z ^[[1m^[[92m    Checking^[[0m arc-swap v1.9.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:33.9272077Z ^[[1m^[[92m    Checking^[[0m simple_asn1 v0.6.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:34.0095757Z ^[[1m^[[92m    Checking^[[0m matchers v0.2.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:34.0464814Z ^[[1m^[[92m    Checking^[[0m hyper-util v0.1.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:34.0625207Z ^[[1m^[[92m    Checking^[[0m tower v0.5.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:34.2152477Z ^[[1m^[[92m    Checking^[[0m serde_urlencoded v0.7.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:34.3336224Z ^[[1m^[[92m    Checking^[[0m pem v3.0.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:34.3517632Z ^[[1m^[[92m    Checking^[[0m itertools v0.13.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:34.4152944Z ^[[1m^[[92m    Checking^[[0m blake2 v0.10.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:34.6078942Z ^[[1m^[[92m    Checking^[[0m tracing-log v0.2.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:34.6832405Z ^[[1m^[[92m   Compiling^[[0m async-trait v0.1.92
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:35.0999701Z ^[[1m^[[92m    Checking^[[0m serde_path_to_error v0.1.20
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:35.2262151Z ^[[1m^[[92m    Checking^[[0m socket2 v0.5.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:35.3112679Z ^[[1m^[[92m    Checking^[[0m thread_local v1.1.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:35.3181598Z ^[[1m^[[92m    Checking^[[0m sha1_smol v1.0.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:35.3639095Z ^[[1m^[[92m    Checking^[[0m matchit v0.8.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:35.3967846Z ^[[1m^[[92m    Checking^[[0m nu-ansi-term v0.50.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:35.3975192Z ^[[1m^[[92m    Checking^[[0m redis v0.27.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:35.5072861Z ^[[1m^[[92m    Checking^[[0m axum v0.8.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:35.5499571Z ^[[1m^[[92m    Checking^[[0m tracing-subscriber v0.3.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:36.2546709Z ^[[1m^[[92m    Checking^[[0m argon2 v0.5.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:36.4365703Z ^[[1m^[[92m    Checking^[[0m sqlx v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:36.5340941Z ^[[1m^[[92m    Checking^[[0m tower-http v0.6.11
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:41.6650745Z ^[[1m^[[92m    Checking^[[0m jsonwebtoken v9.3.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:41.9503459Z ^[[1m^[[92m    Checking^[[0m unadomot-api v0.1.0 (/home/runner/work/unadomot/unadomot/services/api)
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:42.7936054Z ^[[1m^[[91merror^[[0m^[[1m: named argument never used^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:42.7936593Z   ^[[1m^[[94m--> ^[[0msrc/http/public_pages.rs:96:19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:42.7937183Z    ^[[1m^[[94m|^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:42.7937478Z ^[[1m^[[94m59^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m/^[[0m         r#"<!doctype html>
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:42.7937847Z ^[[1m^[[94m60^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m|^[[0m <html lang="en">
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:42.7938186Z ^[[1m^[[94m61^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m|^[[0m <head>
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:42.7938529Z ^[[1m^[[94m62^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m|^[[0m <meta charset="utf-8">
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:42.7938855Z ^[[1m^[[94m...^[[0m  ^[[1m^[[94m|^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:42.7939119Z ^[[1m^[[94m87^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m|^[[0m </body>
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:42.7939426Z ^[[1m^[[94m88^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m|^[[0m </html>"#,
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:42.7939799Z    ^[[1m^[[94m|^[[0m ^[[1m^[[94m|_________-^[[0m ^[[1m^[[94mformatting specifier missing^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:42.7940130Z ^[[1m^[[94m...^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:42.7940641Z ^[[1m^[[94m96^[[0m ^[[1m^[[94m|^[[0m           json_ld = json_ld(&listing, &canonical, &image),
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:42.7941179Z    ^[[1m^[[94m|^[[0m                     ^[[1m^[[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[[0m ^[[1m^[[91mnamed argument never used^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:42.7941464Z 
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.1463178Z ^[[1m^[[91merror[E0432]^[[0m^[[1m: unresolved import `sha1`^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.1463632Z  ^[[1m^[[94m--> ^[[0msrc/infrastructure/cloudinary.rs:3:5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.1463899Z   ^[[1m^[[94m|^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.1469193Z ^[[1m^[[94m3^[[0m ^[[1m^[[94m|^[[0m use sha1::{Digest, Sha1};
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.1469686Z   ^[[1m^[[94m|^[[0m     ^[[1m^[[91m^^^^^[[0m ^[[1m^[[91muse of unresolved module or unlinked crate `sha1`^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.1470039Z   ^[[1m^[[94m|^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.1470574Z ^[[1m^[[96mhelp^[[0m: there is a crate or module with a similar name
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.1470868Z   ^[[1m^[[94m|^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.1471155Z ^[[1m^[[94m3^[[0m ^[[91m- ^[[0muse ^[[91msha1^[[0m::{Digest, Sha1};
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.1471476Z ^[[1m^[[94m3^[[0m ^[[92m+ ^[[0muse ^[[92msha2^[[0m::{Digest, Sha1};
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.1471730Z   ^[[1m^[[94m|^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.1471836Z 
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.3222214Z ^[[1m^[[91merror^[[0m^[[1m: unused import: `ListingStatus`^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.3222821Z  ^[[1m^[[94m--> ^[[0msrc/application/listings.rs:2:43
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.3223205Z   ^[[1m^[[94m|^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.3223895Z ^[[1m^[[94m2^[[0m ^[[1m^[[94m|^[[0m     Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.3224666Z   ^[[1m^[[94m|^[[0m                                           ^[[1m^[[91m^^^^^^^^^^^^^^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.3225119Z   ^[[1m^[[94m|^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.3225565Z   ^[[1m^[[94m= ^[[0m^[[1mnote^[[0m: `-D unused-imports` implied by `-D warnings`
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.3226184Z   ^[[1m^[[94m= ^[[0m^[[1mhelp^[[0m: to override `-D warnings` add `#[allow(unused_imports)]`
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.3226537Z 
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.3585662Z ^[[1m^[[91merror^[[0m^[[1m: unused import: `AuthError`^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.3586188Z  ^[[1m^[[94m--> ^[[0msrc/http/verification.rs:1:48
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.3586572Z   ^[[1m^[[94m|^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.3587266Z ^[[1m^[[94m1^[[0m ^[[1m^[[94m|^[[0m use crate::application::auth::{verify_session, AuthError, UserRepository};
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.3587748Z   ^[[1m^[[94m|^[[0m                                                ^[[1m^[[91m^^^^^^^^^^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:43.3587949Z 
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:44.6717594Z ^[[1mFor more information about this error, try `rustc --explain E0432`.^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:44.8942289Z ^[[1m^[[91merror^[[0m: could not compile `unadomot-api` (lib test) due to 4 previous errors
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:44.8944426Z ^[[1m^[[33mwarning^[[0m: build failed, waiting for other jobs to finish...
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:44.8945092Z ^[[1m^[[91merror^[[0m: could not compile `unadomot-api` (lib) due to 4 previous errors
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T00:07:44.9630502Z ##[error]Process completed with exit code 101.
+android	Analyze, test and build	﻿2026-11-26T00:06:22.7275136Z ##[group]Run flutter pub get
+android	Analyze, test and build	2026-11-26T00:06:22.7275541Z ^[[36;1mflutter pub get^[[0m
+android	Analyze, test and build	2026-11-26T00:06:22.7275841Z ^[[36;1mflutter analyze^[[0m
+android	Analyze, test and build	2026-11-26T00:06:22.7276123Z ^[[36;1mflutter test^[[0m
+android	Analyze, test and build	2026-11-26T00:06:22.7276420Z ^[[36;1mflutter build apk --debug^[[0m
+android	Analyze, test and build	2026-11-26T00:06:22.7308306Z shell: /usr/bin/bash -e {0}
+android	Analyze, test and build	2026-11-26T00:06:22.7308531Z env:
+android	Analyze, test and build	2026-11-26T00:06:22.7308794Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+android	Analyze, test and build	2026-11-26T00:06:22.7309195Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+android	Analyze, test and build	2026-11-26T00:06:22.7309573Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.50.1-x64/flutter
+android	Analyze, test and build	2026-11-26T00:06:22.7309870Z   PUB_CACHE: /home/runner/.pub-cache
+android	Analyze, test and build	2026-11-26T00:06:22.7310080Z ##[endgroup]
+android	Analyze, test and build	2026-11-26T00:06:22.8860001Z Resolving dependencies...
+android	Analyze, test and build	2026-11-26T00:06:22.9695863Z Downloading packages...
+android	Analyze, test and build	2026-11-26T00:06:22.9733164Z   cross_file 0.3.5+5 (0.4.0 available)
+android	Analyze, test and build	2026-11-26T00:06:22.9733661Z   flutter_lints 5.0.0 (6.0.0 available)
+android	Analyze, test and build	2026-11-26T00:06:22.9734126Z   flutter_secure_storage 9.2.4 (11.2.0 available)
+android	Analyze, test and build	2026-11-26T00:06:22.9734534Z   flutter_secure_storage_linux 1.2.3 (3.0.3 available)
+android	Analyze, test and build	2026-11-26T00:06:22.9734945Z   flutter_secure_storage_macos 3.1.3 (4.0.0 available)
+android	Analyze, test and build	2026-11-26T00:06:22.9735402Z   flutter_secure_storage_platform_interface 1.1.2 (2.1.1 available)
+android	Analyze, test and build	2026-11-26T00:06:22.9735869Z   flutter_secure_storage_web 1.2.1 (2.1.1 available)
+android	Analyze, test and build	2026-11-26T00:06:22.9736293Z   flutter_secure_storage_windows 3.1.2 (4.2.2 available)
+android	Analyze, test and build	2026-11-26T00:06:22.9736681Z   js 0.6.7 (0.7.2 available)
+android	Analyze, test and build	2026-11-26T00:06:22.9736973Z   lints 5.1.1 (6.1.0 available)
+android	Analyze, test and build	2026-11-26T00:06:22.9737305Z   material_color_utilities 0.13.0 (0.13.1 available)
+android	Analyze, test and build	2026-11-26T00:06:22.9737674Z   test_api 0.7.14 (0.7.15 available)
+android	Analyze, test and build	2026-11-26T00:06:22.9737989Z   vector_math 2.4.3 (2.4.4 available)
+android	Analyze, test and build	2026-11-26T00:06:22.9738301Z   win32 5.15.0 (6.4.0 available)
+android	Analyze, test and build	2026-11-26T00:06:22.9738613Z Got dependencies!
+android	Analyze, test and build	2026-11-26T00:06:22.9739020Z 14 packages have newer versions incompatible with dependency constraints.
+android	Analyze, test and build	2026-11-26T00:06:22.9739858Z Try `flutter pub outdated` for more information.
+android	Analyze, test and build	2026-11-26T00:06:28.4176790Z Analyzing flutter_app...                                        
+android	Analyze, test and build	2026-11-26T00:06:28.4183036Z 
+android	Analyze, test and build	2026-11-26T00:06:28.4201978Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/main.dart:1:1 • deprecated_member_use
+android	Analyze, test and build	2026-11-26T00:06:28.4204740Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/auth_screen.dart:1:1 • deprecated_member_use
+android	Analyze, test and build	2026-11-26T00:06:28.4207438Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/create_listing_screen.dart:2:1 • deprecated_member_use
+android	Analyze, test and build	2026-11-26T00:06:28.4210194Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/listing_detail_screen.dart:1:1 • deprecated_member_use
+android	Analyze, test and build	2026-11-26T00:06:28.4211764Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/listings_screen.dart:1:1 • deprecated_member_use
+android	Analyze, test and build	2026-11-26T00:06:28.4213457Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/messages_screen.dart:1:1 • deprecated_member_use
+android	Analyze, test and build	2026-11-26T00:06:28.4215916Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/verification_screen.dart:1:1 • deprecated_member_use
+android	Analyze, test and build	2026-11-26T00:06:28.4217205Z 
+android	Analyze, test and build	2026-11-26T00:06:28.4265868Z 7 issues found. (ran in 4.7s)
+android	Analyze, test and build	2026-11-26T00:06:28.4346063Z ##[error]Process completed with exit code 1.
