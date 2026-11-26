@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../api/api_client.dart';
 import '../app_settings.dart';
 import '../data/local_cache.dart';
@@ -265,6 +267,65 @@ class _ListingsScreenState extends State<ListingsScreen> {
     _load();
   }
 
+  Future<void> _openCodeLookup() async {
+    final controller = TextEditingController();
+    final code = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Find by code'),
+        content: TextField(
+          controller: controller,
+          textCapitalization: TextCapitalization.characters,
+          decoration: const InputDecoration(
+            labelText: 'Listing code',
+            hintText: 'e.g. A1B2C3D4',
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, controller.text.trim()),
+            child: const Text('Open'),
+          ),
+        ],
+      ),
+    );
+    if (code == null || code.isEmpty || !mounted) return;
+
+    try {
+      final response = await http.get(
+        widget.api.baseUrl.resolve('/api/listings/code/${Uri.encodeComponent(code)}'),
+        headers: {'Accept': 'application/json'},
+      ).timeout(const Duration(seconds: 20));
+      if (response.statusCode == 404) {
+        throw const ApiException(404, 'No listing matches that code.');
+      }
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw ApiException(response.statusCode, 'Could not look up that code.');
+      }
+      final data = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      final id = data['id'] as String?;
+      if (id == null || !mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ListingDetailScreen(
+            api: widget.api,
+            cache: widget.cache,
+            appState: widget.appState,
+            listingId: id,
+          ),
+        ),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())),
+        );
+      }
+    }
+  }
+
   void _openMap() {
     Navigator.push(
       context,
@@ -400,6 +461,11 @@ class _ListingsScreenState extends State<ListingsScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            tooltip: 'Find by code',
+            icon: const Icon(Icons.qr_code_2),
+            onPressed: _openCodeLookup,
+          ),
           IconButton(
             tooltip: 'Map view',
             icon: const Icon(Icons.map_outlined),
