@@ -1,5 +1,5 @@
 use crate::application::messaging::{MessagingError, MessagingRepository};
-use crate::domain::messaging::{Conversation, ConversationSummary, Message};
+use crate::domain::messaging::{Conversation, ConversationSummary, Message, MessageReaction};
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use sqlx::PgPool;
@@ -119,13 +119,28 @@ impl MessagingRepository for PostgresMessagingRepository {
     async fn list_messages(
         &self,
         conversation_id: Uuid,
+        viewer_id: Uuid,
         before: Option<DateTime<Utc>>,
         limit: i64,
     ) -> Result<Vec<Message>, MessagingError> {
         let rows = sqlx::query_as::<_, MessageRow>(
-            "SELECT id, conversation_id, sender_id, body, created_at, read_at FROM messages WHERE conversation_id = $1 AND ($2::timestamptz IS NULL OR created_at < $2) ORDER BY created_at DESC, id DESC LIMIT $3",
+            "SELECT m.id, m.conversation_id, m.sender_id, m.body, m.media_url, m.media_type,
+                    m.duration_seconds, m.reply_to_id, r.body AS reply_to_body,
+                    COALESCE((
+                      SELECT jsonb_agg(jsonb_build_object('emoji', x.emoji, 'count', x.count, 'reacted_by_me', x.reacted_by_me))
+                      FROM (
+                        SELECT emoji, COUNT(*) AS count, BOOL_OR(user_id = $2) AS reacted_by_me
+                        FROM message_reactions WHERE message_id = m.id GROUP BY emoji
+                      ) x
+                    ), '[]'::jsonb) AS reactions,
+                    m.created_at, m.read_at
+             FROM messages m
+             LEFT JOIN messages r ON r.id = m.reply_to_id
+             WHERE m.conversation_id = $1 AND ($3::timestamptz IS NULL OR m.created_at < $3)
+             ORDER BY m.created_at DESC, m.id DESC LIMIT $4",
         )
         .bind(conversation_id)
+        .bind(viewer_id)
         .bind(before)
         .bind(limit)
         .fetch_all(&self.pool)
@@ -139,7 +154,11 @@ impl MessagingRepository for PostgresMessagingRepository {
         &self,
         conversation_id: Uuid,
         sender_id: Uuid,
-        body: &str,
+        body: Option<&str>,
+        media_url: Option<&str>,
+        media_type: Option<&str>,
+        duration_seconds: Option<i32>,
+        reply_to_id: Option<Uuid>,
     ) -> Result<Message, MessagingError> {
         let mut transaction = self
             .pool
@@ -148,22 +167,33 @@ impl MessagingRepository for PostgresMessagingRepository {
             .map_err(|e| MessagingError::Repository(e.to_string()))?;
 
         let row = sqlx::query_as::<_, MessageRow>(
-            "INSERT INTO messages (conversation_id, sender_id, body) VALUES ($1, $2, $3) RETURNING id, conversation_id, sender_id, body, created_at, read_at",
+            "INSERT INTO messages (conversation_id, sender_id, body, media_url, media_type, duration_seconds, reply_to_id)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)
+             RETURNING id, conversation_id, sender_id, body, media_url, media_type, duration_seconds, reply_to_id,
+                       NULL::text AS reply_to_body, '[]'::jsonb AS reactions, created_at, read_at",
         )
         .bind(conversation_id)
         .bind(sender_id)
         .bind(body)
+        .bind(media_url)
+        .bind(media_type)
+        .bind(duration_seconds)
+        .bind(reply_to_id)
         .fetch_one(&mut *transaction)
         .await
         .map_err(|e| MessagingError::Repository(e.to_string()))?;
 
-        let preview: String = body.chars().take(120).collect();
+        let preview_source = body
+            .map(str::to_string)
+            .or_else(|| media_type.map(|kind| format!("Sent a {kind}")))
+            .unwrap_or_else(|| "New message".into());
+        let preview: String = preview_source.chars().take(120).collect();
 
         sqlx::query(
             "UPDATE conversations SET last_message_at = now(), last_message = $2, last_message_preview = $3, last_sender_id = $4 WHERE id = $1",
         )
         .bind(conversation_id)
-        .bind(body)
+        .bind(&preview_source)
         .bind(preview)
         .bind(sender_id)
         .execute(&mut *transaction)
@@ -176,6 +206,43 @@ impl MessagingRepository for PostgresMessagingRepository {
             .map_err(|e| MessagingError::Repository(e.to_string()))?;
 
         Ok(row.into())
+    }
+
+    async fn react_to_message(
+        &self,
+        message_id: Uuid,
+        user_id: Uuid,
+        emoji: &str,
+    ) -> Result<(), MessagingError> {
+        let allowed = sqlx::query_scalar::<_, bool>(
+            "SELECT EXISTS (
+               SELECT 1 FROM messages m
+               JOIN conversations c ON c.id = m.conversation_id
+               WHERE m.id = $1 AND (c.participant_a = $2 OR c.participant_b = $2)
+             )",
+        )
+        .bind(message_id)
+        .bind(user_id)
+        .fetch_one(&self.pool)
+        .await
+        .map_err(|e| MessagingError::Repository(e.to_string()))?;
+
+        if !allowed {
+            return Err(MessagingError::NotFound);
+        }
+
+        sqlx::query(
+            "INSERT INTO message_reactions (message_id, user_id, emoji) VALUES ($1, $2, $3)
+             ON CONFLICT (message_id, user_id, emoji) DO NOTHING",
+        )
+        .bind(message_id)
+        .bind(user_id)
+        .bind(emoji)
+        .execute(&self.pool)
+        .await
+        .map_err(|e| MessagingError::Repository(e.to_string()))?;
+
+        Ok(())
     }
 
     async fn mark_read(&self, conversation_id: Uuid, user_id: Uuid) -> Result<(), MessagingError> {
@@ -281,18 +348,47 @@ struct MessageRow {
     id: Uuid,
     conversation_id: Uuid,
     sender_id: Uuid,
-    body: String,
+    body: Option<String>,
+    media_url: Option<String>,
+    media_type: Option<String>,
+    duration_seconds: Option<i32>,
+    reply_to_id: Option<Uuid>,
+    reply_to_body: Option<String>,
+    reactions: serde_json::Value,
     created_at: chrono::DateTime<chrono::Utc>,
     read_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 impl From<MessageRow> for Message {
     fn from(row: MessageRow) -> Self {
+        let reactions = row
+            .reactions
+            .as_array()
+            .map(|items| {
+                items
+                    .iter()
+                    .filter_map(|item| {
+                        Some(MessageReaction {
+                            emoji: item.get("emoji")?.as_str()?.to_string(),
+                            count: item.get("count")?.as_i64()?,
+                            reacted_by_me: item.get("reacted_by_me")?.as_bool()?,
+                        })
+                    })
+                    .collect()
+            })
+            .unwrap_or_default();
+
         Self {
             id: row.id,
             conversation_id: row.conversation_id,
             sender_id: row.sender_id,
             body: row.body,
+            media_url: row.media_url,
+            media_type: row.media_type,
+            duration_seconds: row.duration_seconds,
+            reply_to_id: row.reply_to_id,
+            reply_to_body: row.reply_to_body,
+            reactions,
             created_at: row.created_at,
             read_at: row.read_at,
         }

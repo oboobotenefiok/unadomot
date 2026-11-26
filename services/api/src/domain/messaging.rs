@@ -29,11 +29,24 @@ pub struct ConversationSummary {
 }
 
 #[derive(Clone, Debug)]
+pub struct MessageReaction {
+    pub emoji: String,
+    pub count: i64,
+    pub reacted_by_me: bool,
+}
+
+#[derive(Clone, Debug)]
 pub struct Message {
     pub id: Uuid,
     pub conversation_id: Uuid,
     pub sender_id: Uuid,
-    pub body: String,
+    pub body: Option<String>,
+    pub media_url: Option<String>,
+    pub media_type: Option<String>,
+    pub duration_seconds: Option<i32>,
+    pub reply_to_id: Option<Uuid>,
+    pub reply_to_body: Option<String>,
+    pub reactions: Vec<MessageReaction>,
     pub created_at: DateTime<Utc>,
     pub read_at: Option<DateTime<Utc>>,
 }
