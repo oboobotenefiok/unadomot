@@ -6,7 +6,7 @@ use axum::{
     Json, Router,
 };
 use serde::Deserialize;
-use serde_json::{json, Value};
+use serde_json::json;
 use unadomot_api::application::auth::verify_session;
 use unadomot_api::application::messaging::MessagingError;
 use unadomot_api::http::AppState;
