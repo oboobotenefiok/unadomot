@@ -86,6 +86,8 @@ class _BootstrapAppState extends State<BootstrapApp> {
     if (savedTheme == 'dark') appThemeMode.value = ThemeMode.dark;
     final savedContrast = await cache.getSetting('high_contrast');
     appHighContrast.value = savedContrast == 'true';
+    final savedLargeText = await cache.getSetting('large_text');
+    appLargeText.value = savedLargeText == 'true';
 
     if (!mounted) return;
     setState(() {
@@ -175,33 +177,42 @@ class UnaDomotApp extends StatelessWidget {
         valueListenable: appThemeMode,
         builder: (context, mode, _) => ValueListenableBuilder<bool>(
           valueListenable: appHighContrast,
-          builder: (context, contrast, _) => MaterialApp(
-            title: 'UnaDomot',
-            theme: contrast ? unaHighContrastTheme() : unaTheme(),
-            darkTheme: unaDarkTheme(),
-            themeMode: mode,
-            onGenerateRoute: _route,
-            home: showOnboarding
-                ? OnboardingScreen(
-                    cache: cache,
-                    api: api,
-                    appState: state,
-                  )
-                : initialListingId != null
-                    ? ListingDetailScreen(
-                        api: api,
-                        cache: cache,
-                        appState: state,
-                        listingId: initialListingId!,
-                      )
-                    : initialUsername == null
-                        ? MainShell(api: api, cache: cache, appState: state)
-                        : PublicProfileScreen(
-                            api: api,
-                            cache: cache,
-                            appState: state,
-                            username: initialUsername!,
-                          ),
+          builder: (context, contrast, _) => ValueListenableBuilder<bool>(
+            valueListenable: appLargeText,
+            builder: (context, largeText, _) => MaterialApp(
+              title: 'UnaDomot',
+              theme: contrast ? unaHighContrastTheme() : unaTheme(),
+              darkTheme: unaDarkTheme(),
+              themeMode: mode,
+              builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: TextScaler.linear(largeText ? 1.25 : 1.0),
+                ),
+                child: child ?? const SizedBox.shrink(),
+              ),
+              onGenerateRoute: _route,
+              home: showOnboarding
+                  ? OnboardingScreen(
+                      cache: cache,
+                      api: api,
+                      appState: state,
+                    )
+                  : initialListingId != null
+                      ? ListingDetailScreen(
+                          api: api,
+                          cache: cache,
+                          appState: state,
+                          listingId: initialListingId!,
+                        )
+                      : initialUsername == null
+                          ? MainShell(api: api, cache: cache, appState: state)
+                          : PublicProfileScreen(
+                              api: api,
+                              cache: cache,
+                              appState: state,
+                              username: initialUsername!,
+                            ),
+            ),
           ),
         ),
       );
