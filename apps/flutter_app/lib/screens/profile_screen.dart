@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import '../api/api_client.dart';
+import '../app_settings.dart';
 import '../data/local_cache.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
@@ -590,6 +591,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
             context,
             MaterialPageRoute(builder: (_) => MessagesScreen(api: widget.api)),
           )),
+          ValueListenableBuilder<bool>(
+            valueListenable: appHighContrast,
+            builder: (context, enabled, _) => ListTile(
+              leading: const Icon(Icons.contrast, color: Color(0xFF15803D)),
+              title: const Text('High contrast', style: TextStyle(fontWeight: FontWeight.w500)),
+              subtitle: const Text('Stronger borders and bolder text'),
+              trailing: Switch(
+                value: enabled,
+                onChanged: (value) async {
+                  appHighContrast.value = value;
+                  await widget.cache.setSetting('high_contrast', value.toString());
+                },
+              ),
+            ),
+          ),
           _settingsRow(Icons.info_outline, 'About UnaDomot', () => showAboutDialog(
             context: context,
             applicationName: 'UnaDomot',
