@@ -313,6 +313,13 @@ class ApiClient {
     return Map<String, dynamic>.from(result as Map);
   }
 
+  Future<List<Map<String, dynamic>>> incomingCalls() async {
+    final result = await _request('GET', '/api/calls/incoming', authenticated: true);
+    return (result as List)
+        .map((item) => Map<String, dynamic>.from(item as Map))
+        .toList();
+  }
+
   Future<Map<String, dynamic>> getCall(String callId) async {
     final result = await _request(
       'GET',
