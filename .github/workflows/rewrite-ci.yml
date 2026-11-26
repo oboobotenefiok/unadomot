@@ -4,8 +4,13 @@ on:
   push:
     branches: [rewrite/flutter-rust-postgres]
     tags: ['ci']
+  pull_request:
+    branches: [rewrite/flutter-rust-postgres]
 permissions:
   contents: write
+concurrency:
+  group: rewrite-ci-${{ github.ref }}
+  cancel-in-progress: true
 env:
   CARGO_TERM_COLOR: never
   NO_COLOR: 1
@@ -45,8 +50,7 @@ jobs:
         run: |
           set +e
           : > /tmp/rust.log
-          # Formatting gate temporarily disabled. Re-enable when requested.
-          fmt=0
+          cargo fmt --all -- --check >> /tmp/rust.log 2>&1; fmt=$?
           cargo clippy --all-targets -- -D warnings >> /tmp/rust.log 2>&1; clippy=$?
           cargo test >> /tmp/rust.log 2>&1; tests=$?
           if [ $fmt -ne 0 ] || [ $clippy -ne 0 ] || [ $tests -ne 0 ]; then
