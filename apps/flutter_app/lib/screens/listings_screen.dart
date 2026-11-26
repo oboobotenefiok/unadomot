@@ -11,6 +11,7 @@ import 'auth_sheet.dart';
 import 'create_listing_screen.dart';
 import 'favorites_screen.dart';
 import 'listing_detail_screen.dart';
+import 'map_screen.dart';
 import 'messages_screen.dart';
 import 'profile_screen.dart';
 
@@ -263,6 +264,20 @@ class _ListingsScreenState extends State<ListingsScreen> {
     _load();
   }
 
+  void _openMap() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MapScreen(
+          api: widget.api,
+          cache: widget.cache,
+          appState: widget.appState,
+          listings: _visibleListings,
+        ),
+      ),
+    );
+  }
+
   Future<void> _openAccessibility() async {
     await showModalBottomSheet<void>(
       context: context,
@@ -383,6 +398,11 @@ class _ListingsScreenState extends State<ListingsScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            tooltip: 'Map view',
+            icon: const Icon(Icons.map_outlined),
+            onPressed: _openMap,
+          ),
           IconButton(
             tooltip: 'Accessibility',
             icon: const Icon(Icons.accessibility_new),
@@ -873,35 +893,6 @@ class _ListingCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (listing.landlordVerified) ...[
-                        const SizedBox(width: 4),
-                        const Icon(
-                          Icons.verified,
-                          size: 15,
-                          color: UnaColors.green700,
-                        ),
-                      ],
-                      if (listing.isAgentListing) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: UnaColors.green100,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: const Text(
-                            'Agent',
-                            style: TextStyle(
-                              color: UnaColors.green900,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
                       const Spacer(),
                       IconButton(
                         visualDensity: VisualDensity.compact,
@@ -909,19 +900,14 @@ class _ListingCard extends StatelessWidget {
                         onPressed: onFavorite,
                         icon: Icon(
                           isFavorite ? Icons.favorite : Icons.favorite_border,
-                          size: 20,
                           color: isFavorite ? Colors.red : UnaColors.text500,
                         ),
                       ),
                       IconButton(
                         visualDensity: VisualDensity.compact,
-                        tooltip: 'Message lister',
+                        tooltip: 'Message landlord',
                         onPressed: onMessage,
-                        icon: const Icon(
-                          Icons.chat_bubble_outline,
-                          size: 20,
-                          color: UnaColors.text500,
-                        ),
+                        icon: const Icon(Icons.chat_bubble_outline),
                       ),
                     ],
                   ),
