@@ -692,7 +692,7 @@ async fn my_listings_handler(
     State(state): State<AppState>,
     headers: HeaderMap,
 ) -> Result<Json<Vec<ListingResponse>>, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     list_my_listings(state.listings.as_ref(), user.id)
         .await
         .map(|items| Json(items.into_iter().map(ListingResponse::from).collect()))
@@ -704,7 +704,7 @@ async fn create_listing_handler(
     headers: HeaderMap,
     Json(request): Json<CreateListingRequest>,
 ) -> Result<Json<ListingResponse>, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     let input = NewListing {
         landlord_id: user.id,
         title: request.title,
@@ -744,7 +744,7 @@ async fn update_listing_handler(
     Path(id): Path<Uuid>,
     Json(request): Json<UpdateListingRequest>,
 ) -> Result<Json<ListingResponse>, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     let update = ListingUpdate {
         title: request.title,
         description: request.description,
@@ -771,7 +771,7 @@ async fn delete_listing_handler(
     headers: HeaderMap,
     Path(id): Path<Uuid>,
 ) -> Result<StatusCode, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     delete_listing(state.listings.as_ref(), id, user.id)
         .await
         .map(|_| StatusCode::NO_CONTENT)
@@ -784,7 +784,7 @@ async fn admin_remove_listing_handler(
     Path(id): Path<Uuid>,
     Json(request): Json<AdminRemoveRequest>,
 ) -> Result<Json<ListingResponse>, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     if !state.users.is_admin(user.id).await.map_err(auth_error)? {
         return Err(ApiError::new(
             StatusCode::FORBIDDEN,
@@ -804,7 +804,7 @@ async fn admin_restore_listing_handler(
     headers: HeaderMap,
     Path(id): Path<Uuid>,
 ) -> Result<Json<ListingResponse>, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     if !state.users.is_admin(user.id).await.map_err(auth_error)? {
         return Err(ApiError::new(
             StatusCode::FORBIDDEN,
@@ -824,7 +824,7 @@ async fn admin_suspend_user_handler(
     headers: HeaderMap,
     Path(id): Path<Uuid>,
 ) -> Result<StatusCode, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     if !state.users.is_admin(user.id).await.map_err(auth_error)? {
         return Err(ApiError::new(
             StatusCode::FORBIDDEN,
@@ -851,7 +851,7 @@ async fn create_report_handler(
     Path(id): Path<Uuid>,
     Json(request): Json<CreateReportRequest>,
 ) -> Result<Json<ReportResponse>, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     create_report(
         state.reports.as_ref(),
         id,
@@ -869,7 +869,7 @@ async fn admin_list_reports_handler(
     headers: HeaderMap,
     Query(query): Query<ReportQuery>,
 ) -> Result<Json<Vec<ReportResponse>>, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     if !state.users.is_admin(user.id).await.map_err(auth_error)? {
         return Err(ApiError::new(
             StatusCode::FORBIDDEN,
@@ -893,7 +893,7 @@ async fn admin_resolve_report_handler(
     Path(id): Path<Uuid>,
     Json(request): Json<ResolveReportRequest>,
 ) -> Result<Json<ReportResponse>, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     if !state.users.is_admin(user.id).await.map_err(auth_error)? {
         return Err(ApiError::new(
             StatusCode::FORBIDDEN,
@@ -920,7 +920,7 @@ async fn add_media_handler(
     Path(id): Path<Uuid>,
     Json(request): Json<AddMediaRequest>,
 ) -> Result<Json<MediaResponse>, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     let media = NewListingMedia {
         cloudinary_public_id: request.cloudinary_public_id,
         url: request.url,
@@ -939,7 +939,7 @@ async fn signature_handler(
     headers: HeaderMap,
     Json(request): Json<SignatureRequest>,
 ) -> Result<Json<crate::application::media::UploadSignature>, ApiError> {
-    authorize(&state, &headers)?;
+    authorize(&state, &headers).await?;
     let folder = request
         .folder
         .filter(|value| !value.trim().is_empty())
@@ -956,7 +956,7 @@ async fn conversations_handler(
     State(state): State<AppState>,
     headers: HeaderMap,
 ) -> Result<Json<Vec<ConversationSummaryResponse>>, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     list_conversations(state.messaging.as_ref(), user.id)
         .await
         .map(|items| Json(items.into_iter().map(ConversationSummaryResponse::from).collect()))
@@ -968,7 +968,7 @@ async fn start_conversation_handler(
     headers: HeaderMap,
     Path(id): Path<Uuid>,
 ) -> Result<Json<ConversationResponse>, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     start_conversation(state.messaging.as_ref(), id, user.id)
         .await
         .map(|conversation| Json(ConversationResponse::from(conversation)))
@@ -981,7 +981,7 @@ async fn messages_handler(
     Path(id): Path<Uuid>,
     Query(query): Query<MessageQuery>,
 ) -> Result<Json<Vec<MessageResponse>>, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     let before = query
         .before
         .as_deref()
@@ -1016,7 +1016,7 @@ async fn send_message_handler(
     Path(id): Path<Uuid>,
     Json(request): Json<SendMessageRequest>,
 ) -> Result<Json<MessageResponse>, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     send_message(state.messaging.as_ref(), user.id, id, &request.body)
         .await
         .map(|message| Json(MessageResponse::from(message)))
@@ -1028,21 +1028,32 @@ async fn mark_read_handler(
     headers: HeaderMap,
     Path(id): Path<Uuid>,
 ) -> Result<StatusCode, ApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     mark_read(state.messaging.as_ref(), user.id, id)
         .await
         .map(|_| StatusCode::NO_CONTENT)
         .map_err(messaging_error)
 }
 
-fn authorize(state: &AppState, headers: &HeaderMap) -> Result<crate::application::auth::AuthenticatedUser, ApiError> {
+async fn authorize(
+    state: &AppState,
+    headers: &HeaderMap,
+) -> Result<crate::application::auth::AuthenticatedUser, ApiError> {
     let token = headers
         .get("authorization")
         .and_then(|value| value.to_str().ok())
         .and_then(|value| value.strip_prefix("Bearer "))
         .ok_or_else(|| ApiError::new(StatusCode::UNAUTHORIZED, "unauthorized", "Missing bearer token"))?;
 
-    verify_session(token, &state.jwt_secret).map_err(auth_error)
+    let user = verify_session(token, &state.jwt_secret).map_err(auth_error)?;
+    if !state.users.is_active(user.id).await.map_err(auth_error)? {
+        return Err(ApiError::new(
+            StatusCode::UNAUTHORIZED,
+            "unauthorized",
+            "Account is not active",
+        ));
+    }
+    Ok(user)
 }
 
 fn parse_decimal(value: &str) -> Result<Decimal, ApiError> {
