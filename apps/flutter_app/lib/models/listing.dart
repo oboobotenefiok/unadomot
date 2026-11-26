@@ -12,6 +12,8 @@ class Listing {
   final int? bathrooms;
   final String? propertyType;
   final String? furnishing;
+  final List<String> amenities;
+  final int viewCount;
   final String landlordName;
   final bool landlordVerified;
   final String? landlordPhotoUrl;
@@ -32,6 +34,8 @@ class Listing {
     this.bathrooms,
     this.propertyType,
     this.furnishing,
+    this.amenities = const [],
+    this.viewCount = 0,
     this.landlordName = '',
     this.landlordVerified = false,
     this.landlordPhotoUrl,
@@ -51,6 +55,10 @@ class Listing {
         bathrooms: json['bathrooms'] as int?,
         propertyType: json['property_type'] as String?,
         furnishing: json['furnishing'] as String?,
+        amenities: (json['amenities'] as List? ?? const [])
+            .map((item) => item.toString())
+            .toList(),
+        viewCount: (json['view_count'] as num?)?.toInt() ?? 0,
         landlordName: json['landlord_name'] as String? ?? '',
         landlordVerified: json['landlord_verified'] as bool? ?? false,
         landlordPhotoUrl: json['landlord_photo_url'] as String?,

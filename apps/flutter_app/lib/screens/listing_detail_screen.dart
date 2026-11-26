@@ -7,6 +7,7 @@ import '../state/app_state.dart';
 import '../theme.dart';
 import '../utils/share_helper.dart';
 import 'auth_sheet.dart';
+import 'map_screen.dart';
 import 'messages_screen.dart';
 import 'report_listing_screen.dart';
 
@@ -149,6 +150,22 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
     }
   }
 
+  void _openMap() {
+    final listing = _listing;
+    if (listing == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MapScreen(
+          api: widget.api,
+          cache: widget.cache,
+          appState: widget.appState,
+          listings: [listing],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -214,13 +231,19 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                         vertical: 4,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: UnaColors.green100,
+                                        color: _listing!.status == 'available'
+                                            ? UnaColors.green100
+                                            : Colors.orange.shade100,
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       child: Text(
-                                        _listing!.isAgentListing ? 'Agent' : 'Owner',
-                                        style: const TextStyle(
-                                          color: UnaColors.green900,
+                                        _listing!.status == 'available'
+                                            ? (_listing!.isAgentListing ? 'Agent' : 'Owner')
+                                            : _listing!.status.toUpperCase(),
+                                        style: TextStyle(
+                                          color: _listing!.status == 'available'
+                                              ? UnaColors.green900
+                                              : Colors.orange.shade900,
                                           fontSize: 11,
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -245,6 +268,13 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                     fontSize: 13,
                                   ),
                                 ),
+                                if (_listing!.viewCount > 0) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${_listing!.viewCount} views',
+                                    style: const TextStyle(color: UnaColors.text500, fontSize: 12),
+                                  ),
+                                ],
                                 const SizedBox(height: 12),
                                 Wrap(
                                   spacing: 8,
@@ -260,6 +290,25 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                       _chip(_listing!.furnishing!),
                                   ],
                                 ),
+                                if (_listing!.amenities.isNotEmpty) ...[
+                                  const SizedBox(height: 20),
+                                  const Text(
+                                    'Amenities',
+                                    style: TextStyle(
+                                      color: UnaColors.text900,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: _listing!.amenities
+                                        .map((item) => _chip(item))
+                                        .toList(),
+                                  ),
+                                ],
                                 const SizedBox(height: 20),
                                 const Text(
                                   'Description',
@@ -278,6 +327,8 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                     height: 1.5,
                                   ),
                                 ),
+                                const SizedBox(height: 20),
+                                _mapCard(),
                                 const SizedBox(height: 20),
                                 _landlordCard(),
                                 const SizedBox(height: 20),
@@ -299,6 +350,41 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                           ),
                         ],
                       ),
+      );
+
+  Widget _mapCard() => InkWell(
+        onTap: _openMap,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: UnaColors.green100,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: UnaColors.border),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.map_outlined, color: UnaColors.green900),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${_listing!.lga}, ${_listing!.state}',
+                      style: const TextStyle(fontWeight: FontWeight.w600, color: UnaColors.green900),
+                    ),
+                    const Text(
+                      'View this area on the map',
+                      style: TextStyle(fontSize: 12, color: UnaColors.text600),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: UnaColors.green900),
+            ],
+          ),
+        ),
       );
 
   Widget _gallery() {
