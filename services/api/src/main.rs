@@ -43,6 +43,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     if jwt_secret.len() < 32 {
         return Err("JWT_SECRET must be at least 32 bytes".into());
     }
+
+    let refresh_secret = std::env::var("REFRESH_TOKEN_SECRET")
+        .map_err(|_| "REFRESH_TOKEN_SECRET is required and must be at least 32 bytes")?;
+    if refresh_secret.len() < 32 {
+        return Err("REFRESH_TOKEN_SECRET must be at least 32 bytes".into());
+    }
+    if refresh_secret == jwt_secret {
+        return Err("REFRESH_TOKEN_SECRET must differ from JWT_SECRET".into());
+    }
+
     let jwt_secret = Arc::new(jwt_secret);
 
     let (users, listings, messaging, reports, verification_repo): Repositories =

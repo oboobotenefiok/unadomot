@@ -200,15 +200,17 @@ pub fn new_refresh_token() -> String {
     format!("{}{}", Uuid::new_v4().simple(), Uuid::new_v4().simple())
 }
 
-pub fn hash_refresh_token(token: &str) -> String {
-    let secret = std::env::var("REFRESH_TOKEN_SECRET")
-        .or_else(|_| std::env::var("JWT_SECRET"))
-        .unwrap_or_else(|_| "development-refresh-secret-change-me".into());
-
+fn hash_refresh_token_with_secret(token: &str, secret: &str) -> String {
     let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_bytes())
         .expect("HMAC accepts keys of any size");
     mac.update(token.as_bytes());
     hex::encode(mac.finalize().into_bytes())
+}
+
+pub fn hash_refresh_token(token: &str) -> String {
+    let secret = std::env::var("REFRESH_TOKEN_SECRET")
+        .expect("REFRESH_TOKEN_SECRET must be set before hashing refresh tokens");
+    hash_refresh_token_with_secret(token, &secret)
 }
 
 #[cfg(test)]
@@ -230,7 +232,10 @@ mod tests {
 
     #[test]
     fn refresh_tokens_are_hashed_with_hmac() {
-        let hash = hash_refresh_token("token-value");
+        let hash = hash_refresh_token_with_secret(
+            "token-value",
+            "test-refresh-secret-at-least-32-bytes-long",
+        );
         assert_eq!(hash.len(), 64);
         assert_ne!(hash, "token-value");
     }
