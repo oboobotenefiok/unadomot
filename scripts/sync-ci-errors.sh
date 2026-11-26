@@ -10,13 +10,13 @@ fi
 
 BRANCH="$(git branch --show-current)"
 
-# Discard generated log files left from a previous run so pull --rebase can proceed.
-git restore error.txt error-summary.txt 2>/dev/null || true
-rm -f error.txt error-summary.txt
+# Restore generated logs instead of deleting them, so stashing never records a deletion.
+git checkout -- error.txt error-summary.txt 2>/dev/null || true
 
 STASHED=0
-if ! git diff --quiet || ! git diff --cached --quiet; then
-  git stash push -u -m "ci-autostash-$(date +%s)" >/dev/null
+if ! git diff --quiet -- . ':(exclude)error.txt' ':(exclude)error-summary.txt' \
+  || ! git diff --cached --quiet -- . ':(exclude)error.txt' ':(exclude)error-summary.txt'; then
+  git stash push -u -m "ci-autostash-$(date +%s)" -- . ':(exclude)error.txt' ':(exclude)error-summary.txt' >/dev/null
   STASHED=1
 fi
 
@@ -35,7 +35,9 @@ if [ -n "$RUN_ID" ] && [ "$RUN_ID" != "null" ]; then
     git push origin "$BRANCH"
     echo "Pushed error.txt and error-summary.txt for run $RUN_ID"
   else
-    rm -f error.txt error-summary.txt
+    git rm -f error.txt error-summary.txt >/dev/null 2>&1 || true
+    git commit -m "chore: clear CI logs for green run $RUN_ID" || true
+    git push origin "$BRANCH" || true
     echo "Run $RUN_ID has no failed steps"
   fi
 fi
