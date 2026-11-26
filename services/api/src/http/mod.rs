@@ -14,7 +14,7 @@ use crate::application::messaging::{
 use crate::domain::listing::{
     Listing, ListingFilter, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
 };
-use crate::domain::messaging::{Conversation, Message};
+use crate::domain::messaging::{Conversation, ConversationSummary, Message};
 use axum::{
     extract::{DefaultBodyLimit, Path, Query, Request, State},
     http::{header, HeaderMap, HeaderValue, Method, StatusCode},
@@ -278,6 +278,21 @@ pub struct ConversationResponse {
 }
 
 #[derive(Serialize)]
+pub struct ConversationSummaryResponse {
+    pub id: Uuid,
+    pub listing_id: Uuid,
+    pub listing_title: String,
+    pub listing_photo_url: Option<String>,
+    pub counterpart_id: Uuid,
+    pub counterpart_name: String,
+    pub counterpart_verified: bool,
+    pub last_message_preview: Option<String>,
+    pub last_message_at: Option<chrono::DateTime<Utc>>,
+    pub unread_count: i64,
+    pub created_at: chrono::DateTime<Utc>,
+}
+
+#[derive(Serialize)]
 pub struct MessageResponse {
     pub id: Uuid,
     pub conversation_id: Uuid,
@@ -330,6 +345,24 @@ impl From<Conversation> for ConversationResponse {
             last_message_preview: conversation.last_message_preview,
             last_message_at: conversation.last_message_at,
             last_sender_id: conversation.last_sender_id,
+            created_at: conversation.created_at,
+        }
+    }
+}
+
+impl From<ConversationSummary> for ConversationSummaryResponse {
+    fn from(conversation: ConversationSummary) -> Self {
+        Self {
+            id: conversation.id,
+            listing_id: conversation.listing_id,
+            listing_title: conversation.listing_title,
+            listing_photo_url: conversation.listing_photo_url,
+            counterpart_id: conversation.counterpart_id,
+            counterpart_name: conversation.counterpart_name,
+            counterpart_verified: conversation.counterpart_verified,
+            last_message_preview: conversation.last_message_preview,
+            last_message_at: conversation.last_message_at,
+            unread_count: conversation.unread_count,
             created_at: conversation.created_at,
         }
     }
@@ -695,11 +728,11 @@ async fn signature_handler(
 async fn conversations_handler(
     State(state): State<AppState>,
     headers: HeaderMap,
-) -> Result<Json<Vec<ConversationResponse>>, ApiError> {
+) -> Result<Json<Vec<ConversationSummaryResponse>>, ApiError> {
     let user = authorize(&state, &headers)?;
     list_conversations(state.messaging.as_ref(), user.id)
         .await
-        .map(|items| Json(items.into_iter().map(ConversationResponse::from).collect()))
+        .map(|items| Json(items.into_iter().map(ConversationSummaryResponse::from).collect()))
         .map_err(messaging_error)
 }
 
