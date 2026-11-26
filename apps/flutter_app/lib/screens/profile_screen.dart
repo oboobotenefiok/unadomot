@@ -13,12 +13,14 @@ class ProfileScreen extends StatefulWidget {
   final ApiClient api;
   final LocalCache cache;
   final AppState appState;
+  final bool showAppBar;
 
   const ProfileScreen({
     super.key,
     required this.api,
     required this.cache,
     required this.appState,
+    this.showAppBar = true,
   });
 
   @override
@@ -127,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (!widget.appState.signedIn) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Profile')),
+        appBar: widget.showAppBar ? AppBar(title: const Text('Profile')) : null,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -154,7 +156,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       backgroundColor: background,
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: widget.showAppBar ? AppBar(title: const Text('Profile')) : null,
       body: RefreshIndicator(
         onRefresh: _load,
         child: _loading
@@ -394,7 +396,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           color: const Color(0xFF052E16),
                           child: Text(
-                            '₦${(listing['price'] as num?)?.toStringAsFixed(0) ?? '0'}',
+                            'N${(listing['price'] as num?)?.toStringAsFixed(0) ?? '0'}',
                             style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12),
                           ),
                         ),
@@ -472,7 +474,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             )),
             _settingsRow(Icons.logout, 'Logout', () async {
               await widget.appState.signOut();
-              if (mounted) Navigator.pop(context);
+              if (mounted) setState(() {});
             }, danger: true),
           ],
         ),
