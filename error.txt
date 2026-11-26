@@ -1,474 +1,474 @@
-rust	Run cargo clippy --all-targets -- -D warnings	﻿2026-11-26T01:17:51.8100235Z ##[group]Run cargo clippy --all-targets -- -D warnings
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:51.8100672Z ^[[36;1mcargo clippy --all-targets -- -D warnings^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:51.8136308Z shell: /usr/bin/bash -e {0}
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:51.8136580Z env:
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:51.8137038Z   DATABASE_URL: ***localhost:5432/unadomot_test
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:51.8137466Z   JWT_SECRET: test-secret-that-is-at-least-32-bytes-long
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:51.8137936Z   REFRESH_TOKEN_SECRET: test-refresh-secret-that-is-at-least-32-bytes
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:51.8138329Z   CARGO_HOME: /home/runner/.cargo
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:51.8138586Z   CARGO_INCREMENTAL: 0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:51.8138811Z   CARGO_TERM_COLOR: always
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:51.8139056Z   CACHE_ON_FAILURE: false
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:51.8139284Z ##[endgroup]
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:52.3491068Z ^[[1m^[[92m    Updating^[[0m crates.io index
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.1869001Z ^[[1m^[[92m     Locking^[[0m 274 packages to highest compatible versions
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.1875872Z ^[[1m^[[92m      Adding^[[0m argon2 v0.5.3 ^[[1m^[[33m(available: v0.6.0)^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.1940667Z ^[[1m^[[92m      Adding^[[0m generic-array v0.14.7 ^[[1m^[[33m(available: v0.14.9)^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.1954681Z ^[[1m^[[92m      Adding^[[0m hmac v0.12.1 ^[[1m^[[33m(available: v0.13.0)^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.1992092Z ^[[1m^[[92m      Adding^[[0m jsonwebtoken v9.3.1 ^[[1m^[[33m(available: v12.0.0)^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.2000025Z ^[[1m^[[92m      Adding^[[0m matchit v0.8.4 ^[[1m^[[33m(available: v0.8.6)^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.2037551Z ^[[1m^[[92m      Adding^[[0m redis v0.27.6 ^[[1m^[[33m(available: v1.8.3)^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.2083407Z ^[[1m^[[92m      Adding^[[0m sha1 v0.10.7 ^[[1m^[[33m(available: v0.11.0)^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.2084931Z ^[[1m^[[92m      Adding^[[0m sha2 v0.10.9 ^[[1m^[[33m(available: v0.11.2)^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.2094672Z ^[[1m^[[92m      Adding^[[0m sqlx v0.8.6 ^[[1m^[[33m(available: v0.9.1)^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.2181779Z ^[[1m^[[92m      Adding^[[0m tower-http v0.6.11 ^[[1m^[[33m(available: v0.7.1)^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.2320715Z ^[[1m^[[92m Downloading^[[0m crates ...
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.3940562Z ^[[1m^[[92m  Downloaded^[[0m atoi v2.0.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4027898Z ^[[1m^[[92m  Downloaded^[[0m crypto-common v0.1.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4041771Z ^[[1m^[[92m  Downloaded^[[0m aho-corasick v1.1.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4095838Z ^[[1m^[[92m  Downloaded^[[0m argon2 v0.5.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4113369Z ^[[1m^[[92m  Downloaded^[[0m errno v0.3.15
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4127620Z ^[[1m^[[92m  Downloaded^[[0m crc-catalog v2.5.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4140772Z ^[[1m^[[92m  Downloaded^[[0m itoa v1.0.19
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4154628Z ^[[1m^[[92m  Downloaded^[[0m digest v0.10.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4172242Z ^[[1m^[[92m  Downloaded^[[0m arrayvec v0.7.8
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4192746Z ^[[1m^[[92m  Downloaded^[[0m const-oid v0.9.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4210720Z ^[[1m^[[92m  Downloaded^[[0m unicode-properties v0.1.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4227886Z ^[[1m^[[92m  Downloaded^[[0m atomic-waker v1.1.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4239420Z ^[[1m^[[92m  Downloaded^[[0m futures-task v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4250980Z ^[[1m^[[92m  Downloaded^[[0m cfg-if v1.0.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4263355Z ^[[1m^[[92m  Downloaded^[[0m untrusted v0.9.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4279109Z ^[[1m^[[92m  Downloaded^[[0m block-buffer v0.10.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4288466Z ^[[1m^[[92m  Downloaded^[[0m generic-array v0.14.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4301662Z ^[[1m^[[92m  Downloaded^[[0m find-msvc-tools v0.1.15
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4317141Z ^[[1m^[[92m  Downloaded^[[0m futures-channel v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4335716Z ^[[1m^[[92m  Downloaded^[[0m allocator-api2 v0.2.21
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4359653Z ^[[1m^[[92m  Downloaded^[[0m cpufeatures v0.2.17
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4374818Z ^[[1m^[[92m  Downloaded^[[0m equivalent v1.0.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4383668Z ^[[1m^[[92m  Downloaded^[[0m httpdate v1.0.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4395252Z ^[[1m^[[92m  Downloaded^[[0m futures-macro v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4406371Z ^[[1m^[[92m  Downloaded^[[0m http-body v1.1.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4417227Z ^[[1m^[[92m  Downloaded^[[0m cfg_aliases v0.2.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4427366Z ^[[1m^[[92m  Downloaded^[[0m crc v3.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4443796Z ^[[1m^[[92m  Downloaded^[[0m home v0.5.12
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4454016Z ^[[1m^[[92m  Downloaded^[[0m futures-io v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4462646Z ^[[1m^[[92m  Downloaded^[[0m futures-core v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4476555Z ^[[1m^[[92m  Downloaded^[[0m idna_adapter v1.2.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4484877Z ^[[1m^[[92m  Downloaded^[[0m unicode-ident v1.0.27
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4512401Z ^[[1m^[[92m  Downloaded^[[0m axum-core v0.5.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4534384Z ^[[1m^[[92m  Downloaded^[[0m async-trait v0.1.92
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4570764Z ^[[1m^[[92m  Downloaded^[[0m hex v0.4.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4586111Z ^[[1m^[[92m  Downloaded^[[0m md-5 v0.10.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4601017Z ^[[1m^[[92m  Downloaded^[[0m num-iter v0.1.46
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4613111Z ^[[1m^[[92m  Downloaded^[[0m form_urlencoded v1.2.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4620643Z ^[[1m^[[92m  Downloaded^[[0m lazy_static v1.5.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4638844Z ^[[1m^[[92m  Downloaded^[[0m heck v0.5.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4651979Z ^[[1m^[[92m  Downloaded^[[0m matchers v0.2.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4661804Z ^[[1m^[[92m  Downloaded^[[0m futures-sink v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4669342Z ^[[1m^[[92m  Downloaded^[[0m byteorder v1.5.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4684994Z ^[[1m^[[92m  Downloaded^[[0m http-body-util v0.1.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4705447Z ^[[1m^[[92m  Downloaded^[[0m base64ct v1.8.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4730682Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-queue v0.3.14
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4744256Z ^[[1m^[[92m  Downloaded^[[0m dotenvy v0.15.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4771683Z ^[[1m^[[92m  Downloaded^[[0m either v1.19.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4786180Z ^[[1m^[[92m  Downloaded^[[0m fastrand v2.5.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4800624Z ^[[1m^[[92m  Downloaded^[[0m foldhash v0.1.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4813248Z ^[[1m^[[92m  Downloaded^[[0m futures-executor v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4827229Z ^[[1m^[[92m  Downloaded^[[0m blake2 v0.10.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4853317Z ^[[1m^[[92m  Downloaded^[[0m lock_api v0.4.14
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4866427Z ^[[1m^[[92m  Downloaded^[[0m deranged v0.5.9
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4882478Z ^[[1m^[[92m  Downloaded^[[0m arc-swap v1.9.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4942128Z ^[[1m^[[92m  Downloaded^[[0m base64 v0.22.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4972170Z ^[[1m^[[92m  Downloaded^[[0m unicode-normalization v0.1.26
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.4998213Z ^[[1m^[[92m  Downloaded^[[0m time-core v0.1.9
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5012198Z ^[[1m^[[92m  Downloaded^[[0m sha1_smol v1.0.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5032332Z ^[[1m^[[92m  Downloaded^[[0m backon v1.6.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5052187Z ^[[1m^[[92m  Downloaded^[[0m borsh-derive v1.8.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5084043Z ^[[1m^[[92m  Downloaded^[[0m autocfg v1.5.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5101900Z ^[[1m^[[92m  Downloaded^[[0m bitflags v2.13.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5145658Z ^[[1m^[[92m  Downloaded^[[0m borsh v1.8.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5217235Z ^[[1m^[[92m  Downloaded^[[0m event-listener v5.4.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5234929Z ^[[1m^[[92m  Downloaded^[[0m getrandom v0.3.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5268866Z ^[[1m^[[92m  Downloaded^[[0m hashlink v0.10.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5286246Z ^[[1m^[[92m  Downloaded^[[0m httparse v1.10.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5310733Z ^[[1m^[[92m  Downloaded^[[0m iana-time-zone v0.1.65
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5338447Z ^[[1m^[[92m  Downloaded^[[0m thiserror v2.0.21
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5402215Z ^[[1m^[[92m  Downloaded^[[0m bytes v1.12.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5462870Z ^[[1m^[[92m  Downloaded^[[0m litemap v0.8.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5499192Z ^[[1m^[[92m  Downloaded^[[0m tokio-macros v2.7.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5509563Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-utils v0.8.23
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5540858Z ^[[1m^[[92m  Downloaded^[[0m displaydoc v0.2.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5561709Z ^[[1m^[[92m  Downloaded^[[0m getrandom v0.2.17
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5590507Z ^[[1m^[[92m  Downloaded^[[0m hmac v0.12.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5609428Z ^[[1m^[[92m  Downloaded^[[0m memchr v2.8.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5667673Z ^[[1m^[[92m  Downloaded^[[0m toml_datetime v1.1.3+spec-1.1.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5680238Z ^[[1m^[[92m  Downloaded^[[0m futures v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5730974Z ^[[1m^[[92m  Downloaded^[[0m jsonwebtoken v9.3.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5773020Z ^[[1m^[[92m  Downloaded^[[0m matchit v0.8.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5794228Z ^[[1m^[[92m  Downloaded^[[0m proc-macro-crate v3.5.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5807100Z ^[[1m^[[92m  Downloaded^[[0m getrandom v0.4.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5844066Z ^[[1m^[[92m  Downloaded^[[0m icu_provider v2.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5869904Z ^[[1m^[[92m  Downloaded^[[0m log v0.4.35
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5895724Z ^[[1m^[[92m  Downloaded^[[0m tracing-attributes v0.1.31
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5921539Z ^[[1m^[[92m  Downloaded^[[0m flume v0.11.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5955769Z ^[[1m^[[92m  Downloaded^[[0m futures-intrusive v0.5.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.5999524Z ^[[1m^[[92m  Downloaded^[[0m icu_normalizer_data v2.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6020685Z ^[[1m^[[92m  Downloaded^[[0m icu_locale_core v2.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6089292Z ^[[1m^[[92m  Downloaded^[[0m toml_edit v0.25.21+spec-1.1.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6127933Z ^[[1m^[[92m  Downloaded^[[0m thiserror-impl v2.0.21
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6142166Z ^[[1m^[[92m  Downloaded^[[0m der v0.7.10
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6193904Z ^[[1m^[[92m  Downloaded^[[0m icu_collections v2.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6257633Z ^[[1m^[[92m  Downloaded^[[0m thread_local v1.1.10
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6270418Z ^[[1m^[[92m  Downloaded^[[0m url v2.5.9
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6297382Z ^[[1m^[[92m  Downloaded^[[0m pem v3.0.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6310946Z ^[[1m^[[92m  Downloaded^[[0m tower-service v0.3.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6318801Z ^[[1m^[[92m  Downloaded^[[0m parking_lot_core v0.9.12
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6339708Z ^[[1m^[[92m  Downloaded^[[0m quote v1.0.47
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6366375Z ^[[1m^[[92m  Downloaded^[[0m combine v4.6.9
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6402654Z ^[[1m^[[92m  Downloaded^[[0m indexmap v2.14.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6445130Z ^[[1m^[[92m  Downloaded^[[0m futures-util v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6578934Z ^[[1m^[[92m  Downloaded^[[0m time-macros v0.2.32
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6603431Z ^[[1m^[[92m  Downloaded^[[0m unicode-bidi v0.3.18
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6627805Z ^[[1m^[[92m  Downloaded^[[0m hyper-util v0.1.21
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6691554Z ^[[1m^[[92m  Downloaded^[[0m pkcs1 v0.7.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6715774Z ^[[1m^[[92m  Downloaded^[[0m tracing-log v0.2.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6728852Z ^[[1m^[[92m  Downloaded^[[0m http v1.5.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6765943Z ^[[1m^[[92m  Downloaded^[[0m tower-layer v0.3.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6775078Z ^[[1m^[[92m  Downloaded^[[0m icu_properties v2.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6812761Z ^[[1m^[[92m  Downloaded^[[0m idna v1.1.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6848864Z ^[[1m^[[92m  Downloaded^[[0m parking_lot v0.12.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6873771Z ^[[1m^[[92m  Downloaded^[[0m pkcs8 v0.10.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6901968Z ^[[1m^[[92m  Downloaded^[[0m rand_core v0.6.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6915445Z ^[[1m^[[92m  Downloaded^[[0m tokio-stream v0.1.19
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6966360Z ^[[1m^[[92m  Downloaded^[[0m tracing-core v0.1.36
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.6993243Z ^[[1m^[[92m  Downloaded^[[0m typenum v1.20.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7028764Z ^[[1m^[[92m  Downloaded^[[0m cc v1.11.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7070954Z ^[[1m^[[92m  Downloaded^[[0m hashbrown v0.15.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7120385Z ^[[1m^[[92m  Downloaded^[[0m hashbrown v0.17.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7176770Z ^[[1m^[[92m  Downloaded^[[0m itertools v0.13.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7245135Z ^[[1m^[[92m  Downloaded^[[0m tinyvec v1.13.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7279101Z ^[[1m^[[92m  Downloaded^[[0m toml_parser v1.1.7+spec-1.1.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7301961Z ^[[1m^[[92m  Downloaded^[[0m version_check v0.9.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7314478Z ^[[1m^[[92m  Downloaded^[[0m axum v0.8.9
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7395531Z ^[[1m^[[92m  Downloaded^[[0m hyper v1.13.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7465818Z ^[[1m^[[92m  Downloaded^[[0m libm v0.2.16
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7574478Z ^[[1m^[[92m  Downloaded^[[0m tower v0.5.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7674016Z ^[[1m^[[92m  Downloaded^[[0m hkdf v0.12.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7697563Z ^[[1m^[[92m  Downloaded^[[0m percent-encoding v2.3.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7706341Z ^[[1m^[[92m  Downloaded^[[0m icu_properties_data v2.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7819834Z ^[[1m^[[92m  Downloaded^[[0m tokio-util v0.7.20
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7899349Z ^[[1m^[[92m  Downloaded^[[0m chrono v0.4.45
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.7967017Z ^[[1m^[[92m  Downloaded^[[0m tower-http v0.6.11
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8059994Z ^[[1m^[[92m  Downloaded^[[0m tracing-subscriber v0.3.23
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8143720Z ^[[1m^[[92m  Downloaded^[[0m time v0.3.55
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8288668Z ^[[1m^[[92m  Downloaded^[[0m simple_asn1 v0.6.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8301621Z ^[[1m^[[92m  Downloaded^[[0m slab v0.4.12
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8314482Z ^[[1m^[[92m  Downloaded^[[0m ppv-lite86 v0.2.21
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8327257Z ^[[1m^[[92m  Downloaded^[[0m password-hash v0.5.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8344753Z ^[[1m^[[92m  Downloaded^[[0m pem-rfc7468 v0.7.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8364059Z ^[[1m^[[92m  Downloaded^[[0m potential_utf v0.1.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8374809Z ^[[1m^[[92m  Downloaded^[[0m rand_chacha v0.9.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8386498Z ^[[1m^[[92m  Downloaded^[[0m rand_core v0.9.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8399608Z ^[[1m^[[92m  Downloaded^[[0m ryu v1.0.23
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8431883Z ^[[1m^[[92m  Downloaded^[[0m icu_normalizer v2.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8535519Z ^[[1m^[[92m  Downloaded^[[0m parking v2.2.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8546507Z ^[[1m^[[92m  Downloaded^[[0m proc-macro2 v1.0.107
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8575651Z ^[[1m^[[92m  Downloaded^[[0m scopeguard v1.2.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8587621Z ^[[1m^[[92m  Downloaded^[[0m smallvec v1.16.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8601823Z ^[[1m^[[92m  Downloaded^[[0m num-integer v0.1.47
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8617440Z ^[[1m^[[92m  Downloaded^[[0m sqlx-sqlite v0.8.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8663125Z ^[[1m^[[92m  Downloaded^[[0m stable_deref_trait v1.2.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8671669Z ^[[1m^[[92m  Downloaded^[[0m rand v0.8.8
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8705194Z ^[[1m^[[92m  Downloaded^[[0m shlex v2.0.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8718204Z ^[[1m^[[92m  Downloaded^[[0m num-conv v0.2.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8727141Z ^[[1m^[[92m  Downloaded^[[0m subtle v2.6.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.8738548Z ^[[1m^[[92m  Downloaded^[[0m libc v0.2.191
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.9211409Z ^[[1m^[[92m  Downloaded^[[0m mime v0.3.18
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.9226407Z ^[[1m^[[92m  Downloaded^[[0m pkg-config v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.9241664Z ^[[1m^[[92m  Downloaded^[[0m sync_wrapper v1.0.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.9249580Z ^[[1m^[[92m  Downloaded^[[0m writeable v0.6.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.9270393Z ^[[1m^[[92m  Downloaded^[[0m tokio v1.54.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.9753977Z ^[[1m^[[92m  Downloaded^[[0m powerfmt v0.2.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.9766665Z ^[[1m^[[92m  Downloaded^[[0m sqlx-macros v0.8.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.9774937Z ^[[1m^[[92m  Downloaded^[[0m serde_urlencoded v0.7.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.9791377Z ^[[1m^[[92m  Downloaded^[[0m utf8_iter v1.1.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.9804331Z ^[[1m^[[92m  Downloaded^[[0m zerofrom-derive v0.1.8
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.9813746Z ^[[1m^[[92m  Downloaded^[[0m rand_chacha v0.3.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.9824723Z ^[[1m^[[92m  Downloaded^[[0m serde_path_to_error v0.1.20
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:53.9839994Z ^[[1m^[[92m  Downloaded^[[0m zerocopy v0.8.66
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0113986Z ^[[1m^[[92m  Downloaded^[[0m zeroize v1.9.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0131015Z ^[[1m^[[92m  Downloaded^[[0m nu-ansi-term v0.50.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0154234Z ^[[1m^[[92m  Downloaded^[[0m pin-project-lite v0.2.18
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0213973Z ^[[1m^[[92m  Downloaded^[[0m rand v0.9.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0251565Z ^[[1m^[[92m  Downloaded^[[0m signature v2.2.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0265306Z ^[[1m^[[92m  Downloaded^[[0m whoami v1.6.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0284347Z ^[[1m^[[92m  Downloaded^[[0m sha1 v0.10.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0299076Z ^[[1m^[[92m  Downloaded^[[0m yoke-derive v0.8.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0310032Z ^[[1m^[[92m  Downloaded^[[0m stringprep v0.1.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0324736Z ^[[1m^[[92m  Downloaded^[[0m synstructure v0.14.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0334485Z ^[[1m^[[92m  Downloaded^[[0m spin v0.9.9
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0356890Z ^[[1m^[[92m  Downloaded^[[0m utf_types v1.0.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0368349Z ^[[1m^[[92m  Downloaded^[[0m num-bigint-dig v0.8.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0412712Z ^[[1m^[[92m  Downloaded^[[0m serde v1.0.229
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0446494Z ^[[1m^[[92m  Downloaded^[[0m sha2 v0.10.9
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0471285Z ^[[1m^[[92m  Downloaded^[[0m signal-hook-registry v1.4.8
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0482465Z ^[[1m^[[92m  Downloaded^[[0m rustversion v1.0.23
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0509392Z ^[[1m^[[92m  Downloaded^[[0m spki v0.7.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0526683Z ^[[1m^[[92m  Downloaded^[[0m tinystr v0.8.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0546409Z ^[[1m^[[92m  Downloaded^[[0m zerofrom v0.1.8
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0555338Z ^[[1m^[[92m  Downloaded^[[0m zerovec-derive v0.11.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0571753Z ^[[1m^[[92m  Downloaded^[[0m zmij v1.0.23
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0588591Z ^[[1m^[[92m  Downloaded^[[0m once_cell v1.21.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0613062Z ^[[1m^[[92m  Downloaded^[[0m sqlx-macros-core v0.8.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.0633911Z ^[[1m^[[92m  Downloaded^[[0m libsqlite3-sys v0.30.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1276413Z ^[[1m^[[92m  Downloaded^[[0m socket2 v0.6.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1294513Z ^[[1m^[[92m  Downloaded^[[0m serde_core v1.0.229
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1321710Z ^[[1m^[[92m  Downloaded^[[0m sqlx-mysql v0.8.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1379329Z ^[[1m^[[92m  Downloaded^[[0m sqlx v0.8.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1559528Z ^[[1m^[[92m  Downloaded^[[0m yoke v0.8.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1577210Z ^[[1m^[[92m  Downloaded^[[0m num-traits v0.2.19
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1602913Z ^[[1m^[[92m  Downloaded^[[0m zerotrie v0.2.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1641289Z ^[[1m^[[92m  Downloaded^[[0m serde_derive v1.0.229
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1671606Z ^[[1m^[[92m  Downloaded^[[0m sharded-slab v0.1.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1704285Z ^[[1m^[[92m  Downloaded^[[0m socket2 v0.5.10
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1721988Z ^[[1m^[[92m  Downloaded^[[0m uuid v1.29.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1751786Z ^[[1m^[[92m  Downloaded^[[0m rsa v0.9.10
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1803106Z ^[[1m^[[92m  Downloaded^[[0m mio v1.2.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1863293Z ^[[1m^[[92m  Downloaded^[[0m num-bigint v0.4.8
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1910140Z ^[[1m^[[92m  Downloaded^[[0m sqlx-core v0.8.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.1987837Z ^[[1m^[[92m  Downloaded^[[0m sqlx-postgres v0.8.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.2074279Z ^[[1m^[[92m  Downloaded^[[0m zerovec v0.11.9
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.2132939Z ^[[1m^[[92m  Downloaded^[[0m rust_decimal v1.43.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.2199265Z ^[[1m^[[92m  Downloaded^[[0m serde_json v1.0.154
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.2272876Z ^[[1m^[[92m  Downloaded^[[0m winnow v1.0.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.2368157Z ^[[1m^[[92m  Downloaded^[[0m vcpkg v0.2.15
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.2907325Z ^[[1m^[[92m  Downloaded^[[0m redis v0.27.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.2987674Z ^[[1m^[[92m  Downloaded^[[0m syn v3.0.10
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.3094913Z ^[[1m^[[92m  Downloaded^[[0m syn v2.0.119
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.3201271Z ^[[1m^[[92m  Downloaded^[[0m regex-syntax v0.8.12
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.3270489Z ^[[1m^[[92m  Downloaded^[[0m tracing v0.1.44
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.3433464Z ^[[1m^[[92m  Downloaded^[[0m regex-automata v0.4.19
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.3579772Z ^[[1m^[[92m  Downloaded^[[0m ring v0.17.14
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.4874550Z ^[[1m^[[92m   Compiling^[[0m proc-macro2 v1.0.107
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.4875482Z ^[[1m^[[92m   Compiling^[[0m quote v1.0.47
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.4876195Z ^[[1m^[[92m   Compiling^[[0m unicode-ident v1.0.27
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:54.4876856Z ^[[1m^[[92m   Compiling^[[0m libc v0.2.191
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:56.9157093Z ^[[1m^[[92m   Compiling^[[0m serde v1.0.229
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:58.6332956Z ^[[1m^[[92m   Compiling^[[0m version_check v0.9.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:58.6392291Z ^[[1m^[[92m   Compiling^[[0m serde_core v1.0.229
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:58.9137232Z ^[[1m^[[92m   Compiling^[[0m generic-array v0.14.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:59.0283084Z ^[[1m^[[92m   Compiling^[[0m autocfg v1.5.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:59.6402865Z ^[[1m^[[92m   Compiling^[[0m num-traits v0.2.19
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:59.7498770Z ^[[1m^[[92m   Compiling^[[0m syn v3.0.10
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:59.7602805Z ^[[1m^[[92m    Checking^[[0m pin-project-lite v0.2.18
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:59.8152693Z ^[[1m^[[92m    Checking^[[0m cfg-if v1.0.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:59.8922830Z ^[[1m^[[92m   Compiling^[[0m icu_normalizer_data v2.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:59.9626485Z ^[[1m^[[92m    Checking^[[0m futures-core v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:17:59.9988511Z ^[[1m^[[92m   Compiling^[[0m icu_properties_data v2.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:00.1191728Z ^[[1m^[[92m   Compiling^[[0m stable_deref_trait v1.2.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:00.1932495Z ^[[1m^[[92m    Checking^[[0m bytes v1.12.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:00.7083111Z ^[[1m^[[92m    Checking^[[0m itoa v1.0.19
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:00.8122578Z ^[[1m^[[92m   Compiling^[[0m syn v2.0.119
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:01.7343356Z ^[[1m^[[92m   Compiling^[[0m parking_lot_core v0.9.12
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:01.8923192Z ^[[1m^[[92m    Checking^[[0m typenum v1.20.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:02.5692571Z ^[[1m^[[92m   Compiling^[[0m zerocopy v0.8.66
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:02.5862468Z ^[[1m^[[92m   Compiling^[[0m zmij v1.0.23
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:02.8552702Z ^[[1m^[[92m    Checking^[[0m errno v0.3.15
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:03.3200246Z ^[[1m^[[92m    Checking^[[0m signal-hook-registry v1.4.8
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:03.4762738Z ^[[1m^[[92m   Compiling^[[0m synstructure v0.14.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:04.0340897Z ^[[1m^[[92m    Checking^[[0m mio v1.2.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:04.1632695Z ^[[1m^[[92m    Checking^[[0m socket2 v0.6.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:04.3152899Z ^[[1m^[[92m   Compiling^[[0m writeable v0.6.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:04.4323961Z ^[[1m^[[92m   Compiling^[[0m crossbeam-utils v0.8.23
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:04.5092623Z ^[[1m^[[92m   Compiling^[[0m utf_types v1.0.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:04.6082760Z ^[[1m^[[92m   Compiling^[[0m litemap v0.8.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:04.7323158Z ^[[1m^[[92m    Checking^[[0m subtle v2.6.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:04.7932767Z ^[[1m^[[92m   Compiling^[[0m serde_json v1.0.154
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:04.8233077Z ^[[1m^[[92m    Checking^[[0m futures-sink v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:04.8827635Z ^[[1m^[[92m    Checking^[[0m memchr v2.8.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:04.9051906Z ^[[1m^[[92m   Compiling^[[0m thiserror v2.0.21
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:05.1002820Z ^[[1m^[[92m   Compiling^[[0m serde_derive v1.0.229
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:05.1352805Z ^[[1m^[[92m   Compiling^[[0m zerofrom-derive v0.1.8
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:05.3363771Z ^[[1m^[[92m   Compiling^[[0m yoke-derive v0.8.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:05.4412634Z ^[[1m^[[92m   Compiling^[[0m zerovec-derive v0.11.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:06.3304011Z ^[[1m^[[92m   Compiling^[[0m displaydoc v0.2.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:06.3383178Z ^[[1m^[[92m   Compiling^[[0m zerofrom v0.1.8
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:06.4263767Z ^[[1m^[[92m   Compiling^[[0m yoke v0.8.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:06.5942826Z ^[[1m^[[92m   Compiling^[[0m zerovec v0.11.9
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:06.8714062Z ^[[1m^[[92m   Compiling^[[0m tracing-attributes v0.1.31
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:07.1432586Z ^[[1m^[[92m   Compiling^[[0m tinystr v0.8.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:07.1672588Z ^[[1m^[[92m   Compiling^[[0m tokio-macros v2.7.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:07.2962829Z ^[[1m^[[92m   Compiling^[[0m icu_locale_core v2.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:07.6679314Z ^[[1m^[[92m    Checking^[[0m tokio v1.54.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:08.4613020Z ^[[1m^[[92m   Compiling^[[0m potential_utf v0.1.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:08.5064067Z ^[[1m^[[92m    Checking^[[0m smallvec v1.16.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:08.5577230Z ^[[1m^[[92m   Compiling^[[0m zerotrie v0.2.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:08.7067141Z ^[[1m^[[92m   Compiling^[[0m thiserror-impl v2.0.21
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:08.8015809Z ^[[1m^[[92m   Compiling^[[0m utf8_iter v1.1.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:08.8243806Z ^[[1m^[[92m    Checking^[[0m block-buffer v0.10.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:08.8829284Z ^[[1m^[[92m    Checking^[[0m crypto-common v0.1.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:09.4180089Z ^[[1m^[[92m    Checking^[[0m once_cell v1.21.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:09.5453086Z ^[[1m^[[92m    Checking^[[0m tracing-core v0.1.36
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:09.8192613Z ^[[1m^[[92m    Checking^[[0m digest v0.10.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:09.8572454Z ^[[1m^[[92m   Compiling^[[0m icu_collections v2.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:09.9572643Z ^[[1m^[[92m   Compiling^[[0m icu_provider v2.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:10.3757804Z ^[[1m^[[92m    Checking^[[0m log v0.4.35
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:10.6143061Z ^[[1m^[[92m   Compiling^[[0m futures-macro v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:10.6743292Z ^[[1m^[[92m    Checking^[[0m futures-channel v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:10.8582555Z ^[[1m^[[92m    Checking^[[0m getrandom v0.2.17
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:10.9522638Z ^[[1m^[[92m    Checking^[[0m slab v0.4.12
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:10.9612591Z ^[[1m^[[92m    Checking^[[0m futures-task v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:11.0422624Z ^[[1m^[[92m    Checking^[[0m futures-io v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:11.0615495Z ^[[1m^[[92m   Compiling^[[0m icu_properties v2.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:11.1172607Z ^[[1m^[[92m   Compiling^[[0m icu_normalizer v2.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:11.2562646Z ^[[1m^[[92m    Checking^[[0m futures-util v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:11.5822756Z ^[[1m^[[92m    Checking^[[0m tracing v0.1.44
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:11.8182440Z ^[[1m^[[92m   Compiling^[[0m equivalent v1.0.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:11.8652080Z ^[[1m^[[92m    Checking^[[0m percent-encoding v2.3.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:11.9472463Z ^[[1m^[[92m   Compiling^[[0m scopeguard v1.2.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:12.0012622Z ^[[1m^[[92m   Compiling^[[0m lock_api v0.4.14
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:12.2020016Z ^[[1m^[[92m    Checking^[[0m form_urlencoded v1.2.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:12.2762756Z ^[[1m^[[92m   Compiling^[[0m idna_adapter v1.2.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:13.6502665Z ^[[1m^[[92m    Checking^[[0m http v1.5.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:13.7092708Z ^[[1m^[[92m   Compiling^[[0m allocator-api2 v0.2.21
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:14.1784494Z ^[[1m^[[92m   Compiling^[[0m rust_decimal v1.43.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:14.3905370Z ^[[1m^[[92m   Compiling^[[0m foldhash v0.1.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:14.5365552Z ^[[1m^[[92m   Compiling^[[0m hashbrown v0.15.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:14.6287137Z ^[[1m^[[92m    Checking^[[0m http-body v1.1.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:15.1472727Z ^[[1m^[[92m   Compiling^[[0m rand_core v0.6.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:15.1583723Z ^[[1m^[[92m   Compiling^[[0m parking_lot v0.12.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:15.3012277Z ^[[1m^[[92m   Compiling^[[0m idna v1.1.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:16.2790788Z ^[[1m^[[92m   Compiling^[[0m cpufeatures v0.2.17
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:16.3232695Z ^[[1m^[[92m   Compiling^[[0m hashbrown v0.17.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:16.5532481Z ^[[1m^[[92m   Compiling^[[0m tinyvec v1.13.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:16.7992320Z ^[[1m^[[92m   Compiling^[[0m ppv-lite86 v0.2.21
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:16.9852667Z ^[[1m^[[92m   Compiling^[[0m parking v2.2.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:17.0437002Z ^[[1m^[[92m   Compiling^[[0m arrayvec v0.7.8
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:17.0630794Z ^[[1m^[[92m   Compiling^[[0m crc-catalog v2.5.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:17.1732664Z ^[[1m^[[92m   Compiling^[[0m getrandom v0.4.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:17.1822415Z ^[[1m^[[92m   Compiling^[[0m iana-time-zone v0.1.65
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:17.3333172Z ^[[1m^[[92m   Compiling^[[0m chrono v0.4.45
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:18.1883396Z ^[[1m^[[92m   Compiling^[[0m rand_chacha v0.3.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:18.4823834Z ^[[1m^[[92m   Compiling^[[0m crc v3.4.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:18.6652572Z ^[[1m^[[92m   Compiling^[[0m event-listener v5.4.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:18.7532725Z ^[[1m^[[92m   Compiling^[[0m tokio-stream v0.1.19
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:18.8952255Z ^[[1m^[[92m   Compiling^[[0m unicode-normalization v0.1.26
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:19.1572724Z ^[[1m^[[92m   Compiling^[[0m indexmap v2.14.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:19.7392766Z ^[[1m^[[92m   Compiling^[[0m sha2 v0.10.9
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:19.9552999Z ^[[1m^[[92m   Compiling^[[0m crossbeam-queue v0.3.14
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:20.0738299Z ^[[1m^[[92m   Compiling^[[0m url v2.5.9
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:20.0892839Z ^[[1m^[[92m   Compiling^[[0m futures-intrusive v0.5.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:20.6772757Z ^[[1m^[[92m   Compiling^[[0m hashlink v0.10.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:20.6953467Z ^[[1m^[[92m   Compiling^[[0m hmac v0.12.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:20.7862747Z ^[[1m^[[92m   Compiling^[[0m either v1.19.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:20.9953953Z ^[[1m^[[92m   Compiling^[[0m find-msvc-tools v0.1.15
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:21.1733400Z ^[[1m^[[92m   Compiling^[[0m httparse v1.10.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:21.1812778Z ^[[1m^[[92m    Checking^[[0m tower-service v0.3.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:21.1892377Z ^[[1m^[[92m   Compiling^[[0m unicode-properties v0.1.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:21.3093115Z ^[[1m^[[92m    Checking^[[0m base64 v0.22.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:21.3482534Z ^[[1m^[[92m   Compiling^[[0m unicode-bidi v0.3.18
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:21.3782391Z ^[[1m^[[92m   Compiling^[[0m uuid v1.29.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:21.5130694Z ^[[1m^[[92m   Compiling^[[0m shlex v2.0.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:21.6838655Z ^[[1m^[[92m   Compiling^[[0m stringprep v0.1.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:21.8062485Z ^[[1m^[[92m   Compiling^[[0m cc v1.11.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:21.9012912Z ^[[1m^[[92m   Compiling^[[0m sqlx-core v0.8.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:22.6652473Z ^[[1m^[[92m   Compiling^[[0m hkdf v0.12.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:23.1422366Z ^[[1m^[[92m   Compiling^[[0m rand v0.8.8
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:23.8182582Z ^[[1m^[[92m   Compiling^[[0m atoi v2.0.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:23.8292501Z ^[[1m^[[92m   Compiling^[[0m md-5 v0.10.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:23.9023416Z ^[[1m^[[92m    Checking^[[0m num-integer v0.1.47
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:24.0998557Z ^[[1m^[[92m    Checking^[[0m tower-layer v0.3.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:24.2372679Z ^[[1m^[[92m   Compiling^[[0m dotenvy v0.15.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:24.4632777Z ^[[1m^[[92m   Compiling^[[0m time-core v0.1.9
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:24.5850033Z ^[[1m^[[92m   Compiling^[[0m byteorder v1.5.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:24.7049605Z ^[[1m^[[92m   Compiling^[[0m hex v0.4.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:24.7702583Z ^[[1m^[[92m   Compiling^[[0m whoami v1.6.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:24.9283151Z ^[[1m^[[92m   Compiling^[[0m rustversion v1.0.23
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:24.9372352Z ^[[1m^[[92m   Compiling^[[0m home v0.5.12
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:24.9442454Z ^[[1m^[[92m   Compiling^[[0m bitflags v2.13.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:25.0872608Z ^[[1m^[[92m   Compiling^[[0m num-conv v0.2.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:25.1662595Z ^[[1m^[[92m   Compiling^[[0m sqlx-postgres v0.8.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:25.1939036Z ^[[1m^[[92m   Compiling^[[0m time-macros v0.2.32
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:26.5152701Z ^[[1m^[[92m    Checking^[[0m num-bigint v0.4.8
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:26.7882801Z ^[[1m^[[92m   Compiling^[[0m ring v0.17.14
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:27.3519323Z ^[[1m^[[92m    Checking^[[0m http-body-util v0.1.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:27.5512912Z ^[[1m^[[92m    Checking^[[0m regex-syntax v0.8.12
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:27.6212589Z ^[[1m^[[92m    Checking^[[0m deranged v0.5.9
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:27.8213126Z ^[[1m^[[92m   Compiling^[[0m heck v0.5.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:27.9572447Z ^[[1m^[[92m    Checking^[[0m httpdate v1.0.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:28.2618675Z ^[[1m^[[92m    Checking^[[0m ryu v1.0.23
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:28.3542999Z ^[[1m^[[92m    Checking^[[0m powerfmt v0.2.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:28.6108316Z ^[[1m^[[92m    Checking^[[0m sync_wrapper v1.0.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:28.6601578Z ^[[1m^[[92m    Checking^[[0m atomic-waker v1.1.2
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:28.6692537Z ^[[1m^[[92m    Checking^[[0m time v0.3.55
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:28.7088175Z ^[[1m^[[92m    Checking^[[0m hyper v1.13.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:28.9192703Z ^[[1m^[[92m    Checking^[[0m regex-automata v0.4.19
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:29.2882623Z ^[[1m^[[92m   Compiling^[[0m sqlx-macros-core v0.8.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:31.3439636Z ^[[1m^[[92m    Checking^[[0m futures-executor v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:31.4282403Z ^[[1m^[[92m    Checking^[[0m tokio-util v0.7.20
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:31.6962784Z ^[[1m^[[92m    Checking^[[0m untrusted v0.9.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:31.7502693Z ^[[1m^[[92m    Checking^[[0m mime v0.3.18
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:31.8666746Z ^[[1m^[[92m    Checking^[[0m base64ct v1.8.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:32.0392013Z ^[[1m^[[92m    Checking^[[0m lazy_static v1.5.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:32.0922701Z ^[[1m^[[92m    Checking^[[0m fastrand v2.5.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:32.1815670Z ^[[1m^[[92m    Checking^[[0m backon v1.6.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:32.2182648Z ^[[1m^[[92m    Checking^[[0m sharded-slab v0.1.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:32.2962699Z ^[[1m^[[92m    Checking^[[0m password-hash v0.5.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:32.4583338Z ^[[1m^[[92m    Checking^[[0m axum-core v0.5.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:32.6103098Z ^[[1m^[[92m    Checking^[[0m combine v4.6.9
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:33.6382466Z ^[[1m^[[92m    Checking^[[0m arc-swap v1.9.5
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:33.8063028Z ^[[1m^[[92m    Checking^[[0m futures v0.3.34
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:33.8452508Z ^[[1m^[[92m   Compiling^[[0m sqlx-macros v0.8.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:34.7328917Z ^[[1m^[[92m    Checking^[[0m simple_asn1 v0.6.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:34.8668797Z ^[[1m^[[92m    Checking^[[0m matchers v0.2.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:34.8967633Z ^[[1m^[[92m    Checking^[[0m hyper-util v0.1.21
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:34.9215276Z ^[[1m^[[92m    Checking^[[0m tower v0.5.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:35.0964456Z ^[[1m^[[92m    Checking^[[0m serde_urlencoded v0.7.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:35.2256070Z ^[[1m^[[92m    Checking^[[0m pem v3.0.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:35.2478269Z ^[[1m^[[92m    Checking^[[0m itertools v0.13.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:35.3201739Z ^[[1m^[[92m    Checking^[[0m tracing-log v0.2.0
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:35.4052307Z ^[[1m^[[92m    Checking^[[0m blake2 v0.10.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:35.5798476Z ^[[1m^[[92m   Compiling^[[0m async-trait v0.1.92
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:35.8310911Z ^[[1m^[[92m    Checking^[[0m serde_path_to_error v0.1.20
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:36.0103010Z ^[[1m^[[92m    Checking^[[0m socket2 v0.5.10
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:36.2014005Z ^[[1m^[[92m    Checking^[[0m thread_local v1.1.10
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:36.2532839Z ^[[1m^[[92m    Checking^[[0m nu-ansi-term v0.50.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:36.3048766Z ^[[1m^[[92m    Checking^[[0m matchit v0.8.4
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:36.3128002Z ^[[1m^[[92m    Checking^[[0m sha1_smol v1.0.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:36.3841322Z ^[[1m^[[92m    Checking^[[0m tracing-subscriber v0.3.23
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:36.3948250Z ^[[1m^[[92m    Checking^[[0m redis v0.27.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:36.4330871Z ^[[1m^[[92m    Checking^[[0m axum v0.8.9
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:37.3059376Z ^[[1m^[[92m    Checking^[[0m argon2 v0.5.3
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:37.4749182Z ^[[1m^[[92m    Checking^[[0m sqlx v0.8.6
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:37.5440814Z ^[[1m^[[92m    Checking^[[0m tower-http v0.6.11
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:38.0323768Z ^[[1m^[[92m    Checking^[[0m sha1 v0.10.7
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.3042447Z ^[[1m^[[92m    Checking^[[0m jsonwebtoken v9.3.1
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.6525107Z ^[[1m^[[92m    Checking^[[0m unadomot-api v0.1.0 (/home/runner/work/unadomot/unadomot/services/api)
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.9136995Z ^[[1m^[[91merror^[[0m^[[1m: named argument never used^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.9137531Z   ^[[1m^[[94m--> ^[[0msrc/http/public_pages.rs:96:19
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.9137869Z    ^[[1m^[[94m|^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.9138214Z ^[[1m^[[94m59^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m/^[[0m         r#"<!doctype html>
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.9138660Z ^[[1m^[[94m60^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m|^[[0m <html lang="en">
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.9139080Z ^[[1m^[[94m61^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m|^[[0m <head>
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.9139481Z ^[[1m^[[94m62^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m|^[[0m <meta charset="utf-8">
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.9139837Z ^[[1m^[[94m...^[[0m  ^[[1m^[[94m|^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.9140155Z ^[[1m^[[94m87^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m|^[[0m </body>
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.9140719Z ^[[1m^[[94m88^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m|^[[0m </html>"#,
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.9141564Z    ^[[1m^[[94m|^[[0m ^[[1m^[[94m|_________-^[[0m ^[[1m^[[94mformatting specifier missing^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.9142107Z ^[[1m^[[94m...^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.9142505Z ^[[1m^[[94m96^[[0m ^[[1m^[[94m|^[[0m           json_ld = json_ld(&listing, &canonical, &image),
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.9143135Z    ^[[1m^[[94m|^[[0m                     ^[[1m^[[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[[0m ^[[1m^[[91mnamed argument never used^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:42.9143460Z 
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:43.0301267Z ^[[1m^[[91merror^[[0m^[[1m: unused import: `ListingStatus`^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:43.0301918Z  ^[[1m^[[94m--> ^[[0msrc/application/listings.rs:2:43
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:43.0302258Z   ^[[1m^[[94m|^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:43.0302841Z ^[[1m^[[94m2^[[0m ^[[1m^[[94m|^[[0m     Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:43.0303514Z   ^[[1m^[[94m|^[[0m                                           ^[[1m^[[91m^^^^^^^^^^^^^^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:43.0303871Z   ^[[1m^[[94m|^[[0m
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:43.0304230Z   ^[[1m^[[94m= ^[[0m^[[1mnote^[[0m: `-D unused-imports` implied by `-D warnings`
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:43.0304780Z   ^[[1m^[[94m= ^[[0m^[[1mhelp^[[0m: to override `-D warnings` add `#[allow(unused_imports)]`
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:43.0305098Z 
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:44.0310954Z ^[[1m^[[91merror^[[0m: could not compile `unadomot-api` (lib test) due to 2 previous errors
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:44.0314137Z ^[[1m^[[33mwarning^[[0m: build failed, waiting for other jobs to finish...
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:44.0315037Z ^[[1m^[[91merror^[[0m: could not compile `unadomot-api` (lib) due to 2 previous errors
-rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:18:44.1103617Z ##[error]Process completed with exit code 101.
+rust	Run cargo clippy --all-targets -- -D warnings	﻿2026-11-26T01:44:42.3508629Z ##[group]Run cargo clippy --all-targets -- -D warnings
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:42.3509074Z ^[[36;1mcargo clippy --all-targets -- -D warnings^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:42.3539542Z shell: /usr/bin/bash -e {0}
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:42.3539905Z env:
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:42.3540416Z   DATABASE_URL: ***localhost:5432/unadomot_test
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:42.3540776Z   JWT_SECRET: test-secret-that-is-at-least-32-bytes-long
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:42.3541332Z   REFRESH_TOKEN_SECRET: test-refresh-secret-that-is-at-least-32-bytes
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:42.3541739Z   CARGO_HOME: /home/runner/.cargo
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:42.3542023Z   CARGO_INCREMENTAL: 0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:42.3542260Z   CARGO_TERM_COLOR: always
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:42.3542513Z   CACHE_ON_FAILURE: false
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:42.3542751Z ##[endgroup]
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.0210504Z ^[[1m^[[92m    Updating^[[0m crates.io index
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.4909382Z ^[[1m^[[92m     Locking^[[0m 274 packages to highest compatible versions
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.4924416Z ^[[1m^[[92m      Adding^[[0m argon2 v0.5.3 ^[[1m^[[33m(available: v0.6.0)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.4983573Z ^[[1m^[[92m      Adding^[[0m generic-array v0.14.7 ^[[1m^[[33m(available: v0.14.9)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.4995027Z ^[[1m^[[92m      Adding^[[0m hmac v0.12.1 ^[[1m^[[33m(available: v0.13.0)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.5030280Z ^[[1m^[[92m      Adding^[[0m jsonwebtoken v9.3.1 ^[[1m^[[33m(available: v12.0.0)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.5038159Z ^[[1m^[[92m      Adding^[[0m matchit v0.8.4 ^[[1m^[[33m(available: v0.8.6)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.5070635Z ^[[1m^[[92m      Adding^[[0m redis v0.27.6 ^[[1m^[[33m(available: v1.8.3)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.5110002Z ^[[1m^[[92m      Adding^[[0m sha1 v0.10.7 ^[[1m^[[33m(available: v0.11.0)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.5111242Z ^[[1m^[[92m      Adding^[[0m sha2 v0.10.9 ^[[1m^[[33m(available: v0.11.2)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.5119943Z ^[[1m^[[92m      Adding^[[0m sqlx v0.8.6 ^[[1m^[[33m(available: v0.9.1)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.5203432Z ^[[1m^[[92m      Adding^[[0m tower-http v0.6.11 ^[[1m^[[33m(available: v0.7.1)^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.5329075Z ^[[1m^[[92m Downloading^[[0m crates ...
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6145012Z ^[[1m^[[92m  Downloaded^[[0m atomic-waker v1.1.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6162514Z ^[[1m^[[92m  Downloaded^[[0m cfg-if v1.0.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6174907Z ^[[1m^[[92m  Downloaded^[[0m zerofrom v0.1.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6181413Z ^[[1m^[[92m  Downloaded^[[0m version_check v0.9.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6186715Z ^[[1m^[[92m  Downloaded^[[0m cfg_aliases v0.2.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6252983Z ^[[1m^[[92m  Downloaded^[[0m whoami v1.6.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6262799Z ^[[1m^[[92m  Downloaded^[[0m writeable v0.6.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6274413Z ^[[1m^[[92m  Downloaded^[[0m atoi v2.0.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6280003Z ^[[1m^[[92m  Downloaded^[[0m cpufeatures v0.2.17
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6314405Z ^[[1m^[[92m  Downloaded^[[0m byteorder v1.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6345523Z ^[[1m^[[92m  Downloaded^[[0m base64ct v1.8.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6359869Z ^[[1m^[[92m  Downloaded^[[0m argon2 v0.5.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6378289Z ^[[1m^[[92m  Downloaded^[[0m autocfg v1.5.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6386160Z ^[[1m^[[92m  Downloaded^[[0m backon v1.6.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6399617Z ^[[1m^[[92m  Downloaded^[[0m axum-core v0.5.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6410617Z ^[[1m^[[92m  Downloaded^[[0m blake2 v0.10.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6424779Z ^[[1m^[[92m  Downloaded^[[0m arrayvec v0.7.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6435077Z ^[[1m^[[92m  Downloaded^[[0m borsh-derive v1.8.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6450738Z ^[[1m^[[92m  Downloaded^[[0m const-oid v0.9.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6460319Z ^[[1m^[[92m  Downloaded^[[0m async-trait v0.1.92
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6479009Z ^[[1m^[[92m  Downloaded^[[0m unicode-normalization v0.1.26
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6501542Z ^[[1m^[[92m  Downloaded^[[0m unicode-properties v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6511789Z ^[[1m^[[92m  Downloaded^[[0m untrusted v0.9.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6519982Z ^[[1m^[[92m  Downloaded^[[0m yoke-derive v0.8.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6526266Z ^[[1m^[[92m  Downloaded^[[0m allocator-api2 v0.2.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6544111Z ^[[1m^[[92m  Downloaded^[[0m crc-catalog v2.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6553127Z ^[[1m^[[92m  Downloaded^[[0m bitflags v2.13.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6573627Z ^[[1m^[[92m  Downloaded^[[0m base64 v0.22.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6592689Z ^[[1m^[[92m  Downloaded^[[0m bytes v1.12.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6609879Z ^[[1m^[[92m  Downloaded^[[0m arc-swap v1.9.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6628937Z ^[[1m^[[92m  Downloaded^[[0m borsh v1.8.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6659007Z ^[[1m^[[92m  Downloaded^[[0m digest v0.10.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6667662Z ^[[1m^[[92m  Downloaded^[[0m home v0.5.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6675620Z ^[[1m^[[92m  Downloaded^[[0m block-buffer v0.10.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6681377Z ^[[1m^[[92m  Downloaded^[[0m futures-task v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6688011Z ^[[1m^[[92m  Downloaded^[[0m combine v4.6.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6711166Z ^[[1m^[[92m  Downloaded^[[0m fastrand v2.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6718542Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-queue v0.3.14
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6725736Z ^[[1m^[[92m  Downloaded^[[0m http v1.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6745494Z ^[[1m^[[92m  Downloaded^[[0m dotenvy v0.15.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6757570Z ^[[1m^[[92m  Downloaded^[[0m jsonwebtoken v9.3.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6777450Z ^[[1m^[[92m  Downloaded^[[0m foldhash v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6784005Z ^[[1m^[[92m  Downloaded^[[0m hex v0.4.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6791486Z ^[[1m^[[92m  Downloaded^[[0m cc v1.11.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6816348Z ^[[1m^[[92m  Downloaded^[[0m crc v3.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6824669Z ^[[1m^[[92m  Downloaded^[[0m generic-array v0.14.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6832636Z ^[[1m^[[92m  Downloaded^[[0m either v1.19.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6842530Z ^[[1m^[[92m  Downloaded^[[0m icu_locale_core v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6875274Z ^[[1m^[[92m  Downloaded^[[0m crossbeam-utils v0.8.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6889898Z ^[[1m^[[92m  Downloaded^[[0m event-listener v5.4.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6899799Z ^[[1m^[[92m  Downloaded^[[0m hmac v0.12.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6911408Z ^[[1m^[[92m  Downloaded^[[0m idna_adapter v1.2.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6915843Z ^[[1m^[[92m  Downloaded^[[0m matchit v0.8.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6928862Z ^[[1m^[[92m  Downloaded^[[0m md-5 v0.10.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6936211Z ^[[1m^[[92m  Downloaded^[[0m axum v0.8.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6983429Z ^[[1m^[[92m  Downloaded^[[0m crypto-common v0.1.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6988520Z ^[[1m^[[92m  Downloaded^[[0m errno v0.3.15
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.6995630Z ^[[1m^[[92m  Downloaded^[[0m lazy_static v1.5.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7002991Z ^[[1m^[[92m  Downloaded^[[0m equivalent v1.0.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7007179Z ^[[1m^[[92m  Downloaded^[[0m getrandom v0.3.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7024093Z ^[[1m^[[92m  Downloaded^[[0m form_urlencoded v1.2.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7028502Z ^[[1m^[[92m  Downloaded^[[0m log v0.4.35
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7042674Z ^[[1m^[[92m  Downloaded^[[0m der v0.7.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7066758Z ^[[1m^[[92m  Downloaded^[[0m futures-intrusive v0.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7091526Z ^[[1m^[[92m  Downloaded^[[0m http-body-util v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7101265Z ^[[1m^[[92m  Downloaded^[[0m icu_normalizer_data v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7115033Z ^[[1m^[[92m  Downloaded^[[0m futures v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7140050Z ^[[1m^[[92m  Downloaded^[[0m hashlink v0.10.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7148872Z ^[[1m^[[92m  Downloaded^[[0m aho-corasick v1.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7176707Z ^[[1m^[[92m  Downloaded^[[0m displaydoc v0.2.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7184906Z ^[[1m^[[92m  Downloaded^[[0m icu_provider v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7198654Z ^[[1m^[[92m  Downloaded^[[0m idna v1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7219418Z ^[[1m^[[92m  Downloaded^[[0m indexmap v2.14.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7240039Z ^[[1m^[[92m  Downloaded^[[0m chrono v0.4.45
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7276247Z ^[[1m^[[92m  Downloaded^[[0m futures-macro v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7281187Z ^[[1m^[[92m  Downloaded^[[0m hashbrown v0.17.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7309041Z ^[[1m^[[92m  Downloaded^[[0m hyper v1.13.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7343527Z ^[[1m^[[92m  Downloaded^[[0m libm v0.2.16
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7388579Z ^[[1m^[[92m  Downloaded^[[0m hkdf v0.12.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7402093Z ^[[1m^[[92m  Downloaded^[[0m icu_properties v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7423581Z ^[[1m^[[92m  Downloaded^[[0m utf8_iter v1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7429497Z ^[[1m^[[92m  Downloaded^[[0m futures-executor v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7435848Z ^[[1m^[[92m  Downloaded^[[0m icu_properties_data v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7484249Z ^[[1m^[[92m  Downloaded^[[0m find-msvc-tools v0.1.15
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7492017Z ^[[1m^[[92m  Downloaded^[[0m deranged v0.5.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7500421Z ^[[1m^[[92m  Downloaded^[[0m futures-core v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7506566Z ^[[1m^[[92m  Downloaded^[[0m futures-sink v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7509758Z ^[[1m^[[92m  Downloaded^[[0m httpdate v1.0.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7515097Z ^[[1m^[[92m  Downloaded^[[0m futures-channel v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7524083Z ^[[1m^[[92m  Downloaded^[[0m getrandom v0.4.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7541440Z ^[[1m^[[92m  Downloaded^[[0m litemap v0.8.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7552201Z ^[[1m^[[92m  Downloaded^[[0m lock_api v0.4.14
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7558798Z ^[[1m^[[92m  Downloaded^[[0m thiserror v2.0.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7581506Z ^[[1m^[[92m  Downloaded^[[0m flume v0.11.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7600144Z ^[[1m^[[92m  Downloaded^[[0m hyper-util v0.1.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7629493Z ^[[1m^[[92m  Downloaded^[[0m tower-http v0.6.11
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7669705Z ^[[1m^[[92m  Downloaded^[[0m num-conv v0.2.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7673352Z ^[[1m^[[92m  Downloaded^[[0m httparse v1.10.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7684597Z ^[[1m^[[92m  Downloaded^[[0m libc v0.2.191
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7878826Z ^[[1m^[[92m  Downloaded^[[0m matchers v0.2.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7883466Z ^[[1m^[[92m  Downloaded^[[0m serde_urlencoded v0.7.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7890192Z ^[[1m^[[92m  Downloaded^[[0m heck v0.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7895431Z ^[[1m^[[92m  Downloaded^[[0m futures-io v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7900079Z ^[[1m^[[92m  Downloaded^[[0m zerofrom-derive v0.1.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7905429Z ^[[1m^[[92m  Downloaded^[[0m zeroize v1.9.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7913762Z ^[[1m^[[92m  Downloaded^[[0m http-body v1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7918216Z ^[[1m^[[92m  Downloaded^[[0m itoa v1.0.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7924985Z ^[[1m^[[92m  Downloaded^[[0m getrandom v0.2.17
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7936847Z ^[[1m^[[92m  Downloaded^[[0m quote v1.0.47
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7948229Z ^[[1m^[[92m  Downloaded^[[0m stringprep v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7954438Z ^[[1m^[[92m  Downloaded^[[0m icu_collections v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7983566Z ^[[1m^[[92m  Downloaded^[[0m url v2.5.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.7998737Z ^[[1m^[[92m  Downloaded^[[0m iana-time-zone v0.1.65
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8010783Z ^[[1m^[[92m  Downloaded^[[0m time-macros v0.2.32
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8022805Z ^[[1m^[[92m  Downloaded^[[0m toml_edit v0.25.21+spec-1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8041667Z ^[[1m^[[92m  Downloaded^[[0m hashbrown v0.15.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8066553Z ^[[1m^[[92m  Downloaded^[[0m proc-macro-crate v3.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8073395Z ^[[1m^[[92m  Downloaded^[[0m time-core v0.1.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8078463Z ^[[1m^[[92m  Downloaded^[[0m itertools v0.13.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8110109Z ^[[1m^[[92m  Downloaded^[[0m powerfmt v0.2.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8119179Z ^[[1m^[[92m  Downloaded^[[0m subtle v2.6.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8122739Z ^[[1m^[[92m  Downloaded^[[0m sha1 v0.10.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8128852Z ^[[1m^[[92m  Downloaded^[[0m futures-util v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8181581Z ^[[1m^[[92m  Downloaded^[[0m sha1_smol v1.0.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8187030Z ^[[1m^[[92m  Downloaded^[[0m toml_parser v1.1.7+spec-1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8198049Z ^[[1m^[[92m  Downloaded^[[0m tracing-core v0.1.36
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8211332Z ^[[1m^[[92m  Downloaded^[[0m scopeguard v1.2.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8216501Z ^[[1m^[[92m  Downloaded^[[0m time v0.3.55
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8282106Z ^[[1m^[[92m  Downloaded^[[0m num-iter v0.1.46
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8285094Z ^[[1m^[[92m  Downloaded^[[0m icu_normalizer v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8351390Z ^[[1m^[[92m  Downloaded^[[0m stable_deref_trait v1.2.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8356403Z ^[[1m^[[92m  Downloaded^[[0m tracing-log v0.2.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8362195Z ^[[1m^[[92m  Downloaded^[[0m tower-layer v0.3.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8365669Z ^[[1m^[[92m  Downloaded^[[0m pkg-config v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8371461Z ^[[1m^[[92m  Downloaded^[[0m tower v0.5.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8411216Z ^[[1m^[[92m  Downloaded^[[0m mime v0.3.18
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8417929Z ^[[1m^[[92m  Downloaded^[[0m pem-rfc7468 v0.7.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8426619Z ^[[1m^[[92m  Downloaded^[[0m yoke v0.8.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8435262Z ^[[1m^[[92m  Downloaded^[[0m thiserror-impl v2.0.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8442013Z ^[[1m^[[92m  Downloaded^[[0m tinystr v0.8.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8451486Z ^[[1m^[[92m  Downloaded^[[0m tokio-util v0.7.20
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8486694Z ^[[1m^[[92m  Downloaded^[[0m tracing v0.1.44
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8569617Z ^[[1m^[[92m  Downloaded^[[0m tokio v1.54.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8779250Z ^[[1m^[[92m  Downloaded^[[0m thread_local v1.1.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8785671Z ^[[1m^[[92m  Downloaded^[[0m sqlx-macros v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8789887Z ^[[1m^[[92m  Downloaded^[[0m utf_types v1.0.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8795302Z ^[[1m^[[92m  Downloaded^[[0m password-hash v0.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8804396Z ^[[1m^[[92m  Downloaded^[[0m unicode-bidi v0.3.18
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8817130Z ^[[1m^[[92m  Downloaded^[[0m percent-encoding v2.3.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8821147Z ^[[1m^[[92m  Downloaded^[[0m parking v2.2.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8826252Z ^[[1m^[[92m  Downloaded^[[0m shlex v2.0.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8831695Z ^[[1m^[[92m  Downloaded^[[0m simple_asn1 v0.6.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8838019Z ^[[1m^[[92m  Downloaded^[[0m pkcs8 v0.10.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8849551Z ^[[1m^[[92m  Downloaded^[[0m unicode-ident v1.0.27
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8863378Z ^[[1m^[[92m  Downloaded^[[0m once_cell v1.21.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8873547Z ^[[1m^[[92m  Downloaded^[[0m rustversion v1.0.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8886204Z ^[[1m^[[92m  Downloaded^[[0m sqlx-macros-core v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8897179Z ^[[1m^[[92m  Downloaded^[[0m uuid v1.29.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8913758Z ^[[1m^[[92m  Downloaded^[[0m serde_core v1.0.229
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8926597Z ^[[1m^[[92m  Downloaded^[[0m sync_wrapper v1.0.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8930793Z ^[[1m^[[92m  Downloaded^[[0m potential_utf v0.1.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.8935786Z ^[[1m^[[92m  Downloaded^[[0m libsqlite3-sys v0.30.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9407779Z ^[[1m^[[92m  Downloaded^[[0m serde_path_to_error v0.1.20
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9411172Z ^[[1m^[[92m  Downloaded^[[0m tower-service v0.3.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9414257Z ^[[1m^[[92m  Downloaded^[[0m zmij v1.0.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9421544Z ^[[1m^[[92m  Downloaded^[[0m num-integer v0.1.47
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9428149Z ^[[1m^[[92m  Downloaded^[[0m sha2 v0.10.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9438475Z ^[[1m^[[92m  Downloaded^[[0m rand_chacha v0.3.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9442672Z ^[[1m^[[92m  Downloaded^[[0m pem v3.0.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9448396Z ^[[1m^[[92m  Downloaded^[[0m zerovec-derive v0.11.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9455207Z ^[[1m^[[92m  Downloaded^[[0m synstructure v0.14.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9459675Z ^[[1m^[[92m  Downloaded^[[0m signal-hook-registry v1.4.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9464779Z ^[[1m^[[92m  Downloaded^[[0m signature v2.2.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9470164Z ^[[1m^[[92m  Downloaded^[[0m rand_chacha v0.9.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9475126Z ^[[1m^[[92m  Downloaded^[[0m toml_datetime v1.1.3+spec-1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9481196Z ^[[1m^[[92m  Downloaded^[[0m rand_core v0.6.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9486444Z ^[[1m^[[92m  Downloaded^[[0m tokio-macros v2.7.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9490677Z ^[[1m^[[92m  Downloaded^[[0m parking_lot v0.12.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9501723Z ^[[1m^[[92m  Downloaded^[[0m nu-ansi-term v0.50.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9510551Z ^[[1m^[[92m  Downloaded^[[0m spin v0.9.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9520245Z ^[[1m^[[92m  Downloaded^[[0m parking_lot_core v0.9.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9528760Z ^[[1m^[[92m  Downloaded^[[0m ppv-lite86 v0.2.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9533976Z ^[[1m^[[92m  Downloaded^[[0m smallvec v1.16.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9540560Z ^[[1m^[[92m  Downloaded^[[0m pin-project-lite v0.2.18
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9561239Z ^[[1m^[[92m  Downloaded^[[0m rand_core v0.9.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9566720Z ^[[1m^[[92m  Downloaded^[[0m slab v0.4.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9571831Z ^[[1m^[[92m  Downloaded^[[0m spki v0.7.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9578591Z ^[[1m^[[92m  Downloaded^[[0m tokio-stream v0.1.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9597932Z ^[[1m^[[92m  Downloaded^[[0m sharded-slab v0.1.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9611255Z ^[[1m^[[92m  Downloaded^[[0m num-traits v0.2.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9622377Z ^[[1m^[[92m  Downloaded^[[0m ryu v1.0.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9635773Z ^[[1m^[[92m  Downloaded^[[0m socket2 v0.5.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9644708Z ^[[1m^[[92m  Downloaded^[[0m serde_derive v1.0.229
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9657545Z ^[[1m^[[92m  Downloaded^[[0m pkcs1 v0.7.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9666947Z ^[[1m^[[92m  Downloaded^[[0m socket2 v0.6.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9676312Z ^[[1m^[[92m  Downloaded^[[0m tracing-attributes v0.1.31
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9686906Z ^[[1m^[[92m  Downloaded^[[0m rsa v0.9.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9708176Z ^[[1m^[[92m  Downloaded^[[0m proc-macro2 v1.0.107
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9720741Z ^[[1m^[[92m  Downloaded^[[0m sqlx-mysql v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9743332Z ^[[1m^[[92m  Downloaded^[[0m mio v1.2.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9768175Z ^[[1m^[[92m  Downloaded^[[0m rand v0.9.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9785858Z ^[[1m^[[92m  Downloaded^[[0m memchr v2.8.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9807943Z ^[[1m^[[92m  Downloaded^[[0m tinyvec v1.13.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9822511Z ^[[1m^[[92m  Downloaded^[[0m zerotrie v0.2.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9839989Z ^[[1m^[[92m  Downloaded^[[0m rand v0.8.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9854869Z ^[[1m^[[92m  Downloaded^[[0m sqlx-sqlite v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9873474Z ^[[1m^[[92m  Downloaded^[[0m serde v1.0.229
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9888924Z ^[[1m^[[92m  Downloaded^[[0m num-bigint v0.4.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:43.9909909Z ^[[1m^[[92m  Downloaded^[[0m zerocopy v0.8.66
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0014011Z ^[[1m^[[92m  Downloaded^[[0m sqlx-core v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0044623Z ^[[1m^[[92m  Downloaded^[[0m num-bigint-dig v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0065255Z ^[[1m^[[92m  Downloaded^[[0m typenum v1.20.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0082495Z ^[[1m^[[92m  Downloaded^[[0m zerovec v0.11.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0109561Z ^[[1m^[[92m  Downloaded^[[0m winnow v1.0.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0151713Z ^[[1m^[[92m  Downloaded^[[0m sqlx-postgres v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0186631Z ^[[1m^[[92m  Downloaded^[[0m rust_decimal v1.43.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0217772Z ^[[1m^[[92m  Downloaded^[[0m sqlx v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0279852Z ^[[1m^[[92m  Downloaded^[[0m serde_json v1.0.154
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0312189Z ^[[1m^[[92m  Downloaded^[[0m vcpkg v0.2.15
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0484630Z ^[[1m^[[92m  Downloaded^[[0m tracing-subscriber v0.3.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0521410Z ^[[1m^[[92m  Downloaded^[[0m redis v0.27.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0563891Z ^[[1m^[[92m  Downloaded^[[0m syn v3.0.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0616383Z ^[[1m^[[92m  Downloaded^[[0m syn v2.0.119
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0667616Z ^[[1m^[[92m  Downloaded^[[0m regex-syntax v0.8.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0706992Z ^[[1m^[[92m  Downloaded^[[0m regex-automata v0.4.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.0784907Z ^[[1m^[[92m  Downloaded^[[0m ring v0.17.14
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.1513874Z ^[[1m^[[92m   Compiling^[[0m proc-macro2 v1.0.107
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.1514577Z ^[[1m^[[92m   Compiling^[[0m quote v1.0.47
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.1514989Z ^[[1m^[[92m   Compiling^[[0m unicode-ident v1.0.27
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:44.1515414Z ^[[1m^[[92m   Compiling^[[0m libc v0.2.191
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:46.6077781Z ^[[1m^[[92m   Compiling^[[0m serde v1.0.229
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:48.6876950Z ^[[1m^[[92m   Compiling^[[0m serde_core v1.0.229
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:48.6908337Z ^[[1m^[[92m   Compiling^[[0m version_check v0.9.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:48.8767145Z ^[[1m^[[92m   Compiling^[[0m generic-array v0.14.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:48.9379004Z ^[[1m^[[92m   Compiling^[[0m autocfg v1.5.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:49.3537677Z ^[[1m^[[92m   Compiling^[[0m num-traits v0.2.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:49.5319972Z ^[[1m^[[92m   Compiling^[[0m syn v3.0.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:49.5662686Z ^[[1m^[[92m    Checking^[[0m cfg-if v1.0.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:49.5834379Z ^[[1m^[[92m    Checking^[[0m pin-project-lite v0.2.18
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:49.6612694Z ^[[1m^[[92m   Compiling^[[0m icu_properties_data v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:49.7275189Z ^[[1m^[[92m   Compiling^[[0m icu_normalizer_data v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:49.7349624Z ^[[1m^[[92m    Checking^[[0m futures-core v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:49.7875408Z ^[[1m^[[92m   Compiling^[[0m stable_deref_trait v1.2.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:49.8279728Z ^[[1m^[[92m    Checking^[[0m bytes v1.12.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:50.1382787Z ^[[1m^[[92m    Checking^[[0m itoa v1.0.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:50.2042790Z ^[[1m^[[92m   Compiling^[[0m syn v2.0.119
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:50.8327426Z ^[[1m^[[92m   Compiling^[[0m zmij v1.0.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:50.9369995Z ^[[1m^[[92m   Compiling^[[0m parking_lot_core v0.9.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:51.0233762Z ^[[1m^[[92m    Checking^[[0m typenum v1.20.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:51.4302822Z ^[[1m^[[92m   Compiling^[[0m zerocopy v0.8.66
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:51.6155972Z ^[[1m^[[92m    Checking^[[0m errno v0.3.15
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:51.8416757Z ^[[1m^[[92m    Checking^[[0m signal-hook-registry v1.4.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:51.9582905Z ^[[1m^[[92m    Checking^[[0m socket2 v0.6.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:52.1272994Z ^[[1m^[[92m    Checking^[[0m mio v1.2.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:52.2992982Z ^[[1m^[[92m   Compiling^[[0m synstructure v0.14.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:52.4630009Z ^[[1m^[[92m    Checking^[[0m futures-sink v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:52.4962693Z ^[[1m^[[92m    Checking^[[0m memchr v2.8.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:52.6695504Z ^[[1m^[[92m    Checking^[[0m subtle v2.6.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:52.7272979Z ^[[1m^[[92m   Compiling^[[0m litemap v0.8.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:52.8402502Z ^[[1m^[[92m   Compiling^[[0m serde_json v1.0.154
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:52.8403329Z ^[[1m^[[92m   Compiling^[[0m thiserror v2.0.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:52.9116408Z ^[[1m^[[92m   Compiling^[[0m writeable v0.6.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:52.9812778Z ^[[1m^[[92m   Compiling^[[0m crossbeam-utils v0.8.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:53.0432836Z ^[[1m^[[92m   Compiling^[[0m utf_types v1.0.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:53.1362599Z ^[[1m^[[92m    Checking^[[0m block-buffer v0.10.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:53.1822851Z ^[[1m^[[92m   Compiling^[[0m utf8_iter v1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:53.1872895Z ^[[1m^[[92m    Checking^[[0m crypto-common v0.1.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:53.4092931Z ^[[1m^[[92m   Compiling^[[0m serde_derive v1.0.229
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:53.4677400Z ^[[1m^[[92m   Compiling^[[0m zerofrom-derive v0.1.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:53.5942854Z ^[[1m^[[92m   Compiling^[[0m yoke-derive v0.8.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:53.6212890Z ^[[1m^[[92m   Compiling^[[0m zerovec-derive v0.11.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:54.3301203Z ^[[1m^[[92m   Compiling^[[0m displaydoc v0.2.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:54.3348469Z ^[[1m^[[92m   Compiling^[[0m tracing-attributes v0.1.31
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:54.3422425Z ^[[1m^[[92m   Compiling^[[0m zerofrom v0.1.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:54.3893504Z ^[[1m^[[92m   Compiling^[[0m yoke v0.8.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:54.6643022Z ^[[1m^[[92m   Compiling^[[0m zerovec v0.11.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:55.0212724Z ^[[1m^[[92m   Compiling^[[0m tokio-macros v2.7.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:55.0952670Z ^[[1m^[[92m   Compiling^[[0m tinystr v0.8.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:55.0953863Z ^[[1m^[[92m   Compiling^[[0m potential_utf v0.1.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:55.2043013Z ^[[1m^[[92m   Compiling^[[0m icu_locale_core v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:55.2481182Z ^[[1m^[[92m   Compiling^[[0m zerotrie v0.2.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:55.3813652Z ^[[1m^[[92m    Checking^[[0m tokio v1.54.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:55.4349797Z ^[[1m^[[92m   Compiling^[[0m thiserror-impl v2.0.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:55.7342528Z ^[[1m^[[92m    Checking^[[0m smallvec v1.16.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:56.1702743Z ^[[1m^[[92m    Checking^[[0m once_cell v1.21.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:56.2592763Z ^[[1m^[[92m    Checking^[[0m tracing-core v0.1.36
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:56.3085952Z ^[[1m^[[92m   Compiling^[[0m icu_provider v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:56.4463361Z ^[[1m^[[92m   Compiling^[[0m icu_collections v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:56.6832864Z ^[[1m^[[92m    Checking^[[0m digest v0.10.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:56.7632385Z ^[[1m^[[92m    Checking^[[0m log v0.4.35
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:56.9738034Z ^[[1m^[[92m   Compiling^[[0m futures-macro v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:56.9821990Z ^[[1m^[[92m    Checking^[[0m futures-channel v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:57.0862364Z ^[[1m^[[92m    Checking^[[0m getrandom v0.2.17
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:57.1476660Z ^[[1m^[[92m    Checking^[[0m futures-io v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:57.1619413Z ^[[1m^[[92m    Checking^[[0m slab v0.4.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:57.2332288Z ^[[1m^[[92m    Checking^[[0m futures-task v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:57.2432411Z ^[[1m^[[92m   Compiling^[[0m icu_properties v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:57.2922606Z ^[[1m^[[92m   Compiling^[[0m icu_normalizer v2.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:57.4219695Z ^[[1m^[[92m    Checking^[[0m futures-util v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:57.6592515Z ^[[1m^[[92m    Checking^[[0m tracing v0.1.44
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:58.3093337Z ^[[1m^[[92m   Compiling^[[0m scopeguard v1.2.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:58.3222379Z ^[[1m^[[92m    Checking^[[0m percent-encoding v2.3.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:58.3442419Z ^[[1m^[[92m   Compiling^[[0m equivalent v1.0.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:58.3638105Z ^[[1m^[[92m   Compiling^[[0m lock_api v0.4.14
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:58.3740103Z ^[[1m^[[92m    Checking^[[0m form_urlencoded v1.2.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:58.4202245Z ^[[1m^[[92m   Compiling^[[0m idna_adapter v1.2.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:59.2243824Z ^[[1m^[[92m    Checking^[[0m http v1.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:59.4671394Z ^[[1m^[[92m   Compiling^[[0m allocator-api2 v0.2.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:59.6542573Z ^[[1m^[[92m   Compiling^[[0m rust_decimal v1.43.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:59.7752514Z ^[[1m^[[92m   Compiling^[[0m foldhash v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:59.7862592Z ^[[1m^[[92m    Checking^[[0m http-body v1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:44:59.8462649Z ^[[1m^[[92m   Compiling^[[0m hashbrown v0.15.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:00.2531509Z ^[[1m^[[92m   Compiling^[[0m rand_core v0.6.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:00.2842456Z ^[[1m^[[92m   Compiling^[[0m parking_lot v0.12.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:00.3574294Z ^[[1m^[[92m   Compiling^[[0m idna v1.1.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:01.0515433Z ^[[1m^[[92m   Compiling^[[0m arrayvec v0.7.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:01.1593118Z ^[[1m^[[92m   Compiling^[[0m iana-time-zone v0.1.65
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:01.1923110Z ^[[1m^[[92m   Compiling^[[0m cpufeatures v0.2.17
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:01.2672686Z ^[[1m^[[92m   Compiling^[[0m parking v2.2.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:01.3292754Z ^[[1m^[[92m   Compiling^[[0m ppv-lite86 v0.2.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:01.3918673Z ^[[1m^[[92m   Compiling^[[0m hashbrown v0.17.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:01.4137648Z ^[[1m^[[92m   Compiling^[[0m tinyvec v1.13.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:01.7442641Z ^[[1m^[[92m   Compiling^[[0m getrandom v0.4.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:01.7682654Z ^[[1m^[[92m   Compiling^[[0m crc-catalog v2.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:01.8113912Z ^[[1m^[[92m   Compiling^[[0m crc v3.4.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:01.8392552Z ^[[1m^[[92m   Compiling^[[0m indexmap v2.14.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:02.1162339Z ^[[1m^[[92m   Compiling^[[0m rand_chacha v0.3.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:02.3102743Z ^[[1m^[[92m   Compiling^[[0m unicode-normalization v0.1.26
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:02.4412442Z ^[[1m^[[92m   Compiling^[[0m event-listener v5.4.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:02.6204732Z ^[[1m^[[92m   Compiling^[[0m chrono v0.4.45
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:03.4271501Z ^[[1m^[[92m   Compiling^[[0m tokio-stream v0.1.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:03.6326586Z ^[[1m^[[92m   Compiling^[[0m sha2 v0.10.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:03.8193657Z ^[[1m^[[92m   Compiling^[[0m crossbeam-queue v0.3.14
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:03.8913654Z ^[[1m^[[92m   Compiling^[[0m url v2.5.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:03.9042586Z ^[[1m^[[92m   Compiling^[[0m futures-intrusive v0.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:04.3053249Z ^[[1m^[[92m   Compiling^[[0m hashlink v0.10.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:04.3122509Z ^[[1m^[[92m   Compiling^[[0m hmac v0.12.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:04.3376382Z ^[[1m^[[92m   Compiling^[[0m either v1.19.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:04.4884689Z ^[[1m^[[92m   Compiling^[[0m find-msvc-tools v0.1.15
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:04.4954359Z ^[[1m^[[92m   Compiling^[[0m unicode-bidi v0.3.18
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:04.5592832Z ^[[1m^[[92m   Compiling^[[0m base64 v0.22.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:04.6152758Z ^[[1m^[[92m   Compiling^[[0m httparse v1.10.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:04.7562678Z ^[[1m^[[92m    Checking^[[0m tower-service v0.3.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:04.9168401Z ^[[1m^[[92m   Compiling^[[0m shlex v2.0.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:04.9542585Z ^[[1m^[[92m   Compiling^[[0m unicode-properties v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:04.9592243Z ^[[1m^[[92m   Compiling^[[0m uuid v1.29.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:05.0620537Z ^[[1m^[[92m   Compiling^[[0m stringprep v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:05.1762729Z ^[[1m^[[92m   Compiling^[[0m sqlx-core v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:05.2907241Z ^[[1m^[[92m   Compiling^[[0m cc v1.11.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:05.5084703Z ^[[1m^[[92m   Compiling^[[0m hkdf v0.12.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:05.8292449Z ^[[1m^[[92m   Compiling^[[0m rand v0.8.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:06.5171736Z ^[[1m^[[92m   Compiling^[[0m atoi v2.0.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:06.5237525Z ^[[1m^[[92m   Compiling^[[0m md-5 v0.10.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:06.5668240Z ^[[1m^[[92m    Checking^[[0m num-integer v0.1.47
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:06.7452479Z ^[[1m^[[92m   Compiling^[[0m home v0.5.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:06.7886591Z ^[[1m^[[92m   Compiling^[[0m hex v0.4.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:06.8042375Z ^[[1m^[[92m   Compiling^[[0m bitflags v2.13.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:06.9061557Z ^[[1m^[[92m    Checking^[[0m tower-layer v0.3.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:06.9819060Z ^[[1m^[[92m   Compiling^[[0m num-conv v0.2.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:07.0625224Z ^[[1m^[[92m   Compiling^[[0m dotenvy v0.15.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:07.2552659Z ^[[1m^[[92m   Compiling^[[0m rustversion v1.0.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:07.3110232Z ^[[1m^[[92m   Compiling^[[0m byteorder v1.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:07.3508735Z ^[[1m^[[92m   Compiling^[[0m time-core v0.1.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:07.4245469Z ^[[1m^[[92m   Compiling^[[0m whoami v1.6.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:07.4643774Z ^[[1m^[[92m   Compiling^[[0m time-macros v0.2.32
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:07.5692785Z ^[[1m^[[92m   Compiling^[[0m sqlx-postgres v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:08.4782406Z ^[[1m^[[92m    Checking^[[0m num-bigint v0.4.8
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:08.5284521Z ^[[1m^[[92m   Compiling^[[0m ring v0.17.14
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:09.0622470Z ^[[1m^[[92m    Checking^[[0m http-body-util v0.1.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:09.2268781Z ^[[1m^[[92m    Checking^[[0m atomic-waker v1.1.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:09.2562554Z ^[[1m^[[92m    Checking^[[0m sync_wrapper v1.0.2
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:09.2652255Z ^[[1m^[[92m    Checking^[[0m powerfmt v0.2.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:09.3742506Z ^[[1m^[[92m    Checking^[[0m regex-syntax v0.8.12
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:09.4752750Z ^[[1m^[[92m    Checking^[[0m httpdate v1.0.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:09.5253906Z ^[[1m^[[92m    Checking^[[0m ryu v1.0.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:09.5882631Z ^[[1m^[[92m   Compiling^[[0m heck v0.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:09.6002349Z ^[[1m^[[92m    Checking^[[0m deranged v0.5.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:09.7033055Z ^[[1m^[[92m    Checking^[[0m hyper v1.13.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:09.9712464Z ^[[1m^[[92m    Checking^[[0m regex-automata v0.4.19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:10.3489419Z ^[[1m^[[92m    Checking^[[0m time v0.3.55
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:11.0302438Z ^[[1m^[[92m   Compiling^[[0m sqlx-macros-core v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:12.0555578Z ^[[1m^[[92m    Checking^[[0m futures-executor v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:12.0971514Z ^[[1m^[[92m    Checking^[[0m tokio-util v0.7.20
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:12.2449148Z ^[[1m^[[92m    Checking^[[0m lazy_static v1.5.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:12.2987382Z ^[[1m^[[92m    Checking^[[0m mime v0.3.18
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:12.3069272Z ^[[1m^[[92m    Checking^[[0m base64ct v1.8.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:12.3584469Z ^[[1m^[[92m    Checking^[[0m fastrand v2.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:12.4523147Z ^[[1m^[[92m    Checking^[[0m untrusted v0.9.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:12.4757961Z ^[[1m^[[92m    Checking^[[0m password-hash v0.5.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:12.4784955Z ^[[1m^[[92m    Checking^[[0m backon v1.6.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:12.5356064Z ^[[1m^[[92m    Checking^[[0m axum-core v0.5.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:12.5958470Z ^[[1m^[[92m    Checking^[[0m combine v4.6.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:13.3559418Z ^[[1m^[[92m    Checking^[[0m sharded-slab v0.1.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:13.6486900Z ^[[1m^[[92m    Checking^[[0m arc-swap v1.9.5
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:13.7768601Z ^[[1m^[[92m    Checking^[[0m futures v0.3.34
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:13.8012384Z ^[[1m^[[92m   Compiling^[[0m sqlx-macros v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:14.4152697Z ^[[1m^[[92m    Checking^[[0m simple_asn1 v0.6.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:14.4810803Z ^[[1m^[[92m    Checking^[[0m matchers v0.2.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:14.4943457Z ^[[1m^[[92m    Checking^[[0m hyper-util v0.1.21
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:14.5242729Z ^[[1m^[[92m    Checking^[[0m serde_urlencoded v0.7.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:14.6297533Z ^[[1m^[[92m    Checking^[[0m tower v0.5.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:14.6339566Z ^[[1m^[[92m    Checking^[[0m pem v3.0.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:14.6733214Z ^[[1m^[[92m    Checking^[[0m itertools v0.13.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:14.6998697Z ^[[1m^[[92m    Checking^[[0m tracing-log v0.2.0
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:14.7632698Z ^[[1m^[[92m    Checking^[[0m blake2 v0.10.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:14.8565844Z ^[[1m^[[92m   Compiling^[[0m async-trait v0.1.92
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:14.8812716Z ^[[1m^[[92m    Checking^[[0m serde_path_to_error v0.1.20
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:15.0652431Z ^[[1m^[[92m    Checking^[[0m socket2 v0.5.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:15.2022565Z ^[[1m^[[92m    Checking^[[0m thread_local v1.1.10
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:15.2736311Z ^[[1m^[[92m    Checking^[[0m matchit v0.8.4
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:15.3829815Z ^[[1m^[[92m    Checking^[[0m nu-ansi-term v0.50.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:15.3912215Z ^[[1m^[[92m    Checking^[[0m sha1_smol v1.0.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:15.4490227Z ^[[1m^[[92m    Checking^[[0m axum v0.8.9
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:15.4743929Z ^[[1m^[[92m    Checking^[[0m tracing-subscriber v0.3.23
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:15.4833894Z ^[[1m^[[92m    Checking^[[0m redis v0.27.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:16.1735544Z ^[[1m^[[92m    Checking^[[0m argon2 v0.5.3
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:16.3452347Z ^[[1m^[[92m    Checking^[[0m sqlx v0.8.6
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:16.3996780Z ^[[1m^[[92m    Checking^[[0m tower-http v0.6.11
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:16.9149137Z ^[[1m^[[92m    Checking^[[0m sha1 v0.10.7
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:28.9574576Z ^[[1m^[[92m    Checking^[[0m jsonwebtoken v9.3.1
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.2261812Z ^[[1m^[[92m    Checking^[[0m unadomot-api v0.1.0 (/home/runner/work/unadomot/unadomot/services/api)
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.4909302Z ^[[1m^[[91merror^[[0m^[[1m: named argument never used^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.4909686Z   ^[[1m^[[94m--> ^[[0msrc/http/public_pages.rs:96:19
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.4909926Z    ^[[1m^[[94m|^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.4910183Z ^[[1m^[[94m59^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m/^[[0m         r#"<!doctype html>
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.4910502Z ^[[1m^[[94m60^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m|^[[0m <html lang="en">
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.4910817Z ^[[1m^[[94m61^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m|^[[0m <head>
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.4911292Z ^[[1m^[[94m62^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m|^[[0m <meta charset="utf-8">
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.4911573Z ^[[1m^[[94m...^[[0m  ^[[1m^[[94m|^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.4911809Z ^[[1m^[[94m87^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m|^[[0m </body>
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.4912077Z ^[[1m^[[94m88^[[0m ^[[1m^[[94m|^[[0m ^[[1m^[[94m|^[[0m </html>"#,
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.4912404Z    ^[[1m^[[94m|^[[0m ^[[1m^[[94m|_________-^[[0m ^[[1m^[[94mformatting specifier missing^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.4912682Z ^[[1m^[[94m...^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.4912974Z ^[[1m^[[94m96^[[0m ^[[1m^[[94m|^[[0m           json_ld = json_ld(&listing, &canonical, &image),
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.4913617Z    ^[[1m^[[94m|^[[0m                     ^[[1m^[[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[[0m ^[[1m^[[91mnamed argument never used^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.4913964Z 
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.5516034Z ^[[1m^[[91merror^[[0m^[[1m: unused import: `ListingStatus`^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.5516524Z  ^[[1m^[[94m--> ^[[0msrc/application/listings.rs:2:43
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.5516768Z   ^[[1m^[[94m|^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.5517172Z ^[[1m^[[94m2^[[0m ^[[1m^[[94m|^[[0m     Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.5517638Z   ^[[1m^[[94m|^[[0m                                           ^[[1m^[[91m^^^^^^^^^^^^^^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.5517892Z   ^[[1m^[[94m|^[[0m
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.5518157Z   ^[[1m^[[94m= ^[[0m^[[1mnote^[[0m: `-D unused-imports` implied by `-D warnings`
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.5518671Z   ^[[1m^[[94m= ^[[0m^[[1mhelp^[[0m: to override `-D warnings` add `#[allow(unused_imports)]`
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:29.5518920Z 
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:30.3145962Z ^[[1m^[[91merror^[[0m: could not compile `unadomot-api` (lib test) due to 2 previous errors
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:30.3153392Z ^[[1m^[[33mwarning^[[0m: build failed, waiting for other jobs to finish...
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:30.3153880Z ^[[1m^[[91merror^[[0m: could not compile `unadomot-api` (lib) due to 2 previous errors
+rust	Run cargo clippy --all-targets -- -D warnings	2026-11-26T01:45:30.3687970Z ##[error]Process completed with exit code 101.
