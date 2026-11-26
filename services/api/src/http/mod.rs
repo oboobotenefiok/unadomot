@@ -8,7 +8,7 @@ use crate::application::listings::{
 };
 use crate::application::media::{MediaError, MediaSigner};
 use crate::application::messaging::{
-    list_conversations, list_messages, send_message, start_conversation, MessagingError,
+    list_conversations, list_messages, mark_read, send_message, start_conversation, MessagingError,
     MessagingRepository,
 };
 use crate::domain::listing::{
@@ -221,14 +221,14 @@ pub struct SignatureRequest {
 }
 
 #[derive(Deserialize)]
-pub struct StartConversationRequest {
-    pub listing_id: Uuid,
-    pub other_user_id: Uuid,
-}
-
-#[derive(Deserialize)]
 pub struct SendMessageRequest {
     pub body: String,
+}
+
+#[derive(Deserialize, Default)]
+pub struct MessageQuery {
+    pub before: Option<String>,
+    pub limit: Option<i64>,
 }
 
 #[derive(Serialize)]
@@ -271,7 +271,9 @@ pub struct ConversationResponse {
     pub listing_id: Uuid,
     pub participant_a: Uuid,
     pub participant_b: Uuid,
+    pub last_message_preview: Option<String>,
     pub last_message_at: Option<chrono::DateTime<Utc>>,
+    pub last_sender_id: Option<Uuid>,
     pub created_at: chrono::DateTime<Utc>,
 }
 
@@ -325,7 +327,9 @@ impl From<Conversation> for ConversationResponse {
             listing_id: conversation.listing_id,
             participant_a: conversation.participant_a,
             participant_b: conversation.participant_b,
+            last_message_preview: conversation.last_message_preview,
             last_message_at: conversation.last_message_at,
+            last_sender_id: conversation.last_sender_id,
             created_at: conversation.created_at,
         }
     }
@@ -377,15 +381,14 @@ pub fn router(state: AppState) -> Router {
                 .delete(delete_listing_handler),
         )
         .route("/api/listings/{id}/media", post(add_media_handler))
+        .route("/api/listings/{id}/conversations", post(start_conversation_handler))
         .route("/api/media/signature", post(signature_handler))
-        .route(
-            "/api/conversations",
-            get(conversations_handler).post(start_conversation_handler),
-        )
+        .route("/api/conversations", get(conversations_handler))
         .route(
             "/api/conversations/{id}/messages",
             get(messages_handler).post(send_message_handler),
         )
+        .route("/api/conversations/{id}/read", post(mark_read_handler))
         .layer(DefaultBodyLimit::max(2 * 1024 * 1024))
         .layer(SetResponseHeaderLayer::overriding(
             header::X_CONTENT_TYPE_OPTIONS,
@@ -703,30 +706,48 @@ async fn conversations_handler(
 async fn start_conversation_handler(
     State(state): State<AppState>,
     headers: HeaderMap,
-    Json(request): Json<StartConversationRequest>,
+    Path(id): Path<Uuid>,
 ) -> Result<Json<ConversationResponse>, ApiError> {
     let user = authorize(&state, &headers)?;
-    start_conversation(
-        state.messaging.as_ref(),
-        request.listing_id,
-        user.id,
-        request.other_user_id,
-    )
-    .await
-    .map(|conversation| Json(ConversationResponse::from(conversation)))
-    .map_err(messaging_error)
+    start_conversation(state.messaging.as_ref(), id, user.id)
+        .await
+        .map(|conversation| Json(ConversationResponse::from(conversation)))
+        .map_err(messaging_error)
 }
 
 async fn messages_handler(
     State(state): State<AppState>,
     headers: HeaderMap,
     Path(id): Path<Uuid>,
+    Query(query): Query<MessageQuery>,
 ) -> Result<Json<Vec<MessageResponse>>, ApiError> {
     let user = authorize(&state, &headers)?;
-    list_messages(state.messaging.as_ref(), user.id, id, 100, 0)
-        .await
-        .map(|items| Json(items.into_iter().map(MessageResponse::from).collect()))
-        .map_err(messaging_error)
+    let before = query
+        .before
+        .as_deref()
+        .map(|value| {
+            chrono::DateTime::parse_from_rfc3339(value)
+                .map(|value| value.with_timezone(&Utc))
+                .map_err(|_| {
+                    ApiError::new(
+                        StatusCode::BAD_REQUEST,
+                        "validation_error",
+                        "Invalid before cursor",
+                    )
+                })
+        })
+        .transpose()?;
+
+    list_messages(
+        state.messaging.as_ref(),
+        user.id,
+        id,
+        before,
+        query.limit.unwrap_or(50),
+    )
+    .await
+    .map(|items| Json(items.into_iter().map(MessageResponse::from).collect()))
+    .map_err(messaging_error)
 }
 
 async fn send_message_handler(
@@ -739,6 +760,18 @@ async fn send_message_handler(
     send_message(state.messaging.as_ref(), user.id, id, &request.body)
         .await
         .map(|message| Json(MessageResponse::from(message)))
+        .map_err(messaging_error)
+}
+
+async fn mark_read_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<Uuid>,
+) -> Result<StatusCode, ApiError> {
+    let user = authorize(&state, &headers)?;
+    mark_read(state.messaging.as_ref(), user.id, id)
+        .await
+        .map(|_| StatusCode::NO_CONTENT)
         .map_err(messaging_error)
 }
 
