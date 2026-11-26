@@ -176,6 +176,22 @@ class ApiClient {
     return Map<String, dynamic>.from(result as Map);
   }
 
+  Future<void> createReport(
+    String listingId, {
+    required String reason,
+    String? details,
+  }) async {
+    await _request(
+      'POST',
+      '/api/listings/${Uri.encodeComponent(listingId)}/reports',
+      body: {
+        'reason': reason,
+        if (details != null && details.trim().isNotEmpty) 'details': details.trim(),
+      },
+      authenticated: true,
+    );
+  }
+
   Future<List<Map<String, dynamic>>> conversations() async {
     final result = await _request('GET', '/api/conversations', authenticated: true);
     return (result as List)
