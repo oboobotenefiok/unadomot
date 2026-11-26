@@ -25,6 +25,8 @@ jobs:
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           flutter create --platforms=android --org com.unadomot --project-name unadomot .
+          mkdir -p assets
+          cp ../../vault/img/unadomot.jpg assets/unadomot.jpg
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/upload-keystore.jks
           cat > android/key.properties <<EOF
           storePassword=$ANDROID_KEYSTORE_PASSWORD
