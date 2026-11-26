@@ -535,6 +535,7 @@ class _FilterSheetState extends State<_FilterSheet> {
   late String? _state;
   late String? _type;
   late String? _bedrooms;
+  final _lga = TextEditingController();
   final _minPrice = TextEditingController();
   final _maxPrice = TextEditingController();
 
@@ -544,12 +545,14 @@ class _FilterSheetState extends State<_FilterSheet> {
     _state = widget.initial['state'];
     _type = widget.initial['property_type'];
     _bedrooms = widget.initial['bedrooms'];
+    _lga.text = widget.initial['lga'] ?? '';
     _minPrice.text = widget.initial['min_price'] ?? '';
     _maxPrice.text = widget.initial['max_price'] ?? '';
   }
 
   @override
   void dispose() {
+    _lga.dispose();
     _minPrice.dispose();
     _maxPrice.dispose();
     super.dispose();
@@ -558,6 +561,7 @@ class _FilterSheetState extends State<_FilterSheet> {
   void _apply() {
     final filters = <String, String>{};
     if (_state != null) filters['state'] = _state!;
+    if (_lga.text.trim().isNotEmpty) filters['lga'] = _lga.text.trim();
     if (_type != null) filters['property_type'] = _type!;
     if (_bedrooms != null) filters['bedrooms'] = _bedrooms!;
     if (_minPrice.text.trim().isNotEmpty) filters['min_price'] = _minPrice.text.trim();
@@ -570,6 +574,7 @@ class _FilterSheetState extends State<_FilterSheet> {
       _state = null;
       _type = null;
       _bedrooms = null;
+      _lga.clear();
       _minPrice.clear();
       _maxPrice.clear();
     });
@@ -615,6 +620,15 @@ class _FilterSheetState extends State<_FilterSheet> {
                     .map((state) => DropdownMenuItem(value: state, child: Text(state)))
                     .toList(),
                 onChanged: (value) => setState(() => _state = value),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _lga,
+                textCapitalization: TextCapitalization.words,
+                decoration: const InputDecoration(
+                  labelText: 'LGA',
+                  hintText: 'e.g. Ikeja, Gwarinpa, Port Harcourt',
+                ),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
