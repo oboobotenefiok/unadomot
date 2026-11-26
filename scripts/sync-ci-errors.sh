@@ -22,7 +22,6 @@ fi
 
 git pull --rebase
 
-# Log-only commits do not match the workflow path filter, so dispatch explicitly.
 gh workflow run "$WORKFLOW" --ref "$BRANCH" >/dev/null
 sleep 5
 
@@ -38,9 +37,12 @@ gh run watch "$RUN_ID" --exit-status >/dev/null 2>&1 || true
 STATUS="$(gh run view "$RUN_ID" --json conclusion --jq '.conclusion')"
 if [ "$STATUS" = "failure" ]; then
   gh run view "$RUN_ID" --log-failed > error.txt || true
-  sed -E 's/\x1B\[[0-9;]*[mK]//g' error.txt \
-    | grep -n -E 'error(\[|:)|warning:' \
+  sed -E $'s/\x1b\\[[0-9;]*[mK]//g' error.txt \
+    | grep -a -n -E 'error(\[|:)|warning:' \
     > error-summary.txt || true
+  if [ ! -s error-summary.txt ]; then
+    sed -E $'s/\x1b\\[[0-9;]*[mK]//g' error.txt | tail -120 > error-summary.txt
+  fi
   git add error.txt error-summary.txt
   if ! git diff --cached --quiet; then
     git commit -m "chore: capture CI failure $RUN_ID"
