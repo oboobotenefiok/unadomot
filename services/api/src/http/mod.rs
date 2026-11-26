@@ -3,8 +3,9 @@ use crate::application::auth::{
     AuthError, UserRepository,
 };
 use crate::application::listings::{
-    add_listing_media, browse_listings, create_listing, delete_listing, get_public_listing,
-    list_my_listings, update_listing, ListingError, ListingRepository,
+    add_listing_media, admin_remove_listing, admin_restore_listing, browse_listings,
+    create_listing, delete_listing, get_public_listing, list_my_listings, update_listing,
+    ListingError, ListingRepository,
 };
 use crate::application::media::{MediaError, MediaSigner};
 use crate::application::messaging::{
@@ -225,6 +226,11 @@ pub struct SendMessageRequest {
     pub body: String,
 }
 
+#[derive(Deserialize)]
+pub struct AdminRemoveRequest {
+    pub reason: String,
+}
+
 #[derive(Deserialize, Default)]
 pub struct MessageQuery {
     pub before: Option<String>,
@@ -426,6 +432,8 @@ pub fn router(state: AppState) -> Router {
         )
         .route("/api/listings/{id}/media", post(add_media_handler))
         .route("/api/listings/{id}/conversations", post(start_conversation_handler))
+        .route("/api/admin/listings/{id}/remove", post(admin_remove_listing_handler))
+        .route("/api/admin/listings/{id}/restore", post(admin_restore_listing_handler))
         .route("/api/media/signature", post(signature_handler))
         .route("/api/conversations", get(conversations_handler))
         .route(
@@ -710,6 +718,47 @@ async fn delete_listing_handler(
     delete_listing(state.listings.as_ref(), id, user.id)
         .await
         .map(|_| StatusCode::NO_CONTENT)
+        .map_err(listing_error)
+}
+
+async fn admin_remove_listing_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<Uuid>,
+    Json(request): Json<AdminRemoveRequest>,
+) -> Result<Json<ListingResponse>, ApiError> {
+    let user = authorize(&state, &headers)?;
+    if !state.users.is_admin(user.id).await.map_err(auth_error)? {
+        return Err(ApiError::new(
+            StatusCode::FORBIDDEN,
+            "forbidden",
+            "Admin access is required",
+        ));
+    }
+
+    admin_remove_listing(state.listings.as_ref(), id, user.id, &request.reason)
+        .await
+        .map(|listing| Json(ListingResponse::from(listing)))
+        .map_err(listing_error)
+}
+
+async fn admin_restore_listing_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(id): Path<Uuid>,
+) -> Result<Json<ListingResponse>, ApiError> {
+    let user = authorize(&state, &headers)?;
+    if !state.users.is_admin(user.id).await.map_err(auth_error)? {
+        return Err(ApiError::new(
+            StatusCode::FORBIDDEN,
+            "forbidden",
+            "Admin access is required",
+        ));
+    }
+
+    admin_restore_listing(state.listings.as_ref(), id, user.id)
+        .await
+        .map(|listing| Json(ListingResponse::from(listing)))
         .map_err(listing_error)
 }
 
