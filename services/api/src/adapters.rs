@@ -1,9 +1,11 @@
 use crate::application::auth::{AuthenticatedUser, AuthError, StoredUser, UserRepository};
+use crate::application::calls::{CallError, CallRepository};
 use crate::application::listings::{ListingError, ListingPage, ListingRepository};
 use crate::application::media::{MediaError, MediaSigner, UploadSignature};
 use crate::application::messaging::{MessagingError, MessagingRepository};
 use crate::application::reports::{ReportError, ReportRepository};
 use crate::application::verification::{VerificationError, VerificationRepository};
+use crate::domain::call::CallSession;
 use crate::domain::listing::{
     Listing, ListingFilter, ListingMedia, ListingUpdate, NewListing, NewListingMedia,
 };
@@ -195,6 +197,38 @@ impl MessagingRepository for UnconfiguredMessagingRepository {
 
     async fn mark_read(&self, _conversation_id: Uuid, _user_id: Uuid) -> Result<(), MessagingError> {
         Err(MessagingError::Repository("Persistence not configured".into()))
+    }
+}
+
+pub struct UnconfiguredCallRepository;
+
+#[async_trait]
+impl CallRepository for UnconfiguredCallRepository {
+    async fn create(
+        &self,
+        _conversation_id: Uuid,
+        _caller_id: Uuid,
+        _kind: &str,
+        _offer_sdp: &str,
+    ) -> Result<CallSession, CallError> {
+        Err(CallError::Repository("Persistence not configured".into()))
+    }
+
+    async fn get(&self, _id: Uuid, _user_id: Uuid) -> Result<Option<CallSession>, CallError> {
+        Err(CallError::Repository("Persistence not configured".into()))
+    }
+
+    async fn answer(
+        &self,
+        _id: Uuid,
+        _user_id: Uuid,
+        _answer_sdp: &str,
+    ) -> Result<CallSession, CallError> {
+        Err(CallError::Repository("Persistence not configured".into()))
+    }
+
+    async fn end(&self, _id: Uuid, _user_id: Uuid) -> Result<CallSession, CallError> {
+        Err(CallError::Repository("Persistence not configured".into()))
     }
 }
 
