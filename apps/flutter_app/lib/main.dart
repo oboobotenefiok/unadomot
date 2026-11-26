@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'api/api_client.dart';
 import 'app_settings.dart';
 import 'data/local_cache.dart';
+import 'screens/listing_detail_screen.dart';
 import 'screens/main_shell.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/public_profile_screen.dart';
@@ -28,6 +29,7 @@ class _BootstrapAppState extends State<BootstrapApp> {
   LocalCache? _cache;
   AppState? _state;
   String? _initialUsername;
+  String? _initialListingId;
   bool _showOnboarding = false;
   bool _ready = false;
 
@@ -52,12 +54,22 @@ class _BootstrapAppState extends State<BootstrapApp> {
     }
 
     String? initialUsername;
+    String? initialListingId;
     try {
       final uri = await AppLinks().getInitialLink();
       if (uri != null) {
-        final segment = uri.pathSegments.isEmpty ? '' : uri.pathSegments.first;
-        if (RegExp(r'^[a-z0-9_]{3,20}$').hasMatch(segment)) {
-          initialUsername = segment;
+        final segments = uri.pathSegments;
+        if (segments.length >= 2 &&
+            (segments.first == 'listings' || segments.first == 'listing')) {
+          final candidate = segments[1];
+          if (RegExp(r'^[0-9a-fA-F-]{36}$').hasMatch(candidate)) {
+            initialListingId = candidate;
+          }
+        } else if (segments.isNotEmpty) {
+          final segment = segments.first;
+          if (RegExp(r'^[a-z0-9_]{3,20}$').hasMatch(segment)) {
+            initialUsername = segment;
+          }
         }
       }
     } catch (_) {
@@ -79,6 +91,7 @@ class _BootstrapAppState extends State<BootstrapApp> {
       _cache = cache;
       _state = state;
       _initialUsername = initialUsername;
+      _initialListingId = initialListingId;
       _showOnboarding = !onboardingSeen;
       _ready = true;
     });
@@ -101,6 +114,7 @@ class _BootstrapAppState extends State<BootstrapApp> {
       api: _api!,
       cache: _cache!,
       initialUsername: _initialUsername,
+      initialListingId: _initialListingId,
       showOnboarding: _showOnboarding,
     );
   }
@@ -111,6 +125,7 @@ class UnaDomotApp extends StatelessWidget {
   final ApiClient api;
   final LocalCache cache;
   final String? initialUsername;
+  final String? initialListingId;
   final bool showOnboarding;
 
   const UnaDomotApp({
@@ -119,11 +134,24 @@ class UnaDomotApp extends StatelessWidget {
     required this.api,
     required this.cache,
     this.initialUsername,
+    this.initialListingId,
     this.showOnboarding = false,
   });
 
   Route<dynamic>? _route(RouteSettings settings) {
     final name = settings.name ?? '/';
+    final listingMatch = RegExp(r'^/(?:listings|listing)/([0-9a-fA-F-]{36})$').firstMatch(name);
+    if (listingMatch != null) {
+      return MaterialPageRoute(
+        settings: settings,
+        builder: (_) => ListingDetailScreen(
+          api: api,
+          cache: cache,
+          appState: state,
+          listingId: listingMatch.group(1)!,
+        ),
+      );
+    }
     final match = RegExp(r'^/([a-z0-9_]{3,20})$').firstMatch(name);
     if (match == null) return null;
     return MaterialPageRoute(
@@ -152,14 +180,21 @@ class UnaDomotApp extends StatelessWidget {
                   api: api,
                   appState: state,
                 )
-              : initialUsername == null
-                  ? MainShell(api: api, cache: cache, appState: state)
-                  : PublicProfileScreen(
+              : initialListingId != null
+                  ? ListingDetailScreen(
                       api: api,
                       cache: cache,
                       appState: state,
-                      username: initialUsername!,
-                    ),
+                      listingId: initialListingId!,
+                    )
+                  : initialUsername == null
+                      ? MainShell(api: api, cache: cache, appState: state)
+                      : PublicProfileScreen(
+                          api: api,
+                          cache: cache,
+                          appState: state,
+                          username: initialUsername!,
+                        ),
         ),
       );
 }
