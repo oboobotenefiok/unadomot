@@ -330,11 +330,12 @@ class ApiClient {
     required Uint8List bytes,
     required String filename,
     required Map<String, dynamic> signature,
+    String resourceType = 'image',
   }) async {
     final cloud = signature['cloud_name'] as String;
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse('https://api.cloudinary.com/v1_1/$cloud/image/upload'),
+      Uri.parse('https://api.cloudinary.com/v1_1/$cloud/$resourceType/upload'),
     )
       ..fields['api_key'] = signature['api_key'] as String
       ..fields['timestamp'] = '${signature['timestamp']}'
@@ -345,7 +346,7 @@ class ApiClient {
     final streamed = await _client.send(request);
     final response = await http.Response.fromStream(streamed);
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw ApiException(response.statusCode, 'Photo upload failed.');
+      throw ApiException(response.statusCode, 'Media upload failed.');
     }
     return Map<String, dynamic>.from(jsonDecode(response.body) as Map);
   }
@@ -355,6 +356,7 @@ class ApiClient {
     required String publicId,
     required String url,
     String? altText,
+    String mediaType = 'image',
     int position = 0,
   }) async {
     await _request(
@@ -364,6 +366,7 @@ class ApiClient {
         'cloudinary_public_id': publicId,
         'url': url,
         'alt_text': altText,
+        'media_type': mediaType,
         'position': position,
       },
       authenticated: true,

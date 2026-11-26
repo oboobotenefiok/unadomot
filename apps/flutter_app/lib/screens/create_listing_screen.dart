@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../api/api_client.dart';
@@ -14,9 +15,18 @@ class CreateListingScreen extends StatefulWidget {
   State<CreateListingScreen> createState() => _CreateListingScreenState();
 }
 
+class _MediaItem {
+  final Uint8List bytes;
+  final String name;
+  final String type;
+
+  const _MediaItem({required this.bytes, required this.name, required this.type});
+}
+
 class _CreateListingScreenState extends State<CreateListingScreen> {
   static const _draftId = 'new-listing';
-  final _formKey = GlobalKey<FormState>();
+  final _detailsKey = GlobalKey<FormState>();
+  final _locationKey = GlobalKey<FormState>();
   final _title = TextEditingController();
   final _description = TextEditingController();
   final _price = TextEditingController();
@@ -27,8 +37,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   final _bathrooms = TextEditingController();
   String? _propertyType;
   bool _isAgent = false;
-  Uint8List? _photoBytes;
-  String? _photoName;
+  final List<_MediaItem> _media = [];
+  int _step = 0;
   bool _busy = false;
   String? _error;
 
@@ -90,19 +100,60 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     });
   }
 
-  Future<void> _pickPhoto() async {
-    final picked = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
+  Future<void> _pickImages() async {
+    final picked = await ImagePicker().pickMultiImage(
       imageQuality: 85,
       maxWidth: 2000,
     );
+    if (picked.isEmpty) return;
+    for (final file in picked) {
+      final bytes = await file.readAsBytes();
+      _media.add(_MediaItem(bytes: bytes, name: file.name, type: 'image'));
+    }
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _pickVideo() async {
+    final picked = await ImagePicker().pickVideo(source: ImageSource.gallery);
     if (picked == null) return;
     final bytes = await picked.readAsBytes();
     if (mounted) {
       setState(() {
-        _photoBytes = bytes;
-        _photoName = picked.name;
+        _media.add(_MediaItem(bytes: bytes, name: picked.name, type: 'video'));
       });
+    }
+  }
+
+  Future<void> _pickDocument() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc', 'docx'],
+      withData: true,
+    );
+    final file = result?.files.single;
+    if (file == null || file.bytes == null) return;
+    if (mounted) {
+      setState(() {
+        _media.add(_MediaItem(bytes: file.bytes!, name: file.name, type: 'document'));
+      });
+    }
+  }
+
+  void _removeMedia(int index) {
+    setState(() => _media.removeAt(index));
+  }
+
+  void _next() {
+    if (_step == 0 && !_detailsKey.currentState!.validate()) return;
+    if (_step == 1 && !_locationKey.currentState!.validate()) return;
+    setState(() => _step += 1);
+  }
+
+  void _back() {
+    if (_step == 0) {
+      Navigator.pop(context);
+    } else {
+      setState(() => _step -= 1);
     }
   }
 
@@ -125,7 +176,6 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
     setState(() {
       _busy = true;
       _error = null;
@@ -147,18 +197,27 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         if (_propertyType != null) 'property_type': _propertyType,
       });
 
-      if (_photoBytes != null) {
+      final listingId = listing['id'] as String;
+      for (var index = 0; index < _media.length; index++) {
+        final item = _media[index];
         final signature = await widget.api.mediaSignature();
         final uploaded = await widget.api.uploadToCloudinary(
-          bytes: _photoBytes!,
-          filename: _photoName ?? 'listing.jpg',
+          bytes: item.bytes,
+          filename: item.name,
           signature: signature,
+          resourceType: item.type == 'image'
+              ? 'image'
+              : item.type == 'video'
+                  ? 'video'
+                  : 'raw',
         );
         await widget.api.attachMedia(
-          listing['id'] as String,
+          listingId,
           publicId: uploaded['public_id'] as String,
           url: uploaded['secure_url'] as String,
           altText: _title.text.trim(),
+          mediaType: item.type,
+          position: index,
         );
       }
 
@@ -175,140 +234,320 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(title: const Text('Post a listing')),
         body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextFormField(
-                    controller: _title,
-                    decoration: const InputDecoration(labelText: 'Listing title'),
-                    validator: (value) => value == null || value.trim().isEmpty
-                        ? 'Enter a title'
-                        : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _description,
-                    maxLines: 4,
-                    decoration: const InputDecoration(labelText: 'Description'),
-                    validator: (value) => value == null || value.trim().isEmpty
-                        ? 'Enter a description'
-                        : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _price,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Monthly rent (₦)',
-                      prefixText: '₦ ',
+          child: Column(
+            children: [
+              LinearProgressIndicator(value: (_step + 1) / 3),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                child: Row(
+                  children: [
+                    Text(
+                      'Step ${_step + 1} of 3',
+                      style: Theme.of(context).textTheme.labelLarge,
                     ),
-                    validator: (value) {
-                      final price = double.tryParse(value ?? '');
-                      return price == null || price <= 0
-                          ? 'Enter a valid monthly rent'
-                          : null;
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _address,
-                    decoration: const InputDecoration(labelText: 'Address'),
-                    validator: (value) => value == null || value.trim().isEmpty
-                        ? 'Enter an address'
-                        : null,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _state,
-                    decoration: const InputDecoration(labelText: 'State'),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _lga,
-                    decoration: const InputDecoration(labelText: 'LGA / area'),
-                    validator: (value) => value == null || value.trim().isEmpty
-                        ? 'Enter an area'
-                        : null,
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    initialValue: _propertyType,
-                    decoration: const InputDecoration(labelText: 'Property type'),
-                    items: _propertyTypes
-                        .map((type) => DropdownMenuItem(
-                              value: type,
-                              child: Text(type),
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() => _propertyType = value);
-                      _saveDraft();
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
+                    const Spacer(),
+                    Text(
+                      ['Details', 'Location', 'Media'][_step],
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: IndexedStack(
+                    index: _step,
                     children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _bedrooms,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(labelText: 'Bedrooms'),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _bathrooms,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(labelText: 'Bathrooms'),
-                        ),
-                      ),
+                      _detailsStep(),
+                      _locationStep(),
+                      _mediaStep(),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Post as an agent'),
-                    subtitle: const Text('Shown with an Agent badge on your listing'),
-                    value: _isAgent,
-                    onChanged: (value) {
-                      setState(() => _isAgent = value);
-                      _saveDraft();
-                    },
+                ),
+              ),
+              if (_error != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    _error!,
+                    style: TextStyle(color: Theme.of(context).colorScheme.error),
                   ),
-                  const SizedBox(height: 8),
-                  OutlinedButton.icon(
-                    onPressed: _busy ? null : _pickPhoto,
-                    icon: const Icon(Icons.photo_library_outlined),
-                    label: Text(_photoBytes == null ? 'Add a photo' : 'Change photo'),
-                  ),
-                  if (_photoBytes != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.memory(_photoBytes!, height: 160, fit: BoxFit.cover),
+                ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: _busy ? null : _back,
+                        child: Text(_step == 0 ? 'Cancel' : 'Back'),
                       ),
                     ),
-                  const SizedBox(height: 16),
-                  if (_error != null)
-                    Text(
-                      _error!,
-                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: _busy
+                            ? null
+                            : _step == 2
+                                ? _submit
+                                : _next,
+                        child: Text(
+                          _busy
+                              ? 'Posting'
+                              : _step == 2
+                                  ? 'Post listing'
+                                  : 'Continue',
+                        ),
+                      ),
                     ),
-                  const SizedBox(height: 16),
-                  FilledButton(
-                    onPressed: _busy ? null : _submit,
-                    child: Text(_busy ? 'Posting' : 'Post listing'),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
+      );
+
+  Widget _detailsStep() => Form(
+        key: _detailsKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+              controller: _title,
+              decoration: const InputDecoration(labelText: 'Listing title'),
+              validator: (value) => value == null || value.trim().isEmpty
+                  ? 'Enter a title'
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _description,
+              maxLines: 4,
+              decoration: const InputDecoration(labelText: 'Description'),
+              validator: (value) => value == null || value.trim().isEmpty
+                  ? 'Enter a description'
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _price,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Monthly rent',
+                prefixText: 'N ',
+              ),
+              validator: (value) {
+                final price = double.tryParse(value ?? '');
+                return price == null || price <= 0
+                    ? 'Enter a valid monthly rent'
+                    : null;
+              },
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              initialValue: _propertyType,
+              decoration: const InputDecoration(labelText: 'Property type'),
+              items: _propertyTypes
+                  .map((type) => DropdownMenuItem(value: type, child: Text(type)))
+                  .toList(),
+              onChanged: (value) {
+                setState(() => _propertyType = value);
+                _saveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _bedrooms,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(labelText: 'Bedrooms'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _bathrooms,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(labelText: 'Bathrooms'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Post as an agent'),
+              subtitle: const Text('Shown with an Agent badge on your listing'),
+              value: _isAgent,
+              onChanged: (value) {
+                setState(() => _isAgent = value);
+                _saveDraft();
+              },
+            ),
+          ],
+        ),
+      );
+
+  Widget _locationStep() => Form(
+        key: _locationKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+              controller: _address,
+              decoration: const InputDecoration(labelText: 'Address'),
+              validator: (value) => value == null || value.trim().isEmpty
+                  ? 'Enter an address'
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _state,
+              decoration: const InputDecoration(labelText: 'State'),
+              validator: (value) => value == null || value.trim().isEmpty
+                  ? 'Enter a state'
+                  : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _lga,
+              decoration: const InputDecoration(labelText: 'LGA or area'),
+              validator: (value) => value == null || value.trim().isEmpty
+                  ? 'Enter an area'
+                  : null,
+            ),
+          ],
+        ),
+      );
+
+  Widget _mediaStep() => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Photos, video, and documents',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'The first photo becomes the cover image.',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _busy ? null : _pickImages,
+                  icon: const Icon(Icons.photo_library_outlined),
+                  label: const Text('Photos'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _busy ? null : _pickVideo,
+                  icon: const Icon(Icons.videocam_outlined),
+                  label: const Text('Video'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _busy ? null : _pickDocument,
+                  icon: const Icon(Icons.description_outlined),
+                  label: const Text('Docs'),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (_media.isEmpty)
+            Container(
+              height: 140,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Center(child: Text('No media added yet')),
+            )
+          else
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                childAspectRatio: 1.1,
+              ),
+              itemCount: _media.length,
+              itemBuilder: (context, index) {
+                final item = _media[index];
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: item.type == 'image'
+                          ? Image.memory(item.bytes, fit: BoxFit.cover)
+                          : Container(
+                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    item.type == 'video'
+                                        ? Icons.play_circle_outline
+                                        : Icons.description_outlined,
+                                    size: 40,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                    child: Text(
+                                      item.name,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                    ),
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: IconButton.filledTonal(
+                        visualDensity: VisualDensity.compact,
+                        onPressed: _busy ? null : () => _removeMedia(index),
+                        icon: const Icon(Icons.close, size: 18),
+                      ),
+                    ),
+                    if (index == 0)
+                      Positioned(
+                        left: 4,
+                        bottom: 4,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Text(
+                            'Cover',
+                            style: TextStyle(color: Colors.white, fontSize: 10),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+        ],
       );
 }
