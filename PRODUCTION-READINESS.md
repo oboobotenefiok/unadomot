@@ -1,5 +1,12 @@
 # Production readiness
 
+## Current build status
+
+- CI workflow `rewrite-ci.yml` passes on `rewrite/flutter-rust-postgres`.
+- Verified run `45739501106` at commit `113373e`.
+- `v0.1.0` prerelease is published with a debug APK for testing.
+- The debug APK is not Play Store-ready; complete the signing steps below for a release build.
+
 ## Required environment
 
 - `DATABASE_URL` Postgres connection string.

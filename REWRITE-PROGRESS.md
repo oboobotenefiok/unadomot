@@ -39,5 +39,13 @@
 - [x] Database-backed admin roles with env bootstrap
 - [x] Admin audit logging for verification reviews
 - [x] Release signing documentation
-- [ ] Confirm CI passes on GitHub
+- [x] Confirm CI passes on GitHub
 - [ ] Prometheus metrics endpoint
+
+## Verified build
+
+- Workflow: `rewrite-ci.yml`
+- Run: `45739501106`
+- Commit: `113373e`
+- Result: Flutter analyze, Rust fmt and clippy all passed
+- Release: `v0.1.0` prerelease published with `app-debug.apk`
