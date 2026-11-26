@@ -247,6 +247,8 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
   RTCPeerConnection? _peer;
   MediaStream? _localStream;
   Timer? _poll;
+  Timer? _ringTimer;
+  bool _accepted = false;
   bool _muted = false;
   bool _connected = false;
   bool _ending = false;
@@ -257,12 +259,13 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
   @override
   void initState() {
     super.initState();
-    _answer();
+    _ringTimer = Timer(const Duration(seconds: 45), _decline);
   }
 
   @override
   void dispose() {
     _poll?.cancel();
+    _ringTimer?.cancel();
     _localStream?.getTracks().forEach((track) => track.stop());
     _peer?.close();
     _localRenderer.dispose();
@@ -270,7 +273,20 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
     super.dispose();
   }
 
+  Future<void> _decline() async {
+    if (_ending) return;
+    _ending = true;
+    _ringTimer?.cancel();
+    try {
+      await widget.api.endCall(widget.callId);
+    } catch (_) {}
+    if (mounted) Navigator.pop(context);
+  }
+
   Future<void> _answer() async {
+    if (_accepted) return;
+    setState(() => _accepted = true);
+    _ringTimer?.cancel();
     try {
       await _localRenderer.initialize();
       await _remoteRenderer.initialize();
@@ -336,6 +352,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
     if (_ending) return;
     _ending = true;
     _poll?.cancel();
+    _ringTimer?.cancel();
     if (notify) {
       try {
         await widget.api.endCall(widget.callId);
@@ -358,81 +375,135 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) {
+    if (!_accepted) {
+      return Scaffold(
         backgroundColor: Colors.black,
         body: SafeArea(
-          child: Stack(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (_isVideo)
-                Positioned.fill(
-                  child: _connected
-                      ? RTCVideoView(_remoteRenderer, objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover)
-                      : const Center(
-                          child: Text(
-                            'Connecting…',
-                            style: TextStyle(color: Colors.white70, fontSize: 18),
-                          ),
-                        ),
-                )
-              else
-                const Center(
-                  child: Icon(Icons.phone_in_talk, color: Colors.white54, size: 96),
-                ),
-              if (_isVideo)
-                Positioned(
-                  right: 16,
-                  top: 16,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: SizedBox(
-                      width: 110,
-                      height: 160,
-                      child: RTCVideoView(_localRenderer, mirror: true),
-                    ),
-                  ),
-                ),
-              if (_error != null)
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(
-                      _error!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 32,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _CallButton(
-                      icon: _muted ? Icons.mic_off : Icons.mic,
-                      label: _muted ? 'Unmute' : 'Mute',
-                      onTap: _toggleMute,
-                    ),
-                    _CallButton(
-                      icon: Icons.call_end,
-                      label: 'End',
-                      color: Colors.red,
-                      onTap: _hangUp,
-                    ),
-                    if (_isVideo)
-                      _CallButton(
-                        icon: Icons.cameraswitch,
-                        label: 'Flip',
-                        onTap: _switchCamera,
-                      ),
-                  ],
+              const Spacer(),
+              CircleAvatar(
+                radius: 54,
+                backgroundColor: Colors.white12,
+                child: Icon(
+                  _isVideo ? Icons.videocam : Icons.phone,
+                  color: Colors.white,
+                  size: 48,
                 ),
               ),
+              const SizedBox(height: 20),
+              Text(
+                _isVideo ? 'Incoming video call' : 'Incoming voice call',
+                style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Ringing…',
+                style: TextStyle(color: Colors.white60, fontSize: 14),
+              ),
+              const Spacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _CallButton(
+                    icon: Icons.call_end,
+                    label: 'Decline',
+                    color: Colors.red,
+                    onTap: _decline,
+                  ),
+                  _CallButton(
+                    icon: _isVideo ? Icons.videocam : Icons.call,
+                    label: 'Accept',
+                    color: const Color(0xFF16A34A),
+                    onTap: _answer,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 48),
             ],
           ),
         ),
       );
+    }
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            if (_isVideo)
+              Positioned.fill(
+                child: _connected
+                    ? RTCVideoView(_remoteRenderer, objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover)
+                    : const Center(
+                        child: Text(
+                          'Connecting…',
+                          style: TextStyle(color: Colors.white70, fontSize: 18),
+                        ),
+                      ),
+              )
+            else
+              const Center(
+                child: Icon(Icons.phone_in_talk, color: Colors.white54, size: 96),
+              ),
+            if (_isVideo)
+              Positioned(
+                right: 16,
+                top: 16,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: SizedBox(
+                    width: 110,
+                    height: 160,
+                    child: RTCVideoView(_localRenderer, mirror: true),
+                  ),
+                ),
+              ),
+            if (_error != null)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    _error!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 32,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _CallButton(
+                    icon: _muted ? Icons.mic_off : Icons.mic,
+                    label: _muted ? 'Unmute' : 'Mute',
+                    onTap: _toggleMute,
+                  ),
+                  _CallButton(
+                    icon: Icons.call_end,
+                    label: 'End',
+                    color: Colors.red,
+                    onTap: _hangUp,
+                  ),
+                  if (_isVideo)
+                    _CallButton(
+                      icon: Icons.cameraswitch,
+                      label: 'Flip',
+                      onTap: _switchCamera,
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 Future<void> _waitForIce(RTCPeerConnection peer) async {
