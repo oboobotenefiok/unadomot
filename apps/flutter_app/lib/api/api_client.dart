@@ -348,9 +348,7 @@ class ApiClient {
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw ApiException(
           response.statusCode,
-          response.statusCode >= 500
-              ? 'The service is temporarily unavailable.'
-              : 'Request failed (${response.statusCode}).',
+          _errorMessage(response),
         );
       }
 
@@ -361,6 +359,24 @@ class ApiClient {
         'Unable to reach UnaDomot. Check your connection.',
       );
     }
+  }
+
+  String _errorMessage(http.Response response) {
+    if (response.statusCode >= 500) {
+      return 'The service is temporarily unavailable.';
+    }
+    try {
+      final decoded = jsonDecode(response.body);
+      if (decoded is Map && decoded['error'] is Map) {
+        final message = (decoded['error'] as Map)['message'];
+        if (message is String && message.trim().isNotEmpty) {
+          return message;
+        }
+      }
+    } catch (_) {
+      // Fall through to the generic message.
+    }
+    return 'Request failed (${response.statusCode}).';
   }
 
   void close() => _client.close();
