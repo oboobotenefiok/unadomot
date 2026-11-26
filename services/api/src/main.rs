@@ -38,6 +38,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
+    let migrate_only = std::env::args().any(|arg| arg == "migrate");
+
     let jwt_secret = std::env::var("JWT_SECRET")
         .map_err(|_| "JWT_SECRET is required and must be at least 32 bytes")?;
     if jwt_secret.len() < 32 {
@@ -53,16 +55,33 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Err("REFRESH_TOKEN_SECRET must differ from JWT_SECRET".into());
     }
 
+    if std::env::var("PASSWORD_RESET_DEBUG").ok().as_deref() == Some("1")
+        && std::env::var("APP_ENV").ok().as_deref() == Some("production")
+    {
+        return Err("PASSWORD_RESET_DEBUG must not be enabled in production".into());
+    }
+
     let jwt_secret = Arc::new(jwt_secret);
+    let database_url = std::env::var("DATABASE_URL").ok();
+
+    if database_url.is_none() && std::env::var("FLY_APP_NAME").is_ok() {
+        return Err("DATABASE_URL is required in production".into());
+    }
 
     let (users, listings, messaging, reports, verification_repo): Repositories =
-        match std::env::var("DATABASE_URL").ok() {
+        match database_url {
             Some(url) => {
                 let pool = PgPoolOptions::new()
                     .max_connections(10)
                     .connect(&url)
                     .await?;
-                sqlx::migrate!("./migrations").run(&pool).await?;
+
+                if migrate_only {
+                    sqlx::migrate!("./migrations").run(&pool).await?;
+                    tracing::info!("database migrations applied");
+                    return Ok(());
+                }
+
                 (
                     Arc::new(PostgresUserRepository::new(pool.clone())),
                     Arc::new(PostgresListingRepository::new(pool.clone())),
@@ -71,13 +90,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     Arc::new(PostgresVerificationRepository::new(pool)),
                 )
             }
-            None => (
-                Arc::new(UnconfiguredUserRepository),
-                Arc::new(UnconfiguredRepository),
-                Arc::new(UnconfiguredMessagingRepository),
-                Arc::new(UnconfiguredReportRepository),
-                Arc::new(UnconfiguredVerificationRepository),
-            ),
+            None => {
+                if migrate_only {
+                    return Err("DATABASE_URL is required to run migrations".into());
+                }
+                (
+                    Arc::new(UnconfiguredUserRepository),
+                    Arc::new(UnconfiguredRepository),
+                    Arc::new(UnconfiguredMessagingRepository),
+                    Arc::new(UnconfiguredReportRepository),
+                    Arc::new(UnconfiguredVerificationRepository),
+                )
+            }
         };
 
     let media: Arc<dyn MediaSigner> = match (
