@@ -34,4 +34,12 @@ pub trait CallRepository: Send + Sync {
     async fn incoming(&self, _user_id: Uuid) -> Result<Vec<CallSession>, CallError> {
         Ok(Vec::new())
     }
+
+    async fn history(
+        &self,
+        _conversation_id: Uuid,
+        _user_id: Uuid,
+    ) -> Result<Vec<CallSession>, CallError> {
+        Ok(Vec::new())
+    }
 }

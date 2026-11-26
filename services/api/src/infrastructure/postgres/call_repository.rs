@@ -47,7 +47,7 @@ impl CallRepository for PostgresCallRepository {
         let row = sqlx::query_as::<_, CallRow>(
             "INSERT INTO call_sessions (conversation_id, caller_id, callee_id, kind, offer_sdp)
              VALUES ($1, $2, $3, $4, $5)
-             RETURNING id, conversation_id, caller_id, callee_id, kind, status, offer_sdp, answer_sdp, created_at, updated_at",
+             RETURNING id, conversation_id, caller_id, callee_id, kind, status, offer_sdp, answer_sdp, duration_seconds, created_at, updated_at",
         )
         .bind(conversation_id)
         .bind(caller_id)
@@ -63,7 +63,7 @@ impl CallRepository for PostgresCallRepository {
 
     async fn get(&self, id: Uuid, user_id: Uuid) -> Result<Option<CallSession>, CallError> {
         let row = sqlx::query_as::<_, CallRow>(
-            "SELECT id, conversation_id, caller_id, callee_id, kind, status, offer_sdp, answer_sdp, created_at, updated_at
+            "SELECT id, conversation_id, caller_id, callee_id, kind, status, offer_sdp, answer_sdp, duration_seconds, created_at, updated_at
              FROM call_sessions
              WHERE id = $1 AND (caller_id = $2 OR callee_id = $2)",
         )
@@ -86,7 +86,7 @@ impl CallRepository for PostgresCallRepository {
             "UPDATE call_sessions
              SET status = 'accepted', answer_sdp = $3, updated_at = now()
              WHERE id = $1 AND callee_id = $2 AND status = 'ringing'
-             RETURNING id, conversation_id, caller_id, callee_id, kind, status, offer_sdp, answer_sdp, created_at, updated_at",
+             RETURNING id, conversation_id, caller_id, callee_id, kind, status, offer_sdp, answer_sdp, duration_seconds, created_at, updated_at",
         )
         .bind(id)
         .bind(user_id)
@@ -102,9 +102,13 @@ impl CallRepository for PostgresCallRepository {
     async fn end(&self, id: Uuid, user_id: Uuid) -> Result<CallSession, CallError> {
         let row = sqlx::query_as::<_, CallRow>(
             "UPDATE call_sessions
-             SET status = CASE WHEN status = 'ringing' THEN 'declined' ELSE 'ended' END, updated_at = now()
+             SET status = CASE WHEN status = 'ringing' THEN 'declined' ELSE 'ended' END,
+                 duration_seconds = CASE WHEN status = 'accepted'
+                     THEN EXTRACT(EPOCH FROM (now() - created_at))::int
+                     ELSE duration_seconds END,
+                 updated_at = now()
              WHERE id = $1 AND (caller_id = $2 OR callee_id = $2)
-             RETURNING id, conversation_id, caller_id, callee_id, kind, status, offer_sdp, answer_sdp, created_at, updated_at",
+             RETURNING id, conversation_id, caller_id, callee_id, kind, status, offer_sdp, answer_sdp, duration_seconds, created_at, updated_at",
         )
         .bind(id)
         .bind(user_id)
@@ -118,12 +122,45 @@ impl CallRepository for PostgresCallRepository {
 
     async fn incoming(&self, user_id: Uuid) -> Result<Vec<CallSession>, CallError> {
         let rows = sqlx::query_as::<_, CallRow>(
-            "SELECT id, conversation_id, caller_id, callee_id, kind, status, offer_sdp, answer_sdp, created_at, updated_at
+            "SELECT id, conversation_id, caller_id, callee_id, kind, status, offer_sdp, answer_sdp, duration_seconds, created_at, updated_at
              FROM call_sessions
              WHERE callee_id = $1 AND status = 'ringing' AND created_at > now() - interval '60 seconds'
              ORDER BY created_at DESC",
         )
         .bind(user_id)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(|e| CallError::Repository(e.to_string()))?;
+
+        Ok(rows.into_iter().map(CallSession::from).collect())
+    }
+
+    async fn history(
+        &self,
+        conversation_id: Uuid,
+        user_id: Uuid,
+    ) -> Result<Vec<CallSession>, CallError> {
+        let allowed = sqlx::query_scalar::<_, bool>(
+            "SELECT EXISTS (SELECT 1 FROM conversations WHERE id = $1 AND (participant_a = $2 OR participant_b = $2))",
+        )
+        .bind(conversation_id)
+        .bind(user_id)
+        .fetch_one(&self.pool)
+        .await
+        .map_err(|e| CallError::Repository(e.to_string()))?;
+
+        if !allowed {
+            return Err(CallError::Forbidden);
+        }
+
+        let rows = sqlx::query_as::<_, CallRow>(
+            "SELECT id, conversation_id, caller_id, callee_id, kind, status, offer_sdp, answer_sdp, duration_seconds, created_at, updated_at
+             FROM call_sessions
+             WHERE conversation_id = $1
+             ORDER BY created_at DESC
+             LIMIT 50",
+        )
+        .bind(conversation_id)
         .fetch_all(&self.pool)
         .await
         .map_err(|e| CallError::Repository(e.to_string()))?;
@@ -142,6 +179,7 @@ struct CallRow {
     status: String,
     offer_sdp: String,
     answer_sdp: Option<String>,
+    duration_seconds: Option<i32>,
     created_at: chrono::DateTime<chrono::Utc>,
     updated_at: chrono::DateTime<chrono::Utc>,
 }
@@ -157,6 +195,7 @@ impl From<CallRow> for CallSession {
             status: row.status,
             offer_sdp: row.offer_sdp,
             answer_sdp: row.answer_sdp,
+            duration_seconds: row.duration_seconds,
             created_at: row.created_at,
             updated_at: row.updated_at,
         }

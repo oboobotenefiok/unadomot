@@ -11,6 +11,7 @@ pub struct CallSession {
     pub status: String,
     pub offer_sdp: String,
     pub answer_sdp: Option<String>,
+    pub duration_seconds: Option<i32>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
