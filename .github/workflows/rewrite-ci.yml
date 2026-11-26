@@ -9,7 +9,26 @@ on:
 permissions:
   contents: write
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      rust: ${{ steps.filter.outputs.rust }}
+      android: ${{ steps.filter.outputs.android }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            rust:
+              - 'services/api/**'
+              - '.github/workflows/rewrite-ci.yml'
+            android:
+              - 'apps/flutter_app/**'
+              - '.github/workflows/rewrite-ci.yml'
   rust:
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.rust == 'true'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -67,6 +86,8 @@ jobs:
           git commit -m "CI error summary for ${GITHUB_SHA}"
           git push --force origin ci-logs-rust
   android:
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.android == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
