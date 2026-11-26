@@ -23,6 +23,7 @@
 - [x] Postgres service in CI
 - [x] Per-IP rate limiting
 - [x] Refresh-token rotation and revocation
+- [x] Refresh-token reuse detection and family revocation
 - [x] Postgres integration test for the core listing flow
 - [x] Messaging backend with participant checks
 - [x] Flutter messaging inbox and chat screens
@@ -32,6 +33,7 @@
 - [x] CI caching, clippy gate and stable Android scaffold
 - [x] HMAC-SHA256 refresh-token hashing
 - [x] Flutter automatic access-token refresh on 401
+- [x] Session refresh on app restore
 - [x] Firebase migration script with dry-run
 - [x] Production readiness and rollback documentation
 - [x] Redis-backed rate limiting with in-memory fallback
@@ -66,13 +68,20 @@
 - [x] Fly release command for migrations
 - [x] One warm Fly machine during beta
 - [x] Non-root API container and health check
+- [x] Google sign-in account-link hardening
+- [x] Google sign-in refresh token and suspension checks
+- [x] Mock verification provider blocked in production
+- [x] Listing comments, reactions and moderation
+- [x] Listing codes with copy, share and QR view
+- [x] High contrast and larger text settings
+- [x] Map screen and filtered listing loading
+- [x] CI on pull requests, formatting gate and Docker build
 - [ ] Password reset email delivery
 - [ ] Full state-to-LGA mapping
-- [ ] Map view
-- [ ] Comments and reactions
 - [ ] Prometheus metrics endpoint
 - [ ] Cloudinary secrets configured in production
 - [ ] Release APK signing
+- [ ] Golden tests against legacy screenshots
 
 ## Verified deployment
 
