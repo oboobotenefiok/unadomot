@@ -133,5 +133,13 @@ pub fn configured_provider() -> Box<dyn IdentityVerificationProvider> {
     if let Some(provider) = SmileIdProvider::from_env() {
         return Box::new(provider);
     }
+
+    let environment = std::env::var("APP_ENV").unwrap_or_else(|_| "development".into());
+    if environment == "production" {
+        panic!(
+            "SMILE_ID_PARTNER_ID and SMILE_ID_API_KEY are required in production; mock verification is disabled"
+        );
+    }
+
     Box::new(MockProvider)
 }
