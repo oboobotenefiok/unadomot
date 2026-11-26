@@ -11,6 +11,6 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y ca-certificates libssl3 && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /app/target/release/unadomot-api /usr/local/bin/unadomot-api
 COPY --from=builder /app/migrations ./migrations
-ENV BIND_ADDR=0.0.0.0:3000
-EXPOSE 3000
+ENV PORT=8080
+EXPOSE 8080
 CMD ["unadomot-api"]
