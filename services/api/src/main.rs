@@ -1,19 +1,21 @@
 use sqlx::postgres::PgPoolOptions;
 use std::sync::Arc;
 use unadomot_api::adapters::{
-    UnconfiguredMediaSigner, UnconfiguredMessagingRepository, UnconfiguredRepository,
-    UnconfiguredUserRepository, UnconfiguredVerificationRepository,
+    UnconfiguredMediaSigner, UnconfiguredMessagingRepository, UnconfiguredReportRepository,
+    UnconfiguredRepository, UnconfiguredUserRepository, UnconfiguredVerificationRepository,
 };
 use unadomot_api::application::auth::UserRepository;
 use unadomot_api::application::listings::ListingRepository;
 use unadomot_api::application::media::MediaSigner;
 use unadomot_api::application::messaging::MessagingRepository;
+use unadomot_api::application::reports::ReportRepository;
 use unadomot_api::application::verification::VerificationRepository;
 use unadomot_api::http::{public_pages, router, verification, AppState, RateLimiter};
 use unadomot_api::infrastructure::cloudinary::CloudinarySigner;
 use unadomot_api::infrastructure::postgres::{
     listing_repository::PostgresListingRepository,
     messaging_repository::PostgresMessagingRepository,
+    report_repository::PostgresReportRepository,
     user_repository::PostgresUserRepository,
     verification_repository::PostgresVerificationRepository,
 };
@@ -23,6 +25,7 @@ type Repositories = (
     Arc<dyn UserRepository>,
     Arc<dyn ListingRepository>,
     Arc<dyn MessagingRepository>,
+    Arc<dyn ReportRepository>,
     Arc<dyn VerificationRepository>,
 );
 
@@ -42,7 +45,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let jwt_secret = Arc::new(jwt_secret);
 
-    let (users, listings, messaging, verification_repo): Repositories =
+    let (users, listings, messaging, reports, verification_repo): Repositories =
         match std::env::var("DATABASE_URL").ok() {
             Some(url) => {
                 let pool = PgPoolOptions::new()
@@ -54,6 +57,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     Arc::new(PostgresUserRepository::new(pool.clone())),
                     Arc::new(PostgresListingRepository::new(pool.clone())),
                     Arc::new(PostgresMessagingRepository::new(pool.clone())),
+                    Arc::new(PostgresReportRepository::new(pool.clone())),
                     Arc::new(PostgresVerificationRepository::new(pool)),
                 )
             }
@@ -61,6 +65,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 Arc::new(UnconfiguredUserRepository),
                 Arc::new(UnconfiguredRepository),
                 Arc::new(UnconfiguredMessagingRepository),
+                Arc::new(UnconfiguredReportRepository),
                 Arc::new(UnconfiguredVerificationRepository),
             ),
         };
@@ -96,6 +101,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         users: users.clone(),
         listings,
         messaging,
+        reports,
         media,
         jwt_secret: jwt_secret.clone(),
         limiter: Arc::new(RateLimiter::new()),
