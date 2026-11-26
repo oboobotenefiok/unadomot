@@ -40,6 +40,32 @@ pub trait MessagingRepository: Send + Sync {
         body: &str,
     ) -> Result<Message, MessagingError>;
     async fn mark_read(&self, conversation_id: Uuid, user_id: Uuid) -> Result<(), MessagingError>;
+
+    async fn send_rich_message(
+        &self,
+        _conversation_id: Uuid,
+        _sender_id: Uuid,
+        _body: Option<&str>,
+        _media_url: Option<&str>,
+        _media_type: Option<&str>,
+        _duration_seconds: Option<i32>,
+        _reply_to_id: Option<Uuid>,
+    ) -> Result<serde_json::Value, MessagingError> {
+        Err(MessagingError::InvalidInput(
+            "Rich messages are not supported".into(),
+        ))
+    }
+
+    async fn react_to_message(
+        &self,
+        _message_id: Uuid,
+        _user_id: Uuid,
+        _emoji: &str,
+    ) -> Result<(), MessagingError> {
+        Err(MessagingError::InvalidInput(
+            "Reactions are not supported".into(),
+        ))
+    }
 }
 
 pub async fn start_conversation(

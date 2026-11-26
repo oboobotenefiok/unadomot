@@ -178,6 +178,117 @@ impl MessagingRepository for PostgresMessagingRepository {
         Ok(row.into())
     }
 
+    async fn send_rich_message(
+        &self,
+        conversation_id: Uuid,
+        sender_id: Uuid,
+        body: Option<&str>,
+        media_url: Option<&str>,
+        media_type: Option<&str>,
+        duration_seconds: Option<i32>,
+        reply_to_id: Option<Uuid>,
+    ) -> Result<serde_json::Value, MessagingError> {
+        if body.is_none() && media_url.is_none() {
+            return Err(MessagingError::InvalidInput(
+                "A message or attachment is required".into(),
+            ));
+        }
+
+        let mut transaction = self
+            .pool
+            .begin()
+            .await
+            .map_err(|e| MessagingError::Repository(e.to_string()))?;
+
+        let row = sqlx::query_as::<_, RichMessageRow>(
+            "INSERT INTO messages (conversation_id, sender_id, body, media_url, media_type, duration_seconds, reply_to_id)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)
+             RETURNING id, conversation_id, sender_id, body, media_url, media_type, duration_seconds, reply_to_id, created_at, read_at",
+        )
+        .bind(conversation_id)
+        .bind(sender_id)
+        .bind(body)
+        .bind(media_url)
+        .bind(media_type)
+        .bind(duration_seconds)
+        .bind(reply_to_id)
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(|e| MessagingError::Repository(e.to_string()))?;
+
+        let preview_source = body
+            .map(str::to_string)
+            .or_else(|| media_type.map(|kind| format!("Sent a {kind}")))
+            .unwrap_or_else(|| "New message".into());
+        let preview: String = preview_source.chars().take(120).collect();
+
+        sqlx::query(
+            "UPDATE conversations SET last_message_at = now(), last_message = $2, last_message_preview = $3, last_sender_id = $4 WHERE id = $1",
+        )
+        .bind(conversation_id)
+        .bind(&preview_source)
+        .bind(preview)
+        .bind(sender_id)
+        .execute(&mut *transaction)
+        .await
+        .map_err(|e| MessagingError::Repository(e.to_string()))?;
+
+        transaction
+            .commit()
+            .await
+            .map_err(|e| MessagingError::Repository(e.to_string()))?;
+
+        Ok(serde_json::json!({
+            "id": row.id,
+            "conversation_id": row.conversation_id,
+            "sender_id": row.sender_id,
+            "body": row.body,
+            "media_url": row.media_url,
+            "media_type": row.media_type,
+            "duration_seconds": row.duration_seconds,
+            "reply_to_id": row.reply_to_id,
+            "created_at": row.created_at,
+            "read_at": row.read_at,
+        }))
+    }
+
+    async fn react_to_message(
+        &self,
+        message_id: Uuid,
+        user_id: Uuid,
+        emoji: &str,
+    ) -> Result<(), MessagingError> {
+        let allowed = sqlx::query_scalar::<_, bool>(
+            "SELECT EXISTS (
+               SELECT 1 FROM messages m
+               JOIN conversations c ON c.id = m.conversation_id
+               WHERE m.id = $1 AND (c.participant_a = $2 OR c.participant_b = $2)
+             )",
+        )
+        .bind(message_id)
+        .bind(user_id)
+        .fetch_one(&self.pool)
+        .await
+        .map_err(|e| MessagingError::Repository(e.to_string()))?;
+
+        if !allowed {
+            return Err(MessagingError::NotFound);
+        }
+
+        sqlx::query(
+            "INSERT INTO message_reactions (message_id, user_id, emoji) VALUES ($1, $2, $3)
+             ON CONFLICT (message_id, user_id, emoji) DO NOTHING",
+        )
+        .bind(message_id)
+        .bind(user_id)
+        .bind(emoji)
+        .execute(&self.pool)
+        .await
+        .map_err(|e| MessagingError::Repository(e.to_string()))?;
+
+        Ok(())
+    }
+
     async fn mark_read(&self, conversation_id: Uuid, user_id: Uuid) -> Result<(), MessagingError> {
         let mut transaction = self
             .pool
@@ -297,4 +408,18 @@ impl From<MessageRow> for Message {
             read_at: row.read_at,
         }
     }
+}
+
+#[derive(sqlx::FromRow)]
+struct RichMessageRow {
+    id: Uuid,
+    conversation_id: Uuid,
+    sender_id: Uuid,
+    body: Option<String>,
+    media_url: Option<String>,
+    media_type: Option<String>,
+    duration_seconds: Option<i32>,
+    reply_to_id: Option<Uuid>,
+    created_at: chrono::DateTime<chrono::Utc>,
+    read_at: Option<chrono::DateTime<chrono::Utc>>,
 }
