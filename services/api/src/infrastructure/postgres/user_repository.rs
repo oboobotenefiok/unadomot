@@ -29,7 +29,7 @@ impl UserRepository for PostgresUserRepository {
             .map_err(|e| AuthError::Repository(e.to_string()))?;
 
         let user = sqlx::query_as::<_, UserRow>(
-            "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email, password_hash",
+            "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email, password_hash, status",
         )
         .bind(email)
         .bind(password_hash)
@@ -57,7 +57,7 @@ impl UserRepository for PostgresUserRepository {
 
     async fn find_by_email(&self, email: &str) -> Result<Option<StoredUser>, AuthError> {
         let user = sqlx::query_as::<_, UserRow>(
-            "SELECT id, email, password_hash FROM users WHERE lower(email) = lower($1)",
+            "SELECT id, email, password_hash, status FROM users WHERE lower(email) = lower($1)",
         )
         .bind(email)
         .fetch_optional(&self.pool)
@@ -68,6 +68,7 @@ impl UserRepository for PostgresUserRepository {
             id: row.id,
             email: row.email,
             password_hash: row.password_hash,
+            status: row.status,
         }))
     }
 
@@ -114,12 +115,16 @@ impl UserRepository for PostgresUserRepository {
         };
 
         let user = sqlx::query_as::<_, UserRow>(
-            "SELECT id, email, password_hash FROM users WHERE id = $1",
+            "SELECT id, email, password_hash, status FROM users WHERE id = $1",
         )
         .bind(rotated.user_id)
         .fetch_one(&mut *transaction)
         .await
         .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        if user.status != "active" {
+            return Ok(None);
+        }
 
         sqlx::query(
             "INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3)",
@@ -143,12 +148,26 @@ impl UserRepository for PostgresUserRepository {
     }
 
     async fn is_admin(&self, user_id: Uuid) -> Result<bool, AuthError> {
-        let row: Option<(bool,)> = sqlx::query_as("SELECT is_admin FROM users WHERE id = $1")
-            .bind(user_id)
-            .fetch_optional(&self.pool)
-            .await
-            .map_err(|e| AuthError::Repository(e.to_string()))?;
+        let row: Option<(bool,)> = sqlx::query_as(
+            "SELECT EXISTS(SELECT 1 FROM admin_roles WHERE user_id = $1)",
+        )
+        .bind(user_id)
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
         Ok(row.map(|(is_admin,)| is_admin).unwrap_or(false))
+    }
+
+    async fn suspend_user(&self, user_id: Uuid) -> Result<bool, AuthError> {
+        let result = sqlx::query(
+            "UPDATE users SET status = 'suspended', updated_at = now() WHERE id = $1 AND status = 'active'",
+        )
+        .bind(user_id)
+        .execute(&self.pool)
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        Ok(result.rows_affected() > 0)
     }
 }
 
@@ -157,6 +176,7 @@ struct UserRow {
     id: Uuid,
     email: String,
     password_hash: Option<String>,
+    status: String,
 }
 
 #[derive(sqlx::FromRow)]
