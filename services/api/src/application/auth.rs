@@ -70,6 +70,7 @@ pub trait UserRepository: Send + Sync {
         expires_at: DateTime<Utc>,
     ) -> Result<Option<AuthenticatedUser>, AuthError>;
     async fn is_admin(&self, user_id: Uuid) -> Result<bool, AuthError>;
+    async fn is_active(&self, user_id: Uuid) -> Result<bool, AuthError>;
     async fn suspend_user(&self, user_id: Uuid) -> Result<bool, AuthError>;
 }
 
