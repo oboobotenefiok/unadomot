@@ -136,14 +136,12 @@ pub async fn login(
         return Err(AuthError::InvalidCredentials);
     }
 
-    let parsed = user
-        .password_hash
-        .as_deref()
-        .and_then(|hash| PasswordHash::new(hash).ok())
-        .ok_or(AuthError::InvalidCredentials)?;
-
+    let password_hash = user.password_hash.ok_or(AuthError::InvalidCredentials)?;
     let password = password.to_string();
     let valid = tokio::task::spawn_blocking(move || {
+        let Ok(parsed) = PasswordHash::new(&password_hash) else {
+            return false;
+        };
         Argon2::default()
             .verify_password(password.as_bytes(), &parsed)
             .is_ok()
