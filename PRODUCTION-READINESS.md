@@ -19,10 +19,11 @@
 - `PUBLIC_WEB_URL` canonical public URL.
 - `BIND_ADDR` e.g. `0.0.0.0:3000` locally; Fly sets `PORT=8080`.
 - `RUST_LOG` e.g. `info,tower_http=info`.
-- `ADMIN_EMAILS` bootstrap admins; persistent rights live in `users.is_admin`.
 - `ALLOWED_ORIGINS` comma-separated production origins.
 - `REDIS_URL` optional; enables shared rate limiting.
 - `RATE_LIMIT_PER_MINUTE` optional, default 120.
+
+Admin access is granted only through the `admin_roles` table. There is no environment-variable admin bypass.
 
 Secrets should be injected by the platform secret manager, not committed. The API reads environment variables only and never logs them.
 
@@ -36,13 +37,22 @@ gh workflow run fly-deploy.yml \
   --ref rewrite/flutter-rust-postgres
 ```
 
+Migrations run through the Fly release command:
+
+```toml
+[deploy]
+  release_command = "unadomot-api migrate"
+```
+
+The API stays warm with `min_machines_running = 1` and `auto_stop_machines = "off"` during the beta.
+
 Local Docker:
 
 ```bash
 docker compose up --build
 ```
 
-Migrations run at startup. The process handles `SIGTERM` gracefully.
+The process handles `SIGTERM` gracefully.
 
 ## Health and monitoring
 
@@ -94,9 +104,9 @@ Users migrate without passwords; they must use password reset or social login. L
 ## Known limitations
 
 - Cloudinary secrets are not configured in production yet, so photo uploads are disabled.
+- Password reset tokens are generated but email delivery is not implemented.
 - The production API runs on a single Fly machine; there is no multi-region failover.
 - Rate limiting falls back to per-process memory when `REDIS_URL` is absent.
-- Admin rights can be bootstrapped with `ADMIN_EMAILS`; persistent rights use `users.is_admin`.
 - Offset pagination is used instead of cursors.
 - No automated zero-downtime migration; cut-over is scripted and manual.
 - Release APK signing requires a keystore configured outside the repo.
