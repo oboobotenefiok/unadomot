@@ -149,6 +149,49 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
     }
   }
 
+  Future<void> _deleteComment(Map<String, dynamic> comment) async {
+    if (!await requireAuth(context, widget.appState)) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete comment?'),
+        content: const Text('This cannot be undone.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      final response = await http.delete(
+        widget.api.baseUrl.resolve('/api/comments/${comment['id']}'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${widget.api.token}',
+        },
+      ).timeout(const Duration(seconds: 20));
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw ApiException(response.statusCode, 'Could not delete comment.');
+      }
+      if (!mounted) return;
+      setState(() {
+        _comments = _comments.where((item) => item['id'] != comment['id']).toList();
+      });
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())),
+        );
+      }
+    }
+  }
+
   Future<void> _react(Map<String, dynamic> comment, String emoji) async {
     if (!await requireAuth(context, widget.appState)) return;
     try {
@@ -547,56 +590,59 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
         .toList();
     final photo = comment['photo_url'] as String?;
     final name = comment['name'] as String? ?? 'User';
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: UnaColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: UnaColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 16,
-                backgroundColor: UnaColors.green100,
-                backgroundImage: photo == null ? null : NetworkImage(photo),
-                child: photo == null
-                    ? Text(
-                        name.characters.first.toUpperCase(),
-                        style: const TextStyle(color: UnaColors.green900, fontWeight: FontWeight.w700),
-                      )
-                    : null,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  name,
-                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+    return GestureDetector(
+      onLongPress: () => _deleteComment(comment),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: UnaColors.surface,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: UnaColors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: UnaColors.green100,
+                  backgroundImage: photo == null ? null : NetworkImage(photo),
+                  child: photo == null
+                      ? Text(
+                          name.characters.first.toUpperCase(),
+                          style: const TextStyle(color: UnaColors.green900, fontWeight: FontWeight.w700),
+                        )
+                      : null,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(comment['body'] as String? ?? '', style: const TextStyle(height: 1.4)),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 6,
-            children: [
-              for (final emoji in const ['like', 'love', 'fire', 'clap'])
-                _reactionChip(
-                  comment,
-                  emoji,
-                  reactions
-                      .where((item) => item['emoji'] == emoji)
-                      .fold<int>(0, (sum, item) => sum + ((item['count'] as num?)?.toInt() ?? 0)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    name,
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                  ),
                 ),
-            ],
-          ),
-        ],
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(comment['body'] as String? ?? '', style: const TextStyle(height: 1.4)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 6,
+              children: [
+                for (final emoji in const ['like', 'love', 'fire', 'clap'])
+                  _reactionChip(
+                    comment,
+                    emoji,
+                    reactions
+                        .where((item) => item['emoji'] == emoji)
+                        .fold<int>(0, (sum, item) => sum + ((item['count'] as num?)?.toInt() ?? 0)),
+                  ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
