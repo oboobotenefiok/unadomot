@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -6,6 +7,9 @@ use uuid::Uuid;
 pub struct Listing {
     pub id: Uuid,
     pub landlord_id: Uuid,
+    pub landlord_name: String,
+    pub landlord_verified: bool,
+    pub landlord_photo_url: Option<String>,
     pub title: String,
     pub description: String,
     pub price: Decimal,
@@ -18,6 +22,7 @@ pub struct Listing {
     pub bathrooms: Option<i32>,
     pub property_type: Option<String>,
     pub furnishing: Option<String>,
+    pub created_at: DateTime<Utc>,
     #[serde(default)]
     pub media: Vec<ListingMedia>,
 }
