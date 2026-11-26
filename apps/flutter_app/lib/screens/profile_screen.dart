@@ -440,50 +440,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _settingsTab(bool dark) => Container(
-        decoration: BoxDecoration(
-          color: dark ? const Color(0xFF122019) : Colors.white,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          children: [
-            _settingsRow(Icons.verified_outlined, 'Get Verified', () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => VerificationScreen(api: widget.api)),
-            )),
+  Widget _settingsTab(bool dark) {
+    final isAdmin = _profile?['is_admin'] == true;
+    return Container(
+      decoration: BoxDecoration(
+        color: dark ? const Color(0xFF122019) : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: [
+          _settingsRow(Icons.verified_outlined, 'Get Verified', () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => VerificationScreen(api: widget.api)),
+          )),
+          if (isAdmin)
             _settingsRow(Icons.admin_panel_settings_outlined, 'Admin', () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => AdminScreen(api: widget.api)),
             )),
-            _settingsRow(Icons.favorite_border, 'Favorites', () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => FavoritesScreen(api: widget.api, cache: widget.cache, appState: widget.appState)),
-            )),
-            _settingsRow(Icons.chat_bubble_outline, 'Messages', () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => MessagesScreen(api: widget.api)),
-            )),
-            _settingsRow(Icons.info_outline, 'About UnaDomot', () => showAboutDialog(
-              context: context,
-              applicationName: 'UnaDomot',
-              applicationVersion: '1.0.0',
-              applicationLegalese: 'Find your next home in Nigeria.',
-            )),
-            _settingsRow(Icons.shield_outlined, 'Privacy & Terms', () => showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('Privacy & Terms'),
-                content: const Text('Your account details are used only to operate UnaDomot. Listing and chat data are stored securely.'),
-                actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
-              ),
-            )),
-            _settingsRow(Icons.logout, 'Logout', () async {
-              await widget.appState.signOut();
-              if (mounted) setState(() {});
-            }, danger: true),
-          ],
-        ),
-      );
+          _settingsRow(Icons.favorite_border, 'Favorites', () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => FavoritesScreen(api: widget.api, cache: widget.cache, appState: widget.appState)),
+          )),
+          _settingsRow(Icons.chat_bubble_outline, 'Messages', () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => MessagesScreen(api: widget.api)),
+          )),
+          _settingsRow(Icons.info_outline, 'About UnaDomot', () => showAboutDialog(
+            context: context,
+            applicationName: 'UnaDomot',
+            applicationVersion: '1.0.0',
+            applicationLegalese: 'Find your next home in Nigeria.',
+          )),
+          _settingsRow(Icons.shield_outlined, 'Privacy & Terms', () => showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Privacy & Terms'),
+              content: const Text('Your account details are used only to operate UnaDomot. Listing and chat data are stored securely.'),
+              actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+            ),
+          )),
+          _settingsRow(Icons.logout, 'Logout', () async {
+            await widget.appState.signOut();
+            if (mounted) setState(() {});
+          }, danger: true),
+        ],
+      ),
+    );
+  }
 
   Widget _settingsRow(IconData icon, String title, VoidCallback onTap, {bool danger = false}) => ListTile(
         leading: Icon(icon, color: danger ? Colors.red : const Color(0xFF15803D)),
