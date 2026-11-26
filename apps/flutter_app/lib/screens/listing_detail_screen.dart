@@ -5,6 +5,7 @@ import '../data/local_cache.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import '../utils/share_helper.dart';
 import 'auth_sheet.dart';
 import 'messages_screen.dart';
 import 'report_listing_screen.dart';
@@ -99,6 +100,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
           builder: (_) => ChatScreen(
             api: widget.api,
             conversationId: conversation['id'] as String,
+            initialMessage: 'Is this still available?',
           ),
         ),
       );
@@ -114,11 +116,14 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
   }
 
   Future<void> _share() async {
+    final listing = _listing;
+    if (listing == null) return;
     final link = 'https://unadomot.fly.dev/listings/${widget.listingId}';
-    await Clipboard.setData(ClipboardData(text: link));
+    final text = '${naijaShareText(listing)}\n$link';
+    await Clipboard.setData(ClipboardData(text: text));
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Listing link copied')),
+        const SnackBar(content: Text('Link copied to clipboard!')),
       );
     }
   }

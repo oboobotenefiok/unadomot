@@ -81,8 +81,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
 class ChatScreen extends StatefulWidget {
   final ApiClient api;
   final String conversationId;
+  final String? initialMessage;
 
-  const ChatScreen({super.key, required this.api, required this.conversationId});
+  const ChatScreen({
+    super.key,
+    required this.api,
+    required this.conversationId,
+    this.initialMessage,
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -98,6 +104,9 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialMessage != null) {
+      _controller.text = widget.initialMessage!;
+    }
     _load();
   }
 
