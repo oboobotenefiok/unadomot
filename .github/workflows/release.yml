@@ -1,0 +1,40 @@
+name: Release bundle
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Ensure Android platform files
+        run: |
+          if [ ! -d apps/flutter_app/android ]; then
+            flutter create --project-name unadomot --org com.unadomot --platforms android apps/flutter_app
+          fi
+      - name: Apply Android permissions
+        run: bash scripts/apply_android_permissions.sh
+      - name: Build app bundle
+        working-directory: apps/flutter_app
+        run: |
+          flutter pub get
+          flutter build appbundle --release \
+            --dart-define=API_BASE_URL=https://unadomot.fly.dev \
+            --dart-define=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+      - uses: actions/upload-artifact@v7
+        with:
+          name: unadomot-release-aab
+          path: apps/flutter_app/build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 30
