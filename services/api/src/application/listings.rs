@@ -1,5 +1,5 @@
 use crate::domain::listing::{
-    Listing, ListingFilter, ListingMedia, ListingUpdate, NewListing, NewListingMedia,
+    Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
 };
 use async_trait::async_trait;
 use rust_decimal::Decimal;
@@ -29,6 +29,7 @@ pub trait ListingRepository: Send + Sync {
         offset: i64,
     ) -> Result<ListingPage, ListingError>;
     async fn get(&self, id: Uuid) -> Result<Option<Listing>, ListingError>;
+    async fn get_public(&self, id: Uuid) -> Result<Option<Listing>, ListingError>;
     async fn create(&self, listing: &NewListing) -> Result<Listing, ListingError>;
     async fn update(
         &self,
@@ -64,6 +65,13 @@ pub async fn get_listing(
     repository.get(id).await
 }
 
+pub async fn get_public_listing(
+    repository: &dyn ListingRepository,
+    id: Uuid,
+) -> Result<Option<Listing>, ListingError> {
+    repository.get_public(id).await
+}
+
 pub async fn create_listing(
     repository: &dyn ListingRepository,
     owner_id: Uuid,
@@ -82,6 +90,17 @@ pub async fn update_listing(
     owner_id: Uuid,
     update: &ListingUpdate,
 ) -> Result<Listing, ListingError> {
+    let current = repository.get(id).await?.ok_or(ListingError::NotFound)?;
+    if current.landlord_id != owner_id {
+        return Err(ListingError::NotFound);
+    }
+    if update.status == Some(ListingStatus::RemovedByAdmin) {
+        return Err(ListingError::Forbidden);
+    }
+    if current.status == ListingStatus::RemovedByAdmin {
+        return Err(ListingError::Forbidden);
+    }
+
     if let Some(price) = update.price {
         if price <= Decimal::ZERO {
             return Err(ListingError::InvalidInput(

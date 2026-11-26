@@ -87,6 +87,28 @@ impl ListingRepository for PostgresListingRepository {
         Ok(Some(listing))
     }
 
+    async fn get_public(&self, id: Uuid) -> Result<Option<Listing>, ListingError> {
+        let row = sqlx::query_as::<_, ListingRow>(
+            "SELECT id, landlord_id, title, description, price, address, state, lga, is_agent_listing, status, bedrooms, bathrooms, property_type, furnishing FROM listings WHERE id = $1 AND deleted_at IS NULL AND status = 'available'",
+        )
+        .bind(id)
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(|e| ListingError::Repository(e.to_string()))?;
+
+        let Some(row) = row else {
+            return Ok(None);
+        };
+
+        let mut listing: Listing = row.into();
+        listing.media = self
+            .load_media_for(&[id])
+            .await?
+            .remove(&id)
+            .unwrap_or_default();
+        Ok(Some(listing))
+    }
+
     async fn create(&self, input: &NewListing) -> Result<Listing, ListingError> {
         let row = sqlx::query_as::<_, ListingRow>(
             "INSERT INTO listings (landlord_id, title, description, price, address, state, lga, is_agent_listing, bedrooms, bathrooms, property_type, furnishing) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id, landlord_id, title, description, price, address, state, lga, is_agent_listing, status, bedrooms, bathrooms, property_type, furnishing",
@@ -139,7 +161,7 @@ impl ListingRepository for PostgresListingRepository {
         .await
         .map_err(|e| ListingError::Repository(e.to_string()))?;
 
-        row.map(ListingRow::into).ok_or(ListingError::Forbidden)
+        row.map(ListingRow::into).ok_or(ListingError::NotFound)
     }
 
     async fn delete(&self, id: Uuid, owner_id: Uuid) -> Result<(), ListingError> {
@@ -153,7 +175,7 @@ impl ListingRepository for PostgresListingRepository {
         .map_err(|e| ListingError::Repository(e.to_string()))?;
 
         if result.rows_affected() == 0 {
-            return Err(ListingError::Forbidden);
+            return Err(ListingError::NotFound);
         }
         Ok(())
     }
@@ -174,7 +196,7 @@ impl ListingRepository for PostgresListingRepository {
         .map_err(|e| ListingError::Repository(e.to_string()))?;
 
         if owned.is_none() {
-            return Err(ListingError::Forbidden);
+            return Err(ListingError::NotFound);
         }
 
         let row = sqlx::query_as::<_, MediaRow>(
