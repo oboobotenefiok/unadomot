@@ -15,13 +15,16 @@ RUN_ID="$(gh run list --branch "$BRANCH" --limit 1 --json databaseId --jq '.[0].
 if [ -n "$RUN_ID" ] && [ "$RUN_ID" != "null" ]; then
   gh run view "$RUN_ID" --log-failed > error.txt || true
   if [ -s error.txt ]; then
-    git add error.txt
+    sed -E 's/\x1B\[[0-9;]*[mK]//g' error.txt \
+      | grep -n -E 'error(\[|:)|warning:' \
+      > error-summary.txt || true
+    git add error.txt error-summary.txt
     git commit -m "chore: capture CI failure $RUN_ID" || true
     git pull --rebase
     git push origin "$BRANCH"
-    echo "Pushed error.txt for run $RUN_ID"
+    echo "Pushed error.txt and error-summary.txt for run $RUN_ID"
   else
-    rm -f error.txt
+    rm -f error.txt error-summary.txt
     echo "Run $RUN_ID has no failed steps"
   fi
 fi
