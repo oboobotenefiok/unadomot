@@ -4,7 +4,7 @@ use crate::application::auth::{
 };
 use crate::application::listings::{
     add_listing_media, browse_listings, create_listing, delete_listing, get_public_listing,
-    update_listing, ListingError, ListingRepository,
+    list_my_listings, update_listing, ListingError, ListingRepository,
 };
 use crate::application::media::{MediaError, MediaSigner};
 use crate::application::messaging::{
@@ -417,6 +417,7 @@ pub fn router(state: AppState) -> Router {
             "/api/listings",
             get(list_listings).post(create_listing_handler),
         )
+        .route("/api/me/listings", get(my_listings_handler))
         .route(
             "/api/listings/{id}",
             get(get_listing_handler)
@@ -620,6 +621,17 @@ async fn list_listings(
         has_more: page.has_more,
         next_offset: page.next_offset,
     }))
+}
+
+async fn my_listings_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+) -> Result<Json<Vec<ListingResponse>>, ApiError> {
+    let user = authorize(&state, &headers)?;
+    list_my_listings(state.listings.as_ref(), user.id)
+        .await
+        .map(|items| Json(items.into_iter().map(ListingResponse::from).collect()))
+        .map_err(listing_error)
 }
 
 async fn create_listing_handler(
