@@ -111,22 +111,47 @@ impl UserRepository for PostgresUserRepository {
             .await
             .map_err(|e| AuthError::Repository(e.to_string()))?;
 
-        let rotated = sqlx::query_as::<_, RefreshRow>(
-            "UPDATE refresh_tokens SET revoked_at = now() WHERE token_hash = $1 AND revoked_at IS NULL AND expires_at > now() RETURNING user_id",
+        let existing = sqlx::query_as::<_, RefreshRow>(
+            "SELECT user_id, revoked_at, expires_at FROM refresh_tokens WHERE token_hash = $1",
         )
         .bind(old_hash)
         .fetch_optional(&mut *transaction)
         .await
         .map_err(|e| AuthError::Repository(e.to_string()))?;
 
-        let Some(rotated) = rotated else {
+        let Some(existing) = existing else {
             return Ok(None);
         };
+
+        if existing.revoked_at.is_some() {
+            sqlx::query(
+                "UPDATE refresh_tokens SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL",
+            )
+            .bind(existing.user_id)
+            .execute(&mut *transaction)
+            .await
+            .map_err(|e| AuthError::Repository(e.to_string()))?;
+            transaction
+                .commit()
+                .await
+                .map_err(|e| AuthError::Repository(e.to_string()))?;
+            return Ok(None);
+        }
+
+        if existing.expires_at <= Utc::now() {
+            return Ok(None);
+        }
+
+        sqlx::query("UPDATE refresh_tokens SET revoked_at = now() WHERE token_hash = $1")
+            .bind(old_hash)
+            .execute(&mut *transaction)
+            .await
+            .map_err(|e| AuthError::Repository(e.to_string()))?;
 
         let user = sqlx::query_as::<_, UserRow>(
             "SELECT id, email, password_hash, status FROM users WHERE id = $1",
         )
-        .bind(rotated.user_id)
+        .bind(existing.user_id)
         .fetch_one(&mut *transaction)
         .await
         .map_err(|e| AuthError::Repository(e.to_string()))?;
@@ -287,4 +312,6 @@ struct UserRow {
 #[derive(sqlx::FromRow)]
 struct RefreshRow {
     user_id: Uuid,
+    revoked_at: Option<DateTime<Utc>>,
+    expires_at: DateTime<Utc>,
 }
