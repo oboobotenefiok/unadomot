@@ -182,6 +182,7 @@ struct UpdateProfileRequest {
     name: Option<String>,
     phone: Option<String>,
     bio: Option<String>,
+    photo_url: Option<String>,
 }
 
 async fn update_me(
@@ -203,15 +204,21 @@ async fn update_me(
     if bio.len() > 500 {
         return error(StatusCode::BAD_REQUEST, "Bio must be 500 characters or less");
     }
+    let photo_url = request.photo_url.unwrap_or_default().trim().to_string();
+    if photo_url.len() > 2048 {
+        return error(StatusCode::BAD_REQUEST, "Photo URL is too long");
+    }
 
     let result = sqlx::query(
-        "UPDATE user_profiles SET name = $2, phone = NULLIF($3, ''), bio = NULLIF($4, '')
+        "UPDATE user_profiles SET name = $2, phone = NULLIF($3, ''), bio = NULLIF($4, ''),
+                photo_url = COALESCE(NULLIF($5, ''), photo_url)
          WHERE user_id = $1",
     )
     .bind(user_id)
     .bind(&name)
     .bind(&phone)
     .bind(&bio)
+    .bind(&photo_url)
     .execute(&state.pool)
     .await;
 
