@@ -39,6 +39,13 @@ pub trait ListingRepository: Send + Sync {
         update: &ListingUpdate,
     ) -> Result<Listing, ListingError>;
     async fn delete(&self, id: Uuid, owner_id: Uuid) -> Result<(), ListingError>;
+    async fn admin_remove(
+        &self,
+        id: Uuid,
+        admin_id: Uuid,
+        reason: &str,
+    ) -> Result<Listing, ListingError>;
+    async fn admin_restore(&self, id: Uuid, admin_id: Uuid) -> Result<Listing, ListingError>;
     async fn add_media(
         &self,
         listing_id: Uuid,
@@ -132,6 +139,29 @@ pub async fn delete_listing(
     owner_id: Uuid,
 ) -> Result<(), ListingError> {
     repository.delete(id, owner_id).await
+}
+
+pub async fn admin_remove_listing(
+    repository: &dyn ListingRepository,
+    id: Uuid,
+    admin_id: Uuid,
+    reason: &str,
+) -> Result<Listing, ListingError> {
+    let reason = reason.trim();
+    if reason.is_empty() || reason.len() > 500 {
+        return Err(ListingError::InvalidInput(
+            "A removal reason between 1 and 500 characters is required".into(),
+        ));
+    }
+    repository.admin_remove(id, admin_id, reason).await
+}
+
+pub async fn admin_restore_listing(
+    repository: &dyn ListingRepository,
+    id: Uuid,
+    admin_id: Uuid,
+) -> Result<Listing, ListingError> {
+    repository.admin_restore(id, admin_id).await
 }
 
 pub async fn add_listing_media(
