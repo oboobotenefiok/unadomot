@@ -14,6 +14,15 @@ impl PostgresUserRepository {
     }
 }
 
+fn map_user_write_error(error: sqlx::Error) -> AuthError {
+    if let sqlx::Error::Database(database_error) = &error {
+        if database_error.code().as_deref() == Some("23505") {
+            return AuthError::EmailTaken;
+        }
+    }
+    AuthError::Repository(error.to_string())
+}
+
 #[async_trait]
 impl UserRepository for PostgresUserRepository {
     async fn create_user(
@@ -35,7 +44,7 @@ impl UserRepository for PostgresUserRepository {
         .bind(password_hash)
         .fetch_one(&mut *transaction)
         .await
-        .map_err(|e| AuthError::Repository(e.to_string()))?;
+        .map_err(map_user_write_error)?;
 
         sqlx::query("INSERT INTO user_profiles (user_id, name) VALUES ($1, $2)")
             .bind(user.id)
