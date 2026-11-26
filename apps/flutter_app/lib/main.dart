@@ -1,3 +1,4 @@
+import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'api/api_client.dart';
@@ -23,23 +24,43 @@ Future<void> main() async {
     );
   }
 
+  String? initialUsername;
+  try {
+    final uri = await AppLinks().getInitialLink();
+    if (uri != null) {
+      final segment = uri.pathSegments.isEmpty ? '' : uri.pathSegments.first;
+      if (RegExp(r'^[a-z0-9_]{3,20}$').hasMatch(segment)) {
+        initialUsername = segment;
+      }
+    }
+  } catch (_) {
+    // Normal launch when no link is present.
+  }
+
   final api = ApiClient(baseUrl: baseUrl);
   final cache = LocalCache();
   final state = AppState(api: api, cache: cache);
   await state.restore();
-  runApp(UnaDomotApp(state: state, api: api, cache: cache));
+  runApp(UnaDomotApp(
+    state: state,
+    api: api,
+    cache: cache,
+    initialUsername: initialUsername,
+  ));
 }
 
 class UnaDomotApp extends StatelessWidget {
   final AppState state;
   final ApiClient api;
   final LocalCache cache;
+  final String? initialUsername;
 
   const UnaDomotApp({
     super.key,
     required this.state,
     required this.api,
     required this.cache,
+    this.initialUsername,
   });
 
   Route<dynamic>? _route(RouteSettings settings) {
@@ -66,11 +87,14 @@ class UnaDomotApp extends StatelessWidget {
           darkTheme: unaDarkTheme(),
           themeMode: mode,
           onGenerateRoute: _route,
-          home: ListingsScreen(
-            api: api,
-            cache: cache,
-            appState: state,
-          ),
+          home: initialUsername == null
+              ? ListingsScreen(api: api, cache: cache, appState: state)
+              : PublicProfileScreen(
+                  api: api,
+                  cache: cache,
+                  appState: state,
+                  username: initialUsername!,
+                ),
         ),
       );
 }
