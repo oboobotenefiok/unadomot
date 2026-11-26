@@ -1,6 +1,7 @@
 use crate::application::messaging::{MessagingError, MessagingRepository};
 use crate::domain::messaging::{Conversation, Message};
 use async_trait::async_trait;
+use chrono::{DateTime, Utc};
 use sqlx::PgPool;
 use uuid::Uuid;
 
@@ -16,42 +17,61 @@ impl PostgresMessagingRepository {
 
 #[async_trait]
 impl MessagingRepository for PostgresMessagingRepository {
-    async fn find_or_create_conversation(
+    async fn start_conversation(
         &self,
         listing_id: Uuid,
         initiator: Uuid,
-        other: Uuid,
     ) -> Result<Conversation, MessagingError> {
-        let existing = sqlx::query_as::<_, ConversationRow>(
-            "SELECT id, listing_id, participant_a, participant_b, last_message_at, created_at FROM conversations WHERE listing_id = $1 AND ((participant_a = $2 AND participant_b = $3) OR (participant_a = $3 AND participant_b = $2))",
+        let listing = sqlx::query_as::<_, (Uuid, String)>(
+            "SELECT landlord_id, status FROM listings WHERE id = $1 AND deleted_at IS NULL",
         )
         .bind(listing_id)
-        .bind(initiator)
-        .bind(other)
         .fetch_optional(&self.pool)
         .await
         .map_err(|e| MessagingError::Repository(e.to_string()))?;
 
-        if let Some(conversation) = existing {
-            return Ok(conversation.into());
+        let (landlord_id, status) = listing.ok_or(MessagingError::NotFound)?;
+        if status != "available" {
+            return Err(MessagingError::NotFound);
+        }
+        if landlord_id == initiator {
+            return Err(MessagingError::InvalidInput(
+                "You cannot start a conversation on your own listing".into(),
+            ));
         }
 
-        let conversation = sqlx::query_as::<_, ConversationRow>(
-            "INSERT INTO conversations (listing_id, participant_a, participant_b) VALUES ($1, $2, $3) RETURNING id, listing_id, participant_a, participant_b, last_message_at, created_at",
+        let (participant_a, participant_b) = if initiator < landlord_id {
+            (initiator, landlord_id)
+        } else {
+            (landlord_id, initiator)
+        };
+
+        sqlx::query(
+            "INSERT INTO conversations (listing_id, participant_a, participant_b) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING",
         )
         .bind(listing_id)
-        .bind(initiator)
-        .bind(other)
+        .bind(participant_a)
+        .bind(participant_b)
+        .execute(&self.pool)
+        .await
+        .map_err(|e| MessagingError::Repository(e.to_string()))?;
+
+        let row = sqlx::query_as::<_, ConversationRow>(
+            "SELECT id, listing_id, participant_a, participant_b, last_message_preview, last_message_at, last_sender_id, created_at FROM conversations WHERE listing_id = $1 AND participant_a = $2 AND participant_b = $3",
+        )
+        .bind(listing_id)
+        .bind(participant_a)
+        .bind(participant_b)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| MessagingError::Repository(e.to_string()))?;
 
-        Ok(conversation.into())
+        Ok(row.into())
     }
 
     async fn list_conversations(&self, user_id: Uuid) -> Result<Vec<Conversation>, MessagingError> {
         let rows = sqlx::query_as::<_, ConversationRow>(
-            "SELECT id, listing_id, participant_a, participant_b, last_message_at, created_at FROM conversations WHERE participant_a = $1 OR participant_b = $1 ORDER BY COALESCE(last_message_at, created_at) DESC",
+            "SELECT id, listing_id, participant_a, participant_b, last_message_preview, last_message_at, last_sender_id, created_at FROM conversations WHERE participant_a = $1 OR participant_b = $1 ORDER BY COALESCE(last_message_at, created_at) DESC",
         )
         .bind(user_id)
         .fetch_all(&self.pool)
@@ -67,7 +87,7 @@ impl MessagingRepository for PostgresMessagingRepository {
         user_id: Uuid,
     ) -> Result<Option<Conversation>, MessagingError> {
         let row = sqlx::query_as::<_, ConversationRow>(
-            "SELECT id, listing_id, participant_a, participant_b, last_message_at, created_at FROM conversations WHERE id = $1 AND (participant_a = $2 OR participant_b = $2)",
+            "SELECT id, listing_id, participant_a, participant_b, last_message_preview, last_message_at, last_sender_id, created_at FROM conversations WHERE id = $1 AND (participant_a = $2 OR participant_b = $2)",
         )
         .bind(id)
         .bind(user_id)
@@ -81,15 +101,15 @@ impl MessagingRepository for PostgresMessagingRepository {
     async fn list_messages(
         &self,
         conversation_id: Uuid,
+        before: Option<DateTime<Utc>>,
         limit: i64,
-        offset: i64,
     ) -> Result<Vec<Message>, MessagingError> {
         let rows = sqlx::query_as::<_, MessageRow>(
-            "SELECT id, conversation_id, sender_id, body, created_at, read_at FROM messages WHERE conversation_id = $1 ORDER BY created_at ASC LIMIT $2 OFFSET $3",
+            "SELECT id, conversation_id, sender_id, body, created_at, read_at FROM messages WHERE conversation_id = $1 AND ($2::timestamptz IS NULL OR created_at < $2) ORDER BY created_at DESC, id DESC LIMIT $3",
         )
         .bind(conversation_id)
+        .bind(before)
         .bind(limit)
-        .bind(offset)
         .fetch_all(&self.pool)
         .await
         .map_err(|e| MessagingError::Repository(e.to_string()))?;
@@ -119,11 +139,15 @@ impl MessagingRepository for PostgresMessagingRepository {
         .await
         .map_err(|e| MessagingError::Repository(e.to_string()))?;
 
-        sqlx::query("UPDATE conversations SET last_message_at = now() WHERE id = $1")
-            .bind(conversation_id)
-            .execute(&mut *transaction)
-            .await
-            .map_err(|e| MessagingError::Repository(e.to_string()))?;
+        sqlx::query(
+            "UPDATE conversations SET last_message_at = now(), last_message = $2, last_message_preview = $2, last_sender_id = $3 WHERE id = $1",
+        )
+        .bind(conversation_id)
+        .bind(body)
+        .bind(sender_id)
+        .execute(&mut *transaction)
+        .await
+        .map_err(|e| MessagingError::Repository(e.to_string()))?;
 
         transaction
             .commit()
@@ -131,6 +155,43 @@ impl MessagingRepository for PostgresMessagingRepository {
             .map_err(|e| MessagingError::Repository(e.to_string()))?;
 
         Ok(row.into())
+    }
+
+    async fn mark_read(&self, conversation_id: Uuid, user_id: Uuid) -> Result<(), MessagingError> {
+        let mut transaction = self
+            .pool
+            .begin()
+            .await
+            .map_err(|e| MessagingError::Repository(e.to_string()))?;
+
+        sqlx::query(
+            "UPDATE messages SET read_at = now() WHERE conversation_id = $1 AND sender_id <> $2 AND read_at IS NULL",
+        )
+        .bind(conversation_id)
+        .bind(user_id)
+        .execute(&mut *transaction)
+        .await
+        .map_err(|e| MessagingError::Repository(e.to_string()))?;
+
+        let result = sqlx::query(
+            "UPDATE conversations SET last_read_at_a = CASE WHEN participant_a = $2 THEN now() ELSE last_read_at_a END, last_read_at_b = CASE WHEN participant_b = $2 THEN now() ELSE last_read_at_b END WHERE id = $1 AND (participant_a = $2 OR participant_b = $2)",
+        )
+        .bind(conversation_id)
+        .bind(user_id)
+        .execute(&mut *transaction)
+        .await
+        .map_err(|e| MessagingError::Repository(e.to_string()))?;
+
+        if result.rows_affected() == 0 {
+            return Err(MessagingError::NotFound);
+        }
+
+        transaction
+            .commit()
+            .await
+            .map_err(|e| MessagingError::Repository(e.to_string()))?;
+
+        Ok(())
     }
 }
 
@@ -140,7 +201,9 @@ struct ConversationRow {
     listing_id: Uuid,
     participant_a: Uuid,
     participant_b: Uuid,
+    last_message_preview: Option<String>,
     last_message_at: Option<chrono::DateTime<chrono::Utc>>,
+    last_sender_id: Option<Uuid>,
     created_at: chrono::DateTime<chrono::Utc>,
 }
 
@@ -151,7 +214,9 @@ impl From<ConversationRow> for Conversation {
             listing_id: row.listing_id,
             participant_a: row.participant_a,
             participant_b: row.participant_b,
+            last_message_preview: row.last_message_preview,
             last_message_at: row.last_message_at,
+            last_sender_id: row.last_sender_id,
             created_at: row.created_at,
         }
     }

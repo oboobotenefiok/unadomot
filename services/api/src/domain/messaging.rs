@@ -7,7 +7,9 @@ pub struct Conversation {
     pub listing_id: Uuid,
     pub participant_a: Uuid,
     pub participant_b: Uuid,
+    pub last_message_preview: Option<String>,
     pub last_message_at: Option<DateTime<Utc>>,
+    pub last_sender_id: Option<Uuid>,
     pub created_at: DateTime<Utc>,
 }
 
