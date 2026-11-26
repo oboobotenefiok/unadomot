@@ -34,8 +34,9 @@ jobs:
           EOF
           python3 - <<'PY'
           from pathlib import Path
-          p = Path('android/app/build.gradle.kts')
-          s = p.read_text()
+          app = Path('android/app/build.gradle.kts')
+          s = app.read_text()
+          s = s.replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 36')
           if 'import java.util.Properties' not in s:
               s = 'import java.util.Properties\nimport java.io.FileInputStream\n\n' + s
           if 'signingConfigs {' not in s:
@@ -57,7 +58,22 @@ jobs:
           '''
               s = s.replace(marker, block + marker, 1)
           s = s.replace('signingConfig = signingConfigs.getByName("debug")', 'signingConfig = signingConfigs.getByName("release")')
-          p.write_text(s)
+          app.write_text(s)
+
+          root = Path('android/build.gradle.kts')
+          r = root.read_text()
+          if 'compileSdk = 36' not in r:
+              r += '''
+
+          subprojects {
+              afterEvaluate {
+                  extensions.findByName("android")?.let { ext ->
+                      (ext as com.android.build.gradle.BaseExtension).compileSdkVersion(36)
+                  }
+              }
+          }
+          '''
+              root.write_text(r)
           PY
       - name: Build release APK
         working-directory: apps/flutter_app
