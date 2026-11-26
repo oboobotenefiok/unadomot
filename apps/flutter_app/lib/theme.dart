@@ -96,6 +96,88 @@ ThemeData unaTheme() {
   );
 }
 
+ThemeData unaHighContrastTheme() {
+  const scheme = ColorScheme.highContrastLight(
+    primary: Colors.black,
+    onPrimary: Colors.white,
+    secondary: Color(0xFF004D1A),
+    onSecondary: Colors.white,
+    surface: Colors.white,
+    onSurface: Colors.black,
+    error: Color(0xFF8B0000),
+    onError: Colors.white,
+    outline: Colors.black,
+    outlineVariant: Colors.black,
+  );
+
+  final base = ThemeData(
+    useMaterial3: true,
+    colorScheme: scheme,
+    scaffoldBackgroundColor: Colors.white,
+    fontFamily: 'Roboto',
+  );
+
+  return base.copyWith(
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      centerTitle: false,
+      titleTextStyle: TextStyle(
+        color: Colors.black,
+        fontSize: 19,
+        fontWeight: FontWeight.w800,
+      ),
+    ),
+    cardTheme: CardThemeData(
+      color: Colors.white,
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: const BorderSide(color: Colors.black, width: 1.5),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Colors.black, width: 2),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Colors.black, width: 2),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Colors.black, width: 3),
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        minimumSize: const Size(44, 50),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: Colors.black,
+        textStyle: const TextStyle(fontWeight: FontWeight.w700),
+      ),
+    ),
+    dividerColor: Colors.black,
+    dividerTheme: const DividerThemeData(color: Colors.black, thickness: 1.5),
+  );
+}
+
 ThemeData unaDarkTheme() {
   final scheme = ColorScheme.fromSeed(
     seedColor: UnaColors.green600,

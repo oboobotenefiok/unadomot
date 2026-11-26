@@ -84,6 +84,8 @@ class _BootstrapAppState extends State<BootstrapApp> {
     final onboardingSeen = await cache.getSetting('onboarding_seen') == 'true';
     final savedTheme = await cache.getSetting('theme_mode');
     if (savedTheme == 'dark') appThemeMode.value = ThemeMode.dark;
+    final savedContrast = await cache.getSetting('high_contrast');
+    appHighContrast.value = savedContrast == 'true';
 
     if (!mounted) return;
     setState(() {
@@ -100,12 +102,15 @@ class _BootstrapAppState extends State<BootstrapApp> {
   @override
   Widget build(BuildContext context) {
     if (!_ready) {
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: unaTheme(),
-        darkTheme: unaDarkTheme(),
-        themeMode: appThemeMode.value,
-        home: const SplashScreen(),
+      return ValueListenableBuilder<bool>(
+        valueListenable: appHighContrast,
+        builder: (context, contrast, _) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: contrast ? unaHighContrastTheme() : unaTheme(),
+          darkTheme: unaDarkTheme(),
+          themeMode: appThemeMode.value,
+          home: const SplashScreen(),
+        ),
       );
     }
 
@@ -168,33 +173,36 @@ class UnaDomotApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ValueListenableBuilder<ThemeMode>(
         valueListenable: appThemeMode,
-        builder: (context, mode, _) => MaterialApp(
-          title: 'UnaDomot',
-          theme: unaTheme(),
-          darkTheme: unaDarkTheme(),
-          themeMode: mode,
-          onGenerateRoute: _route,
-          home: showOnboarding
-              ? OnboardingScreen(
-                  cache: cache,
-                  api: api,
-                  appState: state,
-                )
-              : initialListingId != null
-                  ? ListingDetailScreen(
-                      api: api,
-                      cache: cache,
-                      appState: state,
-                      listingId: initialListingId!,
-                    )
-                  : initialUsername == null
-                      ? MainShell(api: api, cache: cache, appState: state)
-                      : PublicProfileScreen(
-                          api: api,
-                          cache: cache,
-                          appState: state,
-                          username: initialUsername!,
-                        ),
+        builder: (context, mode, _) => ValueListenableBuilder<bool>(
+          valueListenable: appHighContrast,
+          builder: (context, contrast, _) => MaterialApp(
+            title: 'UnaDomot',
+            theme: contrast ? unaHighContrastTheme() : unaTheme(),
+            darkTheme: unaDarkTheme(),
+            themeMode: mode,
+            onGenerateRoute: _route,
+            home: showOnboarding
+                ? OnboardingScreen(
+                    cache: cache,
+                    api: api,
+                    appState: state,
+                  )
+                : initialListingId != null
+                    ? ListingDetailScreen(
+                        api: api,
+                        cache: cache,
+                        appState: state,
+                        listingId: initialListingId!,
+                      )
+                    : initialUsername == null
+                        ? MainShell(api: api, cache: cache, appState: state)
+                        : PublicProfileScreen(
+                            api: api,
+                            cache: cache,
+                            appState: state,
+                            username: initialUsername!,
+                          ),
+          ),
         ),
       );
 }
