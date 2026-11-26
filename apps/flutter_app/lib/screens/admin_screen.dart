@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../api/api_client.dart';
 import '../theme.dart';
+import 'admin_verification_screen.dart';
 
 class AdminScreen extends StatefulWidget {
   final ApiClient api;
@@ -225,6 +226,16 @@ class _AdminScreenState extends State<AdminScreen> {
               spacing: 8,
               runSpacing: 8,
               children: [
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AdminVerificationScreen(api: widget.api),
+                    ),
+                  ),
+                  icon: const Icon(Icons.verified_user_outlined),
+                  label: const Text('Verification queue'),
+                ),
                 OutlinedButton.icon(
                   onPressed: _suspendUser,
                   icon: const Icon(Icons.person_off_outlined),
