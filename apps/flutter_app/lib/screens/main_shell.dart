@@ -97,7 +97,7 @@ class _MainShellState extends State<MainShell> {
         showAppBar: false,
         onExit: () => _go(0),
       ),
-      MessagesScreen(api: widget.api),
+      MessagesScreen(api: widget.api, showAppBar: false),
       ProfileScreen(
         api: widget.api,
         cache: widget.cache,
