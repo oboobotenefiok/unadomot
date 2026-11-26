@@ -213,6 +213,39 @@ impl ListingRepository for PostgresListingRepository {
         Ok(())
     }
 
+    async fn admin_remove(
+        &self,
+        id: Uuid,
+        admin_id: Uuid,
+        reason: &str,
+    ) -> Result<Listing, ListingError> {
+        let updated = sqlx::query_scalar::<_, Uuid>(
+            "UPDATE listings SET status = 'removed_by_admin', removed_at = now(), removed_by = $2, removed_reason = $3, updated_at = now() WHERE id = $1 AND deleted_at IS NULL RETURNING id",
+        )
+        .bind(id)
+        .bind(admin_id)
+        .bind(reason)
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(|e| ListingError::Repository(e.to_string()))?;
+
+        let id = updated.ok_or(ListingError::NotFound)?;
+        self.get(id).await?.ok_or(ListingError::NotFound)
+    }
+
+    async fn admin_restore(&self, id: Uuid, _admin_id: Uuid) -> Result<Listing, ListingError> {
+        let updated = sqlx::query_scalar::<_, Uuid>(
+            "UPDATE listings SET status = 'available', removed_at = NULL, removed_by = NULL, removed_reason = NULL, updated_at = now() WHERE id = $1 AND deleted_at IS NULL AND status = 'removed_by_admin' RETURNING id",
+        )
+        .bind(id)
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(|e| ListingError::Repository(e.to_string()))?;
+
+        let id = updated.ok_or(ListingError::NotFound)?;
+        self.get(id).await?.ok_or(ListingError::NotFound)
+    }
+
     async fn add_media(
         &self,
         listing_id: Uuid,
