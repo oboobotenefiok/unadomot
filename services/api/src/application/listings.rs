@@ -1,6 +1,7 @@
 use crate::domain::listing::{
     Listing, ListingFilter, ListingMedia, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
 };
+use crate::domain::nigeria::{normalize_state, validate_lga};
 use async_trait::async_trait;
 use rust_decimal::Decimal;
 use uuid::Uuid;
@@ -130,6 +131,20 @@ pub async fn update_listing(
             ));
         }
     }
+    if let Some(state) = &update.state {
+        if normalize_state(state).is_none() {
+            return Err(ListingError::InvalidInput(
+                "State must be a valid Nigerian state or FCT".into(),
+            ));
+        }
+    }
+    if let Some(lga) = &update.lga {
+        if !validate_lga(lga) {
+            return Err(ListingError::InvalidInput(
+                "LGA must be between 1 and 80 characters".into(),
+            ));
+        }
+    }
     repository.update(id, owner_id, update).await
 }
 
@@ -194,9 +209,14 @@ fn validate_new_listing(input: &NewListing) -> Result<(), ListingError> {
             "Description must be between 1 and 5000 characters".into(),
         ));
     }
-    if input.state.trim().is_empty() || input.lga.trim().is_empty() {
+    if normalize_state(&input.state).is_none() {
         return Err(ListingError::InvalidInput(
-            "State and LGA are required".into(),
+            "State must be a valid Nigerian state or FCT".into(),
+        ));
+    }
+    if !validate_lga(&input.lga) {
+        return Err(ListingError::InvalidInput(
+            "LGA must be between 1 and 80 characters".into(),
         ));
     }
     Ok(())
