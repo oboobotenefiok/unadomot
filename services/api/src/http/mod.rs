@@ -3,7 +3,7 @@ use crate::application::auth::{
     AuthError, UserRepository,
 };
 use crate::application::listings::{
-    add_listing_media, browse_listings, create_listing, delete_listing, get_listing,
+    add_listing_media, browse_listings, create_listing, delete_listing, get_public_listing,
     update_listing, ListingError, ListingRepository,
 };
 use crate::application::media::{MediaError, MediaSigner};
@@ -643,7 +643,7 @@ async fn get_listing_handler(
     State(state): State<AppState>,
     Path(id): Path<Uuid>,
 ) -> Result<Json<ListingResponse>, ApiError> {
-    get_listing(state.listings.as_ref(), id)
+    get_public_listing(state.listings.as_ref(), id)
         .await
         .map_err(listing_error)?
         .map(ListingResponse::from)
