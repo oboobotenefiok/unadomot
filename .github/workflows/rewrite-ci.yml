@@ -9,7 +9,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: rewrite-ci-${{ github.ref }}
+  group: rewrite-ci
   cancel-in-progress: true
 env:
   CARGO_TERM_COLOR: never
@@ -59,7 +59,7 @@ jobs:
             exit 1
           fi
       - name: Publish error summary
-        if: failure()
+        if: failure() && !cancelled()
         working-directory: .
         run: |
           if [ -f services/api/error-summary.txt ]; then cp services/api/error-summary.txt error-summary.txt; fi
@@ -134,7 +134,7 @@ jobs:
             exit 1
           fi
       - name: Publish error summary
-        if: failure()
+        if: failure() && !cancelled()
         run: |
           if [ ! -f error-summary.txt ]; then echo "CI failed before an error summary was generated." > error-summary.txt; fi
           cp error-summary.txt /tmp/error-summary.txt
