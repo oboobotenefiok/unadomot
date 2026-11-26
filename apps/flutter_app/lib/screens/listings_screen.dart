@@ -6,6 +6,7 @@ import '../state/app_state.dart';
 import '../theme.dart';
 import 'auth_sheet.dart';
 import 'create_listing_screen.dart';
+import 'favorites_screen.dart';
 import 'listing_detail_screen.dart';
 import 'messages_screen.dart';
 import 'verification_screen.dart';
@@ -139,6 +140,21 @@ class _ListingsScreenState extends State<ListingsScreen> {
     );
   }
 
+  Future<void> _openFavorites() async {
+    if (!await requireAuth(context, widget.appState)) return;
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FavoritesScreen(
+          api: widget.api,
+          cache: widget.cache,
+          appState: widget.appState,
+        ),
+      ),
+    );
+  }
+
   Future<void> _openPost() async {
     if (!await requireAuth(context, widget.appState, register: true)) return;
     if (!mounted) return;
@@ -191,6 +207,11 @@ class _ListingsScreenState extends State<ListingsScreen> {
               child: const Icon(Icons.tune),
             ),
             onPressed: _openFilters,
+          ),
+          IconButton(
+            tooltip: 'Favorites',
+            icon: const Icon(Icons.favorite_border),
+            onPressed: _openFavorites,
           ),
           IconButton(
             tooltip: 'Messages',
