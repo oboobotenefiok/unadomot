@@ -529,11 +529,65 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Future<void> _showCallHistory() async {
+    try {
+      final calls = await widget.api.callHistory(widget.conversationId);
+      if (!mounted) return;
+      showModalBottomSheet<void>(
+        context: context,
+        useSafeArea: true,
+        builder: (context) => calls.isEmpty
+            ? const Padding(
+                padding: EdgeInsets.all(32),
+                child: Text('No calls yet'),
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: calls.length,
+                itemBuilder: (context, index) {
+                  final call = calls[index];
+                  final status = call['status'] as String? ?? 'ended';
+                  final missed = status == 'declined';
+                  final seconds = (call['duration_seconds'] as num?)?.toInt() ?? 0;
+                  final duration = seconds > 0
+                      ? '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}'
+                      : null;
+                  return ListTile(
+                    leading: Icon(
+                      call['kind'] == 'video' ? Icons.videocam : Icons.call,
+                      color: missed ? Colors.red : Colors.green,
+                    ),
+                    title: Text(
+                      call['kind'] == 'video' ? 'Video call' : 'Voice call',
+                    ),
+                    subtitle: Text(
+                      missed
+                          ? 'Missed or declined'
+                          : duration == null
+                              ? 'Completed'
+                              : 'Duration $duration',
+                    ),
+                  );
+                },
+              ),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
           title: const Text('Conversation'),
           actions: [
+            IconButton(
+              tooltip: 'Call history',
+              onPressed: _showCallHistory,
+              icon: const Icon(Icons.history),
+            ),
             IconButton(
               tooltip: 'Voice call',
               onPressed: () => _openCall('audio'),
