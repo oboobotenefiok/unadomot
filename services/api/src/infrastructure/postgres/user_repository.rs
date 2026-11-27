@@ -299,6 +299,54 @@ impl UserRepository for PostgresUserRepository {
 
         Ok(result.rows_affected() > 0)
     }
+
+    async fn link_google_user(&self, user_id: Uuid, had_password: bool) -> Result<(), AuthError> {
+        if had_password {
+            sqlx::query(
+                "UPDATE users SET password_hash = NULL, auth_provider = 'google' WHERE id = $1",
+            )
+            .bind(user_id)
+            .execute(&self.pool)
+            .await
+            .map_err(|e| AuthError::Repository(e.to_string()))?;
+            sqlx::query(
+                "UPDATE refresh_tokens SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL",
+            )
+            .bind(user_id)
+            .execute(&self.pool)
+            .await
+            .map_err(|e| AuthError::Repository(e.to_string()))?;
+        } else {
+            sqlx::query("UPDATE users SET auth_provider = 'google' WHERE id = $1")
+                .bind(user_id)
+                .execute(&self.pool)
+                .await
+                .map_err(|e| AuthError::Repository(e.to_string()))?;
+        }
+        Ok(())
+    }
+
+    async fn create_google_user(&self, email: &str) -> Result<Uuid, AuthError> {
+        sqlx::query_scalar::<_, Uuid>(
+            "INSERT INTO users (email, auth_provider) VALUES ($1, 'google') RETURNING id",
+        )
+        .bind(email)
+        .fetch_one(&self.pool)
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))
+    }
+
+    async fn set_profile_name_if_empty(&self, user_id: Uuid, name: &str) -> Result<(), AuthError> {
+        sqlx::query(
+            "UPDATE user_profiles SET name = $2 WHERE user_id = $1 AND (name IS NULL OR name = '')",
+        )
+        .bind(user_id)
+        .bind(name)
+        .execute(&self.pool)
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
+        Ok(())
+    }
 }
 
 #[derive(sqlx::FromRow)]
