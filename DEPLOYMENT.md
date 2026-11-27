@@ -1,91 +1,63 @@
 # Deployment
 
-## Current production setup
+## API
 
-- API host: Fly.io, app `unadomot`, region `fra`.
-- Public URL: https://unadomot.fly.dev
-- Database: Neon Postgres 16, `aws-eu-central-1` (Frankfurt).
-- Runtime: one shared-CPU machine with 512 MB RAM.
-- API listens on port `8080` inside Fly.
-
-## Required Fly secrets
-
-Set these in the Fly dashboard under the app's **Secrets**:
-
-- `DATABASE_URL` - Neon direct connection string with `sslmode=require`.
-- `JWT_SECRET` - at least 32 random bytes.
-- `REFRESH_TOKEN_SECRET` - at least 32 random bytes, different from JWT.
-
-Optional, needed only for photo uploads and admin bootstrap:
-
-- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
-- `ADMIN_EMAILS`
-- `PUBLIC_WEB_URL`
-- `ALLOWED_ORIGINS`
-- `REDIS_URL`
-
-Use the direct Neon host, not the `-pooler` host, because migrations run at startup. Do not add `channel_binding=require`.
-
-## Deploy the API
-
-The GitHub Actions workflow `.github/workflows/fly-deploy.yml` creates the app if needed and deploys from `services/api`:
+Production runs on Fly.io from `services/api/fly.toml`.
 
 ```bash
-gh workflow run fly-deploy.yml \
-  --repo oboobotenefiok/unadomot \
-  --ref rewrite/flutter-rust-postgres
+flyctl deploy --remote-only --config services/api/fly.toml
 ```
 
-It requires the repository secret `FLY_API_TOKEN`.
+Deploy is manual through the `Deploy API` workflow. It does not run on push.
 
-Manual equivalent:
+## Required secrets
+
+Set these with `flyctl secrets set`:
+
+```
+DATABASE_URL
+JWT_SECRET
+REFRESH_TOKEN_SECRET
+CLOUDINARY_CLOUD_NAME
+CLOUDINARY_API_KEY
+CLOUDINARY_API_SECRET
+RESEND_API_KEY
+EMAIL_FROM
+APP_ENV=production
+ALLOWED_ORIGINS
+```
+
+`JWT_SECRET` and `REFRESH_TOKEN_SECRET` must differ and be at least 32 bytes.
+
+## Migrations
+
+Migrations run as the Fly release command. To run them manually:
 
 ```bash
 cd services/api
-flyctl deploy --remote-only
+DATABASE_URL=... cargo run -- migrate
 ```
 
-## Build the APK
+Use sequential migration numbers from `0013` onward. Never edit an applied migration.
 
-The `.github/workflows/build-apk.yml` workflow builds a debug APK against the live API and uploads it as `unadomot-debug-apk`:
+## Flutter release
 
-```bash
-gh workflow run build-apk.yml \
-  --repo oboobotenefiok/unadomot \
-  --ref rewrite/flutter-rust-postgres
+The release APK workflow generates the Android platform, applies permissions and deep links, configures signing, and builds with:
+
+```
+--dart-define=API_BASE_URL=https://unadomot.fly.dev
 ```
 
-Download it:
+Required GitHub secrets:
 
-```bash
-gh run download <run-id> -n unadomot-debug-apk -D ~/unadomot/apk
+```
+ANDROID_KEYSTORE_BASE64
+ANDROID_KEYSTORE_PASSWORD
+ANDROID_KEY_ALIAS
+ANDROID_KEY_PASSWORD
+GOOGLE_CLIENT_ID
 ```
 
-## Health checks
+## Rollback
 
-```bash
-curl https://unadomot.fly.dev/health
-curl https://unadomot.fly.dev/ready
-```
-
-Registration smoke test:
-
-```bash
-curl -X POST https://unadomot.fly.dev/api/auth/register \
-  -H 'Content-Type: application/json' \
-  -d '{"email":"test@example.com","password":"password123","name":"Test User"}'
-```
-
-A test account `test@example.com` exists from the initial smoke test. Remove or rotate it before public launch.
-
-## Local Docker
-
-```bash
-docker compose up --build
-```
-
-The local API listens on port 3000. Fly uses 8080.
-
-## Database
-
-Migrations live in `services/api/migrations` and run automatically on startup. Back up Postgres before deploying schema changes.
+Use `flyctl releases` and `flyctl deploy --image <previous-image>` to roll back the API. Restore the database from the latest Neon backup if a migration caused the failure.
