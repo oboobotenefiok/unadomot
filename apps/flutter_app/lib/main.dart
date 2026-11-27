@@ -32,6 +32,7 @@ class _BootstrapAppState extends State<BootstrapApp> {
   String? _initialListingId;
   bool _showOnboarding = false;
   bool _ready = false;
+  String? _bootError;
 
   @override
   void initState() {
@@ -47,10 +48,13 @@ class _BootstrapAppState extends State<BootstrapApp> {
         : (kReleaseMode ? '' : fallbackBaseUrl);
 
     if (baseUrl.isEmpty) {
-      throw StateError(
-        'API_BASE_URL must be provided for release builds, for example '
-        '--dart-define=API_BASE_URL=https://unadomot.fly.dev',
-      );
+      if (!mounted) return;
+      setState(() {
+        _bootError =
+            'This build is missing API_BASE_URL. Rebuild with '
+            '--dart-define=API_BASE_URL=https://unadomot.fly.dev';
+      });
+      return;
     }
 
     String? initialUsername;
@@ -103,6 +107,37 @@ class _BootstrapAppState extends State<BootstrapApp> {
 
   @override
   Widget build(BuildContext context) {
+    if (_bootError != null) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: unaTheme(),
+        darkTheme: unaDarkTheme(),
+        home: Scaffold(
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.settings_ethernet, size: 48),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Configuration error',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _bootError!,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     if (!_ready) {
       return ValueListenableBuilder<bool>(
         valueListenable: appHighContrast,
