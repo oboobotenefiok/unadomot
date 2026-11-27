@@ -2,7 +2,9 @@ use async_trait::async_trait;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::application::profiles::{Profile, ProfileListing, ProfileRepository};
+use crate::application::profiles::{
+    AdminUserSummary, AuditEntry, Profile, ProfileListing, ProfileRepository,
+};
 
 pub struct PostgresProfileRepository {
     pool: PgPool,
@@ -225,6 +227,54 @@ impl ProfileRepository for PostgresProfileRepository {
         .await?;
 
         Ok(rows.into_iter().map(ProfileListing::from).collect())
+    }
+
+    async fn search_users(&self, term: &str) -> Result<Vec<AdminUserSummary>, sqlx::Error> {
+        let pattern = format!("%{}%", term.to_lowercase());
+        let rows = sqlx::query_as::<_, (Uuid, String, Option<String>, Option<String>, String, bool, String)>(
+            "SELECT u.id, u.email, p.name, p.username, u.status, p.verified, p.user_type
+             FROM users u LEFT JOIN user_profiles p ON p.user_id = u.id
+             WHERE lower(u.email) LIKE $1 OR lower(COALESCE(p.name, '')) LIKE $1 OR lower(COALESCE(p.username, '')) LIKE $1
+             ORDER BY u.created_at DESC LIMIT 25",
+        )
+        .bind(pattern)
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(rows
+            .into_iter()
+            .map(|(id, email, name, username, status, verified, user_type)| AdminUserSummary {
+                id,
+                email,
+                name,
+                username,
+                status,
+                verified,
+                user_type,
+            })
+            .collect())
+    }
+
+    async fn recent_audit(&self, limit: i64) -> Result<Vec<AuditEntry>, sqlx::Error> {
+        let rows = sqlx::query_as::<_, (Uuid, Uuid, String, Uuid, serde_json::Value, chrono::DateTime<chrono::Utc>)>(
+            "SELECT id, admin_user_id, action, target_id, metadata, created_at
+             FROM admin_audit_log ORDER BY created_at DESC LIMIT $1",
+        )
+        .bind(limit)
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(rows
+            .into_iter()
+            .map(|(id, admin_user_id, action, target_id, metadata, created_at)| AuditEntry {
+                id,
+                admin_user_id,
+                action,
+                target_id,
+                metadata,
+                created_at,
+            })
+            .collect())
     }
 }
 

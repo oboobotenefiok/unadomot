@@ -214,8 +214,8 @@ async fn admin_user_search(
     _admin: AdminUser,
     Query(query): Query<UserSearchQuery>,
 ) -> axum::response::Response {
-    let pool = match state.pool.as_ref() {
-        Some(pool) => pool,
+    let profiles = match state.profiles.as_ref() {
+        Some(profiles) => profiles,
         None => return error(StatusCode::SERVICE_UNAVAILABLE, "User search unavailable"),
     };
 
@@ -223,30 +223,19 @@ async fn admin_user_search(
     if term.len() < 2 {
         return Json(json!([])).into_response();
     }
-    let pattern = format!("%{term}%");
 
-    let rows = sqlx::query_as::<_, (Uuid, String, Option<String>, Option<String>, String, bool, String)>(
-        "SELECT u.id, u.email, p.name, p.username, u.status, p.verified, p.user_type
-         FROM users u LEFT JOIN user_profiles p ON p.user_id = u.id
-         WHERE lower(u.email) LIKE $1 OR lower(COALESCE(p.name, '')) LIKE $1 OR lower(COALESCE(p.username, '')) LIKE $1
-         ORDER BY u.created_at DESC LIMIT 25",
-    )
-    .bind(&pattern)
-    .fetch_all(pool)
-    .await;
-
-    match rows {
+    match profiles.search_users(&term).await {
         Ok(rows) => Json(
             rows.into_iter()
-                .map(|(id, email, name, username, status, verified, user_type)| {
+                .map(|row| {
                     json!({
-                        "id": id,
-                        "email": email,
-                        "name": name,
-                        "username": username,
-                        "status": status,
-                        "verified": verified,
-                        "user_type": user_type,
+                        "id": row.id,
+                        "email": row.email,
+                        "name": row.name,
+                        "username": row.username,
+                        "status": row.status,
+                        "verified": row.verified,
+                        "user_type": row.user_type,
                     })
                 })
                 .collect::<Vec<_>>(),
@@ -260,29 +249,22 @@ async fn admin_audit(
     State(state): State<AppState>,
     _admin: AdminUser,
 ) -> axum::response::Response {
-    let pool = match state.pool.as_ref() {
-        Some(pool) => pool,
+    let profiles = match state.profiles.as_ref() {
+        Some(profiles) => profiles,
         None => return error(StatusCode::SERVICE_UNAVAILABLE, "Audit log unavailable"),
     };
 
-    let rows = sqlx::query_as::<_, (Uuid, Uuid, String, Uuid, Value, chrono::DateTime<chrono::Utc>)>(
-        "SELECT id, admin_user_id, action, target_id, metadata, created_at
-         FROM admin_audit_log ORDER BY created_at DESC LIMIT 100",
-    )
-    .fetch_all(pool)
-    .await;
-
-    match rows {
+    match profiles.recent_audit(100).await {
         Ok(rows) => Json(
             rows.into_iter()
-                .map(|(id, admin_user_id, action, target_id, metadata, created_at)| {
+                .map(|row| {
                     json!({
-                        "id": id,
-                        "admin_user_id": admin_user_id,
-                        "action": action,
-                        "target_id": target_id,
-                        "metadata": metadata,
-                        "created_at": created_at,
+                        "id": row.id,
+                        "admin_user_id": row.admin_user_id,
+                        "action": row.action,
+                        "target_id": row.target_id,
+                        "metadata": row.metadata,
+                        "created_at": row.created_at,
                     })
                 })
                 .collect::<Vec<_>>(),

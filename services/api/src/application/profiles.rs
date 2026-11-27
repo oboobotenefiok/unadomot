@@ -1,6 +1,7 @@
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
+use serde_json::Value;
 use uuid::Uuid;
 
 pub struct Profile {
@@ -34,6 +35,25 @@ pub struct ProfileListing {
     pub image_url: Option<String>,
 }
 
+pub struct AdminUserSummary {
+    pub id: Uuid,
+    pub email: String,
+    pub name: Option<String>,
+    pub username: Option<String>,
+    pub status: String,
+    pub verified: bool,
+    pub user_type: String,
+}
+
+pub struct AuditEntry {
+    pub id: Uuid,
+    pub admin_user_id: Uuid,
+    pub action: String,
+    pub target_id: Uuid,
+    pub metadata: Value,
+    pub created_at: DateTime<Utc>,
+}
+
 #[async_trait]
 pub trait ProfileRepository: Send + Sync {
     async fn email_for_user(&self, user_id: Uuid) -> Result<Option<String>, sqlx::Error>;
@@ -53,4 +73,6 @@ pub trait ProfileRepository: Send + Sync {
         user_id: Uuid,
         only_available: bool,
     ) -> Result<Vec<ProfileListing>, sqlx::Error>;
+    async fn search_users(&self, term: &str) -> Result<Vec<AdminUserSummary>, sqlx::Error>;
+    async fn recent_audit(&self, limit: i64) -> Result<Vec<AuditEntry>, sqlx::Error>;
 }
