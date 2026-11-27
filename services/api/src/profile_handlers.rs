@@ -37,6 +37,15 @@ fn error(status: StatusCode, message: &str) -> axum::response::Response {
     (status, Json(json!({ "error": { "message": message } }))).into_response()
 }
 
+fn valid_media_url(url: &str) -> bool {
+    url.is_empty()
+        || (url.starts_with("https://")
+            && url.len() <= 2048
+            && !url.contains(' ')
+            && !url.contains('\n')
+            && !url.contains('\r'))
+}
+
 async fn authorize(state: &ProfileState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
     let header = headers
         .get(header::AUTHORIZATION)
@@ -220,8 +229,8 @@ async fn update_me(
         return error(StatusCode::BAD_REQUEST, "Bio must be 500 characters or less");
     }
     let photo_url = request.photo_url.unwrap_or_default().trim().to_string();
-    if photo_url.len() > 2048 {
-        return error(StatusCode::BAD_REQUEST, "Photo URL is too long");
+    if !valid_media_url(&photo_url) {
+        return error(StatusCode::BAD_REQUEST, "Photo URL must be a valid HTTPS URL");
     }
 
     let result = sqlx::query(
@@ -649,5 +658,13 @@ mod tests {
         assert!(value.get("email").is_none());
         assert!(value.get("phone").is_none());
         assert_eq!(value["username"], "testuser");
+    }
+
+    #[test]
+    fn rejects_non_https_photo_urls() {
+        assert!(!valid_media_url("http://example.com/photo.jpg"));
+        assert!(!valid_media_url("javascript:alert(1)"));
+        assert!(valid_media_url("https://res.cloudinary.com/demo/image/upload/sample.jpg"));
+        assert!(valid_media_url(""));
     }
 }
