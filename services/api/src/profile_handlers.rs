@@ -33,7 +33,8 @@ fn error(status: StatusCode, message: &str) -> axum::response::Response {
 
 fn valid_media_url(url: &str) -> bool {
     url.is_empty()
-        || (url.starts_with("https://")
+        || (url.starts_with("https://res.cloudinary.com/")
+            && url.contains("/upload/")
             && url.len() <= 2048
             && !url.contains(' ')
             && !url.contains('\n')
@@ -151,7 +152,7 @@ async fn update_me(
     }
     let photo_url = request.photo_url.unwrap_or_default().trim().to_string();
     if !valid_media_url(&photo_url) {
-        return error(StatusCode::BAD_REQUEST, "Photo URL must be a valid HTTPS URL");
+        return error(StatusCode::BAD_REQUEST, "Photo must be a Cloudinary HTTPS upload");
     }
 
     match profiles
@@ -407,9 +408,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn rejects_non_https_photo_urls() {
+    fn rejects_non_cloudinary_photo_urls() {
         assert!(!valid_media_url("http://example.com/photo.jpg"));
         assert!(!valid_media_url("javascript:alert(1)"));
+        assert!(!valid_media_url("https://example.com/upload/photo.jpg"));
         assert!(valid_media_url("https://res.cloudinary.com/demo/image/upload/sample.jpg"));
         assert!(valid_media_url(""));
     }
