@@ -1,4 +1,6 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../api/api_client.dart';
 import '../api/api_client_listing_edit.dart';
 import '../data/nigeria_locations.dart';
@@ -17,6 +19,13 @@ class EditListingScreen extends StatefulWidget {
   State<EditListingScreen> createState() => _EditListingScreenState();
 }
 
+class _NewPhoto {
+  final Uint8List bytes;
+  final String name;
+
+  const _NewPhoto({required this.bytes, required this.name});
+}
+
 class _EditListingScreenState extends State<EditListingScreen> {
   static const _types = ['Apartment', 'House', 'Self Contain', 'Room', 'Duplex'];
   static const _furnishing = ['Furnished', 'Semi-furnished', 'Unfurnished'];
@@ -32,6 +41,8 @@ class _EditListingScreenState extends State<EditListingScreen> {
   late String? _lga;
   late String? _type;
   late String? _furnishingValue;
+  List<String> _existingPhotos = [];
+  final List<_NewPhoto> _newPhotos = [];
   bool _busy = false;
   String? _error;
 
@@ -49,6 +60,23 @@ class _EditListingScreenState extends State<EditListingScreen> {
     _lga = data['lga'] as String?;
     _type = data['property_type'] as String?;
     _furnishingValue = data['furnishing'] as String?;
+    final image = data['image_url'] as String?;
+    if (image != null) _existingPhotos = [image];
+    _loadMedia();
+  }
+
+  Future<void> _loadMedia() async {
+    try {
+      final detail = await widget.api.detail(widget.listing['id'] as String);
+      final media = (detail['media'] as List? ?? [])
+          .whereType<Map>()
+          .map((item) => item['url'] as String?)
+          .whereType<String>()
+          .toList();
+      if (mounted && media.isNotEmpty) setState(() => _existingPhotos = media);
+    } catch (_) {
+      // Existing photos are optional if the detail request fails.
+    }
   }
 
   @override
@@ -59,6 +87,15 @@ class _EditListingScreenState extends State<EditListingScreen> {
     super.dispose();
   }
 
+  Future<void> _pickPhotos() async {
+    final picked = await ImagePicker().pickMultiImage(imageQuality: 85, maxWidth: 2000);
+    if (picked.isEmpty) return;
+    for (final file in picked) {
+      _newPhotos.add(_NewPhoto(bytes: await file.readAsBytes(), name: file.name));
+    }
+    if (mounted) setState(() {});
+  }
+
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() {
@@ -66,7 +103,8 @@ class _EditListingScreenState extends State<EditListingScreen> {
       _error = null;
     });
     try {
-      await widget.api.updateListing(widget.listing['id'] as String, {
+      final listingId = widget.listing['id'] as String;
+      await widget.api.updateListing(listingId, {
         'title': _title.text.trim(),
         'description': _description.text.trim(),
         'price': _price.text.trim(),
@@ -78,6 +116,25 @@ class _EditListingScreenState extends State<EditListingScreen> {
         'property_type': _type,
         'furnishing': _furnishingValue,
       });
+
+      for (var index = 0; index < _newPhotos.length; index++) {
+        final photo = _newPhotos[index];
+        final signature = await widget.api.mediaSignature();
+        final uploaded = await widget.api.uploadToCloudinary(
+          bytes: photo.bytes,
+          filename: photo.name,
+          signature: signature,
+        );
+        await widget.api.attachMedia(
+          listingId,
+          publicId: uploaded['public_id'] as String,
+          url: uploaded['secure_url'] as String,
+          altText: _title.text.trim(),
+          mediaType: 'image',
+          position: _existingPhotos.length + index,
+        );
+      }
+
       if (mounted) Navigator.pop(context, true);
     } catch (error) {
       if (mounted) setState(() => _error = error.toString());
@@ -177,6 +234,58 @@ class _EditListingScreenState extends State<EditListingScreen> {
                 ],
                 onChanged: (value) => setState(() => _lga = value),
               ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  const Expanded(
+                    child: Text('Photos', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                  ),
+                  TextButton.icon(
+                    onPressed: _busy ? null : _pickPhotos,
+                    icon: const Icon(Icons.add_photo_alternate_outlined),
+                    label: const Text('Add'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              if (_existingPhotos.isEmpty && _newPhotos.isEmpty)
+                const Text('No photos yet. Add at least one before saving.', style: TextStyle(color: Colors.grey))
+              else
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                  children: [
+                    ..._existingPhotos.map(
+                      (url) => ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(url, fit: BoxFit.cover),
+                      ),
+                    ),
+                    ..._newPhotos.map(
+                      (photo) => Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.memory(photo.bytes, fit: BoxFit.cover),
+                          ),
+                          Positioned(
+                            top: 4,
+                            right: 4,
+                            child: IconButton.filledTonal(
+                              visualDensity: VisualDensity.compact,
+                              onPressed: _busy ? null : () => setState(() => _newPhotos.remove(photo)),
+                              icon: const Icon(Icons.close, size: 18),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               if (_error != null) ...[
                 const SizedBox(height: 16),
                 Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
