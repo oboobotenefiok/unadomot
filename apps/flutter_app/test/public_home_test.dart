@@ -33,7 +33,8 @@ void main() {
     addTearDown(state.dispose);
 
     await tester.pumpWidget(UnaDomotApp(state: state, api: api, cache: cache));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
     expect(find.text('Available rentals'), findsOneWidget);
     expect(find.text('Create your account'), findsNothing);
 
