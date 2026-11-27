@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
 import '../api/api_client.dart';
 import '../data/local_cache.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
-import '../utils/share_helper.dart';
+import '../widgets/share_listing_sheet.dart';
 import 'listing_detail_screen.dart';
 
 class FavoritesScreen extends StatefulWidget {
@@ -59,8 +58,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   }
 
   Future<void> _share(Listing listing) async {
-    final link = 'https://unadomot.fly.dev/listings/${listing.id}';
-    await Share.share('${naijaShareText(listing)}\n$link', subject: listing.title);
+    await showShareListingSheet(context, listing);
   }
 
   @override
