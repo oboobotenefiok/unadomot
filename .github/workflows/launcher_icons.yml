@@ -1,0 +1,42 @@
+name: Generate launcher icons
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - rewrite/flutter-rust-postgres
+    paths:
+      - 'apps/flutter_app/pubspec.yaml'
+      - 'apps/flutter_app/assets/unadomot.jpg'
+      - '.github/workflows/launcher_icons.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  icons:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/flutter_app
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart run flutter_launcher_icons
+      - name: Commit generated icons
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add android/app/src/main/res
+          if git diff --cached --quiet; then
+            echo "Launcher icons already up to date"
+          else
+            git commit -m "Generate Android launcher icons from logo"
+            git push
+          fi
