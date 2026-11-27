@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/listing.dart';
 import '../theme.dart';
+import '../utils/format.dart';
 
 class ListingCard extends StatelessWidget {
   final Listing listing;
@@ -63,7 +64,7 @@ class ListingCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        '₦${listing.price.toStringAsFixed(0)}',
+                        formatNaira(listing.price),
                         style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
                       ),
                     ),
