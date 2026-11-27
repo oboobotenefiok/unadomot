@@ -9,8 +9,8 @@ jobs:
   bundle:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-java@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
@@ -52,7 +52,7 @@ jobs:
           flutter build appbundle --release \
             --dart-define=API_BASE_URL=https://unadomot.fly.dev \
             --dart-define=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v4
         with:
           name: unadomot-release-aab
           path: apps/flutter_app/build/app/outputs/bundle/release/app-release.aab
