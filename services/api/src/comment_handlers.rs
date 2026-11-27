@@ -34,16 +34,27 @@ fn error(status: StatusCode, message: &str) -> axum::response::Response {
     (status, Json(json!({ "error": { "message": message } }))).into_response()
 }
 
-fn authorize(state: &CommentState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
+async fn authorize(state: &CommentState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
     let header = headers
         .get(header::AUTHORIZATION)
         .and_then(|value| value.to_str().ok())
         .and_then(|value| value.strip_prefix("Bearer "))
         .ok_or_else(|| error(StatusCode::UNAUTHORIZED, "Please sign in"))?;
 
-    verify_session(header, &state.jwt_secret)
-        .map(|user| user.id)
-        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Session expired"))
+    let user = verify_session(header, &state.jwt_secret)
+        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Session expired"))?;
+
+    let status: Option<String> = sqlx::query_scalar("SELECT status FROM users WHERE id = $1")
+        .bind(user.id)
+        .fetch_optional(&state.pool)
+        .await
+        .map_err(|_| error(StatusCode::SERVICE_UNAVAILABLE, "Account status unavailable"))?;
+
+    if status.as_deref() != Some("active") {
+        return Err(error(StatusCode::FORBIDDEN, "This account is suspended"));
+    }
+
+    Ok(user.id)
 }
 
 #[derive(Deserialize)]
@@ -84,7 +95,7 @@ async fn delete_comment(
     headers: HeaderMap,
     Path(comment_id): Path<Uuid>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
@@ -178,7 +189,7 @@ async fn create_comment(
     Path(listing_id): Path<Uuid>,
     Json(request): Json<CreateCommentRequest>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
@@ -242,7 +253,7 @@ async fn toggle_reaction(
     Path(comment_id): Path<Uuid>,
     Json(request): Json<ReactionRequest>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
