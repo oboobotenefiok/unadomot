@@ -6,13 +6,15 @@ mod messaging_handlers;
 mod profile_handlers;
 
 use axum::{
+    extract::{DefaultBodyLimit, Request},
     http::{header, HeaderName, HeaderValue, StatusCode},
     middleware::{self, Next},
     response::Response,
-    extract::Request,
 };
 use sqlx::postgres::PgPoolOptions;
-use std::sync::Arc;
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex, OnceLock};
+use std::time::{Duration, Instant};
 use tower_http::set_header::SetResponseHeaderLayer;
 use unadomot_api::adapters::{
     UnconfiguredCallRepository, UnconfiguredMediaSigner, UnconfiguredMessagingRepository,
@@ -44,6 +46,44 @@ type Repositories = (
     Arc<dyn VerificationRepository>,
     Arc<dyn CallRepository>,
 );
+
+static GLOBAL_LIMIT: OnceLock<Mutex<HashMap<String, (Instant, u32)>>> = OnceLock::new();
+
+fn global_limit_store() -> &'static Mutex<HashMap<String, (Instant, u32)>> {
+    GLOBAL_LIMIT.get_or_init(|| Mutex::new(HashMap::new()))
+}
+
+async fn global_rate_limit(request: Request, next: Next) -> Result<Response, StatusCode> {
+    let key = request
+        .headers()
+        .get("x-forwarded-for")
+        .and_then(|value| value.to_str().ok())
+        .and_then(|value| value.split(',').next())
+        .map(|value| value.trim().to_string())
+        .unwrap_or_else(|| "unknown".into());
+
+    let limit = std::env::var("RATE_LIMIT_PER_MINUTE")
+        .ok()
+        .and_then(|value| value.parse::<u32>().ok())
+        .unwrap_or(120);
+
+    let allowed = {
+        let mut store = global_limit_store().lock().expect("rate limiter lock");
+        let now = Instant::now();
+        let entry = store.entry(key).or_insert((now, 0));
+        if now.duration_since(entry.0) > Duration::from_secs(60) {
+            *entry = (now, 0);
+        }
+        entry.1 += 1;
+        entry.1 <= limit
+    };
+
+    if !allowed {
+        return Err(StatusCode::TOO_MANY_REQUESTS);
+    }
+
+    Ok(next.run(request).await)
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -187,6 +227,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let app = app
+        .layer(DefaultBodyLimit::max(2 * 1024 * 1024))
+        .layer(middleware::from_fn(global_rate_limit))
         .layer(SetResponseHeaderLayer::overriding(
             header::STRICT_TRANSPORT_SECURITY,
             HeaderValue::from_static("max-age=31536000; includeSubDomains; preload"),
