@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../api/api_client.dart';
 import '../data/local_cache.dart';
+import '../models/listing.dart';
 import '../state/app_state.dart';
-import '../utils/currency.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/listing_card.dart';
 import '../widgets/responsive_grid.dart';
 import 'listing_detail_screen.dart';
 
@@ -254,11 +255,13 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
                       itemCount: _listings.length,
                       gridDelegate: responsiveGridDelegate(
                         context,
-                        childAspectRatio: 0.78,
+                        childAspectRatio: 0.66,
                       ),
                       itemBuilder: (context, index) {
                         final listing = _listings[index];
-                        return InkWell(
+                        return ListingCard(
+                          listing: Listing.fromJson(listing),
+                          imageUrl: listing['image_url'] as String?,
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -268,63 +271,6 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
                                 appState: widget.appState,
                                 listingId: listing['id'] as String,
                               ),
-                            ),
-                          ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: dark ? const Color(0xFF122019) : Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6)],
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Stack(
-                                    fit: StackFit.expand,
-                                    children: [
-                                      if (listing['image_url'] != null)
-                                        Image.network(listing['image_url'] as String, fit: BoxFit.cover)
-                                      else
-                                        Container(color: dark ? Colors.white10 : Colors.black12, child: const Icon(Icons.home, size: 40)),
-                                      Positioned(
-                                        left: 6,
-                                        bottom: 6,
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                          color: const Color(0xFF052E16),
-                                          child: Text(
-                                            formatNaira((listing['price'] as num?)?.toDouble() ?? 0),
-                                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        listing['title'] as String? ?? '',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        listing['address'] as String? ?? '',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(fontSize: 11, color: dark ? Colors.white60 : Colors.black54),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
                             ),
                           ),
                         );
