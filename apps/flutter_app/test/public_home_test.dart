@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:unadomot/api/api_client.dart';
@@ -38,7 +39,7 @@ void main() {
     expect(find.text('Available rentals'), findsOneWidget);
     expect(find.text('Create your account'), findsNothing);
 
-    await tester.tap(find.text('Post listing'));
+    await tester.tap(find.byIcon(Icons.add));
     await tester.pumpAndSettle();
     expect(find.text('Create your account'), findsOneWidget);
   });

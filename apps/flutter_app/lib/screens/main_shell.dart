@@ -86,6 +86,14 @@ class _MainShellState extends State<MainShell> {
     _go(4);
   }
 
+  Future<void> _openPost() async {
+    if (!widget.appState.signedIn) {
+      final signedIn = await requireAuth(context, widget.appState, register: true);
+      if (!signedIn || !mounted) return;
+    }
+    _go(2);
+  }
+
   @override
   Widget build(BuildContext context) {
     final pages = [
@@ -153,7 +161,7 @@ class _MainShellState extends State<MainShell> {
               onTap: () => _go(1),
             ),
             GestureDetector(
-              onTap: () => _go(2),
+              onTap: _openPost,
               child: Container(
                 width: 46,
                 height: 46,
