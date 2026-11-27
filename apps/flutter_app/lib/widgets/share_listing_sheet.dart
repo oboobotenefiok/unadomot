@@ -7,9 +7,8 @@ import '../theme.dart';
 import '../utils/share_helper.dart';
 
 Future<void> showShareListingSheet(BuildContext context, Listing listing) async {
-  final link = 'https://unadomot.fly.dev/listings/${listing.id}';
-  final code = listing.code == null ? '' : '\nCode: ${listing.code}';
-  final text = '${naijaShareText(listing)}$code\n$link';
+  final link = listingShareLink(listing);
+  final text = listingShareText(listing);
 
   await showModalBottomSheet<void>(
     context: context,
