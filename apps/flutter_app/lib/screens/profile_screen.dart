@@ -1,8 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import '../api/api_client.dart';
+import '../api/api_client_profile.dart';
 import '../app_settings.dart';
 import '../data/local_cache.dart';
 import '../models/listing.dart';
@@ -182,23 +181,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (saved != true) return;
     try {
-      final response = await http.patch(
-        widget.api.baseUrl.resolve('/api/profile/me'),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${widget.api.token}',
-        },
-        body: jsonEncode({
-          'name': nameController.text.trim(),
-          'phone': phoneController.text.trim(),
-          'bio': bioController.text.trim(),
-          if (photoUrl != null) 'photo_url': photoUrl,
-        }),
-      ).timeout(const Duration(seconds: 20));
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiException(response.statusCode, 'Could not save profile.');
-      }
+      await widget.api.updateProfile(
+        name: nameController.text.trim(),
+        phone: phoneController.text.trim(),
+        bio: bioController.text.trim(),
+        photoUrl: photoUrl,
+      );
       await _load();
     } catch (error) {
       if (mounted) {
@@ -225,16 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
     if (confirmed != true) return;
     try {
-      final response = await http.delete(
-        widget.api.baseUrl.resolve('/api/listings/${listing['id']}'),
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${widget.api.token}',
-        },
-      ).timeout(const Duration(seconds: 20));
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiException(response.statusCode, 'Could not delete listing.');
-      }
+      await widget.api.deleteListing(listing['id'] as String);
       await _load();
     } catch (error) {
       if (mounted) {
