@@ -97,7 +97,7 @@ pub fn router(state: VerificationState) -> Router {
         .with_state(state)
 }
 
-fn authorize(
+async fn authorize(
     state: &VerificationState,
     headers: &HeaderMap,
 ) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
@@ -113,20 +113,30 @@ fn authorize(
             )
         })?;
 
-    verify_session(token, &state.jwt_secret).map_err(|_| {
+    let user = verify_session(token, &state.jwt_secret).map_err(|_| {
         VerificationApiError::new(
             StatusCode::UNAUTHORIZED,
             "unauthorized",
             "Invalid or expired token",
         )
-    })
+    })?;
+
+    if !state.users.is_active(user.id).await.unwrap_or(false) {
+        return Err(VerificationApiError::new(
+            StatusCode::FORBIDDEN,
+            "forbidden",
+            "This account is suspended",
+        ));
+    }
+
+    Ok(user)
 }
 
 async fn authorize_admin(
     state: &VerificationState,
     headers: &HeaderMap,
 ) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
-    let user = authorize(state, headers)?;
+    let user = authorize(state, headers).await?;
     let is_db_admin = state.users.is_admin(user.id).await.unwrap_or(false);
 
     if !is_db_admin {
@@ -144,7 +154,7 @@ async fn submit_handler(
     headers: HeaderMap,
     Json(request): Json<SubmitRequest>,
 ) -> Result<Json<VerificationResponse>, VerificationApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     submit_request(
         state.repository.as_ref(),
         user.id,
@@ -160,7 +170,7 @@ async fn my_handler(
     State(state): State<VerificationState>,
     headers: HeaderMap,
 ) -> Result<Json<Option<VerificationResponse>>, VerificationApiError> {
-    let user = authorize(&state, &headers)?;
+    let user = authorize(&state, &headers).await?;
     my_request(state.repository.as_ref(), user.id)
         .await
         .map(|request| Json(request.map(VerificationResponse::from)))
