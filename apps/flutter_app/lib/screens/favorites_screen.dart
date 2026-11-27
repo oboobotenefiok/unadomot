@@ -59,51 +59,140 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     }
   }
 
+  Future<void> _removeUnavailable() async {
+    final unavailable = _favorites.where((item) => item.status != 'available').toList();
+    for (final listing in unavailable) {
+      await widget.cache.setFavorite(listing.id, false);
+    }
+    if (mounted) {
+      setState(() => _favorites = _favorites.where((item) => item.status == 'available').toList());
+    }
+  }
+
   Future<void> _share(Listing listing) async {
     await showShareListingSheet(context, listing);
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: widget.showAppBar ? AppBar(title: const Text('Favorites')) : null,
-        body: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : _favorites.isEmpty
-                ? const EmptyState(
-                    icon: Icons.favorite_border,
-                    title: 'No favorites yet',
-                    message: 'Tap the heart on a listing to save it here.',
-                  )
-                : GridView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _favorites.length,
-                    gridDelegate: responsiveGridDelegate(
-                      context,
-                      childAspectRatio: 0.66,
+  Widget build(BuildContext context) {
+    final available = _favorites.where((item) => item.status == 'available').toList();
+    final unavailable = _favorites.where((item) => item.status != 'available').toList();
+
+    return Scaffold(
+      appBar: widget.showAppBar ? AppBar(title: const Text('Favorites')) : null,
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _favorites.isEmpty
+              ? EmptyState(
+                  icon: Icons.favorite_border,
+                  title: 'No saved listings yet',
+                  message: 'Tap the heart icon on any listing to save it here.',
+                  actionLabel: 'Browse Listings',
+                  onAction: () => Navigator.pop(context),
+                )
+              : ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+                  children: [
+                    const Text(
+                      'Saved Listings',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
                     ),
-                    itemBuilder: (context, index) {
-                      final listing = _favorites[index];
-                      return ListingCard(
-                        listing: listing,
-                        isFavorite: true,
-                        onFavorite: () => _removeFavorite(listing),
-                        onShare: () => _share(listing),
-                        onTap: () async {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ListingDetailScreen(
-                                api: widget.api,
-                                cache: widget.cache,
-                                appState: widget.appState,
-                                listingId: listing.id,
-                              ),
+                    const SizedBox(height: 20),
+                    if (available.isNotEmpty) ...[
+                      const Text(
+                        'Available Listings',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF374151)),
+                      ),
+                      const SizedBox(height: 10),
+                      _grid(available, unavailable: false),
+                    ],
+                    if (unavailable.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              'Unavailable Listings',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF6B7280)),
                             ),
-                          );
-                          _load();
-                        },
-                      );
-                    },
+                          ),
+                          TextButton(
+                            onPressed: _removeUnavailable,
+                            child: const Text('Remove all', style: TextStyle(color: Colors.red)),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      _grid(unavailable, unavailable: true),
+                    ],
+                  ],
+                ),
+    );
+  }
+
+  Widget _grid(List<Listing> listings, {required bool unavailable}) => GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: listings.length,
+        gridDelegate: responsiveGridDelegate(
+          context,
+          childAspectRatio: 0.66,
+        ),
+        itemBuilder: (context, index) {
+          final listing = listings[index];
+          final card = ListingCard(
+            listing: listing,
+            isFavorite: true,
+            onFavorite: unavailable ? null : () => _removeFavorite(listing),
+            onShare: unavailable ? null : () => _share(listing),
+            onTap: unavailable
+                ? null
+                : () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ListingDetailScreen(
+                          api: widget.api,
+                          cache: widget.cache,
+                          appState: widget.appState,
+                          listingId: listing.id,
+                        ),
+                      ),
+                    );
+                    _load();
+                  },
+          );
+          if (!unavailable) return card;
+          return Stack(
+            children: [
+              ColorFiltered(
+                colorFilter: const ColorFilter.matrix(<double>[
+                  0.2126, 0.7152, 0.0722, 0, 0,
+                  0.2126, 0.7152, 0.0722, 0, 0,
+                  0.2126, 0.7152, 0.0722, 0, 0,
+                  0, 0, 0, 1, 0,
+                ]),
+                child: card,
+              ),
+              Positioned(
+                top: 8,
+                left: 8,
+                right: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade600,
+                    borderRadius: BorderRadius.circular(4),
                   ),
+                  child: const Text(
+                    'This listing is no longer available',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       );
 }
