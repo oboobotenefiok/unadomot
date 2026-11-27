@@ -382,11 +382,17 @@ class ApiClient {
     required String name,
     String? phone,
     String? bio,
+    String? photoUrl,
   }) async {
     await _request(
       'PATCH',
       '/api/profile/me',
-      body: {'name': name, 'phone': phone, 'bio': bio},
+      body: {
+        'name': name,
+        'phone': phone,
+        'bio': bio,
+        if (photoUrl != null) 'photo_url': photoUrl,
+      },
       authenticated: true,
     );
   }
