@@ -38,6 +38,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
   final _scrollController = ScrollController();
   List<Listing> _listings = [];
   Set<String> _favoriteIds = {};
+  Set<String> _myListingIds = {};
   Map<String, double> _affinity = {};
   bool _loading = true;
   bool _loadingMore = false;
@@ -56,6 +57,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
     _load();
     _loadFavorites();
     _loadAffinity();
+    _loadOwnedListings();
   }
 
   @override
@@ -72,6 +74,18 @@ class _ListingsScreenState extends State<ListingsScreen> {
   Future<void> _loadAffinity() async {
     final affinity = await widget.cache.readAffinity();
     if (mounted) setState(() => _affinity = affinity);
+  }
+
+  Future<void> _loadOwnedListings() async {
+    if (!widget.appState.signedIn) return;
+    try {
+      final mine = await widget.api.myListings();
+      if (mounted) {
+        setState(() => _myListingIds = mine.map((item) => item['id'] as String).toSet());
+      }
+    } catch (_) {
+      // Ownership controls are optional if this request fails.
+    }
   }
 
   void _onScroll() {
@@ -176,6 +190,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
   }
 
   Future<void> _messageListing(Listing listing) async {
+    if (_myListingIds.contains(listing.id)) return;
     if (!await requireAuth(context, widget.appState)) return;
     if (!mounted) return;
     try {
@@ -491,76 +506,95 @@ class _ListingsScreenState extends State<ListingsScreen> {
             ? const ListingSkeletonList()
             : _error != null
                 ? Center(child: Text(_error!))
-                : Column(
-                    children: [
+                : CustomScrollView(
+                    controller: _scrollController,
+                    slivers: [
                       if (_cachedAt != null)
-                        Container(
-                          width: double.infinity,
-                          color: UnaColors.green100,
-                          padding: const EdgeInsets.all(8),
-                          child: Text(
-                            'Offline view - updated ${_relative(_cachedAt!)}',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: UnaColors.green900,
-                              fontSize: 12,
+                        SliverToBoxAdapter(
+                          child: Container(
+                            width: double.infinity,
+                            color: UnaColors.green100,
+                            padding: const EdgeInsets.all(8),
+                            child: Text(
+                              'Offline view - updated ${_relative(_cachedAt!)}',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: UnaColors.green900,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
                         ),
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(16, 16, 16, 4),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Welcome home',
-                            style: TextStyle(
-                              color: UnaColors.green900,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
+                      const SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(16, 16, 16, 4),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Welcome home',
+                              style: TextStyle(
+                                color: UnaColors.green900,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         ),
                       ),
                       if (listings.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: HomeCarousel(
-                            listings: listings.take(5).toList(),
-                            onTap: _openDetail,
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: HomeCarousel(
+                              listings: listings.take(5).toList(),
+                              onTap: _openDetail,
+                            ),
                           ),
                         ),
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
-                        child: _SectionHeading('Available rentals'),
+                      const SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
+                          child: _SectionHeading('Available rentals'),
+                        ),
                       ),
-                      Expanded(
-                        child: listings.isEmpty
-                            ? const Center(child: Text('No listings match your search'))
-                            : ListView.builder(
-                                controller: _scrollController,
-                                padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                                itemCount: listings.length + (_loadingMore ? 1 : 0),
-                                itemBuilder: (context, index) {
-                                  if (index >= listings.length) {
-                                    return const Padding(
-                                      padding: EdgeInsets.all(16),
-                                      child: Center(child: CircularProgressIndicator()),
-                                    );
-                                  }
-                                  final listing = listings[index];
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 12),
-                                    child: _ListingCard(
-                                      listing: listing,
-                                      isFavorite: _favoriteIds.contains(listing.id),
-                                      onFavorite: () => _toggleFavorite(listing),
-                                      onMessage: () => _messageListing(listing),
-                                      onTap: () => _openDetail(listing),
-                                    ),
-                                  );
-                                },
-                              ),
-                      ),
+                      if (listings.isEmpty)
+                        const SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: Center(child: Text('No listings match your search')),
+                        )
+                      else
+                        SliverPadding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                          sliver: SliverGrid(
+                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              childAspectRatio: 0.66,
+                            ),
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                final listing = listings[index];
+                                return _GridListingCard(
+                                  listing: listing,
+                                  isFavorite: _favoriteIds.contains(listing.id),
+                                  isOwner: _myListingIds.contains(listing.id),
+                                  onFavorite: () => _toggleFavorite(listing),
+                                  onMessage: () => _messageListing(listing),
+                                  onTap: () => _openDetail(listing),
+                                );
+                              },
+                              childCount: listings.length,
+                            ),
+                          ),
+                        ),
+                      if (_loadingMore)
+                        const SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Center(child: CircularProgressIndicator()),
+                          ),
+                        ),
                     ],
                   ),
       ),
@@ -790,16 +824,18 @@ class _SectionHeading extends StatelessWidget {
       );
 }
 
-class _ListingCard extends StatelessWidget {
+class _GridListingCard extends StatelessWidget {
   final Listing listing;
   final bool isFavorite;
+  final bool isOwner;
   final VoidCallback onFavorite;
   final VoidCallback onMessage;
   final VoidCallback onTap;
 
-  const _ListingCard({
+  const _GridListingCard({
     required this.listing,
     required this.isFavorite,
+    required this.isOwner,
     required this.onFavorite,
     required this.onMessage,
     required this.onTap,
@@ -807,116 +843,112 @@ class _ListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final landlordName =
-        listing.landlordName.trim().isEmpty ? 'Landlord' : listing.landlordName;
     final imageUrl = listing.media.isEmpty ? null : listing.media.first.url;
 
     return Material(
       color: UnaColors.surface,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(10),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 170,
-              width: double.infinity,
-              child: imageUrl == null
-                  ? Container(
+            Expanded(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (imageUrl == null)
+                    Container(
                       color: UnaColors.green100,
                       child: const Icon(
                         Icons.home_work_outlined,
-                        size: 48,
+                        size: 40,
                         color: UnaColors.green700,
                       ),
                     )
-                  : Image.network(imageUrl, fit: BoxFit.cover),
+                  else
+                    Image.network(imageUrl, fit: BoxFit.cover),
+                  Positioned(
+                    top: 6,
+                    right: 6,
+                    child: _RoundAction(
+                      icon: isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? Colors.red : Colors.white,
+                      background: Colors.black45,
+                      onTap: onFavorite,
+                    ),
+                  ),
+                  if (isOwner)
+                    Positioned(
+                      top: 6,
+                      left: 6,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: UnaColors.green900,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Text(
+                          'Yours',
+                          style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          listing.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: UnaColors.text900,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: UnaColors.primary,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          'N${listing.price.toStringAsFixed(0)}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
+                  Text(
+                    listing.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: UnaColors.text900,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
+                  Text(
+                    '₦${listing.price.toStringAsFixed(0)}',
+                    style: const TextStyle(
+                      color: UnaColors.primary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
                   Text(
                     '${listing.lga}, ${listing.state}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: UnaColors.text600,
-                      fontSize: 12,
-                    ),
+                    style: const TextStyle(color: UnaColors.text500, fontSize: 11),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(Icons.person_outline, size: 14, color: UnaColors.text500),
-                      const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          landlordName,
+                          listing.landlordName.isEmpty ? 'Landlord' : listing.landlordName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: UnaColors.text500,
-                            fontSize: 11,
+                          style: const TextStyle(color: UnaColors.text500, fontSize: 10),
+                        ),
+                      ),
+                      if (!isOwner)
+                        InkWell(
+                          onTap: onMessage,
+                          borderRadius: BorderRadius.circular(20),
+                          child: const Padding(
+                            padding: EdgeInsets.all(4),
+                            child: Icon(Icons.chat_bubble_outline, size: 16, color: UnaColors.green700),
                           ),
                         ),
-                      ),
-                      IconButton(
-                        visualDensity: VisualDensity.compact,
-                        tooltip: 'Message lister',
-                        onPressed: onMessage,
-                        icon: const Icon(Icons.chat_bubble_outline, size: 18),
-                      ),
-                      IconButton(
-                        visualDensity: VisualDensity.compact,
-                        tooltip: isFavorite ? 'Remove favorite' : 'Save favorite',
-                        onPressed: onFavorite,
-                        icon: Icon(
-                          isFavorite ? Icons.favorite : Icons.favorite_border,
-                          size: 18,
-                          color: isFavorite ? Colors.red : UnaColors.text500,
-                        ),
-                      ),
                     ],
                   ),
                 ],
@@ -927,4 +959,29 @@ class _ListingCard extends StatelessWidget {
       ),
     );
   }
+}
+
+class _RoundAction extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final Color background;
+  final VoidCallback onTap;
+
+  const _RoundAction({
+    required this.icon,
+    required this.color,
+    required this.background,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(color: background, shape: BoxShape.circle),
+          child: Icon(icon, size: 16, color: color),
+        ),
+      );
 }
