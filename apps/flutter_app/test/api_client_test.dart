@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -79,6 +80,39 @@ void main() {
 
     api.signOut();
     expect(api.signedIn, isFalse);
+  });
+
+  test('in-flight authenticated request is discarded after sign out', () async {
+    final gate = Completer<void>();
+    final api = ApiClient(
+      baseUrl: 'https://example.test',
+      client: MockClient((_) async {
+        await gate.future;
+        return http.Response('{"id":"one"}', 200);
+      }),
+    );
+    addTearDown(api.close);
+
+    api.restoreSession(
+      'test-token',
+      DateTime.now().toUtc().add(const Duration(hours: 1)),
+    );
+
+    final pending = api.myProfile();
+    await Future<void>.delayed(Duration.zero);
+    api.signOut();
+    gate.complete();
+
+    await expectLater(
+      pending,
+      throwsA(
+        isA<ApiException>().having(
+          (error) => error.message,
+          'message',
+          'Session ended.',
+        ),
+      ),
+    );
   });
 
   test('server failures do not expose internal response details', () async {
