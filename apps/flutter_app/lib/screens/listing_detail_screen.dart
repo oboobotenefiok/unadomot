@@ -1,7 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import '../api/api_client.dart';
+import '../api/api_client_comments.dart';
 import '../data/local_cache.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
@@ -111,16 +110,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
 
   Future<void> _loadComments() async {
     try {
-      final response = await http.get(
-        widget.api.baseUrl.resolve('/api/listings/${widget.listingId}/comments'),
-        headers: {'Accept': 'application/json'},
-      ).timeout(const Duration(seconds: 20));
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiException(response.statusCode, 'Comments unavailable.');
-      }
-      final comments = (jsonDecode(response.body) as List)
-          .map((item) => Map<String, dynamic>.from(item as Map))
-          .toList();
+      final comments = await widget.api.comments(widget.listingId);
       if (mounted) setState(() => _comments = comments);
     } catch (_) {
       // Comments are optional if the request fails.
@@ -135,19 +125,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
     if (body.isEmpty || _postingComment) return;
     setState(() => _postingComment = true);
     try {
-      final response = await http.post(
-        widget.api.baseUrl.resolve('/api/listings/${widget.listingId}/comments'),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${widget.api.token}',
-        },
-        body: jsonEncode({'body': body}),
-      ).timeout(const Duration(seconds: 20));
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiException(response.statusCode, 'Could not post comment.');
-      }
-      final comment = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      final comment = await widget.api.postComment(widget.listingId, body);
       if (!mounted) return;
       setState(() {
         _comments = [..._comments, comment];
@@ -184,16 +162,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
     if (confirmed != true) return;
 
     try {
-      final response = await http.delete(
-        widget.api.baseUrl.resolve('/api/comments/${comment['id']}'),
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${widget.api.token}',
-        },
-      ).timeout(const Duration(seconds: 20));
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiException(response.statusCode, 'Could not delete comment.');
-      }
+      await widget.api.deleteComment(comment['id'] as String);
       if (!mounted) return;
       setState(() {
         _comments = _comments.where((item) => item['id'] != comment['id']).toList();
@@ -210,19 +179,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
   Future<void> _react(Map<String, dynamic> comment, String emoji) async {
     if (!await requireAuth(context, widget.appState)) return;
     try {
-      final response = await http.post(
-        widget.api.baseUrl.resolve('/api/comments/${comment['id']}/reactions'),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${widget.api.token}',
-        },
-        body: jsonEncode({'emoji': emoji}),
-      ).timeout(const Duration(seconds: 20));
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiException(response.statusCode, 'Could not react.');
-      }
-      final data = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      final data = await widget.api.reactToComment(comment['id'] as String, emoji);
       if (!mounted) return;
       setState(() {
         final index = _comments.indexWhere((item) => item['id'] == comment['id']);
