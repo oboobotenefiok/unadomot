@@ -1,6 +1,6 @@
 use axum::{
     extract::{Path, State},
-    http::{header, HeaderMap, StatusCode},
+    http::{HeaderMap, StatusCode},
     response::IntoResponse,
     routing::{get, post},
     Json, Router,
@@ -8,7 +8,9 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 use std::sync::Arc;
-use unadomot_api::application::auth::{verify_session, UserRepository};
+use unadomot_api::application::auth::{
+    bearer_token, require_active, verify_session, UserRepository,
+};
 use unadomot_api::application::calls::{CallError, CallRepository};
 use uuid::Uuid;
 
@@ -47,23 +49,15 @@ fn error(status: StatusCode, message: &str) -> axum::response::Response {
 }
 
 async fn authorize(state: &CallState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
-    let header = headers
-        .get(header::AUTHORIZATION)
-        .and_then(|value| value.to_str().ok())
-        .and_then(|value| value.strip_prefix("Bearer "))
-        .ok_or_else(|| error(StatusCode::UNAUTHORIZED, "Please sign in"))?;
+    let token = bearer_token(headers)
+        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Please sign in"))?;
 
-    let user = verify_session(header, &state.jwt_secret)
+    let user = verify_session(token, &state.jwt_secret)
         .map_err(|_| error(StatusCode::UNAUTHORIZED, "Session expired"))?;
 
-    if !state
-        .users
-        .is_active(user.id)
+    require_active(state.users.as_ref(), user.id)
         .await
-        .map_err(|_| error(StatusCode::SERVICE_UNAVAILABLE, "Account status unavailable"))?
-    {
-        return Err(error(StatusCode::FORBIDDEN, "This account is suspended"));
-    }
+        .map_err(|_| error(StatusCode::FORBIDDEN, "This account is suspended"))?;
 
     Ok(user.id)
 }
