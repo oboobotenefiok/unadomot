@@ -63,16 +63,26 @@ fn error(status: StatusCode, message: &str) -> axum::response::Response {
     (status, Json(json!({ "error": { "message": message } }))).into_response()
 }
 
-fn authorize(state: &AppState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
+async fn authorize(state: &AppState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
     let header = headers
         .get(header::AUTHORIZATION)
         .and_then(|value| value.to_str().ok())
         .and_then(|value| value.strip_prefix("Bearer "))
         .ok_or_else(|| error(StatusCode::UNAUTHORIZED, "Please sign in"))?;
 
-    verify_session(header, &state.jwt_secret)
-        .map(|user| user.id)
-        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Session expired"))
+    let user = verify_session(header, &state.jwt_secret)
+        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Session expired"))?;
+
+    if !state
+        .users
+        .is_active(user.id)
+        .await
+        .map_err(|_| error(StatusCode::SERVICE_UNAVAILABLE, "Account status unavailable"))?
+    {
+        return Err(error(StatusCode::FORBIDDEN, "This account is suspended"));
+    }
+
+    Ok(user.id)
 }
 
 fn messaging_error(error_value: MessagingError) -> axum::response::Response {
@@ -91,7 +101,7 @@ async fn conversations_presence_handler(
     State(state): State<AppState>,
     headers: HeaderMap,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
@@ -128,7 +138,7 @@ async fn typing_ping_handler(
     headers: HeaderMap,
     Path(conversation_id): Path<Uuid>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
@@ -145,7 +155,7 @@ async fn typing_status_handler(
     headers: HeaderMap,
     Path(conversation_id): Path<Uuid>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
@@ -170,7 +180,7 @@ async fn list_rich_messages_handler(
     Path(conversation_id): Path<Uuid>,
     Query(query): Query<RichMessageQuery>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
@@ -196,7 +206,7 @@ async fn send_rich_message_handler(
     Path(conversation_id): Path<Uuid>,
     Json(request): Json<RichMessageRequest>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
@@ -233,7 +243,7 @@ async fn react_handler(
     Path(message_id): Path<Uuid>,
     Json(request): Json<ReactionRequest>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
