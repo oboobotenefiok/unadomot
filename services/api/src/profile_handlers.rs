@@ -291,11 +291,6 @@ async fn google_auth(
     State(state): State<AppState>,
     Json(request): Json<GoogleAuthRequest>,
 ) -> axum::response::Response {
-    let pool = match state.pool.as_ref() {
-        Some(pool) => pool,
-        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Google sign-in unavailable"),
-    };
-
     let client_id = match std::env::var("GOOGLE_CLIENT_ID") {
         Ok(value) if !value.trim().is_empty() => value,
         _ => return error(StatusCode::SERVICE_UNAVAILABLE, "Google sign-in is not configured"),
@@ -334,53 +329,30 @@ async fn google_auth(
     let email = info.email.trim().to_lowercase();
     let name = info.name.unwrap_or_else(|| email.split('@').next().unwrap_or("User").to_string());
 
-    let existing = sqlx::query_as::<_, (Uuid, Option<String>, String)>(
-        "SELECT id, password_hash, status FROM users WHERE lower(email) = lower($1)",
-    )
-    .bind(&email)
-    .fetch_optional(pool)
-    .await;
+    let existing = match state.users.find_by_email(&email).await {
+        Ok(user) => user,
+        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Could not verify account"),
+    };
 
     let user_id = match existing {
-        Ok(Some((id, password_hash, status))) => {
-            if status != "active" {
+        Some(user) => {
+            if user.status != "active" {
                 return error(StatusCode::FORBIDDEN, "This account is suspended");
             }
-
-            if password_hash.is_some() {
-                let _ = sqlx::query(
-                    "UPDATE users SET password_hash = NULL, auth_provider = 'google' WHERE id = $1",
-                )
-                .bind(id)
-                .execute(pool)
-                .await;
-                let _ = sqlx::query(
-                    "UPDATE refresh_tokens SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL",
-                )
-                .bind(id)
-                .execute(pool)
-                .await;
-            } else {
-                let _ = sqlx::query("UPDATE users SET auth_provider = 'google' WHERE id = $1")
-                    .bind(id)
-                    .execute(pool)
-                    .await;
-            }
-            id
-        }
-        Ok(None) => {
-            match sqlx::query_scalar::<_, Uuid>(
-                "INSERT INTO users (email, auth_provider) VALUES ($1, 'google') RETURNING id",
-            )
-            .bind(&email)
-            .fetch_one(pool)
-            .await
+            if state
+                .users
+                .link_google_user(user.id, user.password_hash.is_some())
+                .await
+                .is_err()
             {
-                Ok(id) => id,
-                Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Could not create account"),
+                return error(StatusCode::SERVICE_UNAVAILABLE, "Could not verify account");
             }
+            user.id
         }
-        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Could not verify account"),
+        None => match state.users.create_google_user(&email).await {
+            Ok(id) => id,
+            Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Could not create account"),
+        },
     };
 
     let profiles = match state.profiles.as_ref() {
@@ -391,23 +363,22 @@ async fn google_auth(
         return error(StatusCode::SERVICE_UNAVAILABLE, "Could not create profile");
     }
 
-    let _ = sqlx::query("UPDATE user_profiles SET name = $2 WHERE user_id = $1 AND (name IS NULL OR name = '')")
-        .bind(user_id)
-        .bind(&name)
-        .execute(pool)
-        .await;
+    if state
+        .users
+        .set_profile_name_if_empty(user_id, &name)
+        .await
+        .is_err()
+    {
+        return error(StatusCode::SERVICE_UNAVAILABLE, "Could not create profile");
+    }
 
     let refresh_token = new_refresh_token();
     let refresh_hash = hash_refresh_token(&refresh_token);
-    if sqlx::query(
-        "INSERT INTO refresh_tokens (user_id, token_hash, expires_at) VALUES ($1, $2, $3)",
-    )
-    .bind(user_id)
-    .bind(&refresh_hash)
-    .bind(Utc::now() + Duration::days(30))
-    .execute(pool)
-    .await
-    .is_err()
+    if state
+        .users
+        .store_refresh_token(user_id, &refresh_hash, Utc::now() + Duration::days(30))
+        .await
+        .is_err()
     {
         return error(StatusCode::SERVICE_UNAVAILABLE, "Could not create session");
     }
