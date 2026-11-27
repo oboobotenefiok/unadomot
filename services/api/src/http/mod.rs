@@ -124,6 +124,7 @@ pub struct AppState {
     pub audit: Arc<dyn VerificationRepository>,
     pub media: Arc<dyn MediaSigner>,
     pub email: Arc<dyn EmailSender>,
+    pub pool: Option<sqlx::PgPool>,
     pub jwt_secret: Arc<String>,
     pub limiter: Arc<RateLimiter>,
     pub allowed_origins: Arc<Vec<String>>,
