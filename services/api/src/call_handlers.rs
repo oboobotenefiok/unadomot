@@ -5,8 +5,12 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
+use base64::Engine;
+use chrono::Utc;
+use hmac::{Hmac, Mac};
 use serde::Deserialize;
 use serde_json::json;
+use sha1::Sha1;
 use std::sync::Arc;
 use unadomot_api::application::auth::{
     bearer_token, require_active, verify_session, UserRepository,
@@ -15,6 +19,7 @@ use unadomot_api::application::calls::{CallError, CallRepository};
 use uuid::Uuid;
 
 const MAX_SDP_BYTES: usize = 64 * 1024;
+const TURN_TTL_SECONDS: i64 = 3600;
 
 #[derive(Clone)]
 pub struct CallState {
@@ -76,20 +81,32 @@ fn call_error(error_value: CallError) -> axum::response::Response {
     }
 }
 
-async fn ice_servers_handler() -> axum::response::Response {
+async fn ice_servers_handler(
+    State(state): State<CallState>,
+    headers: HeaderMap,
+) -> axum::response::Response {
+    let user_id = match authorize(&state, &headers).await {
+        Ok(id) => id,
+        Err(response) => return response,
+    };
+
     let mut servers = vec![json!({
         "urls": "stun:stun.l.google.com:19302"
     })];
 
-    if let (Ok(urls), Ok(username), Ok(credential)) = (
+    if let (Ok(urls), Ok(secret)) = (
         std::env::var("TURN_URLS"),
-        std::env::var("TURN_USERNAME"),
-        std::env::var("TURN_CREDENTIAL"),
+        std::env::var("TURN_SECRET"),
     ) {
-        if !urls.trim().is_empty()
-            && !username.trim().is_empty()
-            && !credential.trim().is_empty()
-        {
+        if !urls.trim().is_empty() && !secret.trim().is_empty() {
+            let expiry = Utc::now().timestamp() + TURN_TTL_SECONDS;
+            let username = format!("{expiry}:{user_id}");
+            let mut mac = Hmac::<Sha1>::new_from_slice(secret.as_bytes())
+                .expect("HMAC accepts keys of any size");
+            mac.update(username.as_bytes());
+            let credential = base64::engine::general_purpose::STANDARD
+                .encode(mac.finalize().into_bytes());
+
             servers.push(json!({
                 "urls": urls,
                 "username": username,
