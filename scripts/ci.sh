@@ -25,7 +25,8 @@ OUT="thisrun.txt"
   echo
 
   echo "## Watch"
-  gh run watch "$RUN_ID" --exit-status || true
+  gh run watch "$RUN_ID" --exit-status >/dev/null 2>&1 || true
+  gh run view "$RUN_ID"
 
   echo
   echo "## Failed logs"
