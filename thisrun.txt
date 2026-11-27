@@ -1,52 +1,42 @@
-# CI run 2026-11-27T16:31:47Z
+# CI run 2026-11-27T16:50:28Z
 Branch: rewrite/flutter-rust-postgres
 
 ## Trigger
-https://github.com/oboobotenefiok/unadomot/actions/runs/46034387042
+https://github.com/oboobotenefiok/unadomot/actions/runs/46036976785
 
 ## Recent runs
-queued		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46034387042	6s	2026-11-27T16:31:50Z
+pending		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46036976785	6s	2026-11-27T16:50:31Z
+in_progress		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46036523460	3m22s	2026-11-27T16:47:15Z
+completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46034387042	4m48s	2026-11-27T16:31:50Z
 completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46033185974	5m1s	2026-11-27T16:23:22Z
 completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46032147966	4m24s	2026-11-27T16:16:06Z
-completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46031088720	2m49s	2026-11-27T16:08:51Z
-completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46028830439	2m52s	2026-11-27T15:53:11Z
 
-Run ID: 46034387042
-URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46034387042
+Run ID: 46036976785
+URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46036976785
 
 ## Watch
 
-X rewrite/flutter-rust-postgres Rewrite CI · 46034387042
-Triggered via workflow_dispatch about 4 minutes ago
+✓ rewrite/flutter-rust-postgres Rewrite CI · 46036976785
+Triggered via workflow_dispatch about 5 minutes ago
 
 JOBS
-X audit in 3m22s (ID 140625988733)
-  ✓ Set up job
-  ✓ Run actions/checkout@v4
-  ✓ Run dtolnay/rust-toolchain@stable
-  ✓ Install cargo-audit
-  X Audit dependencies
-  ✓ Post Run actions/checkout@v4
-  ✓ Complete job
-✓ docker in 2m5s (ID 140625989081)
-✓ android in 4m43s (ID 140625989181)
-✓ rust in 2m49s (ID 140625989390)
+✓ android in 5m11s (ID 140634867821)
+✓ docker in 2m10s (ID 140634868187)
+✓ audit in 2m37s (ID 140634868386)
+✓ rust in 1m22s (ID 140634868467)
 
 ANNOTATIONS
-! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-audit: .github#2
-
-X Process completed with exit code 1.
-audit: .github#35
-
-! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-docker: .github#2
-
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, actions/setup-java@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 android: .github#4
 
 ! setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
 android: .github#18
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+docker: .github#2
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+audit: .github#2
 
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 rust: .github#2
@@ -55,42 +45,7 @@ rust: .github#2
 ARTIFACTS
 unadomot-debug-apk
 
-To see what failed, try: gh run view 46034387042 --log-failed
-View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46034387042
+For more information about a job, try: gh run view --job=<job-id>
+View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46036976785
 
 ## Failed logs
-audit	Audit dependencies	﻿2026-11-27T16:35:13.5340877Z ##[group]Run cargo audit --ignore RUSTSEC-2026-0459
-audit	Audit dependencies	2026-11-27T16:35:13.5341556Z ^[[36;1mcargo audit --ignore RUSTSEC-2026-0459^[[0m
-audit	Audit dependencies	2026-11-27T16:35:13.5387646Z shell: /usr/bin/bash -e {0}
-audit	Audit dependencies	2026-11-27T16:35:13.5388052Z env:
-audit	Audit dependencies	2026-11-27T16:35:13.5388370Z   CARGO_TERM_COLOR: never
-audit	Audit dependencies	2026-11-27T16:35:13.5388741Z   NO_COLOR: 1
-audit	Audit dependencies	2026-11-27T16:35:13.5389056Z   RUST_BACKTRACE: 1
-audit	Audit dependencies	2026-11-27T16:35:13.5389413Z   CARGO_HOME: /home/runner/.cargo
-audit	Audit dependencies	2026-11-27T16:35:13.5389836Z   CARGO_INCREMENTAL: 0
-audit	Audit dependencies	2026-11-27T16:35:13.5390189Z ##[endgroup]
-audit	Audit dependencies	2026-11-27T16:35:13.5860860Z     Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
-audit	Audit dependencies	2026-11-27T16:35:15.2053558Z       Loaded 1571 security advisories (from /home/runner/.cargo/advisory-db)
-audit	Audit dependencies	2026-11-27T16:35:15.2054573Z     Updating crates.io index
-audit	Audit dependencies	2026-11-27T16:35:15.2216975Z     Scanning Cargo.lock for vulnerabilities (275 crate dependencies)
-audit	Audit dependencies	2026-11-27T16:35:15.3562710Z error: 1 vulnerability found!
-audit	Audit dependencies	2026-11-27T16:35:15.3563285Z warning: 1 allowed warning found
-audit	Audit dependencies	2026-11-27T16:35:15.3563803Z Crate:     rsa
-audit	Audit dependencies	2026-11-27T16:35:15.3564360Z Version:   0.9.10
-audit	Audit dependencies	2026-11-27T16:35:15.3564881Z Title:     Marvin Attack: potential key recovery through timing sidechannels
-audit	Audit dependencies	2026-11-27T16:35:15.3574077Z Date:      2023-11-22
-audit	Audit dependencies	2026-11-27T16:35:15.3574664Z ID:        RUSTSEC-2023-0071
-audit	Audit dependencies	2026-11-27T16:35:15.3575224Z URL:       https://rustsec.org/advisories/RUSTSEC-2023-0071
-audit	Audit dependencies	2026-11-27T16:35:15.3575780Z Severity:  5.9 (medium)
-audit	Audit dependencies	2026-11-27T16:35:15.3576082Z Solution:  Upgrade to >=0.10.0 (patched)
-audit	Audit dependencies	2026-11-27T16:35:15.3576310Z 
-audit	Audit dependencies	2026-11-27T16:35:15.3576411Z Crate:     chrono
-audit	Audit dependencies	2026-11-27T16:35:15.3576726Z Version:   0.4.45
-audit	Audit dependencies	2026-11-27T16:35:15.3577087Z Warning:   unmaintained
-audit	Audit dependencies	2026-11-27T16:35:15.3577692Z Title:     chrono is unmaintained
-audit	Audit dependencies	2026-11-27T16:35:15.3578589Z Date:      2026-09-14
-audit	Audit dependencies	2026-11-27T16:35:15.3578981Z ID:        RUSTSEC-2026-0543
-audit	Audit dependencies	2026-11-27T16:35:15.3579546Z URL:       https://rustsec.org/advisories/RUSTSEC-2026-0543
-audit	Audit dependencies	2026-11-27T16:35:15.3580220Z Solution:  No fixed upgrade is available!
-audit	Audit dependencies	2026-11-27T16:35:15.3580606Z 
-audit	Audit dependencies	2026-11-27T16:35:15.3647999Z ##[error]Process completed with exit code 1.
