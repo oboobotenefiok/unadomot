@@ -1,18 +1,17 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:share_plus/share_plus.dart';
 import '../api/api_client.dart';
 import '../data/local_cache.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
-import '../utils/share_helper.dart';
+import '../widgets/share_listing_sheet.dart';
 import 'auth_sheet.dart';
 import 'listing_code_screen.dart';
 import 'map_screen.dart';
 import 'messages_screen.dart';
+import 'public_profile_screen.dart';
 import 'report_listing_screen.dart';
 
 class ListingDetailScreen extends StatefulWidget {
@@ -303,10 +302,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
   Future<void> _share() async {
     final listing = _listing;
     if (listing == null) return;
-    final link = 'https://unadomot.fly.dev/listings/${widget.listingId}';
-    final code = listing.code == null ? '' : '\nCode: ${listing.code}';
-    final text = '${naijaShareText(listing)}$code\n$link';
-    await Share.share(text, subject: listing.title);
+    await showShareListingSheet(context, listing);
   }
 
   void _openCode() {
@@ -360,6 +356,22 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
     );
   }
 
+  void _openLandlord() {
+    final listing = _listing;
+    if (listing == null || listing.landlordName.isEmpty) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PublicProfileScreen(
+          api: widget.api,
+          cache: widget.cache,
+          appState: widget.appState,
+          username: listing.landlordName.toLowerCase().replaceAll(' ', ''),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -400,10 +412,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                               child: Text(
                                 'Offline view - updated ${_cachedAt!.toLocal()}',
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: UnaColors.green900,
-                                  fontSize: 12,
-                                ),
+                                style: const TextStyle(color: UnaColors.green900, fontSize: 12),
                               ),
                             ),
                           _gallery(),
@@ -426,10 +435,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                       ),
                                     ),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 4,
-                                      ),
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                       decoration: BoxDecoration(
                                         color: _listing!.status == 'available'
                                             ? UnaColors.green100
@@ -463,63 +469,12 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                 const SizedBox(height: 4),
                                 Text(
                                   '${_listing!.address}, ${_listing!.lga}, ${_listing!.state}',
-                                  style: const TextStyle(
-                                    color: UnaColors.text600,
-                                    fontSize: 13,
-                                  ),
+                                  style: const TextStyle(color: UnaColors.text600, fontSize: 13),
                                 ),
-                                if (_listing!.viewCount > 0) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${_listing!.viewCount} views',
-                                    style: const TextStyle(color: UnaColors.text500, fontSize: 12),
-                                  ),
-                                ],
-                                if (_listing!.code != null) ...[
-                                  const SizedBox(height: 8),
-                                  InkWell(
-                                    onTap: _openCode,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                      decoration: BoxDecoration(
-                                        color: UnaColors.green100,
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(Icons.qr_code_2, size: 14, color: UnaColors.green900),
-                                          const SizedBox(width: 6),
-                                          Text(
-                                            'Code ${_listing!.code}',
-                                            style: const TextStyle(
-                                              color: UnaColors.green900,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 6),
-                                          const Icon(Icons.open_in_new, size: 12, color: UnaColors.green900),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
                                 const SizedBox(height: 12),
-                                Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: [
-                                    if (_listing!.bedrooms != null)
-                                      _chip('${_listing!.bedrooms} bed'),
-                                    if (_listing!.bathrooms != null)
-                                      _chip('${_listing!.bathrooms} bath'),
-                                    if (_listing!.propertyType != null)
-                                      _chip(_listing!.propertyType!),
-                                    if (_listing!.furnishing != null)
-                                      _chip(_listing!.furnishing!),
-                                  ],
-                                ),
+                                _propertyGrid(),
+                                const SizedBox(height: 16),
+                                _landlordCard(),
                                 if (_listing!.amenities.isNotEmpty) ...[
                                   const SizedBox(height: 20),
                                   const Text(
@@ -534,9 +489,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                   Wrap(
                                     spacing: 8,
                                     runSpacing: 8,
-                                    children: _listing!.amenities
-                                        .map((item) => _chip(item))
-                                        .toList(),
+                                    children: _listing!.amenities.map((item) => _chip(item)).toList(),
                                   ),
                                 ],
                                 const SizedBox(height: 20),
@@ -559,14 +512,29 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                 ),
                                 const SizedBox(height: 20),
                                 _mapCard(),
-                                const SizedBox(height: 20),
-                                _commentsSection(),
-                                if (_similar.isNotEmpty) ...[
-                                  const SizedBox(height: 20),
-                                  _similarSection(),
-                                ],
-                                const SizedBox(height: 20),
-                                _landlordCard(),
+                                const SizedBox(height: 24),
+                                LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    if (constraints.maxWidth >= 700) {
+                                      return Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(child: _similarSection()),
+                                          const SizedBox(width: 20),
+                                          Expanded(child: _commentsSection()),
+                                        ],
+                                      );
+                                    }
+                                    return Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        _similarSection(),
+                                        const SizedBox(height: 24),
+                                        _commentsSection(),
+                                      ],
+                                    );
+                                  },
+                                ),
                                 const SizedBox(height: 20),
                                 if (_isOwner)
                                   Container(
@@ -593,9 +561,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                   FilledButton.icon(
                                     onPressed: _startingChat ? null : _openChat,
                                     icon: const Icon(Icons.chat_bubble_outline),
-                                    label: Text(
-                                      _startingChat ? 'Opening chat...' : 'Chat with lister',
-                                    ),
+                                    label: Text(_startingChat ? 'Opening chat...' : 'Chat with lister'),
                                   ),
                                 if (!_isOwner) ...[
                                   const SizedBox(height: 8),
@@ -612,6 +578,211 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                       ),
       );
 
+  Widget _gallery() {
+    final media = _listing!.media;
+    if (media.isEmpty) {
+      return Container(
+        height: 240,
+        color: UnaColors.green100,
+        child: const Center(
+          child: Icon(Icons.home_work_outlined, size: 72, color: UnaColors.green700),
+        ),
+      );
+    }
+    return Column(
+      children: [
+        SizedBox(
+          height: 260,
+          child: PageView.builder(
+            itemCount: media.length,
+            onPageChanged: (index) => setState(() => _photoIndex = index),
+            itemBuilder: (context, index) => Image.network(media[index].url, fit: BoxFit.cover),
+          ),
+        ),
+        if (media.length > 1)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(media.length, (index) {
+                final active = index == _photoIndex;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  width: active ? 18 : 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: active ? UnaColors.green700 : UnaColors.border,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                );
+              }),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _propertyGrid() => Row(
+        children: [
+          _propertyTile(Icons.bed_outlined, 'Bedrooms', _listing!.bedrooms?.toString() ?? '—'),
+          const SizedBox(width: 8),
+          _propertyTile(Icons.bathtub_outlined, 'Bathrooms', _listing!.bathrooms?.toString() ?? '—'),
+          const SizedBox(width: 8),
+          _propertyTile(Icons.square_foot, 'Type', _listing!.propertyType ?? '—'),
+          const SizedBox(width: 8),
+          _propertyTile(Icons.chair_outlined, 'Furnishing', _listing!.furnishing ?? '—'),
+        ],
+      );
+
+  Widget _propertyTile(IconData icon, String label, String value) => Expanded(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+          decoration: BoxDecoration(
+            color: UnaColors.green100,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            children: [
+              Icon(icon, size: 22, color: UnaColors.green900),
+              const SizedBox(height: 4),
+              Text(label, style: const TextStyle(fontSize: 10, color: UnaColors.text500)),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: UnaColors.text900),
+              ),
+            ],
+          ),
+        ),
+      );
+
+  Widget _landlordCard() => InkWell(
+        onTap: _openLandlord,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: UnaColors.surface,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: UnaColors.border),
+          ),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 22,
+                backgroundColor: UnaColors.green100,
+                backgroundImage: _listing!.landlordPhotoUrl == null
+                    ? null
+                    : NetworkImage(_listing!.landlordPhotoUrl!),
+                child: _listing!.landlordPhotoUrl == null
+                    ? const Icon(Icons.person, color: UnaColors.green900)
+                    : null,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            _listing!.landlordName.isEmpty ? 'Landlord' : _listing!.landlordName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                          ),
+                        ),
+                        if (_listing!.landlordVerified) ...[
+                          const SizedBox(width: 4),
+                          const Icon(Icons.verified, size: 15, color: Color(0xFF16A34A)),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    const Text('View profile', style: TextStyle(color: UnaColors.primary, fontSize: 12)),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: UnaColors.text500),
+            ],
+          ),
+        ),
+      );
+
+  Widget _similarSection() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Similar listings',
+            style: TextStyle(color: UnaColors.text900, fontSize: 16, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 10),
+          if (_similar.isEmpty)
+            const Text('No similar listings yet.', style: TextStyle(color: UnaColors.text500))
+          else
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _similar.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 0.8,
+              ),
+              itemBuilder: (context, index) {
+                final item = _similar[index];
+                return InkWell(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ListingDetailScreen(
+                        api: widget.api,
+                        cache: widget.cache,
+                        appState: widget.appState,
+                        listingId: item.id,
+                      ),
+                    ),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: UnaColors.surface,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: UnaColors.border),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: item.media.isEmpty
+                              ? Container(color: UnaColors.green100, child: const Icon(Icons.home_work_outlined))
+                              : Image.network(item.media.first.url, fit: BoxFit.cover, width: double.infinity),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(item.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
+                              Text('N${item.price.toStringAsFixed(0)}', style: const TextStyle(color: UnaColors.primary, fontSize: 12, fontWeight: FontWeight.w700)),
+                              Text('${item.lga}, ${item.state}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: UnaColors.text500, fontSize: 10)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+        ],
+      );
+
   Widget _commentsSection() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -619,17 +790,10 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
             children: [
               const Text(
                 'Comments',
-                style: TextStyle(
-                  color: UnaColors.text900,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: TextStyle(color: UnaColors.text900, fontSize: 16, fontWeight: FontWeight.w700),
               ),
               const SizedBox(width: 8),
-              Text(
-                '${_comments.length}',
-                style: const TextStyle(color: UnaColors.text500, fontSize: 13),
-              ),
+              Text('${_comments.length}', style: const TextStyle(color: UnaColors.text500, fontSize: 13)),
             ],
           ),
           const SizedBox(height: 10),
@@ -651,11 +815,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
               IconButton.filled(
                 onPressed: _postingComment ? null : _postComment,
                 icon: _postingComment
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
+                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                     : const Icon(Icons.send),
               ),
             ],
@@ -710,199 +870,35 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    name,
-                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-                  ),
+                  child: Text(name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Text(comment['body'] as String? ?? '', style: const TextStyle(height: 1.4)),
+            Text(comment['body'] as String? ?? '', style: const TextStyle(fontSize: 13, height: 1.4)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (final emoji in const ['love', 'laugh', 'cry', 'dislike', 'hate'])
-                  _reactionChip(
-                    comment,
-                    emoji,
-                    reactions
-                        .where((item) => item['emoji'] == emoji)
-                        .fold<int>(0, (sum, item) => sum + ((item['count'] as num?)?.toInt() ?? 0)),
-                  ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _reactionChip(Map<String, dynamic> comment, String emoji, int count) {
-    final icon = switch (emoji) {
-      'love' => Icons.favorite_border,
-      'laugh' => Icons.sentiment_very_satisfied_outlined,
-      'cry' => Icons.sentiment_dissatisfied_outlined,
-      'dislike' => Icons.thumb_down_alt_outlined,
-      _ => Icons.sentiment_very_dissatisfied_outlined,
-    };
-    return InkWell(
-      onTap: () => _react(comment, emoji),
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: UnaColors.green100,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 14, color: UnaColors.green900),
-            if (count > 0) ...[
-              const SizedBox(width: 4),
-              Text('$count', style: const TextStyle(fontSize: 11, color: UnaColors.green900)),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _similarSection() => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Similar listings',
-            style: TextStyle(
-              color: UnaColors.text900,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 10),
-          SizedBox(
-            height: 150,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: _similar.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
-              itemBuilder: (context, index) {
-                final item = _similar[index];
-                final image = item.media.isEmpty ? null : item.media.first.url;
-                return SizedBox(
-                  width: 150,
-                  child: InkWell(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ListingDetailScreen(
-                          api: widget.api,
-                          cache: widget.cache,
-                          appState: widget.appState,
-                          listingId: item.id,
-                        ),
-                      ),
+              children: ['Love', 'Laugh', 'Cry', 'Dislike', 'Hate'].map((emoji) {
+                final count = reactions
+                    .where((item) => item['emoji'] == emoji)
+                    .fold<int>(0, (sum, item) => sum + ((item['count'] as num?)?.toInt() ?? 0));
+                return InkWell(
+                  onTap: () => _react(comment, emoji),
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: UnaColors.green100,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: image == null
-                                ? Container(color: UnaColors.green100)
-                                : Image.network(image, width: double.infinity, fit: BoxFit.cover),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          item.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-                        ),
-                        Text(
-                          'N${item.price.toStringAsFixed(0)}',
-                          style: const TextStyle(color: UnaColors.primary, fontSize: 12, fontWeight: FontWeight.w700),
-                        ),
-                      ],
-                    ),
+                    child: Text('$emoji $count', style: const TextStyle(fontSize: 11)),
                   ),
                 );
-              },
+              }).toList(),
             ),
-          ),
-        ],
-      );
-
-  Widget _landlordCard() {
-    final listing = _listing!;
-    final photo = listing.landlordPhotoUrl;
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: UnaColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: UnaColors.border),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 22,
-            backgroundColor: UnaColors.green100,
-            backgroundImage: photo == null ? null : NetworkImage(photo),
-            child: photo == null
-                ? Text(
-                    listing.landlordName.isEmpty ? 'L' : listing.landlordName.characters.first.toUpperCase(),
-                    style: const TextStyle(color: UnaColors.green900, fontWeight: FontWeight.w700),
-                  )
-                : null,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  listing.landlordName.isEmpty ? 'Landlord' : listing.landlordName,
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-                if (listing.landlordVerified)
-                  const Row(
-                    children: [
-                      Icon(Icons.verified, size: 14, color: Color(0xFF16A34A)),
-                      SizedBox(width: 4),
-                      Text('Verified', style: TextStyle(fontSize: 11, color: Color(0xFF16A34A))),
-                    ],
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _gallery() {
-    final media = _listing!.media;
-    if (media.isEmpty) {
-      return Container(
-        height: 240,
-        color: UnaColors.green100,
-        child: const Center(
-          child: Icon(Icons.home_work_outlined, size: 64, color: UnaColors.green700),
+          ],
         ),
-      );
-    }
-    return SizedBox(
-      height: 260,
-      child: PageView.builder(
-        itemCount: media.length,
-        onPageChanged: (index) => setState(() => _photoIndex = index),
-        itemBuilder: (context, index) => Image.network(media[index].url, fit: BoxFit.cover),
       ),
     );
   }
@@ -911,22 +907,22 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
         onTap: _openMap,
         borderRadius: BorderRadius.circular(10),
         child: Container(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: UnaColors.green100,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.map_outlined, color: UnaColors.green900),
-              SizedBox(width: 10),
+              const Icon(Icons.map_outlined, color: UnaColors.green900),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'View on map',
-                  style: TextStyle(color: UnaColors.green900, fontWeight: FontWeight.w600),
+                  '${_listing!.lga}, ${_listing!.state}',
+                  style: const TextStyle(color: UnaColors.green900, fontWeight: FontWeight.w600),
                 ),
               ),
-              Icon(Icons.chevron_right, color: UnaColors.green900),
+              const Icon(Icons.chevron_right, color: UnaColors.green900),
             ],
           ),
         ),
@@ -936,11 +932,11 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: UnaColors.green100,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(6),
         ),
         child: Text(
           text,
-          style: const TextStyle(color: UnaColors.green900, fontSize: 12),
+          style: const TextStyle(color: UnaColors.green900, fontSize: 12, fontWeight: FontWeight.w600),
         ),
       );
 }
