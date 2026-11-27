@@ -63,6 +63,14 @@ fn error(status: StatusCode, message: &str) -> axum::response::Response {
     (status, Json(json!({ "error": { "message": message } }))).into_response()
 }
 
+fn valid_media_url(url: &str) -> bool {
+    url.starts_with("https://")
+        && url.len() <= 2048
+        && !url.contains(' ')
+        && !url.contains('\n')
+        && !url.contains('\r')
+}
+
 async fn authorize(state: &AppState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
     let token = bearer_token(headers)
         .map_err(|_| error(StatusCode::UNAUTHORIZED, "Please sign in"))?;
@@ -209,6 +217,24 @@ async fn send_rich_message_handler(
     }
     if body.is_some_and(|value| value.len() > 2000) {
         return error(StatusCode::BAD_REQUEST, "Message is too long");
+    }
+
+    if let Some(url) = request.media_url.as_deref() {
+        if !valid_media_url(url) {
+            return error(StatusCode::BAD_REQUEST, "Attachment URL must be a valid HTTPS URL");
+        }
+    }
+
+    if let Some(kind) = request.media_type.as_deref() {
+        if !matches!(kind, "image" | "video" | "audio" | "file") {
+            return error(StatusCode::BAD_REQUEST, "Unsupported attachment type");
+        }
+    }
+
+    if let Some(duration) = request.duration_seconds {
+        if !(0..=600).contains(&duration) {
+            return error(StatusCode::BAD_REQUEST, "Attachment duration is out of range");
+        }
     }
 
     match state
