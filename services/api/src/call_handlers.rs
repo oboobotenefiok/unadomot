@@ -58,10 +58,13 @@ fn call_error(error_value: CallError) -> axum::response::Response {
         CallError::NotFound => error(StatusCode::NOT_FOUND, "Call not found"),
         CallError::Forbidden => error(StatusCode::FORBIDDEN, "Not allowed"),
         CallError::InvalidInput(message) => error(StatusCode::BAD_REQUEST, &message),
-        CallError::Repository(_) => error(
-            StatusCode::SERVICE_UNAVAILABLE,
-            "The service is temporarily unavailable",
-        ),
+        CallError::Repository(source) => {
+            tracing::error!(error = %source, "call repository failure");
+            error(
+                StatusCode::SERVICE_UNAVAILABLE,
+                "The service is temporarily unavailable",
+            )
+        }
     }
 }
 
