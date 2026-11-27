@@ -46,6 +46,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   String? _stateValue = 'Rivers';
   String? _lgaValue = 'Port Harcourt';
   String? _propertyType;
+  String? _furnishing;
+  final Set<String> _amenities = {};
   bool _isAgent = false;
   final List<_MediaItem> _media = [];
   int _step = 0;
@@ -58,6 +60,23 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     'Self Contain',
     'Room',
     'Duplex',
+  ];
+
+  static const _furnishingOptions = [
+    'Furnished',
+    'Semi-furnished',
+    'Unfurnished',
+  ];
+
+  static const _amenityOptions = [
+    'Parking',
+    'Security',
+    'Water',
+    'Generator',
+    'Air conditioning',
+    'Balcony',
+    'Kitchen',
+    'Internet',
   ];
 
   @override
@@ -89,6 +108,10 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       _bedrooms.text = draft['bedrooms'] as String? ?? '';
       _bathrooms.text = draft['bathrooms'] as String? ?? '';
       _propertyType = draft['property_type'] as String?;
+      _furnishing = draft['furnishing'] as String?;
+      _amenities
+        ..clear()
+        ..addAll((draft['amenities'] as List? ?? const []).map((e) => e.toString()));
       _isAgent = draft['is_agent_listing'] as bool? ?? false;
     });
   }
@@ -104,6 +127,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       'bedrooms': _bedrooms.text,
       'bathrooms': _bathrooms.text,
       'property_type': _propertyType,
+      'furnishing': _furnishing,
+      'amenities': _amenities.toList(),
       'is_agent_listing': _isAgent,
     });
   }
@@ -224,6 +249,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         'bedrooms': int.tryParse(_bedrooms.text.trim()),
         'bathrooms': int.tryParse(_bathrooms.text.trim()),
         'property_type': _propertyType,
+        'furnishing': _furnishing,
+        'amenities': _amenities.toList(),
       });
 
       final listingId = listing['id'] as String;
@@ -395,6 +422,18 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
               },
             ),
             const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              initialValue: _furnishing,
+              decoration: const InputDecoration(labelText: 'Furnishing'),
+              items: _furnishingOptions
+                  .map((item) => DropdownMenuItem(value: item, child: Text(item)))
+                  .toList(),
+              onChanged: (value) {
+                setState(() => _furnishing = value);
+                _saveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -421,6 +460,30 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+            Text('Amenities', style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _amenityOptions.map((item) {
+                final selected = _amenities.contains(item);
+                return FilterChip(
+                  label: Text(item),
+                  selected: selected,
+                  onSelected: (value) {
+                    setState(() {
+                      if (value) {
+                        _amenities.add(item);
+                      } else {
+                        _amenities.remove(item);
+                      }
+                    });
+                    _saveDraft();
+                  },
+                );
+              }).toList(),
             ),
             const SizedBox(height: 16),
             Text('List as', style: Theme.of(context).textTheme.labelLarge),
@@ -639,9 +702,18 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
             lines: [
               '${_propertyType ?? 'Property type not set'} · ${_bedrooms.text} bed · ${_bathrooms.text} bath',
               '${_address.text.trim()}, ${_lgaValue ?? ''}, ${_stateValue ?? ''}',
+              _furnishing == null ? 'Furnishing not set' : _furnishing!,
               _isAgent ? 'Listed as an agent' : 'Listed as a landlord',
             ],
           ),
+          if (_amenities.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _reviewCard(
+              title: 'Amenities',
+              subtitle: '',
+              lines: [_amenities.join(', ')],
+            ),
+          ],
           const SizedBox(height: 12),
           _reviewCard(
             title: 'Media',
