@@ -3,6 +3,7 @@ import '../api/api_client.dart';
 import '../data/local_cache.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
+import '../widgets/empty_state.dart';
 import '../widgets/listing_card.dart';
 import '../widgets/share_listing_sheet.dart';
 import 'listing_detail_screen.dart';
@@ -67,8 +68,10 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         body: _loading
             ? const Center(child: CircularProgressIndicator())
             : _favorites.isEmpty
-                ? const Center(
-                    child: Text('No favorites yet. Tap the heart on a listing.'),
+                ? const EmptyState(
+                    icon: Icons.favorite_border,
+                    title: 'No favorites yet',
+                    message: 'Tap the heart on a listing to save it here.',
                   )
                 : GridView.builder(
                     padding: const EdgeInsets.all(16),
