@@ -55,7 +55,7 @@ See `.env.example` for the full list. Production requires:
 
 ## CI
 
-`Rewrite CI` is manual-only. It runs:
+`Rewrite CI` runs on pushes to `rewrite/flutter-rust-postgres` and can also be started manually. It runs:
 
 - Rust Clippy, tests, release build
 - `cargo audit`

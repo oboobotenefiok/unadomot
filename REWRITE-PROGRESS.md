@@ -34,10 +34,10 @@ Last updated: 27 November 2026
 
 ## CI and release
 
-- [x] Manual-only `Rewrite CI`
+- [x] CI runs on branch pushes and manually
 - [x] Rust Clippy, tests, release build
 - [x] `cargo audit`
-- [x] Docker build
+- [x] Docker build from the repository root
 - [x] Flutter analyze and tests
 - [x] APK build and permission verification
 - [x] Failure logs published to `ci-logs`

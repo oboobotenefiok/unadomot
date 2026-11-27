@@ -11,7 +11,7 @@ Last updated: 27 November 2026
 - Rate limiting and suspended-account checks
 - Cloudinary-only media URLs
 - JSON logs with request IDs
-- Manual-only CI with tests, audit, Docker build, and APK verification
+- CI on branch pushes with tests, audit, Docker build, and APK verification
 - Android permission, deep-link, and signing scripts
 
 ## Blockers
