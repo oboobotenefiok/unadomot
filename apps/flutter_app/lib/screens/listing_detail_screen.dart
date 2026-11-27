@@ -6,6 +6,7 @@ import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../utils/currency.dart';
+import '../widgets/infinite_listing_gallery.dart';
 import '../widgets/share_listing_sheet.dart';
 import 'auth_sheet.dart';
 import 'listing_code_screen.dart';
@@ -45,7 +46,6 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
   DateTime? _cachedAt;
   bool _favorite = false;
   bool _startingChat = false;
-  int _photoIndex = 0;
 
   @override
   void initState() {
@@ -536,50 +536,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                       ),
       );
 
-  Widget _gallery() {
-    final media = _listing!.media;
-    if (media.isEmpty) {
-      return Container(
-        height: 240,
-        color: UnaColors.green100,
-        child: const Center(
-          child: Icon(Icons.home_work_outlined, size: 72, color: UnaColors.green700),
-        ),
-      );
-    }
-    return Column(
-      children: [
-        SizedBox(
-          height: 260,
-          child: PageView.builder(
-            itemCount: media.length,
-            onPageChanged: (index) => setState(() => _photoIndex = index),
-            itemBuilder: (context, index) => Image.network(media[index].url, fit: BoxFit.cover),
-          ),
-        ),
-        if (media.length > 1)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(media.length, (index) {
-                final active = index == _photoIndex;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: active ? 18 : 6,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: active ? UnaColors.green700 : UnaColors.border,
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                );
-              }),
-            ),
-          ),
-      ],
-    );
-  }
+  Widget _gallery() => InfiniteListingGallery(media: _listing!.media);
 
   Widget _propertyGrid() => Row(
         children: [
@@ -744,29 +701,26 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
   Widget _commentsSection() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Text(
-                'Comments',
-                style: TextStyle(color: UnaColors.text900, fontSize: 16, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(width: 8),
-              Text('${_comments.length}', style: const TextStyle(color: UnaColors.text500, fontSize: 13)),
-            ],
+          const Text(
+            'Comments',
+            style: TextStyle(color: UnaColors.text900, fontSize: 16, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 10),
+          if (_loadingComments)
+            const Center(child: Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator()))
+          else if (_comments.isEmpty)
+            const Text('No comments yet.', style: TextStyle(color: UnaColors.text500))
+          else
+            ..._comments.map(_commentTile),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
                 child: TextField(
                   controller: _commentController,
-                  maxLength: 1000,
                   minLines: 1,
-                  maxLines: 4,
-                  decoration: const InputDecoration(
-                    hintText: 'Ask a question or leave a note',
-                    counterText: '',
-                  ),
+                  maxLines: 3,
+                  decoration: const InputDecoration(hintText: 'Add a comment'),
                 ),
               ),
               const SizedBox(width: 8),
@@ -778,85 +732,51 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          if (_loadingComments)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Center(child: CircularProgressIndicator()),
-            )
-          else if (_comments.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              child: Text('No comments yet. Start the conversation.', style: TextStyle(color: UnaColors.text500)),
-            )
-          else
-            ..._comments.map(_commentTile),
         ],
       );
 
   Widget _commentTile(Map<String, dynamic> comment) {
-    final reactions = (comment['reactions'] as List? ?? [])
-        .map((item) => Map<String, dynamic>.from(item as Map))
-        .toList();
-    final photo = comment['photo_url'] as String?;
-    final name = comment['name'] as String? ?? 'User';
-    return GestureDetector(
-      onLongPress: () => _deleteComment(comment),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: UnaColors.surface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: UnaColors.border),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 16,
-                  backgroundColor: UnaColors.green100,
-                  backgroundImage: photo == null ? null : NetworkImage(photo),
-                  child: photo == null
-                      ? Text(
-                          name.characters.first.toUpperCase(),
-                          style: const TextStyle(color: UnaColors.green900, fontWeight: FontWeight.w700),
-                        )
-                      : null,
+    final reactions = Map<String, dynamic>.from(comment['reactions'] as Map? ?? const {});
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: UnaColors.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: UnaColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  comment['author_name'] as String? ?? 'User',
+                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(comment['body'] as String? ?? '', style: const TextStyle(fontSize: 13, height: 1.4)),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 6,
-              children: ['Love', 'Laugh', 'Cry', 'Dislike', 'Hate'].map((emoji) {
-                final count = reactions
-                    .where((item) => item['emoji'] == emoji)
-                    .fold<int>(0, (sum, item) => sum + ((item['count'] as num?)?.toInt() ?? 0));
-                return InkWell(
-                  onTap: () => _react(comment, emoji),
-                  borderRadius: BorderRadius.circular(20),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: UnaColors.green100,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text('$emoji $count', style: const TextStyle(fontSize: 11)),
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
+              ),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                onPressed: () => _deleteComment(comment),
+                icon: const Icon(Icons.delete_outline, size: 16),
+              ),
+            ],
+          ),
+          Text(comment['body'] as String? ?? '', style: const TextStyle(fontSize: 13, height: 1.4)),
+          const SizedBox(height: 6),
+          Wrap(
+            spacing: 6,
+            children: ['👍', '❤️', '😂'].map((emoji) {
+              final count = reactions[emoji] as int? ?? 0;
+              return ActionChip(
+                visualDensity: VisualDensity.compact,
+                label: Text('$emoji $count'),
+                onPressed: () => _react(comment, emoji),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
@@ -886,15 +806,12 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
         ),
       );
 
-  Widget _chip(String text) => Container(
+  Widget _chip(String label) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: UnaColors.green100,
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(20),
         ),
-        child: Text(
-          text,
-          style: const TextStyle(color: UnaColors.green900, fontSize: 12, fontWeight: FontWeight.w600),
-        ),
+        child: Text(label, style: const TextStyle(color: UnaColors.green900, fontSize: 12)),
       );
 }
