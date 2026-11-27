@@ -55,6 +55,13 @@ fn error(status: StatusCode, message: &str) -> axum::response::Response {
     (status, Json(json!({ "error": { "message": message } }))).into_response()
 }
 
+fn turn_credential(secret: &str, username: &str) -> String {
+    let mut mac = Hmac::<Sha1>::new_from_slice(secret.as_bytes())
+        .expect("HMAC accepts keys of any size");
+    mac.update(username.as_bytes());
+    base64::engine::general_purpose::STANDARD.encode(mac.finalize().into_bytes())
+}
+
 async fn authorize(state: &CallState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
     let token = bearer_token(headers)
         .map_err(|_| error(StatusCode::UNAUTHORIZED, "Please sign in"))?;
@@ -101,11 +108,7 @@ async fn ice_servers_handler(
         if !urls.trim().is_empty() && !secret.trim().is_empty() {
             let expiry = Utc::now().timestamp() + TURN_TTL_SECONDS;
             let username = format!("{expiry}:{user_id}");
-            let mut mac = Hmac::<Sha1>::new_from_slice(secret.as_bytes())
-                .expect("HMAC accepts keys of any size");
-            mac.update(username.as_bytes());
-            let credential = base64::engine::general_purpose::STANDARD
-                .encode(mac.finalize().into_bytes());
+            let credential = turn_credential(&secret, &username);
 
             servers.push(json!({
                 "urls": urls,
@@ -245,5 +248,21 @@ async fn end_call_handler(
     match state.calls.end(id, user_id).await {
         Ok(call) => Json(call).into_response(),
         Err(error_value) => call_error(error_value),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn turn_credentials_are_deterministic_and_secret_bound() {
+        let first = turn_credential("turn-secret", "1700000000:user-id");
+        let second = turn_credential("turn-secret", "1700000000:user-id");
+        let other = turn_credential("other-secret", "1700000000:user-id");
+
+        assert_eq!(first, second);
+        assert_ne!(first, other);
+        assert!(!first.is_empty());
     }
 }
