@@ -3,7 +3,7 @@ use argon2::{
     Argon2,
 };
 use async_trait::async_trait;
-use axum::http::{header, HeaderMap};
+use axum::http::{header, HeaderMap, HeaderValue};
 use chrono::{DateTime, Duration, Utc};
 use hmac::{Hmac, Mac};
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
@@ -301,5 +301,21 @@ mod tests {
         );
         assert_eq!(hash.len(), 64);
         assert_ne!(hash, "token-value");
+    }
+
+    #[test]
+    fn bearer_token_requires_bearer_prefix() {
+        let mut headers = HeaderMap::new();
+        headers.insert(
+            header::AUTHORIZATION,
+            HeaderValue::from_static("Bearer test-token"),
+        );
+        assert_eq!(bearer_token(&headers).unwrap(), "test-token");
+
+        headers.insert(
+            header::AUTHORIZATION,
+            HeaderValue::from_static("Basic test-token"),
+        );
+        assert!(bearer_token(&headers).is_err());
     }
 }
