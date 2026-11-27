@@ -14,7 +14,6 @@ use unadomot_api::application::auth::{
 use unadomot_api::application::profiles::{Profile, ProfileListing};
 use unadomot_api::extract::{AdminUser, AuthUser};
 use unadomot_api::http::AppState;
-use uuid::Uuid;
 
 pub fn router(state: AppState) -> Router {
     Router::new()
@@ -302,7 +301,7 @@ async fn google_auth(
     }
 
     let client = match reqwest::Client::builder()
-        .timeout(Duration::from_secs(10))
+        .timeout(std::time::Duration::from_secs(10))
         .build()
     {
         Ok(client) => client,
@@ -406,6 +405,7 @@ async fn google_auth(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use uuid::Uuid;
 
     #[test]
     fn rejects_non_cloudinary_photo_urls() {
