@@ -35,4 +35,25 @@ void main() {
     await cache.clearDraft('new-listing');
     expect(await cache.readDraft('new-listing'), isNull);
   });
+
+  test('clearUserData removes user data but keeps settings', () async {
+    final cache = LocalCache(databasePath: inMemoryDatabasePath);
+    addTearDown(cache.close);
+
+    await cache.setSetting('theme_mode', 'dark');
+    await cache.cacheListings([
+      {'id': 'one', 'title': 'Flat', 'price': 800000},
+    ]);
+    await cache.setFavorite('one', true);
+    await cache.saveDraft('new-listing', {'title': 'Draft flat'});
+    await cache.addAffinity({'lagos': 1.5});
+
+    await cache.clearUserData();
+
+    expect(await cache.readListings(), isNull);
+    expect(await cache.readFavoriteIds(), isEmpty);
+    expect(await cache.readDraft('new-listing'), isNull);
+    expect(await cache.readAffinity(), isEmpty);
+    expect(await cache.getSetting('theme_mode'), 'dark');
+  });
 }
