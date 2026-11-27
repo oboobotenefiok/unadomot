@@ -1,7 +1,120 @@
-# CI run 2026-11-27T15:29:41Z
+# CI run 2026-11-27T15:36:04Z
 Branch: rewrite/flutter-rust-postgres
 
 ## Trigger
-https://github.com/oboobotenefiok/unadomot/actions/runs/46025403506
+https://github.com/oboobotenefiok/unadomot/actions/runs/46026357345
 
 ## Recent runs
+queued		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46026357345	6s	2026-11-27T15:36:07Z
+completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46025403506	2m46s	2026-11-27T15:29:45Z
+completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46022367670	3m29s	2026-11-27T15:09:33Z
+completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46020359995	2m57s	2026-11-27T14:56:08Z
+completed	cancelled	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46020019346	2m35s	2026-11-27T14:53:51Z
+
+Run ID: 46026357345
+URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46026357345
+
+## Watch
+
+X rewrite/flutter-rust-postgres Rewrite CI · 46026357345
+Triggered via workflow_dispatch about 2 minutes ago
+
+JOBS
+X audit in 2m31s (ID 140598654484)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run dtolnay/rust-toolchain@stable
+  ✓ Install cargo-audit
+  X Audit dependencies
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+X docker in 2m7s (ID 140598654831)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  X Build API image
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+X rust in 54s (ID 140598654898)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Run actions/checkout@v4
+  ✓ Run dtolnay/rust-toolchain@stable
+  ✓ Run Swatinem/rust-cache@v2
+  X Clippy
+  - Tests
+  - Release build
+  - Post Run Swatinem/rust-cache@v2
+  ✓ Post Run actions/checkout@v4
+  ✓ Stop containers
+  ✓ Complete job
+X android in 1m49s (ID 140598655083)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-java@v4
+  ✓ Run subosito/flutter-action@v2
+  ✓ Cache Gradle
+  ✓ Ensure Android platform files
+  ✓ Apply Android permissions and deep links
+  ✓ Install dependencies
+  ✓ Analyze
+  X Flutter tests with coverage
+  - Build debug APK
+  - Verify required Android permissions
+  - Run actions/upload-artifact@v4
+  - Post Cache Gradle
+  ✓ Post Run subosito/flutter-action@v2
+  ✓ Post Run actions/setup-java@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+X publish-logs in 6s (ID 140599944027)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  X Fetch failed run logs
+  - Publish logs to ci-logs branch
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+
+ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+audit: .github#2
+
+X Process completed with exit code 1.
+audit: .github#44
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+docker: .github#2
+
+X Process completed with exit code 1.
+docker: .github#827
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+rust: .github#2
+
+X Process completed with exit code 101.
+rust: .github#139
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, actions/setup-java@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+android: .github#2
+
+X Process completed with exit code 1.
+android: .github#60
+
+X 11 tests passed, 1 failed.
+android: .github#59
+
+! setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
+android: .github#18
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+publish-logs: .github#2
+
+X Process completed with exit code 1.
+publish-logs: .github#11
+
+
+To see what failed, try: gh run view 46026357345 --log-failed
+View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46026357345
+
+## Failed logs
+error connecting to results-receiver.actions.githubusercontent.com
+check your internet connection or https://githubstatus.com
