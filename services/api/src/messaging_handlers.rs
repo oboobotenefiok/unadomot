@@ -1,6 +1,6 @@
 use axum::{
     extract::{Path, Query, State},
-    http::{HeaderMap, StatusCode},
+    http::StatusCode,
     response::IntoResponse,
     routing::{get, post},
     Json, Router,
@@ -10,8 +10,8 @@ use serde_json::json;
 use std::collections::HashMap;
 use std::sync::{Mutex, OnceLock};
 use std::time::{Duration, Instant};
-use unadomot_api::application::auth::{bearer_token, require_active, verify_session};
 use unadomot_api::application::messaging::MessagingError;
+use unadomot_api::extract::AuthUser;
 use unadomot_api::http::AppState;
 use uuid::Uuid;
 
@@ -64,25 +64,12 @@ fn error(status: StatusCode, message: &str) -> axum::response::Response {
 }
 
 fn valid_media_url(url: &str) -> bool {
-    url.starts_with("https://")
+    url.starts_with("https://res.cloudinary.com/")
+        && url.contains("/upload/")
         && url.len() <= 2048
         && !url.contains(' ')
         && !url.contains('\n')
         && !url.contains('\r')
-}
-
-async fn authorize(state: &AppState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
-    let token = bearer_token(headers)
-        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Please sign in"))?;
-
-    let user = verify_session(token, &state.jwt_secret)
-        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Session expired"))?;
-
-    require_active(state.users.as_ref(), user.id)
-        .await
-        .map_err(|_| error(StatusCode::FORBIDDEN, "This account is suspended"))?;
-
-    Ok(user.id)
 }
 
 fn messaging_error(error_value: MessagingError) -> axum::response::Response {
@@ -112,14 +99,9 @@ async fn require_participant(
 
 async fn conversations_presence_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
-    };
-
-    match state.messaging.list_conversations(user_id).await {
+    match state.messaging.list_conversations(user.id).await {
         Ok(items) => Json(
             items
                 .into_iter()
@@ -148,20 +130,15 @@ async fn conversations_presence_handler(
 
 async fn typing_ping_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
     Path(conversation_id): Path<Uuid>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
-    };
-
-    if let Err(response) = require_participant(&state, conversation_id, user_id).await {
+    if let Err(response) = require_participant(&state, conversation_id, user.id).await {
         return response;
     }
 
     if let Ok(mut store) = typing_store().lock() {
-        store.insert((conversation_id, user_id), Instant::now());
+        store.insert((conversation_id, user.id), Instant::now());
         store.retain(|_, at| at.elapsed() < Duration::from_secs(30));
     }
     StatusCode::NO_CONTENT.into_response()
@@ -169,15 +146,10 @@ async fn typing_ping_handler(
 
 async fn typing_status_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
     Path(conversation_id): Path<Uuid>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
-    };
-
-    if let Err(response) = require_participant(&state, conversation_id, user_id).await {
+    if let Err(response) = require_participant(&state, conversation_id, user.id).await {
         return response;
     }
 
@@ -186,7 +158,7 @@ async fn typing_status_handler(
         .map(|store| {
             store.iter().any(|((cid, uid), at)| {
                 *cid == conversation_id
-                    && *uid != user_id
+                    && *uid != user.id
                     && at.elapsed() < Duration::from_secs(5)
             })
         })
@@ -197,20 +169,15 @@ async fn typing_status_handler(
 
 async fn list_rich_messages_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
     Path(conversation_id): Path<Uuid>,
     Query(query): Query<RichMessageQuery>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
-    };
-
     match state
         .messaging
         .list_rich_messages(
             conversation_id,
-            user_id,
+            user.id,
             query.before,
             query.limit.unwrap_or(50).clamp(1, 50),
         )
@@ -223,15 +190,10 @@ async fn list_rich_messages_handler(
 
 async fn send_rich_message_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
     Path(conversation_id): Path<Uuid>,
     Json(request): Json<RichMessageRequest>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
-    };
-
     let body = request.body.as_deref().map(str::trim).filter(|value| !value.is_empty());
     if body.is_none() && request.media_url.is_none() {
         return error(StatusCode::BAD_REQUEST, "A message or attachment is required");
@@ -242,7 +204,7 @@ async fn send_rich_message_handler(
 
     if let Some(url) = request.media_url.as_deref() {
         if !valid_media_url(url) {
-            return error(StatusCode::BAD_REQUEST, "Attachment URL must be a valid HTTPS URL");
+            return error(StatusCode::BAD_REQUEST, "Attachment must be a Cloudinary HTTPS upload");
         }
     }
 
@@ -262,7 +224,7 @@ async fn send_rich_message_handler(
         .messaging
         .send_rich_message(
             conversation_id,
-            user_id,
+            user.id,
             body,
             request.media_url.as_deref(),
             request.media_type.as_deref(),
@@ -278,15 +240,10 @@ async fn send_rich_message_handler(
 
 async fn react_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
     Path(message_id): Path<Uuid>,
     Json(request): Json<ReactionRequest>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
-    };
-
     let emoji = request.emoji.trim();
     if emoji.is_empty() || emoji.chars().count() > 8 {
         return error(StatusCode::BAD_REQUEST, "Invalid reaction");
@@ -294,7 +251,7 @@ async fn react_handler(
 
     match state
         .messaging
-        .react_to_message(message_id, user_id, emoji)
+        .react_to_message(message_id, user.id, emoji)
         .await
     {
         Ok(()) => StatusCode::NO_CONTENT.into_response(),
@@ -307,10 +264,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn rejects_non_https_media_urls() {
+    fn rejects_non_cloudinary_media_urls() {
         assert!(!valid_media_url("http://example.com/a.jpg"));
         assert!(!valid_media_url("javascript:alert(1)"));
         assert!(!valid_media_url("https://example.com/a b.jpg"));
+        assert!(!valid_media_url("https://example.com/upload/a.jpg"));
         assert!(valid_media_url("https://res.cloudinary.com/demo/image/upload/a.jpg"));
     }
 }
