@@ -301,3 +301,16 @@ async fn react_handler(
         Err(error_value) => messaging_error(error_value),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rejects_non_https_media_urls() {
+        assert!(!valid_media_url("http://example.com/a.jpg"));
+        assert!(!valid_media_url("javascript:alert(1)"));
+        assert!(!valid_media_url("https://example.com/a b.jpg"));
+        assert!(valid_media_url("https://res.cloudinary.com/demo/image/upload/a.jpg"));
+    }
+}
