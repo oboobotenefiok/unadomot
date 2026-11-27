@@ -34,7 +34,8 @@ Last updated: 27 November 2026
 
 ## CI and release
 
-- [x] CI runs on branch pushes and manually
+- [x] Manual-only CI, started from the terminal
+- [x] `scripts/ci.sh` captures the run into `thisrun.txt` and pushes it
 - [x] Rust Clippy, tests, release build
 - [x] `cargo audit`
 - [x] Docker build from the repository root

@@ -55,15 +55,13 @@ See `.env.example` for the full list. Production requires:
 
 ## CI
 
-`Rewrite CI` runs on pushes to `rewrite/flutter-rust-postgres` and can also be started manually. It runs:
+`Rewrite CI` is manual-only. It never runs on push. Start it from your terminal with:
 
-- Rust Clippy, tests, release build
-- `cargo audit`
-- Docker image build
-- Flutter analyze and tests with coverage
-- Debug APK build and Android permission verification
+```bash
+bash scripts/ci.sh
+```
 
-Failed runs publish their logs to the `ci-logs` branch.
+The script triggers the workflow, watches it, writes the full output to `thisrun.txt`, and pushes that file without triggering CI.
 
 ## Documentation
 
