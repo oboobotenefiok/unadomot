@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../api/api_client.dart';
 import '../data/local_cache.dart';
 import '../data/nigeria_locations.dart';
+import '../utils/currency.dart';
 
 class CreateListingScreen extends StatefulWidget {
   final ApiClient api;
@@ -153,7 +154,14 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   void _next() {
     if (_step == 0 && !_detailsKey.currentState!.validate()) return;
     if (_step == 1 && !_locationKey.currentState!.validate()) return;
-    setState(() => _step += 1);
+    if (_step == 2 && _media.isEmpty) {
+      setState(() => _error = 'Add at least one photo before continuing.');
+      return;
+    }
+    setState(() {
+      _error = null;
+      _step += 1;
+    });
   }
 
   void _back() {
@@ -255,18 +263,18 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              LinearProgressIndicator(value: (_step + 1) / 3),
+              LinearProgressIndicator(value: (_step + 1) / 4),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
                 child: Row(
                   children: [
                     Text(
-                      'Step ${_step + 1} of 3',
+                      'Step ${_step + 1} of 4',
                       style: Theme.of(context).textTheme.labelLarge,
                     ),
                     const Spacer(),
                     Text(
-                      ['Details', 'Location', 'Media'][_step],
+                      ['Details', 'Location', 'Media', 'Review'][_step],
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ],
@@ -281,6 +289,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                       _detailsStep(),
                       _locationStep(),
                       _mediaStep(),
+                      _reviewStep(),
                     ],
                   ),
                 ),
@@ -308,13 +317,13 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                       child: FilledButton(
                         onPressed: _busy
                             ? null
-                            : _step == 2
+                            : _step == 3
                                 ? _submit
                                 : _next,
                         child: Text(
                           _busy
                               ? 'Posting'
-                              : _step == 2
+                              : _step == 3
                                   ? 'Post listing'
                                   : 'Continue',
                         ),
@@ -602,5 +611,78 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
               },
             ),
         ],
+      );
+
+  Widget _reviewStep() => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Review your listing',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Check the details before posting. You can go back to edit anything.',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 16),
+          _reviewCard(
+            title: _title.text.trim().isEmpty ? 'Untitled listing' : _title.text.trim(),
+            subtitle: '${formatNaira(double.tryParse(_price.text.trim()) ?? 0)} / month',
+            lines: [
+              '${_propertyType ?? 'Property type not set'} · ${_bedrooms.text} bed · ${_bathrooms.text} bath',
+              '${_address.text.trim()}, ${_lgaValue ?? ''}, ${_stateValue ?? ''}',
+              _isAgent ? 'Listed as an agent' : 'Listed as a landlord',
+            ],
+          ),
+          const SizedBox(height: 12),
+          _reviewCard(
+            title: 'Media',
+            subtitle: '${_media.length} item${_media.length == 1 ? '' : 's'}',
+            lines: [
+              if (_media.isNotEmpty) 'Cover: ${_media.first.name}',
+              'At least one photo is required.',
+            ],
+          ),
+          const SizedBox(height: 12),
+          _reviewCard(
+            title: 'Description',
+            subtitle: '',
+            lines: [_description.text.trim().isEmpty ? 'No description' : _description.text.trim()],
+          ),
+        ],
+      );
+
+  Widget _reviewCard({
+    required String title,
+    required String subtitle,
+    required List<String> lines,
+  }) =>
+      Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+            ),
+            if (subtitle.isNotEmpty) ...[
+              const SizedBox(height: 2),
+              Text(subtitle, style: const TextStyle(fontSize: 12)),
+            ],
+            const SizedBox(height: 8),
+            ...lines.map(
+              (line) => Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Text(line, style: const TextStyle(fontSize: 12, height: 1.4)),
+              ),
+            ),
+          ],
+        ),
       );
 }
