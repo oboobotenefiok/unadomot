@@ -122,3 +122,34 @@ jobs:
           path: apps/flutter_app/build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 14
+  publish-logs:
+    needs: [rust, audit, docker, android]
+    if: failure()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch failed run logs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh run view ${{ github.run_id }} --log > ci-failure.log
+      - name: Publish logs to ci-logs branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan ci-logs
+          git rm -rf . >/dev/null 2>&1 || true
+          git clean -fdx >/dev/null 2>&1 || true
+          cp "$GITHUB_WORKSPACE/ci-failure.log" ci-failure.log 2>/dev/null || true
+          {
+            echo "# Rewrite CI failure"
+            echo
+            echo "- Commit: ${GITHUB_SHA}"
+            echo "- Ref: ${GITHUB_REF_NAME}"
+            echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "- Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > status.md
+          git add status.md ci-failure.log
+          git commit -m "CI failure for ${GITHUB_SHA}"
+          git push --force origin ci-logs
