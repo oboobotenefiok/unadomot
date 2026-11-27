@@ -1,0 +1,45 @@
+class NigeriaLocations {
+  static const capitals = <String, String>{
+    'Abia': 'Umuahia',
+    'Adamawa': 'Yola',
+    'Akwa Ibom': 'Uyo',
+    'Anambra': 'Awka',
+    'Bauchi': 'Bauchi',
+    'Bayelsa': 'Yenagoa',
+    'Benue': 'Makurdi',
+    'Borno': 'Maiduguri',
+    'Cross River': 'Calabar',
+    'Delta': 'Asaba',
+    'Ebonyi': 'Abakaliki',
+    'Edo': 'Benin City',
+    'Ekiti': 'Ado Ekiti',
+    'Enugu': 'Enugu',
+    'FCT': 'Abuja',
+    'Gombe': 'Gombe',
+    'Imo': 'Owerri',
+    'Jigawa': 'Dutse',
+    'Kaduna': 'Kaduna',
+    'Kano': 'Kano',
+    'Katsina': 'Katsina',
+    'Kebbi': 'Birnin Kebbi',
+    'Kogi': 'Lokoja',
+    'Kwara': 'Ilorin',
+    'Lagos': 'Ikeja',
+    'Nasarawa': 'Lafia',
+    'Niger': 'Minna',
+    'Ogun': 'Abeokuta',
+    'Ondo': 'Akure',
+    'Osun': 'Osogbo',
+    'Oyo': 'Ibadan',
+    'Plateau': 'Jos',
+    'Rivers': 'Port Harcourt',
+    'Sokoto': 'Sokoto',
+    'Taraba': 'Jalingo',
+    'Yobe': 'Damaturu',
+    'Zamfara': 'Gusau',
+  };
+
+  static List<String> get states => capitals.keys.toList()..sort();
+
+  static String capitalFor(String state) => capitals[state] ?? '';
+}
