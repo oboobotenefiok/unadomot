@@ -1,0 +1,507 @@
+wind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- Icon 1: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/components/LocationSearch.js`.
+
+**States (G4).**
+- Literal conditional class expression: `className: 'relative flex-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-full pl-9 pr-8 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-green-950'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'absolute left-3 top-2.5 w-4 h-4 text-gray-400'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'absolute right-3 top-2.5 w-4 h-4 border-2 border-green-950 border-t-transparent rounded-full animate-spin'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-60 overflow-y-auto'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-full text-left px-4 py-2 hover:bg-green-50 text-sm border-b last:border-0'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Default: source's unconditional class string(s) above.
+- hover: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- focus: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- active: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- disabled: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- loading: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- error: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- success: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- selected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- unselected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- dark-mode: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- high-contrast: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- reduce-motion: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+
+**Copy (G3) — exact candidate strings in this file.**
+- `UnaDomot/1.0`
+- `relative flex-1`
+- `Search location...`
+- `w-full pl-9 pr-8 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-green-950`
+- `absolute left-3 top-2.5 w-4 h-4 text-gray-400`
+- `M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z`
+- `absolute right-3 top-2.5 w-4 h-4 border-2 border-green-950 border-t-transparent rounded-full animate-spin`
+- `absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-60 overflow-y-auto`
+- `w-full text-left px-4 py-2 hover:bg-green-50 text-sm border-b last:border-0`
+
+**Responsive.**
+- Component-local responsive utility tokens, if any, are included in the class inventory above (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`). Global stylesheet switching and breakpoint behavior: HANDOFF §2.9 and §3.2–§3.4.
+
+**Animation.** See §4 for source keyframes and transition declarations. Component-local `animate-*`, `transition-*`, `duration-*`, and `ease-*` tokens are recorded in §4.
+
+**Accessibility.**
+- [NOT SPECIFIED] No literal aria/role/title attribute matched in this file; inspect semantic element type and parent usage.
+
+**Flutter notes.** Map source DOM positioning and utility behavior to `Stack`/`Positioned`, `SafeArea`, `Padding`, `DecoratedBox`, `ClipRRect`, `BoxShadow`, `TextStyle`, `InkWell`/`GestureDetector`, `Focus`, and `Semantics` as applicable. Use HANDOFF §12.2 for the baseline mapping; this source-specific subsection adds only the exact visual evidence above.
+
+**Evidence flags.** [SOURCE] class/copy/attributes above are extracted from the named file. [INFERRED] Flutter widget mapping. [NOT SPECIFIED] Any state not represented by a source conditional or stylesheet.
+
+### 6.32.6 pages/home/components/PriceRangeSlider.js
+
+**Purpose & usage sites.** Literal source: `pages/home/components/PriceRangeSlider.js` (117 lines). See the relevant usage and routing context in HANDOFF §5 and §6. The implementation is React `createElement`; this subsection extracts the actual class, copy, and inline-SVG evidence from that module.
+
+**Element tree / literal structure.** The source's returned tree is represented by the following concrete structural evidence; where the source constructs children conditionally or via helper functions, the branch is preserved as a source condition rather than flattened into a fabricated single tree.
+- [NOT SPECIFIED] No direct `return (` block found; component may return via expression/helper.
+
+**Box model, color & typography — literal class inventory.**
+- `bg-white rounded-xl shadow-lg p-4`
+- `flex justify-between items-center mb-3`
+- `font-bold text-gray-900`
+- `text-xs text-green-950 hover:underline flex items-center gap-1`
+- `w-4 h-4 transition-transform ${showPresets ? 'rotate-180' : ''}`
+- `mb-4 space-y-1`
+- `w-full text-left px-3 py-2 text-sm hover:bg-green-50 rounded-lg transition`
+- `space-y-4`
+- `block text-xs text-gray-600 mb-1`
+- `relative`
+- `absolute left-3 top-2 text-gray-500`
+- `w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-950`
+- `relative h-2 bg-gray-200 rounded-full mt-4`
+- `absolute h-full bg-green-950 rounded-full`
+- `w-full bg-green-950 text-white py-2 rounded-lg text-sm font-medium hover:bg-green-800 transition mt-2`
+
+**Resolved values.** Utility classes resolve through the legend in §2 and theme overrides in HANDOFF §2. Where no corresponding CSS override exists, standard Tailwind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- Icon 1: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/components/PriceRangeSlider.js`.
+
+**States (G4).**
+- Literal conditional class expression: `className: `w-4 h-4 transition-transform ${showPresets ? 'rotate-180' : ''}``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'bg-white rounded-xl shadow-lg p-4'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex justify-between items-center mb-3'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'font-bold text-gray-900'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-xs text-green-950 hover:underline flex items-center gap-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'mb-4 space-y-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-full text-left px-3 py-2 text-sm hover:bg-green-50 rounded-lg transition'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'space-y-4'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'block text-xs text-gray-600 mb-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'relative'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'absolute left-3 top-2 text-gray-500'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-950'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'relative h-2 bg-gray-200 rounded-full mt-4'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'absolute h-full bg-green-950 rounded-full'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-full bg-green-950 text-white py-2 rounded-lg text-sm font-medium hover:bg-green-800 transition mt-2'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Default: source's unconditional class string(s) above.
+- hover: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- focus: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- active: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- disabled: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- loading: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- error: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- success: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- selected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- unselected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- dark-mode: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- high-contrast: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- reduce-motion: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+
+**Copy (G3) — exact candidate strings in this file.**
+- `Under ₦500k`
+- `₦500k - ₦1M`
+- `₦1M - ₦3M`
+- `₦3M - ₦5M`
+- `Above ₦5M`
+- `bg-white rounded-xl shadow-lg p-4`
+- `flex justify-between items-center mb-3`
+- `font-bold text-gray-900`
+- `Price Range`
+- `text-xs text-green-950 hover:underline flex items-center gap-1`
+- `Quick picks`
+- `M19 9l-7 7-7-7`
+- `mb-4 space-y-1`
+- `w-full text-left px-3 py-2 text-sm hover:bg-green-50 rounded-lg transition`
+- `block text-xs text-gray-600 mb-1`
+- `absolute left-3 top-2 text-gray-500`
+- `w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-950`
+- `relative h-2 bg-gray-200 rounded-full mt-4`
+- `absolute h-full bg-green-950 rounded-full`
+- `w-full bg-green-950 text-white py-2 rounded-lg text-sm font-medium hover:bg-green-800 transition mt-2`
+- `Apply Price Filter`
+
+**Responsive.**
+- Component-local responsive utility tokens, if any, are included in the class inventory above (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`). Global stylesheet switching and breakpoint behavior: HANDOFF §2.9 and §3.2–§3.4.
+
+**Animation.** See §4 for source keyframes and transition declarations. Component-local `animate-*`, `transition-*`, `duration-*`, and `ease-*` tokens are recorded in §4.
+
+**Accessibility.**
+- [NOT SPECIFIED] No literal aria/role/title attribute matched in this file; inspect semantic element type and parent usage.
+
+**Flutter notes.** Map source DOM positioning and utility behavior to `Stack`/`Positioned`, `SafeArea`, `Padding`, `DecoratedBox`, `ClipRRect`, `BoxShadow`, `TextStyle`, `InkWell`/`GestureDetector`, `Focus`, and `Semantics` as applicable. Use HANDOFF §12.2 for the baseline mapping; this source-specific subsection adds only the exact visual evidence above.
+
+**Evidence flags.** [SOURCE] class/copy/attributes above are extracted from the named file. [INFERRED] Flutter widget mapping. [NOT SPECIFIED] Any state not represented by a source conditional or stylesheet.
+
+### 6.32.7 pages/home/components/RecentViews.js
+
+**Purpose & usage sites.** Literal source: `pages/home/components/RecentViews.js` (120 lines). See the relevant usage and routing context in HANDOFF §5 and §6. The implementation is React `createElement`; this subsection extracts the actual class, copy, and inline-SVG evidence from that module.
+
+**Element tree / literal structure.** The source's returned tree is represented by the following concrete structural evidence; where the source constructs children conditionally or via helper functions, the branch is preserved as a source condition rather than flattened into a fabricated single tree.
+```javascript
+    return () => window.removeEventListener('listing-viewed', handleNewView);
+  }, [maxItems]);
+  
+  const clearRecent = () => {
+    setRecentViews([]);
+    localStorage.removeItem('recent_views');
+  };
+  
+  if (recentViews.length === 0) return null;
+  
+  return React.createElement(React.Fragment, null,
+    // Recent views button
+    React.createElement('button', {
+        onClick: () => setShowRecent(!showRecent),
+        className: 'bg-white rounded-full shadow-lg p-3 transition-all hover:scale-110 relative'
+      },
+      React.createElement('svg', {
+          className: 'w-5 h-5',
+          fill: 'none',
+          stroke: 'currentColor',
+          viewBox: '0 0 24 24'
+        },
+        React.createElement('path', {
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+          strokeWidth: '2',
+          d: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
+        })
+      ),
+      React.createElement('span', {
+        className: 'absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center'
+      }, recentViews.length)
+    ),
+    
+    // Recent views panel
+    showRecent && React.createElement('div', {
+        className: 'absolute bottom-20 left-4 right-4 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-96 overflow-y-auto'
+      },
+      React.createElement('div', { className: 'p-3 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white' },
+        React.createElement('h3', { className: 'font-bold text-gray-900' }, 'Recently Viewed'),
+        React.createElement('div', { className: 'flex gap-2' },
+          React.createElement('button', {
+            onClick: clearRecent,
+            className: 'text-xs text-red-500 hover:text-red-700'
+          }, 'Clear'),
+          React.createElement('button', {
+            onClick: () => setShowRecent(false),
+            className: 'text-gray-400 hover:text-gray-600'
+          }, '✕')
+        )
+      ),
+      
+      React.createElement('div', { className: 'p-2' },
+        recentViews.map(listing =>
+          React.createElement('div', {
+              key: listing.id,
+              onClick: () => {
+                onListingSelect(listing.id);
+                setShowRecent(false);
+              },
+              className: 'flex gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition'
+            },
+            React.createElement('img', {
+              src: listing.images?.[0] ?
+                window.CloudinaryHelpers?.getThumbnailUrl(listing.images[0]) :
+                '/vault/img/no-image.jpg',
+              className: 'w-16 h-16 rounded-lg object-cover',
+              onError: (e) => { e.target.src = '/vault/img/no-image.jpg'; }
+            }),
+            React.createElement('div', { className: 'flex-1' },
+              React.createElement('h4', { className: 'font-medium text-sm' }, listing.title),
+              React.createElement('p', { className: 'text-xs text-gray-500 mt-1' },
+                `${listing.lga || ''}, ${listing.state || ''}`
+              ),
+              React.createElement('p', { className: 'text-sm font-bold text-green-950 mt-1' },
+                `₦${listing.price?.toLocaleString()}/month`
+              )
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
+window.RecentViews = RecentViews;
+
+============================================================
+```
+
+**Box model, color & typography — literal class inventory.**
+- `bg-white rounded-full shadow-lg p-3 transition-all hover:scale-110 relative`
+- `w-5 h-5`
+- `absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center`
+- `absolute bottom-20 left-4 right-4 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-96 overflow-y-auto`
+- `p-3 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white`
+- `font-bold text-gray-900`
+- `flex gap-2`
+- `text-xs text-red-500 hover:text-red-700`
+- `text-gray-400 hover:text-gray-600`
+- `p-2`
+- `flex gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition`
+- `w-16 h-16 rounded-lg object-cover`
+- `flex-1`
+- `font-medium text-sm`
+- `text-xs text-gray-500 mt-1`
+- `text-sm font-bold text-green-950 mt-1`
+
+**Resolved values.** Utility classes resolve through the legend in §2 and theme overrides in HANDOFF §2. Where no corresponding CSS override exists, standard Tailwind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- Icon 1: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/components/RecentViews.js`.
+
+**States (G4).**
+- Literal conditional class expression: `className: 'bg-white rounded-full shadow-lg p-3 transition-all hover:scale-110 relative'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-5 h-5'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'absolute bottom-20 left-4 right-4 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-96 overflow-y-auto'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'p-3 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'font-bold text-gray-900'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex gap-2'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-xs text-red-500 hover:text-red-700'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-gray-400 hover:text-gray-600'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'p-2'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-16 h-16 rounded-lg object-cover'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'font-medium text-sm'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-xs text-gray-500 mt-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-sm font-bold text-green-950 mt-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Default: source's unconditional class string(s) above.
+- hover: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- focus: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- active: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- disabled: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- loading: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- error: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- success: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- selected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- unselected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- dark-mode: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- high-contrast: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- reduce-motion: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+
+**Copy (G3) — exact candidate strings in this file.**
+- `Error loading recent views:`
+- `bg-white rounded-full shadow-lg p-3 transition-all hover:scale-110 relative`
+- `w-5 h-5`
+- `M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z`
+- `absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center`
+- `absolute bottom-20 left-4 right-4 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-96 overflow-y-auto`
+- `p-3 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white`
+- `font-bold text-gray-900`
+- `Recently Viewed`
+- `flex gap-2`
+- `text-xs text-red-500 hover:text-red-700`
+- `text-gray-400 hover:text-gray-600`
+- `flex gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition`
+- `w-16 h-16 rounded-lg object-cover`
+- `font-medium text-sm`
+- `text-xs text-gray-500 mt-1`
+- `text-sm font-bold text-green-950 mt-1`
+
+**Responsive.**
+- Component-local responsive utility tokens, if any, are included in the class inventory above (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`). Global stylesheet switching and breakpoint behavior: HANDOFF §2.9 and §3.2–§3.4.
+
+**Animation.** See §4 for source keyframes and transition declarations. Component-local `animate-*`, `transition-*`, `duration-*`, and `ease-*` tokens are recorded in §4.
+
+**Accessibility.**
+- [NOT SPECIFIED] No literal aria/role/title attribute matched in this file; inspect semantic element type and parent usage.
+
+**Flutter notes.** Map source DOM positioning and utility behavior to `Stack`/`Positioned`, `SafeArea`, `Padding`, `DecoratedBox`, `ClipRRect`, `BoxShadow`, `TextStyle`, `InkWell`/`GestureDetector`, `Focus`, and `Semantics` as applicable. Use HANDOFF §12.2 for the baseline mapping; this source-specific subsection adds only the exact visual evidence above.
+
+**Evidence flags.** [SOURCE] class/copy/attributes above are extracted from the named file. [INFERRED] Flutter widget mapping. [NOT SPECIFIED] Any state not represented by a source conditional or stylesheet.
+
+### 6.32.8 pages/home/components/SearchBar.js
+
+**Purpose & usage sites.** Literal source: `pages/home/components/SearchBar.js` (224 lines). See the relevant usage and routing context in HANDOFF §5 and §6. The implementation is React `createElement`; this subsection extracts the actual class, copy, and inline-SVG evidence from that module.
+
+**Element tree / literal structure.** The source's returned tree is represented by the following concrete structural evidence; where the source constructs children conditionally or via helper functions, the branch is preserved as a source condition rather than flattened into a fabricated single tree.
+- [NOT SPECIFIED] No direct `return (` block found; component may return via expression/helper.
+
+**Box model, color & typography — literal class inventory.**
+- `bg-yellow-100 font-normal`
+- `flex-1 relative`
+- `relative`
+- `w-full pl-9 pr-12 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-950 focus:border-transparent text-sm`
+- `absolute left-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none`
+- `absolute right-2.5 top-1.5 rounded-full w-7 h-7 flex items-center justify-center transition ${
+            showArrow 
+              ? 'bg-green-950 text-white hover:bg-green-800' 
+              : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+          }`
+- `w-4 h-4`
+- `absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden max-h-96 overflow-y-auto`
+- `flex items-center justify-between px-3 py-2 border-b border-gray-50 bg-gray-50`
+- `text-xs font-medium text-gray-500 uppercase tracking-wide`
+- `text-xs text-gray-400 hover:text-red-500 transition`
+- `w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-left text-sm text-gray-700 transition border-b border-gray-50 last:border-0`
+- `w-3.5 h-3.5 text-gray-400 flex-shrink-0`
+- `px-3 py-1.5 bg-gray-50 border-b border-gray-100 text-xs font-medium text-gray-500`
+- `w-full flex items-center gap-2 px-3 py-2 hover:bg-green-50 text-left text-sm text-gray-700 transition border-b border-gray-50 last:border-0`
+- `text-base`
+- `flex-1`
+- `text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full`
+- `px-3 py-4 text-center text-sm text-gray-400`
+
+**Resolved values.** Utility classes resolve through the legend in §2 and theme overrides in HANDOFF §2. Where no corresponding CSS override exists, standard Tailwind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- Icon 1: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/components/SearchBar.js`.
+- Icon 2: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2.5`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/components/SearchBar.js`.
+- Icon 3: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2.5`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/components/SearchBar.js`.
+- Icon 4: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/components/SearchBar.js`.
+
+**States (G4).**
+- Literal conditional class expression: `className: `absolute right-2.5 top-1.5 rounded-full w-7 h-7 flex items-center justify-center transition ${ showArrow ? 'bg-green-950 text-white hover:bg-green-800' : 'bg-gray-200 text-gray-600 hover:bg-gray-300' }``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'bg-yellow-100 font-normal'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex-1 relative'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'relative'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-full pl-9 pr-12 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-950 focus:border-transparent text-sm'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'absolute left-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-4 h-4'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden max-h-96 overflow-y-auto'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex items-center justify-between px-3 py-2 border-b border-gray-50 bg-gray-50'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-xs font-medium text-gray-500 uppercase tracking-wide'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-xs text-gray-400 hover:text-red-500 transition'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-left text-sm text-gray-700 transition border-b border-gray-50 last:border-0'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-3.5 h-3.5 text-gray-400 flex-shrink-0'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'px-3 py-1.5 bg-gray-50 border-b border-gray-100 text-xs font-medium text-gray-500'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-full flex items-center gap-2 px-3 py-2 hover:bg-green-50 text-left text-sm text-gray-700 transition border-b border-gray-50 last:border-0'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-base'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'px-3 py-4 text-center text-sm text-gray-400'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Default: source's unconditional class string(s) above.
+- hover: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- focus: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- active: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- disabled: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- loading: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- error: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- success: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- selected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- unselected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- dark-mode: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- high-contrast: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- reduce-motion: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+
+**Copy (G3) — exact candidate strings in this file.**
+- `re in search mode
+}) {
+  const handleKeyDown = function(e) {
+    if (e.key === `
+- `) {
+      e.preventDefault();
+      onSearchSubmit(searchTerm);
+      setShowDropdown(false);
+    }
+    if (e.key === `
+- `, {
+        ref: searchInputRef,
+        type: `
+- `,
+        placeholder: `
+- `,
+          fill: `
+- `,
+          stroke: `
+- `,
+          viewBox: `
+- `, {
+          strokeLinecap: `
+- `,
+          strokeLinejoin: `
+- `,
+          strokeWidth: `
+- `,
+          d: `
+- `: showArrow ? `
+- `,
+            fill: `
+- `,
+            stroke: `
+- `,
+            viewBox: `
+- `, {
+            strokeLinecap: `
+- `,
+            strokeLinejoin: `
+- `,
+            strokeWidth: `
+- `,
+            d: `
+- `,
+                fill: `
+- `,
+                stroke: `
+- `,
+                viewBox: `
+- `, {
+                strokeLinecap: `
+- `,
+                strokeLinejoin: `
+- `,
+                strokeWidth: `
+- `,
+                d: `
+- `, null,
+        suggestions.map(function(item, index) {
+          // Render header
+          if (item.type === `
+- `, {
+              key: `
+- `, {
+              key: item.type + `
+- ` + item.text + `
+- `', searchTerm, '`
+
+**Responsive.**
+- Component-local responsive utility tokens, if any, are included in the class inventory above (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`). Global stylesheet switching and breakpoint behavior: HANDOFF §2.9 and §3.2–§3.4.
+
+**Animation.** See §4 for source keyframes and transition declarations. Component-local `animate-*`, `transition-*`, `duration-*`, and `ease-*` tokens are recorded in §4.
+
+**Accessibility.**
+- [NOT SPECIFIED] No literal aria/role/title attribute matched in this file; inspect semantic element type and parent usage.
+
+**Flutter notes.** Map source DOM positioning and utility behavior to `Stack`/`Positioned`, `SafeArea`, `Padding`, `DecoratedBox`, `ClipRRect`, `BoxShadow`, `TextStyle`, `InkWell`/`GestureDetector`, `Focus`, and `Semantics` as applicable. Use HANDOFF §12.2 for the baseline mapping; this source-specific subsection adds only the exact visual evidence above.
+
+**Evidence flags.** [SOURCE] class/copy/attributes above are extracted from the named file. [INFERRED] Flutter widget mapping. [NOT SPECIFIED] Any state not represented by a source conditional or stylesheet.
+
+### 6.32.9 pages/home/components/ViewToggle.js
+
+**Purpose & usage sites.** Literal source: `pages/home/components/ViewToggle.js` (46 lines). See the relevant usage and routing context in HANDOFF §5 and §6. The implementation is React `createElement`; this subsection extracts the actual class, copy, and inline-SVG evidence from that module.
+
+**Element tree / literal structure.** The source's returned tree is represented by the following concrete structural evidence; where the source constructs children conditionally or via helper functions, the branch is preserved as a source condition rather than flattened into a fabricated single tree.
+- [NOT SPECIFIED] No direct `return (` block found; component may return via expression/helper.
+
+**Box model, color & typography — literal class inventory.**
+- `p-2 rounded-full transition-all duration-300 ${
+      viewMode === 'map' 
+        ? 'bg-green-950 text-white shadow-lg scale-110' 
+        : 'bg-white text-gray-600 hover:bg-gray-100'
+    }`
+- `w-5 h-5`
+
+**Resolved values.** Utility classes resolve through the legend in §2 and theme overrides in HANDOFF §2. Where no corresponding CSS override exists, standard Tailwind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- Icon 1: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/components/ViewToggle.js`.
+- Icon 2: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/components/ViewToggle.js`.
+
+**States (G4).**
+- Literal conditional class expression: `className: `p-2 rounded-full transition-all duration-300 ${ viewMode === 'map' ? 'bg-green-950 text-white shadow-lg scale-110' : 'bg-white text-gray-600 hover:bg-gray-100' }``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-5 h-5'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Default: source's unconditional class string(s) above.
+- hover: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- focus: [NOT SPECIFIED] unless an exact conditional expression or

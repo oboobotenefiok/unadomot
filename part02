@@ -1,0 +1,778 @@
+ transform: translateX(-2px); }
+        20%, 40%, 60%, 80% { transform: translateX(2px); }
+      }
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes float` — `offline.html`
+```css
+@keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes spin` — `styles/mobile.css`
+```css
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes typing` — `styles/mobile.css`
+```css
+@keyframes typing {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes fadeInUp` — `styles/mobile.css`
+```css
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes pulse` — `styles/mobile.css`
+```css
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes slideDown` — `styles/mobile.css`
+```css
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes blink` — `styles/mobile.css`
+```css
+@keyframes blink {
+  from, to { background-color: transparent; }
+  50% { background-color: #052e16; }
+}
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes spin` — `verify-email.html`
+```css
+@keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes spin` — `styles/styles.css`
+```css
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes fadeInUp` — `styles/styles.css`
+```css
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes pulse` — `styles/styles.css`
+```css
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes slideDown` — `styles/styles.css`
+```css
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes blink` — `styles/styles.css`
+```css
+@keyframes blink {
+  from, to { background-color: transparent; }
+  50% { background-color: #052e16; }
+}
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes pgFadeIn` — `index.html`
+```css
+@keyframes pgFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+            
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes pulse` — `index.html`
+```css
+@keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(0.8);
+            }
+            
+            50% {
+                transform: scale(1.2);
+            }
+        }
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes fadeInUp` — `index.html`
+```css
+@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### `@keyframes pulse` — `index.html`
+```css
+@keyframes pulse {
+            0% {
+                opacity: 1;
+                r: 8;
+            }
+            
+            50% {
+                opacity: 0.5;
+                r: 12;
+            }
+            
+            100% {
+                opacity: 1;
+                r: 8;
+            }
+        }
+```
+- Duration/timing/iteration are resolved from the attaching selector or inline animation declaration; if not specified there, CSS defaults apply (`0s`, `ease`, `1`, `normal`).
+
+### Transition declarations (literal CSS lines)
+- `offline.html:62` — `transition: background 0.2s;`
+- `styles/mobile.css:47` — `transition: transform 0.3s ease-in-out;`
+- `styles/mobile.css:93` — `transition: transform 0.2s ease;`
+- `styles/mobile.css:144` — `transition: background 0.2s;`
+- `styles/mobile.css:158` — `transition: transform 0.2s;`
+- `styles/mobile.css:418` — `transition: transform 0.1s;`
+- `styles/mobile.css:423` — `transition: transform 0.2s ease;`
+- `styles/mobile.css:431` — `transition: border-color 0.2s ease;`
+- `styles/mobile.css:436` — `transition: transform 0.2s ease;`
+- `styles/mobile.css:567` — `transition: transform 0.2s ease;`
+- `verify-email.html:59` — `transition: background 0.2s;`
+- `styles/accessibility-base.css:95` — `transition-duration: 0.001s !important;`
+- `styles/accessibility-base.css:102` — `transition: none !important;`
+- `styles/styles.css:31` — `transition: background 0.2s;`
+- `styles/styles.css:45` — `transition: transform 0.2s;`
+- `styles/styles.css:94` — `transition: transform 0.2s ease;`
+- `styles/styles.css:428` — `transition: all 0.3s ease !important;`
+- `index.html:91` — `transition: opacity 0.3s ease-in;`
+- `index.html:138` — `transition: opacity 0.3s ease-out;`
+- `index.html:192` — `transition: transform 0.3s ease-in-out;`
+- `index.html:208` — `transition: all 0.3s ease;`
+- `styles/desktop.css:35` — `transition: all 0.2s ease;`
+- `styles/desktop.css:119` — `transition: all 0.2s ease;`
+- `styles/desktop.css:152` — `transition: all 0.2s ease;`
+- `styles/desktop.css:187` — `transition: all 0.2s ease;`
+- `styles/desktop.css:253` — `transition: all 0.2s ease;`
+- `styles/desktop.css:341` — `transition: all 0.2s ease;`
+- `styles/desktop.css:430` — `transition: background 0.2s ease;`
+- `styles/themes/dark.css:1022` — `transition: all 0.3s ease;`
+
+### Tailwind motion utilities found
+- `animate-bounce` — utils/errors/ErrorFallback.js
+- `animate-fade-in-up` — components/ListingCard.js, hooks/useToast.js, pages/FavoritesPage.js, pages/PublicProfilePage.js
+- `animate-fadeIn` — pages/home/components/map/MapControls.js
+- `animate-pulse` — app.js, components/AuthModal.js, components/ChatInterface.js, components/ChatList.js, components/LoadingSpinner.js, components/ReactionButton.js, components/SkeletonLoader.js, pages/AdminPage.js, pages/ChatPage.js, pages/CheckoutNoticePage.js, pages/FavoritesPage.js, pages/ListingByCodePage.js, pages/ProfileRedirectPage.js, pages/PublicProfilePage.js, pages/VerificationPage.js, pages/home/components/Carousel.js, pages/home/components/ListingGrid.js, pages/home/index.js, pages/listing-detail/components/CommentsSection.js, pages/listing-detail/index.js, pages/profile/components/ListingsTab.js, pages/profile/index.js, pages/userByUsernamePage.js
+- `animate-slide-down` — pages/profile/components/SettingsTab.js
+- `animate-spin` — components/AuthModal.js, components/ChatInterface.js, components/DeleteConfirmationModal.js, components/LoginForm.js, components/MapView.js, components/PostListingWizard.js, components/SignupForm.js, components/SimilarListings.js, components/ValidationIndicator.js, pages/home/components/LocationSearch.js, pages/home/components/map/LocationSearch.js, pages/home/components/map/MapControls.js, pages/home/components/map/index.js, pages/listing-detail/components/CommentForm.js
+- `duration-200` — components/ListingCard.js
+- `duration-300` — components/AuthModal.js, components/PasswordStrengthMeter.js, components/ScrollToTopButton.js, components/SignupForm.js, pages/home/components/ViewToggle.js, pages/home/components/map/MapControls.js, pages/home/index.js, utils/errors/ErrorToast.js
+- `duration-500` — components/SmartForm.js, pages/listing-detail/components/ImageGallery.js
+- `ease-out` — pages/listing-detail/components/ImageGallery.js
+- `transition` — app.js, components/AuthModal.js, components/BackButton.js, components/ChatInterface.js, components/ChatList.js, components/DeleteConfirmationModal.js, components/DetailRightPanel.js, components/ForgotPasswordModal.js, components/Header.js, components/ListingCard.js, components/LoginForm.js, components/MapView.js, components/NotificationBell.js, components/PostListingWizard.js, components/ReportModal.js, components/SignupForm.js, components/SimilarListings.js, components/SmartForm.js, components/VerificationWarning.js, pages/AdminPage.js, pages/FavoritesPage.js, pages/ListingByCodePage.js, pages/PublicProfilePage.js, pages/VerificationPage.js, pages/home/components/AccessibilityModal.js, pages/home/components/Carousel.js, pages/home/components/FilterBar.js, pages/home/components/ListingGrid.js, pages/home/components/PriceRangeSlider.js, pages/home/components/RecentViews.js, pages/home/components/SearchBar.js, pages/home/components/map/MapControls.js, pages/home/components/map/SearchBar.js, pages/home/components/map/index.js, pages/home/index.js, pages/listing-detail/components/ActionButtons.js, pages/listing-detail/components/CommentForm.js, pages/listing-detail/components/ImageGallery.js, pages/listing-detail/components/LandlordCard.js, pages/listing-detail/components/MessageButton.js, pages/listing-detail/components/ProfileCard.js, pages/listing-detail/components/ReportButton.js, pages/listing-detail/index.js, pages/profile/components/EditProfileModal.js, pages/profile/components/ListingsTab.js, pages/profile/components/PopupModal.js, pages/profile/components/ProfileHeader.js, pages/profile/components/ProfileTabs.js, pages/profile/components/SettingsTab.js, pages/userByUsernamePage.js, utils/errors/ErrorFallback.js, utils/errors/ErrorModal.js
+- `transition-all` — components/AuthModal.js, components/LoginForm.js, components/PasswordStrengthMeter.js, components/ScrollToTopButton.js, components/SignupForm.js, components/SmartForm.js, pages/home/components/RecentViews.js, pages/home/components/ViewToggle.js, pages/home/components/map/MapControls.js, utils/errors/ErrorToast.js
+- `transition-colors` — components/AccessibilityPanel.js, components/Footer.js, components/LoginForm.js, components/NotificationBell.js, components/SignupForm.js, pages/home/components/AccessibilityModal.js
+- `transition-opacity` — components/Header.js, components/ListingCard.js
+- `transition-transform` — components/AccessibilityPanel.js, components/BackButton.js, components/ListingCard.js, components/NotificationBell.js, pages/home/components/AccessibilityModal.js, pages/home/components/ListingGrid.js, pages/home/components/PriceRangeSlider.js, pages/home/components/map/MapControls.js, pages/home/index.js, pages/listing-detail/components/ImageGallery.js, pages/listing-detail/index.js
+
+### Reduced motion
+- [NOT SPECIFIED] No `prefers-reduced-motion` media query found in the supplied source. Accessibility `reduceMotion` state is described in HANDOFF, but its exact component-level class delta is not universally encoded as a CSS media override.
+
+**Resolution rule:** an `animation:` shorthand in a selector supplies duration/timing/iteration; a bare keyframe definition does not. Tailwind `animate-spin` uses 1s linear infinite; `animate-pulse` uses the CDN Tailwind pulse defaults unless overridden in source. Any unqualified transition utility is Tailwind's default transition-property set and 150ms ease-in-out unless the source's CSS or configured CDN overrides it. These are framework defaults, not component-specific literals.
+
+## 5. Splash and boot (G6)
+
+### Splash element tree
+- `#root` app mount and splash element are declared in `index.html`; the exact markup and inline critical style declarations follow.
+```html
+<div id="splash-screen" class="splash-screen">
+        <div class="splash-center">
+            <img src="/vault/img/unadomot.jpg" alt="UnaDomot" class="splash-logo">
+        </div>
+```
+```html
+<style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #root {
+            min-height: 100vh;
+            opacity: 0;
+            transition: opacity 0.3s ease-in;
+        }
+        
+        #root.ready {
+            opacity: 1;
+        }
+        
+        .sticky.top-0 {
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+        
+        .fixed.bottom-0,
+        .fixed.top-0 {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+        }
+        
+        /* Smooth page transitions prevent flash */
+        .page-transition {
+            animation: pgFadeIn 0.12s ease-out;
+        }
+        
+        @keyframes pgFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+            
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Splash screen styles */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #f0fdf4;
+            display: flex;
+            flex-direction: column;
+            z-index: 9999;
+            transition: opacity 0.3s ease-out;
+        }
+        
+        .splash-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .splash-center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .splash-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(0.8);
+            }
+            
+            50% {
+                transform: scale(1.2);
+            }
+        }
+        
+        /* Scroll to top button animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.3s ease-out;
+        }
+        
+        /* Transition for hiding/showing headers */
+        .transition-transform {
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        /* ===== MAP CLUSTER STYLES ===== */
+        .custom-cluster {
+            background: transparent;
+        }
+        
+        .cluster-icon {
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .cluster-icon.small {
+            width: 30px;
+            height: 30px;
+            font-size: 12px;
+        }
+        
+        .cluster-icon.medium {
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+        }
+        
+        .cluster-icon.large {
+            width: 50px;
+            height: 50px;
+            font-size: 16px;
+        }
+        
+        /* Pulse animation for user location */
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+                r: 8;
+            }
+            
+            50% {
+                opacity: 0.5;
+                r: 12;
+            }
+            
+            100% {
+                opacity: 1;
+                r: 8;
+            }
+        }
+        
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Map popup custom styles */
+        .leaflet-popup-content {
+            margin: 0;
+            min-width: 240px;
+        }
+        
+        .leaflet-popup-content-wrapper {
+            padding: 0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        /* Mobile optimizations for map */
+        @media (max-width: 640px) {
+            .leaflet-popup-content {
+                min-width: 200px;
+            }
+            
+            .cluster-icon.small {
+                width: 24px;
+                height: 24px;
+                font-size: 10px;
+            }
+            
+            .cluster-icon.medium {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+            
+            .cluster-icon.large {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+            
+            .leaflet-control-zoom a {
+                width: 44px !important;
+                height: 44px !important;
+                line-height: 44px !important;
+                font-size: 20px !important;
+            }
+            
+            .leaflet-control-attribution {
+                font-size: 9px !important;
+            }
+        }
+    </style>
+```
+### Exact inline splash CSS (Literal — `index.html`)
+
+```css
+#root {
+    min-height: 100vh;
+    opacity: 0;
+    transition: opacity 0.3s ease-in;
+}
+
+#root.ready {
+    opacity: 1;
+}
+
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #f0fdf4;
+    display: flex;
+    flex-direction: column;
+    z-index: 9999;
+    transition: opacity 0.3s ease-out;
+}
+
+.splash-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.splash-center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.splash-logo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    animation: pulse 3s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(0.8); }
+    50% { transform: scale(1.2); }
+}
+```
+
+- Splash image element: `<img src="/vault/img/unadomot.jpg" alt="UnaDomot" class="splash-logo">` inside `.splash-center`, itself inside `.splash-screen`.
+- `.splash-logo`: 100×100 CSS px; circle crop (`border-radius:50%`); `object-fit:cover`; `pulse 3s infinite`; pulse scales 0.8 → 1.2 → 0.8.
+- `#root`: initial opacity 0; `.ready` opacity 1; transition `opacity 0.3s ease-in`.
+- `.splash-screen`: fixed full viewport; `z-index:9999`; background `#f0fdf4`; fade-out transition `opacity 0.3s ease-out`; `.hidden` sets opacity 0 and disables pointer events.
+
+### `hideSplashScreen()` teardown (Literal — `index.html`)
+
+```javascript
+window.hideSplashScreen = function() {
+    const splash = document.querySelector('.splash-screen');
+    const root = document.getElementById('root');
+
+    if (splash) {
+        splash.classList.add('hidden');
+    }
+
+    if (root) {
+        root.classList.add('ready');
+    }
+
+    setTimeout(() => {
+        if (splash) {
+            splash.remove();
+        }
+    }, 300);
+};
+```
+
+`App` invokes `window.hideSplashScreen()` after the app's initial loading state resolves, with a 100ms timeout at its call site. The 300ms teardown is the splash removal delay, not the fade-in duration. [SOURCE] Dark-mode preboot script reads `localStorage.getItem('darkMode') === 'true'` and adds `dark-mode` to `document.body` before app rendering; see HANDOFF §3.1 and source `index.html`.
+
+**Flutter mapping:** render splash with a full-screen `Stack`, centered `ClipOval` + `Image.asset(fit: BoxFit.cover)` at the source-resolved size, and a pulse animation driven by `AnimationController`/`Tween`. Fade the root content using `AnimatedOpacity`. Delay teardown by the source's 300ms before removing the splash. [PROPOSED DEFAULT] use `SystemChrome`/theme initialization before first frame to avoid a theme flash; preserve the source's dark-mode pre-boot localStorage behavior rather than assuming Flutter storage semantics.
+
+## 6. Shared component specs (G1, G3, G4, G7)
+
+The subsections follow the HANDOFF's actual component order in §5. The HANDOFF §5.30 and §5.31 entries are expanded with the additional component/page-local modules found in the dumps. For each file, literal classes and strings are included; state rows distinguish actual conditional class expressions from states not independently specified by the source.
+
+### 6.1 AccessibilityProvider
+
+**Purpose & usage sites.** Literal source: `components/AccessibilityProvider.js` (87 lines). See the relevant usage and routing context in HANDOFF §5 and §6. The implementation is React `createElement`; this subsection extracts the actual class, copy, and inline-SVG evidence from that module.
+
+**Element tree / literal structure.** The source's returned tree is represented by the following concrete structural evidence; where the source constructs children conditionally or via helper functions, the branch is preserved as a source condition rather than flattened into a fabricated single tree.
+- [NOT SPECIFIED] No direct `return (` block found; component may return via expression/helper.
+
+**Box model, color & typography — literal class inventory.**
+- [NOT SPECIFIED] No literal `className`/`class` string found in this file.
+
+**Resolved values.** Utility classes resolve through the legend in §2 and theme overrides in HANDOFF §2. Where no corresponding CSS override exists, standard Tailwind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- No inline SVG found in this module. External image/icon use, if any, remains literal at the path/alt attributes in source.
+
+**States (G4).**
+- [NOT SPECIFIED] No explicit conditional `className` branch matched in this module. Hover/focus/disabled/loading/selected/dark/high-contrast/reduced-motion states must be read from CSS, parent state, or browser defaults; do not invent a class delta.
+- Default: source's unconditional class string(s) above.
+- hover: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- focus: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- active: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- disabled: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- loading: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- error: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- success: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- selected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- unselected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- dark-mode: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- high-contrast: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- reduce-motion: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+
+**Copy (G3) — exact candidate strings in this file.**
+- [NOT SPECIFIED] No user-facing string candidate extracted.
+
+**Responsive.**
+- Component-local responsive utility tokens, if any, are included in the class inventory above (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`). Global stylesheet switching and breakpoint behavior: HANDOFF §2.9 and §3.2–§3.4.
+
+**Animation.** See §4 for source keyframes and transition declarations. Component-local `animate-*`, `transition-*`, `duration-*`, and `ease-*` tokens are recorded in §4.
+
+**Accessibility.**
+- [NOT SPECIFIED] No literal aria/role/title attribute matched in this file; inspect semantic element type and parent usage.
+
+**Flutter notes.** Map source DOM positioning and utility behavior to `Stack`/`Positioned`, `SafeArea`, `Padding`, `DecoratedBox`, `ClipRRect`, `BoxShadow`, `TextStyle`, `InkWell`/`GestureDetector`, `Focus`, and `Semantics` as applicable. Use HANDOFF §12.2 for the baseline mapping; this source-specific subsection adds only the exact visual evidence above.
+
+**Evidence flags.** [SOURCE] class/copy/attributes above are extracted from the named file. [INFERRED] Flutter widget mapping. [NOT SPECIFIED] Any state not represented by a source conditional or stylesheet.
+
+### 6.2 AccessibilityPanel
+
+**Purpose & usage sites.** Literal source: `components/AccessibilityPanel.js` (113 lines). See the relevant usage and routing context in HANDOFF §5 and §6. The implementation is React `createElement`; this subsection extracts the actual class, copy, and inline-SVG evidence from that module.
+
+**Element tree / literal structure.** The source's returned tree is represented by the following concrete structural evidence; where the source constructs children conditionally or via helper functions, the branch is preserved as a source condition rather than flattened into a fabricated single tree.
+- [NOT SPECIFIED] No direct `return (` block found; component may return via expression/helper.
+
+**Box model, color & typography — literal class inventory.**
+- `fixed top-20 right-4 w-80 bg-white rounded-lg shadow-xl z-50 p-4`
+- `flex justify-between items-center mb-4`
+- `font-bold text-lg`
+- `text-gray-500 hover:text-gray-700`
+- `mb-4 pb-4 border-b border-gray-200`
+- `flex items-center justify-between cursor-pointer`
+- `text-sm font-medium flex items-center gap-2`
+- `text-base`
+- `relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
+            document.body.classList.contains('dark-mode') ? 'bg-green-950' : 'bg-gray-300'
+          }`
+- `inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+              document.body.classList.contains('dark-mode') ? 'translate-x-5' : 'translate-x-0.5'
+            }`
+- `mb-4`
+- `block text-sm font-medium mb-2`
+- `flex gap-2`
+- `px-3 py-1 rounded ${settings.fontSize === size ? 'bg-green-950 text-white' : 'bg-gray-100'}`
+- `space-y-3`
+- `text-sm`
+- `toggle-checkbox`
+- `w-full mt-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200`
+
+**Resolved values.** Utility classes resolve through the legend in §2 and theme overrides in HANDOFF §2. Where no corresponding CSS override exists, standard Tailwind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- No inline SVG found in this module. External image/icon use, if any, remains literal at the path/alt attributes in source.
+
+**States (G4).**
+- Literal conditional class expression: `className: `px-3 py-1 rounded ${settings.fontSize === size ? 'bg-green-950 text-white' : 'bg-gray-100'}``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: `relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${ document.body.classList.contains('dark-mode') ? 'bg-green-950' : 'bg-gray-300' }``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: `inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${ document.body.classList.contains('dark-mode') ? 'translate-x-5' : 'translate-x-0.5' }``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'fixed top-20 right-4 w-80 bg-white rounded-lg shadow-xl z-50 p-4'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex justify-between items-center mb-4'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'font-bold text-lg'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-gray-500 hover:text-gray-700'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'mb-4 pb-4 border-b border-gray-200'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex items-center justify-between cursor-pointer'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-sm font-medium flex items-center gap-2'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-base'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'mb-4'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'block text-sm font-medium mb-2'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex gap-2'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'space-y-3'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-sm'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'toggle-checkbox'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-full mt-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Default: source's unconditional class string(s) above.
+- hover: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- focus: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- active: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- disabled: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- loading: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- error: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- success: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- selected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- unselected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- dark-mode: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- high-contrast: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- reduce-motion: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+
+**Copy (G3) — exact candidate strings in this file.**
+- `fixed top-20 right-4 w-80 bg-white rounded-lg shadow-xl z-50 p-4`
+- `flex justify-between items-center mb-4`
+- `font-bold text-lg`
+- `text-gray-500 hover:text-gray-700`
+- `mb-4 pb-4 border-b border-gray-200`
+- `flex items-center justify-between cursor-pointer`
+- `text-sm font-medium flex items-center gap-2`
+- `Dark Mode`
+- `block text-sm font-medium mb-2`
+- `Text Size`
+- `flex gap-2`
+- `High Contrast`
+- `Reduce Motion`
+- `Dyslexia-Friendly Font`
+- `Always Underline Links`
+- `w-full mt-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200`
+- `Reset to Default`
+
+**Responsive.**
+- Component-local responsive utility tokens, if any, are included in the class inventory above (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`). Global stylesheet switching and breakpoint behavior: HANDOFF §2.9 and §3.2–§3.4.
+
+**Animation.** See §4 for source keyframes and transition declarations. Component-local `animate-*`, `transition-*`, `duration-*`, and `ease-*` tokens are recorded in §4.
+
+**Accessibility.**
+- `'`
+
+**Flutter notes.** Map source DOM positioning and utility behavior to `Stack`/`Positioned`, `SafeArea`, `Padding`, `DecoratedBox`, `ClipRRect`, `BoxShadow`, `TextStyle`, `InkWell`/`GestureDetector`, `Focus`, and `Semantics` as applicable. Use HANDOFF §12.2 for the baseline mapping; this source-specific subsection adds only the exact visual evidence above.
+
+**Evidence flags.** [SOURCE] class/copy/attributes above are extracted from the named file. [INFERRED] Flutter widget mapping. [NOT SPECIFIED] Any state not represented by a source conditional or stylesheet.
+
+### 6.3 AuthModalContext / AuthModalProvider
+
+**Purpose & usage sites.** Literal source: `contexts/AuthModalContext.js` (63 lines). See the relevant usage and routing context in HANDOFF §5 and §6. The implementation is React `createElement`; this subsection extracts the actual class, copy, and inline-SVG evidence from that module.
+
+**Element tree / literal structure.** The source's returned tree is represented by the following concrete structural evidence; where the source constructs children conditionally or via helper functions, the branch is preserved as a source condition rather than flattened into a fabricated single tree.
+- [NOT SPECIFIED] No direct `return (` block found; component may return via expression/helper.
+
+**Box model, color & typography — literal class inventory.**
+- [NOT SPECIFIED] No literal `className`/`class` string found in this file.
+
+**Resolved values.** Utility classes resolve through the legend in §2 and theme overrides in HANDOFF §2. Where no corresponding CSS override exists, standard Tailwind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- No inline SVG found in this module. External image/icon use, if any, remains literal at the path/alt attributes in source.
+
+**States (G4).**
+- [NOT SPECIFIED] No explicit conditional `className` branch matched in this module. Hover/focus/disabled/loading/selected/dark/high-contrast/reduced-motion states must be read from CSS, parent state, or browser defaults; do not invent a class delta.
+- Default: source's unconditional class string(s) above.
+- hover: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- focus: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- active: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- disabled: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- loading: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- error: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- success: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- selected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- unselected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- dark-mode: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- high-contrast: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- reduce-motion: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+
+**Copy (G3) — exact candidate strings in this file.**
+- [NOT SPECIFIED] No user-facing string candidate extracted.
+
+**Responsive.**
+- Component-local responsive utility tokens, if any, are included in the class inventory above (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`). Global stylesheet switching and breakpoint behavior: HANDOFF §2.9 and §3.2–§3.4.
+
+**Animation.** See §4 for source keyframes and transition declarations. Component-local `animate-*`, `transition-*`, `duration-*`, and `ease-*` tokens are recorded in §4.
+
+**Accessibility.**
+- [NOT SPECIFIED] No literal aria/role/title attribute matched in this file; inspect semantic element type and parent usage.
+
+**Flutter notes.** Map source DOM positioning and utility beh
