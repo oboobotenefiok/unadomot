@@ -1,6 +1,14 @@
 import 'dart:math';
 import '../models/listing.dart';
 
+String listingShareLink(Listing listing) =>
+    'https://unadomot.fly.dev/listings/${listing.id}';
+
+String listingShareText(Listing listing) {
+  final code = listing.code == null ? '' : '\nCode: ${listing.code}';
+  return '${naijaShareText(listing)}$code\n${listingShareLink(listing)}';
+}
+
 String naijaShareText(Listing listing) {
   final price = listing.price.toStringAsFixed(0);
   final messages = [
