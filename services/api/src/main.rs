@@ -7,7 +7,7 @@ mod profile_handlers;
 
 use axum::{
     extract::{DefaultBodyLimit, Request},
-    http::{header, HeaderName, HeaderValue, StatusCode},
+    http::{header, HeaderName, HeaderValue, Method, StatusCode},
     middleware::{self, Next},
     response::Response,
 };
@@ -15,7 +15,11 @@ use sqlx::postgres::PgPoolOptions;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex, OnceLock};
 use std::time::{Duration, Instant};
-use tower_http::set_header::SetResponseHeaderLayer;
+use tower_http::{
+    cors::{AllowOrigin, CorsLayer},
+    set_header::SetResponseHeaderLayer,
+    trace::TraceLayer,
+};
 use unadomot_api::adapters::{
     UnconfiguredCallRepository, UnconfiguredMediaSigner, UnconfiguredMessagingRepository,
     UnconfiguredReportRepository, UnconfiguredRepository, UnconfiguredUserRepository,
@@ -264,6 +268,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         allowed_origins,
     };
 
+    let cors = if state.allowed_origins.is_empty() {
+        CorsLayer::permissive()
+    } else {
+        let origins = state
+            .allowed_origins
+            .iter()
+            .filter_map(|origin| origin.parse::<HeaderValue>().ok())
+            .collect::<Vec<_>>();
+        CorsLayer::new()
+            .allow_origin(AllowOrigin::list(origins))
+            .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])
+            .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE])
+    };
+
     let mut app = router(state.clone())
         .merge(public_pages::router(state.clone()))
         .merge(verification::router(state.clone()))
@@ -278,6 +296,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = app
         .layer(DefaultBodyLimit::max(2 * 1024 * 1024))
+        .layer(cors)
+        .layer(TraceLayer::new_for_http())
         .layer(middleware::from_fn(global_rate_limit))
         .layer(middleware::from_fn(request_log))
         .layer(SetResponseHeaderLayer::overriding(

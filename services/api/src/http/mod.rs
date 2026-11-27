@@ -25,9 +25,8 @@ use crate::domain::messaging::{Conversation, ConversationSummary, Message};
 use crate::domain::report::Report;
 use crate::extract::{AdminUser, AuthUser};
 use axum::{
-    extract::{DefaultBodyLimit, Path, Query, Request, State},
-    http::{header, HeaderValue, Method, StatusCode},
-    middleware::{self, Next},
+    extract::{Path, Query, State},
+    http::{header, HeaderValue, StatusCode},
     response::{IntoResponse, Response},
     routing::{get, post},
     Json, Router,
@@ -41,11 +40,7 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration as StdDuration, Instant};
-use tower_http::{
-    cors::{AllowOrigin, CorsLayer},
-    set_header::SetResponseHeaderLayer,
-    trace::TraceLayer,
-};
+use tower_http::set_header::SetResponseHeaderLayer;
 use uuid::Uuid;
 
 pub mod public_pages;
@@ -139,7 +134,7 @@ pub struct ApiError {
 }
 
 impl ApiError {
-    pub(crate) fn new(status: StatusCode, code: &'static str, message: impl Into<String>) -> Self {
+    pub fn new(status: StatusCode, code: &'static str, message: impl Into<String>) -> Self {
         Self {
             status,
             code,
@@ -475,21 +470,6 @@ impl From<Report> for ReportResponse {
 }
 
 pub fn router(state: AppState) -> Router {
-    let limiter_state = state.clone();
-    let cors = if state.allowed_origins.is_empty() {
-        CorsLayer::permissive()
-    } else {
-        let origins = state
-            .allowed_origins
-            .iter()
-            .filter_map(|origin| origin.parse::<HeaderValue>().ok())
-            .collect::<Vec<_>>();
-        CorsLayer::new()
-            .allow_origin(AllowOrigin::list(origins))
-            .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])
-            .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE])
-    };
-
     Router::new()
         .route("/health", get(|| async { "ok" }))
         .route("/ready", get(ready_handler))
@@ -531,7 +511,6 @@ pub fn router(state: AppState) -> Router {
             get(messages_handler).post(send_message_handler),
         )
         .route("/api/conversations/{id}/read", post(mark_read_handler))
-        .layer(DefaultBodyLimit::max(2 * 1024 * 1024))
         .layer(SetResponseHeaderLayer::overriding(
             header::X_CONTENT_TYPE_OPTIONS,
             HeaderValue::from_static("nosniff"),
@@ -544,34 +523,7 @@ pub fn router(state: AppState) -> Router {
             header::REFERRER_POLICY,
             HeaderValue::from_static("strict-origin-when-cross-origin"),
         ))
-        .layer(cors)
-        .layer(TraceLayer::new_for_http())
-        .layer(middleware::from_fn_with_state(limiter_state, rate_limit))
         .with_state(state)
-}
-
-async fn rate_limit(
-    State(state): State<AppState>,
-    request: Request,
-    next: Next,
-) -> Result<Response, ApiError> {
-    let key = request
-        .headers()
-        .get("x-forwarded-for")
-        .and_then(|value| value.to_str().ok())
-        .and_then(|value| value.split(',').next())
-        .map(|value| value.trim().to_string())
-        .unwrap_or_else(|| "unknown".into());
-
-    if !state.limiter.allow(&key).await {
-        return Err(ApiError::new(
-            StatusCode::TOO_MANY_REQUESTS,
-            "rate_limited",
-            "Too many requests. Please try again shortly.",
-        ));
-    }
-
-    Ok(next.run(request).await)
 }
 
 async fn ready_handler(State(state): State<AppState>) -> Result<StatusCode, ApiError> {
