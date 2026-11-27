@@ -167,7 +167,7 @@ class _EditListingScreenState extends State<EditListingScreen> {
               TextFormField(
                 controller: _price,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Monthly rent', prefixText: 'N '),
+                decoration: const InputDecoration(labelText: 'Monthly rent', prefixText: '₦ '),
                 validator: (value) {
                   final price = double.tryParse(value ?? '');
                   return price == null || price <= 0 ? 'Enter a valid rent' : null;
