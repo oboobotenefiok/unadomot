@@ -206,6 +206,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         jwt_secret: jwt_secret.clone(),
         limiter: Arc::new(RateLimiter::new(config.rate_limit_per_minute)),
         allowed_origins: config.allowed_origins.clone(),
+        app_base_url: Arc::new(config.app_base_url.clone()),
     };
 
     let cors = if state.allowed_origins.is_empty() {
