@@ -1,5 +1,6 @@
 pub mod auth;
 pub mod calls;
+pub mod comments;
 pub mod email;
 pub mod listings;
 pub mod media;
