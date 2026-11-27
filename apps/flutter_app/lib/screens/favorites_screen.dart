@@ -49,6 +49,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     }
   }
 
+  Future<void> _removeFavorite(Listing listing) async {
+    await widget.cache.setFavorite(listing.id, false);
+    if (mounted) {
+      setState(() => _favorites = _favorites.where((item) => item.id != listing.id).toList());
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: widget.showAppBar ? AppBar(title: const Text('Favorites')) : null,
@@ -58,55 +65,119 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 ? const Center(
                     child: Text('No favorites yet. Tap the heart on a listing.'),
                   )
-                : ListView.separated(
+                : GridView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: _favorites.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.66,
+                    ),
                     itemBuilder: (context, index) {
                       final listing = _favorites[index];
-                      return Material(
-                        color: UnaColors.surface,
-                        borderRadius: BorderRadius.circular(8),
-                        clipBehavior: Clip.antiAlias,
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: UnaColors.green100,
-                            backgroundImage: listing.media.isEmpty
-                                ? null
-                                : NetworkImage(listing.media.first.url),
-                            child: listing.media.isEmpty
-                                ? const Icon(
-                                    Icons.home_work_outlined,
-                                    color: UnaColors.green700,
-                                  )
-                                : null,
-                          ),
-                          title: Text(listing.title),
-                          subtitle: Text('${listing.lga}, ${listing.state}'),
-                          trailing: Text(
-                            'N${listing.price.toStringAsFixed(0)}',
-                            style: const TextStyle(
-                              color: UnaColors.primary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          onTap: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ListingDetailScreen(
-                                  api: widget.api,
-                                  cache: widget.cache,
-                                  appState: widget.appState,
-                                  listingId: listing.id,
-                                ),
+                      return _FavoriteCard(
+                        listing: listing,
+                        onRemove: () => _removeFavorite(listing),
+                        onTap: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ListingDetailScreen(
+                                api: widget.api,
+                                cache: widget.cache,
+                                appState: widget.appState,
+                                listingId: listing.id,
                               ),
-                            );
-                            _load();
-                          },
-                        ),
+                            ),
+                          );
+                          _load();
+                        },
                       );
                     },
                   ),
       );
+}
+
+class _FavoriteCard extends StatelessWidget {
+  final Listing listing;
+  final VoidCallback onRemove;
+  final VoidCallback onTap;
+
+  const _FavoriteCard({
+    required this.listing,
+    required this.onRemove,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final imageUrl = listing.media.isEmpty ? null : listing.media.first.url;
+    return Material(
+      color: UnaColors.surface,
+      borderRadius: BorderRadius.circular(10),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (imageUrl == null)
+                    Container(
+                      color: UnaColors.green100,
+                      child: const Icon(Icons.home_work_outlined, size: 40, color: UnaColors.green700),
+                    )
+                  else
+                    Image.network(imageUrl, fit: BoxFit.cover),
+                  Positioned(
+                    top: 6,
+                    right: 6,
+                    child: InkWell(
+                      onTap: onRemove,
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(color: Colors.black45, shape: BoxShape.circle),
+                        child: const Icon(Icons.favorite, size: 16, color: Colors.red),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    listing.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: UnaColors.text900, fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '₦${listing.price.toStringAsFixed(0)}',
+                    style: const TextStyle(color: UnaColors.primary, fontSize: 13, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${listing.lga}, ${listing.state}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: UnaColors.text500, fontSize: 11),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
