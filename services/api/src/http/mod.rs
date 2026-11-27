@@ -2,6 +2,7 @@ use crate::application::auth::{
     hash_password, hash_refresh_token, issue_session, login, new_refresh_token, register, AuthError,
     UserRepository,
 };
+use crate::application::calls::CallRepository;
 use crate::application::email::EmailSender;
 use crate::application::listings::{
     add_listing_media, admin_remove_listing, admin_restore_listing, browse_listings,
@@ -122,6 +123,7 @@ pub struct AppState {
     pub messaging: Arc<dyn MessagingRepository>,
     pub reports: Arc<dyn ReportRepository>,
     pub audit: Arc<dyn VerificationRepository>,
+    pub calls: Arc<dyn CallRepository>,
     pub media: Arc<dyn MediaSigner>,
     pub email: Arc<dyn EmailSender>,
     pub pool: Option<sqlx::PgPool>,
