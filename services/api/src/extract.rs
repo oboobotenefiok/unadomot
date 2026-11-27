@@ -12,7 +12,6 @@ pub struct AuthUser {
     pub id: Uuid,
 }
 
-#[async_trait]
 impl FromRequestParts<AppState> for AuthUser {
     type Rejection = ApiError;
 
@@ -63,7 +62,6 @@ pub struct AdminUser {
     pub id: Uuid,
 }
 
-#[async_trait]
 impl FromRequestParts<AppState> for AdminUser {
     type Rejection = ApiError;
 

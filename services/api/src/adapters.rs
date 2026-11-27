@@ -148,6 +148,18 @@ impl UserRepository for UnconfiguredUserRepository {
     async fn suspend_user(&self, _user_id: Uuid) -> Result<bool, AuthError> {
         Err(AuthError::Repository("Persistence not configured".into()))
     }
+
+    async fn link_google_user(&self, _user_id: Uuid, _had_password: bool) -> Result<(), AuthError> {
+        Err(AuthError::Repository("Persistence not configured".into()))
+    }
+
+    async fn create_google_user(&self, _email: &str) -> Result<Uuid, AuthError> {
+        Err(AuthError::Repository("Persistence not configured".into()))
+    }
+
+    async fn set_profile_name_if_empty(&self, _user_id: Uuid, _name: &str) -> Result<(), AuthError> {
+        Err(AuthError::Repository("Persistence not configured".into()))
+    }
 }
 
 pub struct UnconfiguredMessagingRepository;

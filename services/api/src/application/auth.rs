@@ -3,7 +3,7 @@ use argon2::{
     Argon2,
 };
 use async_trait::async_trait;
-use axum::http::{header, HeaderMap, HeaderValue};
+use axum::http::{header, HeaderMap};
 use chrono::{DateTime, Duration, Utc};
 use hmac::{Hmac, Mac};
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
@@ -282,6 +282,7 @@ pub fn hash_refresh_token(token: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use axum::http::HeaderValue;
 
     #[test]
     fn password_hashing_and_verification_work() {
