@@ -10,6 +10,7 @@ import '../data/nigeria_locations.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import '../utils/currency.dart';
 import 'listing_detail_screen.dart';
 import 'messages_screen.dart';
 
@@ -521,7 +522,7 @@ class _MapPopup extends StatelessWidget {
                                     style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
                                   ),
                                   Text(
-                                    '₦${listing.price.toStringAsFixed(0)} • ${listing.lga}',
+                                    '${formatNaira(listing.price)}${listing.lga.isEmpty ? '' : ' • ${listing.lga}'}',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(color: UnaColors.primary, fontSize: 11, fontWeight: FontWeight.w600),
