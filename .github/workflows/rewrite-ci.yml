@@ -88,6 +88,14 @@ jobs:
           flutter analyze --no-fatal-infos
           flutter test
           flutter build apk --debug --dart-define=API_BASE_URL=https://unadomot.fly.dev
+      - name: Verify required Android permissions
+        working-directory: apps/flutter_app
+        run: |
+          AAPT=$(find "$ANDROID_HOME/build-tools" -name aapt | sort -r | head -n 1)
+          APK=build/app/outputs/flutter-apk/app-debug.apk
+          for permission in INTERNET CAMERA RECORD_AUDIO ACCESS_FINE_LOCATION ACCESS_COARSE_LOCATION; do
+            "$AAPT" dump permissions "$APK" | grep -q "android.permission.$permission"
+          done
       - uses: actions/upload-artifact@v4
         if: success()
         with:
