@@ -115,6 +115,44 @@ void main() {
     );
   });
 
+  test('refresh response after sign out is ignored', () async {
+    final gate = Completer<void>();
+    final api = ApiClient(
+      baseUrl: 'https://example.test',
+      client: MockClient((request) async {
+        expect(request.url.path, '/api/auth/refresh');
+        await gate.future;
+        return http.Response(
+          jsonEncode({
+            'token': 'new-token',
+            'refresh_token': 'new-refresh-token',
+            'expires_at': DateTime.now()
+                .add(const Duration(hours: 1))
+                .millisecondsSinceEpoch ~/
+                1000,
+          }),
+          200,
+        );
+      }),
+    );
+    addTearDown(api.close);
+
+    api.restoreSession(
+      'old-token',
+      DateTime.now().toUtc().subtract(const Duration(minutes: 1)),
+      refreshToken: 'old-refresh-token',
+    );
+
+    final refresh = api.refreshSession();
+    await Future<void>.delayed(Duration.zero);
+    api.signOut();
+    gate.complete();
+
+    expect(await refresh, isFalse);
+    expect(api.signedIn, isFalse);
+    expect(api.token, isNull);
+  });
+
   test('server failures do not expose internal response details', () async {
     final api = ApiClient(
       baseUrl: 'https://example.test',
