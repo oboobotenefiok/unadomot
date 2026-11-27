@@ -170,8 +170,8 @@ class _AuthSheetState extends State<AuthSheet> {
                 textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => _submit(),
                 decoration: const InputDecoration(labelText: 'Password'),
-                validator: (value) => value == null || value.length < 8
-                    ? 'Use at least 8 characters'
+                validator: (value) => value == null || value.length < 6
+                    ? 'Use at least 6 characters'
                     : null,
               ),
               if (!_register)
