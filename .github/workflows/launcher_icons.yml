@@ -2,13 +2,6 @@ name: Generate launcher icons
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - rewrite/flutter-rust-postgres
-    paths:
-      - 'apps/flutter_app/pubspec.yaml'
-      - 'apps/flutter_app/assets/unadomot.jpg'
-      - '.github/workflows/launcher_icons.yml'
 
 permissions:
   contents: write
