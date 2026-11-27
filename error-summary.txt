@@ -1,0 +1,12 @@
+warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_audit_screen.dart:5:8 • unused_import
+warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_screen.dart:5:8 • unused_import
+warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_users_screen.dart:5:8 • unused_import
+warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_verification_screen.dart:5:8 • unused_import
+warning • The declaration '_openMessages' isn't referenced. Try removing the declaration of '_openMessages' • lib/screens/listings_screen.dart:205:16 • unused_element
+warning • The declaration '_openFavorites' isn't referenced. Try removing the declaration of '_openFavorites' • lib/screens/listings_screen.dart:214:16 • unused_element
+warning • The declaration '_openProfile' isn't referenced. Try removing the declaration of '_openProfile' • lib/screens/listings_screen.dart:229:16 • unused_element
+warning • The declaration '_openPost' isn't referenced. Try removing the declaration of '_openPost' • lib/screens/listings_screen.dart:243:16 • unused_element
+warning • Unused import: '../theme.dart'. Try removing the import directive • lib/widgets/skeletons.dart:3:8 • unused_import
+::group::❌ /home/runner/work/unadomot/unadomot/apps/flutter_app/test/public_home_test.dart: Home opens signed out and Post prompts for signup (failed)
+Test failed. See exception logs above.
+::error::7 tests passed, 1 failed.
