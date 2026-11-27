@@ -571,6 +571,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               trailing: Switch(
                 value: enabled,
                 onChanged: (value) async {
+                  appLargeText.value = value;
                   await widget.cache.setSetting('large_text', value.toString());
                 },
               ),
