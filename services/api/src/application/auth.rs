@@ -3,6 +3,7 @@ use argon2::{
     Argon2,
 };
 use async_trait::async_trait;
+use axum::http::{header, HeaderMap};
 use chrono::{DateTime, Duration, Utc};
 use hmac::{Hmac, Mac};
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
@@ -84,6 +85,44 @@ pub trait UserRepository: Send + Sync {
     async fn is_admin(&self, user_id: Uuid) -> Result<bool, AuthError>;
     async fn is_active(&self, user_id: Uuid) -> Result<bool, AuthError>;
     async fn suspend_user(&self, user_id: Uuid) -> Result<bool, AuthError>;
+}
+
+pub fn bearer_token(headers: &HeaderMap) -> Result<&str, AuthError> {
+    headers
+        .get(header::AUTHORIZATION)
+        .and_then(|value| value.to_str().ok())
+        .and_then(|value| value.strip_prefix("Bearer "))
+        .ok_or(AuthError::InvalidCredentials)
+}
+
+pub async fn require_active(
+    repository: &dyn UserRepository,
+    user_id: Uuid,
+) -> Result<(), AuthError> {
+    if repository.is_active(user_id).await? {
+        Ok(())
+    } else {
+        Err(AuthError::InvalidCredentials)
+    }
+}
+
+pub async fn require_active_pool(
+    pool: &sqlx::PgPool,
+    user_id: Uuid,
+) -> Result<(), AuthError> {
+    let active: Option<bool> = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM users WHERE id = $1 AND status = 'active')",
+    )
+    .bind(user_id)
+    .fetch_optional(pool)
+    .await
+    .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+    if active.unwrap_or(false) {
+        Ok(())
+    } else {
+        Err(AuthError::InvalidCredentials)
+    }
 }
 
 pub async fn register(
