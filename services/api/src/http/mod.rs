@@ -773,6 +773,7 @@ fn valid_media_url(url: &str) -> bool {
 
 fn valid_cloudinary_public_id(public_id: &str) -> bool {
     public_id.starts_with("unadomot/")
+        && !public_id.contains("..")
         && public_id.len() <= 255
         && public_id
             .chars()
