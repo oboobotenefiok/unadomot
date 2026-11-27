@@ -4,6 +4,7 @@ import '../data/local_cache.dart';
 import '../state/app_state.dart';
 import '../utils/currency.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/responsive_grid.dart';
 import 'listing_detail_screen.dart';
 
 class PublicProfileScreen extends StatefulWidget {
@@ -251,10 +252,8 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: _listings.length,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
+                      gridDelegate: responsiveGridDelegate(
+                        context,
                         childAspectRatio: 0.78,
                       ),
                       itemBuilder: (context, index) {
