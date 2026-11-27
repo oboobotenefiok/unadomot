@@ -6,17 +6,19 @@ WORKFLOW="rewrite-ci.yml"
 OUT="thisrun.txt"
 ALERT_SOUND="${ALERT_SOUND:-$HOME/hi.m4a}"
 REPO=$(gh repo view --json nameWithOwner --jq .nameWithOwner)
+TMP_DIR="${TMPDIR:-$PWD/.ci-tmp}"
+mkdir -p "$TMP_DIR"
 
 fetch_failed_logs() {
   local run_id="$1"
   local attempt
 
   for attempt in 1 2 3; do
-    if gh run view "$run_id" --log-failed > /tmp/ci-failed.log 2>/tmp/ci-failed.err; then
-      cat /tmp/ci-failed.log
+    if gh run view "$run_id" --log-failed > "$TMP_DIR/ci-failed.log" 2>"$TMP_DIR/ci-failed.err"; then
+      cat "$TMP_DIR/ci-failed.log"
       return 0
     fi
-    echo "Failed-log attempt $attempt: $(tr '\n' ' ' < /tmp/ci-failed.err)"
+    echo "Failed-log attempt $attempt: $(tr '\n' ' ' < "$TMP_DIR/ci-failed.err")"
     sleep $((attempt * 5))
   done
 
