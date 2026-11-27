@@ -1,4 +1,5 @@
 [advisories]
 # libsqlite3-sys is an optional dependency of sqlx-sqlite. This API only
 # enables the postgres driver, so the SQLite C library is not linked or used.
-ignore = ["RUSTSEC-2026-0459"]
+# rsa 0.9 is pulled in by the optional sqlx-mysql driver, which is also unused.
+ignore = ["RUSTSEC-2026-0459", "RUSTSEC-2023-0071"]
