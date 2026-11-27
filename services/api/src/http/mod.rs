@@ -22,6 +22,7 @@ use crate::domain::listing::{
 };
 use crate::domain::messaging::{Conversation, ConversationSummary, Message};
 use crate::domain::report::Report;
+use crate::extract::AuthUser;
 use axum::{
     extract::{DefaultBodyLimit, Path, Query, Request, State},
     http::{header, HeaderMap, HeaderValue, Method, StatusCode},
@@ -135,7 +136,7 @@ pub struct ApiError {
 }
 
 impl ApiError {
-    fn new(status: StatusCode, code: &'static str, message: impl Into<String>) -> Self {
+    pub(crate) fn new(status: StatusCode, code: &'static str, message: impl Into<String>) -> Self {
         Self {
             status,
             code,
@@ -825,9 +826,8 @@ async fn list_listings(
 
 async fn my_listings_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
 ) -> Result<Json<Vec<ListingResponse>>, ApiError> {
-    let user = authorize(&state, &headers).await?;
     list_my_listings(state.listings.as_ref(), user.id)
         .await
         .map(|items| Json(items.into_iter().map(ListingResponse::from).collect()))
@@ -836,10 +836,9 @@ async fn my_listings_handler(
 
 async fn create_listing_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
     Json(request): Json<CreateListingRequest>,
 ) -> Result<Json<ListingResponse>, ApiError> {
-    let user = authorize(&state, &headers).await?;
     let input = NewListing {
         landlord_id: user.id,
         title: request.title,
@@ -1344,7 +1343,7 @@ fn messaging_error(error: MessagingError) -> ApiError {
             StatusCode::FORBIDDEN,
             "forbidden",
             "You are not a participant in this conversation",
-        ),
+        );
         MessagingError::InvalidInput(message) => {
             ApiError::new(StatusCode::BAD_REQUEST, "validation_error", message)
         }
