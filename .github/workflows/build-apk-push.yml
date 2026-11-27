@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -165,3 +165,25 @@ jobs:
         with:
           name: unadomot-release-apk
           path: apps/flutter_app/build/app/outputs/flutter-apk/app-release.apk
+      - name: Publish release failure
+        if: failure()
+        run: |
+          cp /tmp/apk.log /tmp/apk-full.log 2>/dev/null || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan ci-logs-apk
+          git rm -rf . >/dev/null 2>&1 || true
+          git clean -fdx >/dev/null 2>&1 || true
+          cp /tmp/apk-full.log apk-full.log 2>/dev/null || true
+          {
+            echo "# Release APK failure"
+            echo
+            echo "- Commit: ${GITHUB_SHA}"
+            echo "- Ref: ${GITHUB_REF_NAME}"
+            echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "- Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > status.md
+          git add status.md
+          [ -f apk-full.log ] && git add apk-full.log
+          git commit -m "Release APK failure for ${GITHUB_SHA}"
+          git push --force origin ci-logs-apk
