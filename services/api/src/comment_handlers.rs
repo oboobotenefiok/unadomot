@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::{header, HeaderMap, StatusCode},
     response::IntoResponse,
     routing::{delete, get, post},
@@ -65,6 +65,12 @@ struct CreateCommentRequest {
 #[derive(Deserialize)]
 struct ReactionRequest {
     emoji: String,
+}
+
+#[derive(Deserialize, Default)]
+struct CommentQuery {
+    limit: Option<i64>,
+    offset: Option<i64>,
 }
 
 async fn find_by_code(
@@ -138,7 +144,11 @@ async fn delete_comment(
 async fn list_comments(
     State(state): State<CommentState>,
     Path(listing_id): Path<Uuid>,
+    Query(query): Query<CommentQuery>,
 ) -> axum::response::Response {
+    let limit = query.limit.unwrap_or(50).clamp(1, 100);
+    let offset = query.offset.unwrap_or(0).max(0);
+
     let rows = sqlx::query_as::<_, (Uuid, Uuid, String, String, Option<String>, chrono::DateTime<chrono::Utc>, Value)>(r#"
         SELECT c.id, c.user_id, COALESCE(p.name, 'User') AS name,
                c.body, p.photo_url, c.created_at,
@@ -156,9 +166,11 @@ async fn list_comments(
         LEFT JOIN user_profiles p ON p.user_id = c.user_id
         WHERE c.listing_id = $1
         ORDER BY c.created_at ASC
-        LIMIT 200
+        LIMIT $2 OFFSET $3
     "#)
     .bind(listing_id)
+    .bind(limit)
+    .bind(offset)
     .fetch_all(&state.pool)
     .await;
 
