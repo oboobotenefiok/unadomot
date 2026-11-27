@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../state/app_state.dart';
+import '../theme.dart';
+import 'reset_password_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   final AppState appState;
@@ -74,6 +76,15 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
+  void _openForgotPassword() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ResetPasswordScreen(api: widget.appState.api),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(title: Text(_register ? 'Create account' : 'Sign in')),
@@ -85,17 +96,32 @@ class _AuthScreenState extends State<AuthScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (_register)
+                  Text(
+                    _register ? 'Create your account' : 'Welcome back',
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _register
+                        ? 'Sign up to save listings, message listers and post your own.'
+                        : 'Sign in to continue where you left off.',
+                    style: const TextStyle(color: UnaColors.text500, fontSize: 14),
+                  ),
+                  const SizedBox(height: 24),
+                  if (_register) ...[
                     TextFormField(
                       controller: _name,
+                      textInputAction: TextInputAction.next,
                       decoration: const InputDecoration(labelText: 'Full name'),
                       validator: (value) => value == null || value.trim().isEmpty
                           ? 'Enter your name'
                           : null,
                     ),
-                  const SizedBox(height: 12),
+                    const SizedBox(height: 12),
+                  ],
                   TextFormField(
                     controller: _email,
+                    textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(labelText: 'Email'),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) => value == null || !value.contains('@')
@@ -106,18 +132,37 @@ class _AuthScreenState extends State<AuthScreen> {
                   TextFormField(
                     controller: _password,
                     obscureText: true,
+                    textInputAction: TextInputAction.done,
+                    onFieldSubmitted: (_) => _submit(),
                     decoration: const InputDecoration(labelText: 'Password'),
-                    validator: (value) => value == null || value.length < 8
-                        ? 'Use at least 8 characters'
+                    validator: (value) => value == null || value.length < 6
+                        ? 'Use at least 6 characters'
                         : null,
                   ),
-                  const SizedBox(height: 16),
-                  if (_error != null)
-                    Text(
-                      _error!,
-                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  if (!_register)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: _busy ? null : _openForgotPassword,
+                        child: const Text('Forgot password?'),
+                      ),
                     ),
-                  const SizedBox(height: 16),
+                  if (_error != null) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFEF2F2),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFFFECACA)),
+                      ),
+                      child: Text(
+                        _error!,
+                        style: const TextStyle(color: UnaColors.error, fontSize: 13),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 20),
                   FilledButton(
                     onPressed: _busy ? null : _submit,
                     child: Text(
@@ -135,7 +180,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         ? null
                         : () => setState(() => _register = !_register),
                     child: Text(
-                      _register ? 'I already have an account' : 'Create an account',
+                      _register ? 'I already have an account' : 'New to UnaDomot? Create an account',
                     ),
                   ),
                 ],
