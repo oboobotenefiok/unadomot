@@ -1,53 +1,32 @@
-# CI run 2026-11-27T15:44:57Z
+# CI run 2026-11-27T15:53:08Z
 Branch: rewrite/flutter-rust-postgres
 
 ## Trigger
-https://github.com/oboobotenefiok/unadomot/actions/runs/46027646855
+https://github.com/oboobotenefiok/unadomot/actions/runs/46028830439
 
 ## Recent runs
-queued		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46027646855	5s	2026-11-27T15:45:01Z
+in_progress		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46028830439	6s	2026-11-27T15:53:11Z
+completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46027646855	3m35s	2026-11-27T15:45:01Z
 completed	cancelled	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46027602710	23s	2026-11-27T15:44:42Z
 completed	cancelled	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46027413219	1m37s	2026-11-27T15:43:23Z
 completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46026357345	2m43s	2026-11-27T15:36:07Z
-completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46025403506	2m46s	2026-11-27T15:29:45Z
 
-Run ID: 46027646855
-URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46027646855
+Run ID: 46028830439
+URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46028830439
 
 ## Watch
 
-X rewrite/flutter-rust-postgres Rewrite CI · 46027646855
+X rewrite/flutter-rust-postgres Rewrite CI · 46028830439
 Triggered via workflow_dispatch about 3 minutes ago
 
 JOBS
-X docker in 2m4s (ID 140603106452)
+X docker in 1m49s (ID 140607092955)
   ✓ Set up job
   ✓ Run actions/checkout@v4
   X Build API image
   ✓ Post Run actions/checkout@v4
   ✓ Complete job
-X audit in 3m20s (ID 140603106746)
-  ✓ Set up job
-  ✓ Run actions/checkout@v4
-  ✓ Run dtolnay/rust-toolchain@stable
-  ✓ Install cargo-audit
-  X Audit dependencies
-  ✓ Post Run actions/checkout@v4
-  ✓ Complete job
-X rust in 50s (ID 140603106776)
-  ✓ Set up job
-  ✓ Initialize containers
-  ✓ Run actions/checkout@v4
-  ✓ Run dtolnay/rust-toolchain@stable
-  ✓ Run Swatinem/rust-cache@v2
-  X Clippy
-  - Tests
-  - Release build
-  - Post Run Swatinem/rust-cache@v2
-  ✓ Post Run actions/checkout@v4
-  ✓ Stop containers
-  ✓ Complete job
-X android in 1m38s (ID 140603107755)
+X android in 1m35s (ID 140607093252)
   ✓ Set up job
   ✓ Run actions/checkout@v4
   ✓ Run actions/setup-java@v4
@@ -66,7 +45,28 @@ X android in 1m38s (ID 140603107755)
   ✓ Post Run actions/setup-java@v4
   ✓ Post Run actions/checkout@v4
   ✓ Complete job
-X publish-logs in 6s (ID 140604779185)
+X rust in 55s (ID 140607093382)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Run actions/checkout@v4
+  ✓ Run dtolnay/rust-toolchain@stable
+  ✓ Run Swatinem/rust-cache@v2
+  X Clippy
+  - Tests
+  - Release build
+  - Post Run Swatinem/rust-cache@v2
+  ✓ Post Run actions/checkout@v4
+  ✓ Stop containers
+  ✓ Complete job
+X audit in 2m42s (ID 140607093401)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run dtolnay/rust-toolchain@stable
+  ✓ Install cargo-audit
+  X Audit dependencies
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+X publish-logs in 4s (ID 140608424726)
   ✓ Set up job
   ✓ Run actions/checkout@v4
   X Fetch failed run logs
@@ -79,19 +79,7 @@ ANNOTATIONS
 docker: .github#2
 
 X Process completed with exit code 1.
-docker: .github#830
-
-! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-audit: .github#2
-
-X Process completed with exit code 1.
-audit: .github#44
-
-! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-rust: .github#2
-
-X Process completed with exit code 101.
-rust: .github#139
+docker: .github#834
 
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, actions/setup-java@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 android: .github#2
@@ -106,43 +94,49 @@ android: .github#59
 android: .github#18
 
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+rust: .github#2
+
+X Process completed with exit code 101.
+rust: .github#139
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+audit: .github#2
+
+X Process completed with exit code 1.
+audit: .github#44
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 publish-logs: .github#2
 
 X Process completed with exit code 1.
 publish-logs: .github#11
 
 
-To see what failed, try: gh run view 46027646855 --log-failed
-View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46027646855
+To see what failed, try: gh run view 46028830439 --log-failed
+View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46028830439
 
 ## Failed logs
-/data/data/com.termux/files/home/unadomot/scripts/ci.sh: line 15: /tmp/ci-failed.log: No such file or directory
-/data/data/com.termux/files/home/unadomot/scripts/ci.sh: line 19: /tmp/ci-failed.err: No such file or directory
-Failed-log attempt 1: 
-/data/data/com.termux/files/home/unadomot/scripts/ci.sh: line 15: /tmp/ci-failed.log: No such file or directory
-/data/data/com.termux/files/home/unadomot/scripts/ci.sh: line 19: /tmp/ci-failed.err: No such file or directory
-Failed-log attempt 2: 
-/data/data/com.termux/files/home/unadomot/scripts/ci.sh: line 15: /tmp/ci-failed.log: No such file or directory
-/data/data/com.termux/files/home/unadomot/scripts/ci.sh: line 19: /tmp/ci-failed.err: No such file or directory
-Failed-log attempt 3: 
+Failed-log attempt 1: error connecting to results-receiver.actions.githubusercontent.com check your internet connection or https://githubstatus.com 
+Failed-log attempt 2: error connecting to results-receiver.actions.githubusercontent.com check your internet connection or https://githubstatus.com 
+Failed-log attempt 3: error connecting to results-receiver.actions.githubusercontent.com check your internet connection or https://githubstatus.com 
 Failed-log endpoint unavailable. Falling back to per-job logs.
 
-### Job: docker (140603106452)
+### Job: docker (140607092955)
 error connecting to results-receiver.actions.githubusercontent.com
 check your internet connection or https://githubstatus.com
 
-### Job: audit (140603106746)
+### Job: android (140607093252)
 error connecting to results-receiver.actions.githubusercontent.com
 check your internet connection or https://githubstatus.com
 
-### Job: rust (140603106776)
+### Job: rust (140607093382)
 error connecting to results-receiver.actions.githubusercontent.com
 check your internet connection or https://githubstatus.com
 
-### Job: android (140603107755)
+### Job: audit (140607093401)
 error connecting to results-receiver.actions.githubusercontent.com
 check your internet connection or https://githubstatus.com
 
-### Job: publish-logs (140604779185)
+### Job: publish-logs (140608424726)
 error connecting to results-receiver.actions.githubusercontent.com
 check your internet connection or https://githubstatus.com
