@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:unadomot/api/api_client.dart';
 import 'package:unadomot/data/local_cache.dart';
 import 'package:unadomot/main.dart';
@@ -21,6 +22,9 @@ class _MemoryCache extends LocalCache {
 }
 
 void main() {
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
+
   testWidgets('Home opens signed out and Post prompts for signup', (tester) async {
     final api = _PublicApi();
     final cache = _MemoryCache();
