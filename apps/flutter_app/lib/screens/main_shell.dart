@@ -28,6 +28,7 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _index = 0;
+  final List<int> _history = [];
   String? _photoUrl;
   String? _displayName;
   bool _wasSignedIn = false;
@@ -74,8 +75,24 @@ class _MainShellState extends State<MainShell> {
   }
 
   void _go(int index) {
+    if (index == _index) return;
+    _history.add(_index);
     setState(() => _index = index);
     if (index == 4 && widget.appState.signedIn) _loadProfile();
+  }
+
+  void _goHome() {
+    _history.clear();
+    setState(() => _index = 0);
+  }
+
+  void _back() {
+    if (_history.isEmpty) {
+      _goHome();
+      return;
+    }
+    final previous = _history.removeLast();
+    setState(() => _index = previous);
   }
 
   Future<void> _openProfile() async {
@@ -112,7 +129,7 @@ class _MainShellState extends State<MainShell> {
         api: widget.api,
         cache: widget.cache,
         showAppBar: false,
-        onExit: () => _go(0),
+        onExit: _goHome,
       ),
       MessagesScreen(api: widget.api, showAppBar: false),
       ProfileScreen(
@@ -123,79 +140,85 @@ class _MainShellState extends State<MainShell> {
       ),
     ];
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            if (_index != 0)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  tooltip: 'Back to home',
-                  onPressed: () => _go(0),
-                  icon: const Icon(Icons.arrow_back),
+    return PopScope(
+      canPop: _history.isEmpty,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _back();
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              if (_index != 0)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    tooltip: 'Back',
+                    onPressed: _back,
+                    icon: const Icon(Icons.arrow_back),
+                  ),
                 ),
+              Expanded(
+                child: IndexedStack(index: _index, children: pages),
               ),
-            Expanded(
-              child: IndexedStack(index: _index, children: pages),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        height: 68,
-        padding: EdgeInsets.zero,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _NavIcon(
-              label: 'Home',
-              selected: _index == 0,
-              onTap: () => _go(0),
-              iconWidget: _BrandIcon(selected: _index == 0),
-            ),
-            _NavIcon(
-              icon: Icons.favorite_border,
-              label: 'Favorites',
-              selected: _index == 1,
-              onTap: () => _go(1),
-            ),
-            GestureDetector(
-              onTap: _openPost,
-              child: Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: _index == 2 ? UnaColors.green900 : UnaColors.green700,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: UnaColors.green900.withValues(alpha: 0.25),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+        bottomNavigationBar: BottomAppBar(
+          height: 68,
+          padding: EdgeInsets.zero,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _NavIcon(
+                label: 'Home',
+                selected: _index == 0,
+                onTap: _goHome,
+                iconWidget: _BrandIcon(selected: _index == 0),
+              ),
+              _NavIcon(
+                icon: Icons.favorite_border,
+                label: 'Favorites',
+                selected: _index == 1,
+                onTap: () => _go(1),
+              ),
+              GestureDetector(
+                onTap: _openPost,
+                child: Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: _index == 2 ? UnaColors.green900 : UnaColors.green700,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: UnaColors.green900.withValues(alpha: 0.25),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.add, color: Colors.white, size: 28),
                 ),
-                child: const Icon(Icons.add, color: Colors.white, size: 28),
               ),
-            ),
-            _NavIcon(
-              icon: Icons.chat_bubble_outline,
-              label: 'Messages',
-              selected: _index == 3,
-              onTap: () => _go(3),
-            ),
-            _NavIcon(
-              label: 'Profile',
-              selected: _index == 4,
-              onTap: _openProfile,
-              iconWidget: _ProfileIcon(
+              _NavIcon(
+                icon: Icons.chat_bubble_outline,
+                label: 'Messages',
+                selected: _index == 3,
+                onTap: () => _go(3),
+              ),
+              _NavIcon(
+                label: 'Profile',
                 selected: _index == 4,
-                photoUrl: _photoUrl,
-                name: _displayName,
+                onTap: _openProfile,
+                iconWidget: _ProfileIcon(
+                  selected: _index == 4,
+                  photoUrl: _photoUrl,
+                  name: _displayName,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
