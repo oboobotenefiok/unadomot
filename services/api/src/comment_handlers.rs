@@ -6,7 +6,7 @@ use axum::{
     Json, Router,
 };
 use serde::Deserialize;
-use serde_json::{json, Value};
+use serde_json::json;
 use unadomot_api::extract::AuthUser;
 use unadomot_api::http::AppState;
 use uuid::Uuid;
@@ -47,8 +47,8 @@ async fn find_by_code(
     State(state): State<AppState>,
     Path(code): Path<String>,
 ) -> axum::response::Response {
-    let pool = match state.pool.as_ref() {
-        Some(pool) => pool,
+    let comments = match state.comments.as_ref() {
+        Some(comments) => comments,
         None => return error(StatusCode::SERVICE_UNAVAILABLE, "Listing lookup unavailable"),
     };
 
@@ -57,14 +57,7 @@ async fn find_by_code(
         return error(StatusCode::BAD_REQUEST, "Enter a valid listing code");
     }
 
-    let id = sqlx::query_scalar::<_, Uuid>(
-        "SELECT id FROM listings WHERE upper(code) = $1 AND deleted_at IS NULL",
-    )
-    .bind(&code)
-    .fetch_optional(pool)
-    .await;
-
-    match id {
+    match comments.find_listing_by_code(&code).await {
         Ok(Some(id)) => Json(json!({ "id": id, "code": code })).into_response(),
         Ok(None) => error(StatusCode::NOT_FOUND, "No listing matches that code"),
         Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Listing lookup unavailable"),
@@ -76,50 +69,28 @@ async fn delete_comment(
     user: AuthUser,
     Path(comment_id): Path<Uuid>,
 ) -> axum::response::Response {
-    let pool = match state.pool.as_ref() {
-        Some(pool) => pool,
+    let comments = match state.comments.as_ref() {
+        Some(comments) => comments,
         None => return error(StatusCode::SERVICE_UNAVAILABLE, "Comment unavailable"),
     };
 
-    let row = sqlx::query_as::<_, (Uuid, Uuid)>(
-        "SELECT user_id, listing_id FROM listing_comments WHERE id = $1",
-    )
-    .bind(comment_id)
-    .fetch_optional(pool)
-    .await;
-
-    let (owner, listing_id) = match row {
+    let (owner, listing_id) = match comments.comment_owner_and_listing(comment_id).await {
         Ok(Some(row)) => row,
         Ok(None) => return error(StatusCode::NOT_FOUND, "Comment not found"),
         Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Comment unavailable"),
     };
 
-    let is_admin: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM admin_roles WHERE user_id = $1)",
-    )
-    .bind(user.id)
-    .fetch_one(pool)
-    .await
-    .unwrap_or(false);
-
-    let is_listing_owner: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM listings WHERE id = $1 AND landlord_id = $2 AND deleted_at IS NULL)",
-    )
-    .bind(listing_id)
-    .bind(user.id)
-    .fetch_one(pool)
-    .await
-    .unwrap_or(false);
+    let is_admin = state.users.is_admin(user.id).await.unwrap_or(false);
+    let is_listing_owner = comments
+        .is_listing_owner(listing_id, user.id)
+        .await
+        .unwrap_or(false);
 
     if owner != user.id && !is_admin && !is_listing_owner {
         return error(StatusCode::FORBIDDEN, "You cannot delete this comment");
     }
 
-    match sqlx::query("DELETE FROM listing_comments WHERE id = $1")
-        .bind(comment_id)
-        .execute(pool)
-        .await
-    {
+    match comments.delete_comment(comment_id).await {
         Ok(_) => Json(json!({ "ok": true })).into_response(),
         Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Could not delete comment"),
     }
@@ -130,63 +101,32 @@ async fn list_comments(
     Path(listing_id): Path<Uuid>,
     Query(query): Query<CommentQuery>,
 ) -> axum::response::Response {
-    let pool = match state.pool.as_ref() {
-        Some(pool) => pool,
+    let comments = match state.comments.as_ref() {
+        Some(comments) => comments,
         None => return error(StatusCode::SERVICE_UNAVAILABLE, "Comments unavailable"),
     };
 
-    let visible: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM listings WHERE id = $1 AND deleted_at IS NULL)",
-    )
-    .bind(listing_id)
-    .fetch_one(pool)
-    .await
-    .unwrap_or(false);
-
-    if !visible {
-        return error(StatusCode::NOT_FOUND, "Listing not found");
+    match comments.listing_exists(listing_id).await {
+        Ok(true) => {}
+        Ok(false) => return error(StatusCode::NOT_FOUND, "Listing not found"),
+        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Comments unavailable"),
     }
 
     let limit = query.limit.unwrap_or(50).clamp(1, 100);
     let offset = query.offset.unwrap_or(0).max(0);
 
-    let rows = sqlx::query_as::<_, (Uuid, Uuid, String, String, Option<String>, chrono::DateTime<chrono::Utc>, Value)>(r#"
-        SELECT c.id, c.user_id, COALESCE(p.name, 'User') AS name,
-               c.body, p.photo_url, c.created_at,
-               COALESCE(
-                   (SELECT json_agg(json_build_object('emoji', r.emoji, 'count', r.count))
-                    FROM (
-                        SELECT emoji, COUNT(*)::int AS count
-                        FROM listing_comment_reactions
-                        WHERE comment_id = c.id
-                        GROUP BY emoji
-                    ) r),
-                   '[]'::json
-               ) AS reactions
-        FROM listing_comments c
-        LEFT JOIN user_profiles p ON p.user_id = c.user_id
-        WHERE c.listing_id = $1
-        ORDER BY c.created_at ASC
-        LIMIT $2 OFFSET $3
-    "#)
-    .bind(listing_id)
-    .bind(limit)
-    .bind(offset)
-    .fetch_all(pool)
-    .await;
-
-    match rows {
+    match comments.list_comments(listing_id, limit, offset).await {
         Ok(rows) => Json(
             rows.into_iter()
-                .map(|(id, user_id, name, body, photo_url, created_at, reactions)| {
+                .map(|row| {
                     json!({
-                        "id": id,
-                        "user_id": user_id,
-                        "name": name,
-                        "body": body,
-                        "photo_url": photo_url,
-                        "created_at": created_at,
-                        "reactions": reactions,
+                        "id": row.id,
+                        "user_id": row.user_id,
+                        "name": row.name,
+                        "body": row.body,
+                        "photo_url": row.photo_url,
+                        "created_at": row.created_at,
+                        "reactions": row.reactions,
                     })
                 })
                 .collect::<Vec<_>>(),
@@ -202,8 +142,8 @@ async fn create_comment(
     Path(listing_id): Path<Uuid>,
     Json(request): Json<CreateCommentRequest>,
 ) -> axum::response::Response {
-    let pool = match state.pool.as_ref() {
-        Some(pool) => pool,
+    let comments = match state.comments.as_ref() {
+        Some(comments) => comments,
         None => return error(StatusCode::SERVICE_UNAVAILABLE, "Comments unavailable"),
     };
 
@@ -212,50 +152,26 @@ async fn create_comment(
         return error(StatusCode::BAD_REQUEST, "Comment must be 1 to 1000 characters");
     }
 
-    let exists: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM listings WHERE id = $1 AND deleted_at IS NULL)",
-    )
-    .bind(listing_id)
-    .fetch_one(pool)
-    .await
-    .unwrap_or(false);
-    if !exists {
-        return error(StatusCode::NOT_FOUND, "Listing not found");
+    match comments.listing_exists(listing_id).await {
+        Ok(true) => {}
+        Ok(false) => return error(StatusCode::NOT_FOUND, "Listing not found"),
+        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Comments unavailable"),
     }
 
-    let row = sqlx::query_as::<_, (Uuid, Uuid, String, Option<String>, chrono::DateTime<chrono::Utc>)>(
-        "INSERT INTO listing_comments (listing_id, user_id, body) VALUES ($1, $2, $3)
-         RETURNING id, user_id, body, (SELECT photo_url FROM user_profiles WHERE user_id = $2), created_at",
-    )
-    .bind(listing_id)
-    .bind(user.id)
-    .bind(body)
-    .fetch_one(pool)
-    .await;
-
-    match row {
-        Ok((id, user_id, body, photo_url, created_at)) => {
-            let name: String = sqlx::query_scalar(
-                "SELECT COALESCE(name, 'User') FROM user_profiles WHERE user_id = $1",
-            )
-            .bind(user_id)
-            .fetch_optional(pool)
-            .await
-            .ok()
-            .flatten()
-            .unwrap_or_else(|| "User".into());
-
-            (StatusCode::CREATED, Json(json!({
-                "id": id,
-                "user_id": user_id,
-                "name": name,
-                "body": body,
-                "photo_url": photo_url,
-                "created_at": created_at,
+    match comments.create_comment(listing_id, user.id, body).await {
+        Ok(comment) => (
+            StatusCode::CREATED,
+            Json(json!({
+                "id": comment.id,
+                "user_id": comment.user_id,
+                "name": comment.name,
+                "body": comment.body,
+                "photo_url": comment.photo_url,
+                "created_at": comment.created_at,
                 "reactions": [],
-            })))
-            .into_response()
-        }
+            })),
+        )
+            .into_response(),
         Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Could not post comment"),
     }
 }
@@ -266,8 +182,8 @@ async fn toggle_reaction(
     Path(comment_id): Path<Uuid>,
     Json(request): Json<ReactionRequest>,
 ) -> axum::response::Response {
-    let pool = match state.pool.as_ref() {
-        Some(pool) => pool,
+    let comments = match state.comments.as_ref() {
+        Some(comments) => comments,
         None => return error(StatusCode::SERVICE_UNAVAILABLE, "Comments unavailable"),
     };
 
@@ -276,56 +192,21 @@ async fn toggle_reaction(
         return error(StatusCode::BAD_REQUEST, "Unsupported reaction");
     }
 
-    let visible: bool = sqlx::query_scalar(
-        "SELECT EXISTS(
-            SELECT 1 FROM listing_comments c
-            JOIN listings l ON l.id = c.listing_id
-            WHERE c.id = $1 AND l.deleted_at IS NULL
-        )",
-    )
-    .bind(comment_id)
-    .fetch_one(pool)
-    .await
-    .unwrap_or(false);
-
-    if !visible {
-        return error(StatusCode::NOT_FOUND, "Comment not found");
+    match comments.comment_visible(comment_id).await {
+        Ok(true) => {}
+        Ok(false) => return error(StatusCode::NOT_FOUND, "Comment not found"),
+        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Comments unavailable"),
     }
 
-    let removed = sqlx::query(
-        "DELETE FROM listing_comment_reactions WHERE comment_id = $1 AND user_id = $2 AND emoji = $3",
-    )
-    .bind(comment_id)
-    .bind(user.id)
-    .bind(emoji)
-    .execute(pool)
-    .await
-    .map(|result| result.rows_affected() > 0)
-    .unwrap_or(false);
-
-    if !removed {
-        let _ = sqlx::query(
-            "INSERT INTO listing_comment_reactions (comment_id, user_id, emoji) VALUES ($1, $2, $3)
-             ON CONFLICT DO NOTHING",
-        )
-        .bind(comment_id)
-        .bind(user.id)
-        .bind(emoji)
-        .execute(pool)
-        .await;
+    match comments.toggle_reaction(comment_id, user.id, emoji).await {
+        Ok((active, rows)) => Json(json!({
+            "active": active,
+            "reactions": rows
+                .into_iter()
+                .map(|(emoji, count)| json!({"emoji": emoji, "count": count}))
+                .collect::<Vec<_>>(),
+        }))
+        .into_response(),
+        Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Comments unavailable"),
     }
-
-    let rows = sqlx::query_as::<_, (String, i32)>(
-        "SELECT emoji, COUNT(*)::int FROM listing_comment_reactions WHERE comment_id = $1 GROUP BY emoji",
-    )
-    .bind(comment_id)
-    .fetch_all(pool)
-    .await
-    .unwrap_or_default();
-
-    Json(json!({
-        "active": !removed,
-        "reactions": rows.into_iter().map(|(emoji, count)| json!({"emoji": emoji, "count": count})).collect::<Vec<_>>(),
-    }))
-    .into_response()
 }

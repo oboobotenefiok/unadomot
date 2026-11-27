@@ -38,7 +38,8 @@ use unadomot_api::config::Config;
 use unadomot_api::http::{public_pages, router, verification, AppState, RateLimiter};
 use unadomot_api::infrastructure::cloudinary::CloudinarySigner;
 use unadomot_api::infrastructure::postgres::{
-    call_repository::PostgresCallRepository, listing_repository::PostgresListingRepository,
+    call_repository::PostgresCallRepository, comment_repository::PostgresCommentRepository,
+    listing_repository::PostgresListingRepository,
     messaging_repository::PostgresMessagingRepository, report_repository::PostgresReportRepository,
     user_repository::PostgresUserRepository,
     verification_repository::PostgresVerificationRepository,
@@ -180,6 +181,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         None => Arc::new(UnconfiguredEmailSender),
     };
 
+    let comments = profile_pool
+        .as_ref()
+        .map(|pool| Arc::new(PostgresCommentRepository::new(pool.clone())) as Arc<dyn unadomot_api::application::comments::CommentRepository>);
+
     let state = AppState {
         users: users.clone(),
         listings,
@@ -190,6 +195,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         email,
         pool: profile_pool.clone(),
         calls,
+        comments,
         jwt_secret: jwt_secret.clone(),
         limiter: Arc::new(RateLimiter::new(config.rate_limit_per_minute)),
         allowed_origins: config.allowed_origins.clone(),

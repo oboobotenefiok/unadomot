@@ -3,6 +3,7 @@ use crate::application::auth::{
     UserRepository,
 };
 use crate::application::calls::CallRepository;
+use crate::application::comments::CommentRepository;
 use crate::application::email::EmailSender;
 use crate::application::listings::{
     add_listing_media, admin_remove_listing, admin_restore_listing, browse_listings,
@@ -115,6 +116,7 @@ pub struct AppState {
     pub reports: Arc<dyn ReportRepository>,
     pub audit: Arc<dyn VerificationRepository>,
     pub calls: Arc<dyn CallRepository>,
+    pub comments: Option<Arc<dyn CommentRepository>>,
     pub media: Arc<dyn MediaSigner>,
     pub email: Arc<dyn EmailSender>,
     pub pool: Option<sqlx::PgPool>,
