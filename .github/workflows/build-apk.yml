@@ -143,6 +143,16 @@ jobs:
           exec > >(tee -a /tmp/apk.log) 2>&1
           set -e
           flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Run Flutter tests
+        working-directory: apps/flutter_app
+        run: |
+          exec > >(tee -a /tmp/apk.log) 2>&1
+          set -e
+          if [ -d test ]; then
+            flutter test
+          else
+            echo "No test directory found; skipping flutter test."
+          fi
       - name: Build release APK
         working-directory: apps/flutter_app
         run: |
