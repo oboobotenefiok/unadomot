@@ -46,7 +46,16 @@ jobs:
       - name: Clippy
         run: cargo clippy --all-targets -- -D warnings
       - name: Tests
-        run: cargo test
+        run: cargo test --all-targets
+      - name: Release build
+        run: cargo build --release
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rustsec/audit-check@v2.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
   docker:
     runs-on: ubuntu-latest
     steps:
@@ -83,13 +92,21 @@ jobs:
         run: |
           bash scripts/apply_android_permissions.sh
           bash scripts/apply_android_deep_links.sh
-      - name: Analyze, test and build
+      - name: Install dependencies
         working-directory: apps/flutter_app
-        run: |
-          flutter pub get
-          flutter analyze --no-fatal-infos
-          flutter test
-          flutter build apk --debug --dart-define=API_BASE_URL=https://unadomot.fly.dev
+        run: flutter pub get
+      - name: Dart format check
+        working-directory: apps/flutter_app
+        run: dart format --output=none --set-exit-if-changed lib test
+      - name: Analyze
+        working-directory: apps/flutter_app
+        run: flutter analyze --no-fatal-infos
+      - name: Flutter tests with coverage
+        working-directory: apps/flutter_app
+        run: flutter test --coverage
+      - name: Build debug APK
+        working-directory: apps/flutter_app
+        run: flutter build apk --debug --dart-define=API_BASE_URL=https://unadomot.fly.dev
       - name: Verify required Android permissions
         working-directory: apps/flutter_app
         run: |
