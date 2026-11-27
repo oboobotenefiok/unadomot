@@ -17,6 +17,7 @@ import 'edit_listing_screen.dart';
 import 'favorites_screen.dart';
 import 'listing_detail_screen.dart';
 import 'messages_screen.dart';
+import 'static_page_screen.dart';
 import 'verification_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -449,12 +450,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   decoration: BoxDecoration(
                     border: Border(
                       bottom: BorderSide(
-                        color: _tab == 0 ? const Color(0xFF052E16) : Colors.transparent,
+                        color: _tab == 0 ? UnaColors.green900 : Colors.transparent,
                         width: 2,
                       ),
                     ),
                   ),
-                  child: Icon(Icons.menu, color: _tab == 0 ? (dark ? Colors.white : const Color(0xFF052E16)) : Colors.grey),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.home_work_outlined, size: 18, color: _tab == 0 ? (dark ? Colors.white : UnaColors.green900) : Colors.grey),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Listings',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: _tab == 0 ? (dark ? Colors.white : UnaColors.green900) : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -467,12 +481,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   decoration: BoxDecoration(
                     border: Border(
                       bottom: BorderSide(
-                        color: _tab == 1 ? const Color(0xFF052E16) : Colors.transparent,
+                        color: _tab == 1 ? UnaColors.green900 : Colors.transparent,
                         width: 2,
                       ),
                     ),
                   ),
-                  child: Icon(Icons.info_outline, color: _tab == 1 ? (dark ? Colors.white : const Color(0xFF052E16)) : Colors.grey),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.settings_outlined, size: 18, color: _tab == 1 ? (dark ? Colors.white : UnaColors.green900) : Colors.grey),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Settings',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: _tab == 1 ? (dark ? Colors.white : UnaColors.green900) : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -606,13 +633,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             applicationVersion: '1.0.0',
             applicationLegalese: 'Find your next home in Nigeria.',
           )),
-          _settingsRow(Icons.shield_outlined, 'Privacy & Terms', () => showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Privacy & Terms'),
-              content: const Text('Your account details are used only to operate UnaDomot. Listing and chat data are stored securely.'),
-              actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
-            ),
+          _settingsRow(Icons.shield_outlined, 'Privacy Policy', () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => StaticPageScreen.privacy()),
+          )),
+          _settingsRow(Icons.description_outlined, 'Terms of Service', () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => StaticPageScreen.terms()),
+          )),
+          _settingsRow(Icons.payments_outlined, 'Checkout Notice', () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => StaticPageScreen.checkoutNotice()),
           )),
           _settingsRow(Icons.logout, 'Logout', () async {
             await widget.appState.signOut();
