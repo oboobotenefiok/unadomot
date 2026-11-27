@@ -20,7 +20,7 @@ jobs:
           channel: stable
           cache: true
       - name: Start log
-        run: : > /tmp/apk.log
+        run: truncate -s 0 /tmp/apk.log
       - name: Prepare Android project
         working-directory: apps/flutter_app
         env:
