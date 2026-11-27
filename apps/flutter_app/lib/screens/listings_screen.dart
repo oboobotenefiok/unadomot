@@ -1,7 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import '../api/api_client.dart';
+import '../api/api_client_lookup.dart';
 import '../app_settings.dart';
 import '../data/local_cache.dart';
 import '../data/nigeria_locations.dart';
@@ -315,17 +314,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
     if (code == null || code.isEmpty || !mounted) return;
 
     try {
-      final response = await http.get(
-        widget.api.baseUrl.resolve('/api/listings/code/${Uri.encodeComponent(code)}'),
-        headers: {'Accept': 'application/json'},
-      ).timeout(const Duration(seconds: 20));
-      if (response.statusCode == 404) {
-        throw const ApiException(404, 'No listing matches that code.');
-      }
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw ApiException(response.statusCode, 'Could not look up that code.');
-      }
-      final data = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+      final data = await widget.api.listingByCode(code);
       final id = data['id'] as String?;
       if (id == null || !mounted) return;
       Navigator.push(
