@@ -636,9 +636,14 @@ class _FilterSheetState extends State<_FilterSheet> {
     'Apartment', 'House', 'Self Contain', 'Room', 'Duplex',
   ];
 
+  static const _furnishingOptions = [
+    'Furnished', 'Semi-furnished', 'Unfurnished',
+  ];
+
   late String? _state;
   late String? _type;
   late String? _bedrooms;
+  late String? _furnishing;
   final _lga = TextEditingController();
   final _minPrice = TextEditingController();
   final _maxPrice = TextEditingController();
@@ -649,6 +654,7 @@ class _FilterSheetState extends State<_FilterSheet> {
     _state = widget.initial['state'];
     _type = widget.initial['property_type'];
     _bedrooms = widget.initial['bedrooms'];
+    _furnishing = widget.initial['furnishing'];
     _lga.text = widget.initial['lga'] ?? '';
     _minPrice.text = widget.initial['min_price'] ?? '';
     _maxPrice.text = widget.initial['max_price'] ?? '';
@@ -668,6 +674,7 @@ class _FilterSheetState extends State<_FilterSheet> {
     if (_lga.text.trim().isNotEmpty) filters['lga'] = _lga.text.trim();
     if (_type != null) filters['property_type'] = _type!;
     if (_bedrooms != null) filters['bedrooms'] = _bedrooms!;
+    if (_furnishing != null) filters['furnishing'] = _furnishing!;
     if (_minPrice.text.trim().isNotEmpty) filters['min_price'] = _minPrice.text.trim();
     if (_maxPrice.text.trim().isNotEmpty) filters['max_price'] = _maxPrice.text.trim();
     Navigator.pop(context, filters);
@@ -678,6 +685,7 @@ class _FilterSheetState extends State<_FilterSheet> {
       _state = null;
       _type = null;
       _bedrooms = null;
+      _furnishing = null;
       _lga.clear();
       _minPrice.clear();
       _maxPrice.clear();
@@ -754,6 +762,15 @@ class _FilterSheetState extends State<_FilterSheet> {
                   DropdownMenuItem(value: '4', child: Text('4+')),
                 ],
                 onChanged: (value) => setState(() => _bedrooms = value),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue: _furnishing,
+                decoration: const InputDecoration(labelText: 'Furnishing'),
+                items: _furnishingOptions
+                    .map((item) => DropdownMenuItem(value: item, child: Text(item)))
+                    .toList(),
+                onChanged: (value) => setState(() => _furnishing = value),
               ),
               const SizedBox(height: 12),
               Row(
