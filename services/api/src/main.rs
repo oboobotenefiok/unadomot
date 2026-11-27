@@ -54,6 +54,17 @@ fn global_limit_store() -> &'static Mutex<HashMap<String, (Instant, u32)>> {
     GLOBAL_LIMIT.get_or_init(|| Mutex::new(HashMap::new()))
 }
 
+fn is_placeholder_secret(value: &str) -> bool {
+    let lower = value.to_lowercase();
+    lower.contains("changeme")
+        || lower.contains("change-me")
+        || lower.contains("test-secret")
+        || lower.contains("your-secret")
+        || lower.contains("example")
+        || lower == "secret"
+        || lower == "password"
+}
+
 async fn global_rate_limit(request: Request, next: Next) -> Result<Response, StatusCode> {
     let key = request
         .headers()
@@ -138,11 +149,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     if jwt_secret.len() < 32 {
         return Err("JWT_SECRET must be at least 32 bytes".into());
     }
+    if is_placeholder_secret(&jwt_secret) {
+        return Err("JWT_SECRET must not be a placeholder value".into());
+    }
 
     let refresh_secret = std::env::var("REFRESH_TOKEN_SECRET")
         .map_err(|_| "REFRESH_TOKEN_SECRET is required and must be at least 32 bytes")?;
     if refresh_secret.len() < 32 {
         return Err("REFRESH_TOKEN_SECRET must be at least 32 bytes".into());
+    }
+    if is_placeholder_secret(&refresh_secret) {
+        return Err("REFRESH_TOKEN_SECRET must not be a placeholder value".into());
     }
     if refresh_secret == jwt_secret {
         return Err("REFRESH_TOKEN_SECRET must differ from JWT_SECRET".into());
