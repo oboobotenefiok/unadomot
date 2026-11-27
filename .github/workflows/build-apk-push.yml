@@ -1,0 +1,189 @@
+name: Build APK Push
+
+on:
+  push:
+    branches:
+      - ci-build
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Start log
+        run: : > /tmp/apk.log
+      - name: Prepare Android project
+        working-directory: apps/flutter_app
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          exec > >(tee -a /tmp/apk.log) 2>&1
+          set -e
+          flutter create --platforms=android --org com.unadomot --project-name unadomot .
+          mkdir -p assets
+          cp ../../vault/img/unadomot.jpg assets/unadomot.jpg
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/upload-keystore.jks
+          cat > android/key.properties <<EOF
+          storePassword=$ANDROID_KEYSTORE_PASSWORD
+          keyPassword=$ANDROID_KEY_PASSWORD
+          keyAlias=$ANDROID_KEY_ALIAS
+          storeFile=upload-keystore.jks
+          EOF
+          python3 - <<'PY'
+          from pathlib import Path
+          manifest = Path('android/app/src/main/AndroidManifest.xml')
+          text = manifest.read_text()
+          text = text.replace('android:label="unadomot"', 'android:label="UnaDomot"')
+          manifest.write_text(text)
+
+          app = Path('android/app/build.gradle.kts')
+          s = app.read_text()
+          s = s.replace('compileSdk = flutter.compileSdkVersion', 'compileSdk = 36')
+          if 'import java.util.Properties' not in s:
+              s = 'import java.util.Properties\nimport java.io.FileInputStream\n\n' + s
+          if 'signingConfigs {' not in s:
+              marker = '    buildTypes {'
+              block = '''    signingConfigs {
+                  create("release") {
+                      val keystoreProperties = Properties()
+                      val keystorePropertiesFile = rootProject.file("key.properties")
+                      if (keystorePropertiesFile.exists()) {
+                          keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+                      }
+                      storeFile = file(keystoreProperties["storeFile"] as String)
+                      storePassword = keystoreProperties["storePassword"] as String
+                      keyAlias = keystoreProperties["keyAlias"] as String
+                      keyPassword = keystoreProperties["keyPassword"] as String
+                  }
+              }
+
+          '''
+              s = s.replace(marker, block + marker, 1)
+          s = s.replace('signingConfig = signingConfigs.getByName("debug")', 'signingConfig = signingConfigs.getByName("release")')
+          app.write_text(s)
+          PY
+          mkdir -p android/app/src/main/res/values android/app/src/main/res/values-v31 android/app/src/main/res/drawable
+          cat > android/app/src/main/res/values/colors.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <color name="splash_background">#0F5132</color>
+          </resources>
+          EOF
+          cat > android/app/src/main/res/drawable/launch_background.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+              <item android:drawable="@color/splash_background" />
+              <item>
+                  <bitmap android:gravity="center" android:src="@mipmap/ic_launcher" />
+              </item>
+          </layer-list>
+          EOF
+          cat > android/app/src/main/res/values/styles.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+                  <item name="android:windowBackground">@drawable/launch_background</item>
+              </style>
+              <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+                  <item name="android:windowBackground">?android:colorBackground</item>
+              </style>
+          </resources>
+          EOF
+          cat > android/app/src/main/res/values-v31/styles.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+                  <item name="android:windowSplashScreenBackground">@color/splash_background</item>
+                  <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+                  <item name="android:windowSplashScreenIconBackgroundColor">@color/splash_background</item>
+                  <item name="android:postSplashScreenTheme">@style/NormalTheme</item>
+              </style>
+              <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+                  <item name="android:windowBackground">?android:colorBackground</item>
+              </style>
+          </resources>
+          EOF
+      - name: Patch plugin compileSdk
+        working-directory: apps/flutter_app
+        run: |
+          exec > >(tee -a /tmp/apk.log) 2>&1
+          set -e
+          flutter pub get
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          root = Path.home() / '.pub-cache/hosted/pub.dev'
+          for p in list(root.glob('*/android/build.gradle')) + list(root.glob('*/android/build.gradle.kts')):
+              s = p.read_text()
+              s2 = re.sub(r'compileSdk(?:Version)?\s*=?\s*\d+', 'compileSdk 36', s)
+              if s2 != s:
+                  p.write_text(s2)
+          PY
+      - name: Generate launcher icon
+        working-directory: apps/flutter_app
+        run: |
+          exec > >(tee -a /tmp/apk.log) 2>&1
+          set -e
+          dart run flutter_launcher_icons
+      - name: Analyze Dart
+        working-directory: apps/flutter_app
+        run: |
+          exec > >(tee -a /tmp/apk.log) 2>&1
+          set -e
+          flutter analyze --no-fatal-infos --no-fatal-warnings
+      - name: Run Flutter tests
+        working-directory: apps/flutter_app
+        run: |
+          exec > >(tee -a /tmp/apk.log) 2>&1
+          set -e
+          if [ -d test ]; then
+            flutter test
+          else
+            echo "No test directory found; skipping flutter test."
+          fi
+      - name: Build release APK
+        working-directory: apps/flutter_app
+        run: |
+          exec > >(tee -a /tmp/apk.log) 2>&1
+          set -e
+          flutter build apk --release --dart-define=API_BASE_URL=https://unadomot.fly.dev --dart-define=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: unadomot-release-apk
+          path: apps/flutter_app/build/app/outputs/flutter-apk/app-release.apk
+      - name: Publish release failure
+        if: failure()
+        run: |
+          cp /tmp/apk.log /tmp/apk-full.log 2>/dev/null || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan ci-logs-apk
+          git rm -rf . >/dev/null 2>&1 || true
+          git clean -fdx >/dev/null 2>&1 || true
+          cp /tmp/apk-full.log apk-full.log 2>/dev/null || true
+          {
+            echo "# Release APK failure"
+            echo
+            echo "- Commit: ${GITHUB_SHA}"
+            echo "- Ref: ${GITHUB_REF_NAME}"
+            echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "- Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > status.md
+          git add status.md
+          [ -f apk-full.log ] && git add apk-full.log
+          git commit -m "Release APK failure for ${GITHUB_SHA}"
+          git push --force origin ci-logs-apk
