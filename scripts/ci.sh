@@ -25,6 +25,6 @@ run_workflow() {
 }
 
 run_workflow deploy-api.yml "Deploying API"
-run_workflow build-apk.yml "Building release APK"
+run_workflow build-apk-manual.yml "Building release APK"
 
-echo "CI finished. Download the APK from the Build APK run."
+echo "CI finished. Download the APK from the Build APK Manual run."
