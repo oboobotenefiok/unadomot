@@ -97,13 +97,24 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-java@v6
+        continue-on-error: true
         with:
           distribution: temurin
           java-version: '17'
       - uses: subosito/flutter-action@v2
+        continue-on-error: true
         with:
           channel: stable
           cache: true
+      - name: Toolchain diagnostics
+        run: |
+          : > /tmp/flutter.log
+          set -x
+          java -version >> /tmp/flutter.log 2>&1 || true
+          flutter --version >> /tmp/flutter.log 2>&1 || true
+          which flutter >> /tmp/flutter.log 2>&1 || true
+          which java >> /tmp/flutter.log 2>&1 || true
+          set +x
       - name: Cache Gradle
         uses: actions/cache@v4
         with:
@@ -124,7 +135,6 @@ jobs:
         working-directory: apps/flutter_app
         run: |
           set +e
-          : > /tmp/flutter.log
           flutter pub get >> /tmp/flutter.log 2>&1; pub=$?
           flutter analyze --no-fatal-infos >> /tmp/flutter.log 2>&1; analyze=$?
           flutter test >> /tmp/flutter.log 2>&1; tests=$?
