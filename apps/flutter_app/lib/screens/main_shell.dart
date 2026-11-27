@@ -8,6 +8,7 @@ import 'create_listing_screen.dart';
 import 'favorites_screen.dart';
 import 'listings_screen.dart';
 import 'messages_screen.dart';
+import 'notifications_screen.dart';
 import 'profile_screen.dart';
 
 class MainShell extends StatefulWidget {
@@ -32,6 +33,7 @@ class _MainShellState extends State<MainShell> {
   final ValueNotifier<String> _search = ValueNotifier('');
   String? _photoUrl;
   String? _displayName;
+  int _unreadCount = 0;
   bool _wasSignedIn = false;
 
   @override
@@ -39,7 +41,10 @@ class _MainShellState extends State<MainShell> {
     super.initState();
     widget.appState.addListener(_onAuthChanged);
     _wasSignedIn = widget.appState.signedIn;
-    if (_wasSignedIn) _loadProfile();
+    if (_wasSignedIn) {
+      _loadProfile();
+      _loadUnread();
+    }
   }
 
   @override
@@ -55,10 +60,12 @@ class _MainShellState extends State<MainShell> {
     _wasSignedIn = signedIn;
     if (signedIn) {
       _loadProfile();
+      _loadUnread();
     } else if (mounted) {
       setState(() {
         _photoUrl = null;
         _displayName = null;
+        _unreadCount = 0;
       });
     }
   }
@@ -76,11 +83,27 @@ class _MainShellState extends State<MainShell> {
     }
   }
 
+  Future<void> _loadUnread() async {
+    if (!widget.appState.signedIn) return;
+    try {
+      final conversations = await widget.api.conversations();
+      var total = 0;
+      for (final item in conversations) {
+        final value = item['unread_count'] ?? item['unread'] ?? 0;
+        if (value is num) total += value.toInt();
+      }
+      if (mounted) setState(() => _unreadCount = total);
+    } catch (_) {
+      // Keep the last known badge count.
+    }
+  }
+
   void _go(int index) {
     if (index == _index) return;
     _history.add(_index);
     setState(() => _index = index);
     if (index == 4 && widget.appState.signedIn) _loadProfile();
+    if (index == 3 && widget.appState.signedIn) _loadUnread();
   }
 
   void _goHome() {
@@ -113,6 +136,20 @@ class _MainShellState extends State<MainShell> {
     _go(2);
   }
 
+  Future<void> _openNotifications() async {
+    if (!widget.appState.signedIn) {
+      final signedIn = await requireAuth(context, widget.appState);
+      if (!signedIn || !mounted) return;
+    }
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => NotificationsScreen(api: widget.api),
+      ),
+    );
+    if (mounted) _loadUnread();
+  }
+
   @override
   Widget build(BuildContext context) {
     final pages = [
@@ -121,6 +158,8 @@ class _MainShellState extends State<MainShell> {
         cache: widget.cache,
         appState: widget.appState,
         searchNotifier: _search,
+        onNotifications: _openNotifications,
+        unreadCount: _unreadCount,
       ),
       FavoritesScreen(
         api: widget.api,
@@ -186,6 +225,8 @@ class _MainShellState extends State<MainShell> {
                         _DesktopTopBar(
                           search: _search,
                           onMessages: () => _go(3),
+                          onNotifications: _openNotifications,
+                          unreadCount: _unreadCount,
                         ),
                         Expanded(child: content),
                       ],
@@ -260,8 +301,15 @@ class _MainShellState extends State<MainShell> {
 class _DesktopTopBar extends StatefulWidget {
   final ValueNotifier<String> search;
   final VoidCallback onMessages;
+  final VoidCallback onNotifications;
+  final int unreadCount;
 
-  const _DesktopTopBar({required this.search, required this.onMessages});
+  const _DesktopTopBar({
+    required this.search,
+    required this.onMessages,
+    required this.onNotifications,
+    required this.unreadCount,
+  });
 
   @override
   State<_DesktopTopBar> createState() => _DesktopTopBarState();
@@ -335,6 +383,15 @@ class _DesktopTopBarState extends State<_DesktopTopBar> {
             ),
           ),
           const Spacer(),
+          IconButton(
+            tooltip: 'Notifications',
+            onPressed: widget.onNotifications,
+            icon: Badge(
+              isLabelVisible: widget.unreadCount > 0,
+              label: Text(widget.unreadCount > 99 ? '99+' : '${widget.unreadCount}'),
+              child: const Icon(Icons.notifications_none),
+            ),
+          ),
           IconButton(
             tooltip: 'Messages',
             onPressed: widget.onMessages,
