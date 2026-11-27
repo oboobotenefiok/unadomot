@@ -234,27 +234,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _shareListing(Map<String, dynamic> listing) async {
-    await showShareListingSheet(context, _listingFromMap(listing));
+    await showShareListingSheet(context, Listing.fromJson(listing));
   }
-
-  Listing _listingFromMap(Map<String, dynamic> json) => Listing(
-        id: json['id'] as String,
-        title: json['title'] as String? ?? '',
-        description: json['description'] as String? ?? '',
-        price: double.tryParse(json['price']?.toString() ?? '') ?? 0,
-        address: json['address'] as String? ?? '',
-        state: json['state'] as String? ?? '',
-        lga: json['lga'] as String? ?? '',
-        isAgentListing: json['is_agent_listing'] as bool? ?? false,
-        status: json['status'] as String? ?? 'available',
-        media: const [],
-        bedrooms: json['bedrooms'] as int?,
-        bathrooms: json['bathrooms'] as int?,
-        propertyType: json['property_type'] as String?,
-        furnishing: json['furnishing'] as String?,
-        code: json['code'] as String?,
-        landlordName: json['landlord_name'] as String? ?? '',
-      );
 
   @override
   Widget build(BuildContext context) {
@@ -518,7 +499,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           final listing = listings[index];
           final deleted = listing['status'] == 'deleted';
           return ListingCard(
-            listing: _listingFromMap(listing),
+            listing: Listing.fromJson(listing),
             imageUrl: listing['image_url'] as String?,
             isOwner: true,
             showOwnerActions: true,
@@ -590,7 +571,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               trailing: Switch(
                 value: enabled,
                 onChanged: (value) async {
-                  appLargeText.value = value;
                   await widget.cache.setSetting('large_text', value.toString());
                 },
               ),
