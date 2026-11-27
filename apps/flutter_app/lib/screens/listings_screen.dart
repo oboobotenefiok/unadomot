@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import '../api/api_client.dart';
 import '../app_settings.dart';
 import '../data/local_cache.dart';
+import '../data/nigeria_locations.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
@@ -631,14 +632,6 @@ class _FilterSheet extends StatefulWidget {
 }
 
 class _FilterSheetState extends State<_FilterSheet> {
-  static const _states = [
-    'Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue',
-    'Borno', 'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu',
-    'FCT', 'Gombe', 'Imo', 'Jigawa', 'Kaduna', 'Kano', 'Katsina', 'Kebbi',
-    'Kogi', 'Kwara', 'Lagos', 'Nasarawa', 'Niger', 'Ogun', 'Ondo', 'Osun',
-    'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba', 'Yobe', 'Zamfara',
-  ];
-
   static const _types = [
     'Apartment', 'House', 'Self Contain', 'Room', 'Duplex',
   ];
@@ -735,7 +728,7 @@ class _FilterSheetState extends State<_FilterSheet> {
               DropdownButtonFormField<String>(
                 initialValue: _state,
                 decoration: const InputDecoration(labelText: 'State'),
-                items: _states
+                items: NigeriaLocations.states
                     .map((state) => DropdownMenuItem(value: state, child: Text(state)))
                     .toList(),
                 onChanged: (value) => setState(() => _state = value),
