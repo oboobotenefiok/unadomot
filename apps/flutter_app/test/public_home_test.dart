@@ -40,7 +40,8 @@ void main() {
     expect(find.text('Create your account'), findsNothing);
 
     await tester.tap(find.byIcon(Icons.add));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
     expect(find.text('Create your account'), findsOneWidget);
   });
 }
