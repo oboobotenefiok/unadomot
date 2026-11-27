@@ -9,6 +9,7 @@ import '../state/app_state.dart';
 import '../theme.dart';
 import '../utils/feed_ranker.dart';
 import '../widgets/home_carousel.dart';
+import '../widgets/share_listing_sheet.dart';
 import '../widgets/skeletons.dart';
 import 'auth_sheet.dart';
 import 'create_listing_screen.dart';
@@ -187,6 +188,10 @@ class _ListingsScreenState extends State<ListingsScreen> {
         content: Text(next ? 'Saved to favorites' : 'Removed from favorites'),
       ),
     );
+  }
+
+  Future<void> _share(Listing listing) async {
+    await showShareListingSheet(context, listing);
   }
 
   Future<void> _messageListing(Listing listing) async {
@@ -585,6 +590,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                                   isOwner: _myListingIds.contains(listing.id),
                                   onFavorite: () => _toggleFavorite(listing),
                                   onMessage: () => _messageListing(listing),
+                                  onShare: () => _share(listing),
                                   onTap: () => _openDetail(listing),
                                 );
                               },
@@ -851,6 +857,7 @@ class _GridListingCard extends StatelessWidget {
   final bool isOwner;
   final VoidCallback onFavorite;
   final VoidCallback onMessage;
+  final VoidCallback onShare;
   final VoidCallback onTap;
 
   const _GridListingCard({
@@ -859,6 +866,7 @@ class _GridListingCard extends StatelessWidget {
     required this.isOwner,
     required this.onFavorite,
     required this.onMessage,
+    required this.onShare,
     required this.onTap,
   });
 
@@ -882,14 +890,40 @@ class _GridListingCard extends StatelessWidget {
                   if (imageUrl == null)
                     Container(
                       color: UnaColors.green100,
-                      child: const Icon(
-                        Icons.home_work_outlined,
-                        size: 40,
-                        color: UnaColors.green700,
-                      ),
+                      child: const Icon(Icons.home_work_outlined, size: 40, color: UnaColors.green700),
                     )
                   else
                     Image.network(imageUrl, fit: BoxFit.cover),
+                  Positioned(
+                    left: 6,
+                    bottom: 6,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: UnaColors.green900,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        '₦${listing.price.toStringAsFixed(0)}',
+                        style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 6,
+                    left: 6,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.6),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        listing.lga.isEmpty ? listing.state : listing.lga,
+                        style: const TextStyle(color: Colors.white, fontSize: 9),
+                      ),
+                    ),
+                  ),
                   Positioned(
                     top: 6,
                     right: 6,
@@ -902,8 +936,8 @@ class _GridListingCard extends StatelessWidget {
                   ),
                   if (isOwner)
                     Positioned(
-                      top: 6,
-                      left: 6,
+                      bottom: 6,
+                      right: 6,
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                         decoration: BoxDecoration(
@@ -928,39 +962,29 @@ class _GridListingCard extends StatelessWidget {
                     listing.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: UnaColors.text900,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: const TextStyle(color: UnaColors.text900, fontSize: 13, fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '₦${listing.price.toStringAsFixed(0)}',
-                    style: const TextStyle(
-                      color: UnaColors.primary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${listing.lga}, ${listing.state}',
+                    listing.address.isEmpty ? '${listing.lga}, ${listing.state}' : listing.address,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: UnaColors.text500, fontSize: 11),
+                    style: const TextStyle(color: UnaColors.text500, fontSize: 10),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      if (!listing.isAgentListing)
+                        _badge('Agent-Free', UnaColors.green100, UnaColors.green700),
+                      if (listing.propertyType != null) ...[
+                        const SizedBox(width: 4),
+                        _badge(listing.propertyType!, Colors.grey.shade100, Colors.grey.shade700),
+                      ],
+                    ],
                   ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      Expanded(
-                        child: Text(
-                          listing.landlordName.isEmpty ? 'Landlord' : listing.landlordName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(color: UnaColors.text500, fontSize: 10),
-                        ),
-                      ),
                       if (!isOwner)
                         InkWell(
                           onTap: onMessage,
@@ -970,6 +994,22 @@ class _GridListingCard extends StatelessWidget {
                             child: Icon(Icons.chat_bubble_outline, size: 16, color: UnaColors.green700),
                           ),
                         ),
+                      const SizedBox(width: 4),
+                      InkWell(
+                        onTap: onShare,
+                        borderRadius: BorderRadius.circular(20),
+                        child: const Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Icon(Icons.share_outlined, size: 16, color: UnaColors.green700),
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        listing.landlordName.isEmpty ? 'Landlord' : listing.landlordName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: UnaColors.text500, fontSize: 10),
+                      ),
                     ],
                   ),
                 ],
@@ -980,6 +1020,18 @@ class _GridListingCard extends StatelessWidget {
       ),
     );
   }
+
+  Widget _badge(String text, Color background, Color foreground) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+        decoration: BoxDecoration(
+          color: background,
+          borderRadius: BorderRadius.circular(3),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(color: foreground, fontSize: 9, fontWeight: FontWeight.w600),
+        ),
+      );
 }
 
 class _RoundAction extends StatelessWidget {
