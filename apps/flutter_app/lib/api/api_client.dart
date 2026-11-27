@@ -31,6 +31,7 @@ class ApiClient {
   String? _refreshToken;
   DateTime? _expiresAt;
   Future<bool>? _refreshInFlight;
+  int _sessionEpoch = 0;
 
   Future<void> Function(String token, String? refreshToken, DateTime expiresAt)?
       onSessionChanged;
@@ -49,6 +50,7 @@ class ApiClient {
   String? get token => _token;
   String? get refreshToken => _refreshToken;
   DateTime? get expiresAt => _expiresAt;
+  int get sessionEpoch => _sessionEpoch;
 
   void restoreSession(String token, DateTime expiresAt, {String? refreshToken}) {
     if (token.isEmpty) return;
@@ -58,6 +60,7 @@ class ApiClient {
   }
 
   void signOut() {
+    _sessionEpoch++;
     _token = null;
     _refreshToken = null;
     _expiresAt = null;
@@ -158,6 +161,7 @@ class ApiClient {
   }
 
   Future<bool> _performRefresh() async {
+    final sessionEpoch = _sessionEpoch;
     final refreshToken = _refreshToken;
     if (refreshToken == null) return false;
 
@@ -170,6 +174,8 @@ class ApiClient {
         },
         body: jsonEncode({'refresh_token': refreshToken}),
       ).timeout(const Duration(seconds: 20));
+
+      if (sessionEpoch != _sessionEpoch) return false;
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
         signOut();
@@ -516,6 +522,7 @@ class ApiClient {
     bool authenticated = false,
     bool retried = false,
   }) async {
+    final sessionEpoch = _sessionEpoch;
     final uri = baseUrl.resolve(path).replace(queryParameters: query);
     final request = http.Request(method, uri)
       ..headers['Accept'] = 'application/json';
@@ -533,6 +540,10 @@ class ApiClient {
       final streamed = await _client.send(request);
       final response = await http.Response.fromStream(streamed)
           .timeout(const Duration(seconds: 20));
+
+      if (authenticated && sessionEpoch != _sessionEpoch) {
+        throw const ApiException(401, 'Session ended.');
+      }
 
       if (response.statusCode == 401 && authenticated && !retried) {
         if (await _refreshSession()) {
