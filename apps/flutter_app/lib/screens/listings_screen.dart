@@ -8,6 +8,7 @@ import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../utils/feed_ranker.dart';
+import '../widgets/empty_state.dart';
 import '../widgets/home_carousel.dart';
 import '../widgets/listing_card.dart';
 import '../widgets/share_listing_sheet.dart';
@@ -560,7 +561,11 @@ class _ListingsScreenState extends State<ListingsScreen> {
                       if (listings.isEmpty)
                         const SliverFillRemaining(
                           hasScrollBody: false,
-                          child: Center(child: Text('No listings match your search')),
+                          child: EmptyState(
+                            icon: Icons.home_work_outlined,
+                            title: 'No listings match your search',
+                            message: 'Try a different state, LGA, or price range.',
+                          ),
                         )
                       else
                         SliverPadding(
