@@ -99,7 +99,7 @@ async fn request_log(request: Request, next: Next) -> Response {
             %method,
             %path,
             status = %response.status(),
-            latency_ms,
+            latency_ms = %latency_ms,
             request_id = %request_id,
             "request failed"
         );
@@ -108,7 +108,7 @@ async fn request_log(request: Request, next: Next) -> Response {
             %method,
             %path,
             status = %response.status(),
-            latency_ms,
+            latency_ms = %latency_ms,
             request_id = %request_id,
             "request"
         );
