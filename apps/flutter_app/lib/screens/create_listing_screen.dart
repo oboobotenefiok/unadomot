@@ -405,14 +405,25 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                 ),
               ],
             ),
+            const SizedBox(height: 16),
+            Text('List as', style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 8),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('Post as an agent'),
-              subtitle: const Text('Shown with an Agent badge on your listing'),
-              value: _isAgent,
-              onChanged: (value) {
-                setState(() => _isAgent = value);
+            SegmentedButton<bool>(
+              segments: const [
+                ButtonSegment(
+                  value: false,
+                  label: Text('Landlord'),
+                  icon: Icon(Icons.home_outlined),
+                ),
+                ButtonSegment(
+                  value: true,
+                  label: Text('Agent'),
+                  icon: Icon(Icons.badge_outlined),
+                ),
+              ],
+              selected: {_isAgent},
+              onSelectionChanged: (selection) {
+                setState(() => _isAgent = selection.first);
                 _saveDraft();
               },
             ),
