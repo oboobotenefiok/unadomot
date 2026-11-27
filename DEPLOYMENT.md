@@ -2,10 +2,10 @@
 
 ## API
 
-Production runs on Fly.io from `services/api/fly.toml`.
+Production runs on Fly.io from the root `fly.toml`.
 
 ```bash
-flyctl deploy --remote-only --config services/api/fly.toml
+flyctl deploy --remote-only
 ```
 
 Deploy is manual through the `Deploy API` workflow. It does not run on push.

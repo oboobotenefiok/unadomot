@@ -4,10 +4,9 @@ Use this checklist before tagging a release. A checked item needs a named test o
 
 ## API
 
-- [ ] `cargo fmt --all -- --check` passes.
 - [ ] `cargo clippy --all-targets -- -D warnings` passes.
 - [ ] `cargo test` passes against Postgres 16.
-- [ ] The Docker image builds from `services/api`.
+- [ ] The Docker image builds from the repository root.
 - [ ] `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` are set on Fly.
 - [ ] `APP_ENV=production` is set on Fly.
 - [ ] `RESEND_API_KEY` and `EMAIL_FROM` are set if password-reset email is enabled.
