@@ -257,6 +257,15 @@ class LocalCache {
     await db.delete('drafts', where: 'id = ?', whereArgs: [id]);
   }
 
+  Future<void> clearUserData() async {
+    final db = await _db;
+    await db.delete('cached_listings');
+    await db.delete('listing_details');
+    await db.delete('favorites');
+    await db.delete('drafts');
+    await db.delete('affinity');
+  }
+
   Future<void> close() async {
     await _database?.close();
     _database = null;
