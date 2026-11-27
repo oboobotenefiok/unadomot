@@ -37,23 +37,34 @@ fn error(status: StatusCode, message: &str) -> axum::response::Response {
     (status, Json(json!({ "error": { "message": message } }))).into_response()
 }
 
-fn authorize(state: &ProfileState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
+async fn authorize(state: &ProfileState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
     let header = headers
         .get(header::AUTHORIZATION)
         .and_then(|value| value.to_str().ok())
         .and_then(|value| value.strip_prefix("Bearer "))
         .ok_or_else(|| error(StatusCode::UNAUTHORIZED, "Please sign in"))?;
 
-    verify_session(header, &state.jwt_secret)
-        .map(|user| user.id)
-        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Session expired"))
+    let user = verify_session(header, &state.jwt_secret)
+        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Session expired"))?;
+
+    let status: Option<String> = sqlx::query_scalar("SELECT status FROM users WHERE id = $1")
+        .bind(user.id)
+        .fetch_optional(&state.pool)
+        .await
+        .map_err(|_| error(StatusCode::SERVICE_UNAVAILABLE, "Account status unavailable"))?;
+
+    if status.as_deref() != Some("active") {
+        return Err(error(StatusCode::FORBIDDEN, "This account is suspended"));
+    }
+
+    Ok(user.id)
 }
 
 async fn authorize_admin(
     state: &ProfileState,
     headers: &HeaderMap,
 ) -> Result<Uuid, axum::response::Response> {
-    let user_id = authorize(state, headers)?;
+    let user_id = authorize(state, headers).await?;
     let is_admin: bool = sqlx::query_scalar(
         "SELECT EXISTS(SELECT 1 FROM admin_roles WHERE user_id = $1)",
     )
@@ -134,7 +145,7 @@ async fn me(
     State(state): State<ProfileState>,
     headers: HeaderMap,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
@@ -194,7 +205,7 @@ async fn update_me(
     headers: HeaderMap,
     Json(request): Json<UpdateProfileRequest>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
@@ -237,7 +248,7 @@ async fn my_listings(
     State(state): State<ProfileState>,
     headers: HeaderMap,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
