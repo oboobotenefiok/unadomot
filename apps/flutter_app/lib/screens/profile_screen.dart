@@ -12,6 +12,7 @@ import '../widgets/listing_card.dart';
 import '../widgets/share_listing_sheet.dart';
 import 'admin_screen.dart';
 import 'auth_sheet.dart';
+import 'edit_listing_screen.dart';
 import 'favorites_screen.dart';
 import 'listing_detail_screen.dart';
 import 'messages_screen.dart';
@@ -220,6 +221,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
       }
     }
+  }
+
+  Future<void> _editListing(Map<String, dynamic> listing) async {
+    final saved = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EditListingScreen(api: widget.api, listing: listing),
+      ),
+    );
+    if (saved == true) await _load();
   }
 
   Future<void> _shareListing(Map<String, dynamic> listing) async {
@@ -523,6 +534,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             onShare: () => _shareListing(listing),
+            onEdit: deleted ? null : () => _editListing(listing),
             onDelete: deleted ? null : () => _deleteListing(listing),
           );
         },
