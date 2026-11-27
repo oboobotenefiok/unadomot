@@ -55,17 +55,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _loading = true;
       _error = null;
     });
+
     try {
       final profile = await widget.api.myProfile();
-      final listings = await widget.api.myListings();
-      if (mounted) {
-        setState(() {
-          _profile = profile;
-          _listings = listings;
-        });
-      }
+      if (mounted) setState(() => _profile = profile);
     } catch (error) {
       if (mounted) setState(() => _error = error.toString());
+    }
+
+    try {
+      final listings = await widget.api.myListings();
+      if (mounted) setState(() => _listings = listings);
+    } catch (_) {
+      // The profile still renders when the listings request fails.
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -244,7 +246,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             : _error != null
                 ? ListView(
                     padding: const EdgeInsets.all(24),
-                    children: [Text(_error!), const SizedBox(height: 12), FilledButton(onPressed: _load, child: const Text('Retry'))],
+                    children: [
+                      Text('Could not load your profile.', style: Theme.of(context).textTheme.titleMedium),
+                      const SizedBox(height: 8),
+                      Text(_error!),
+                      const SizedBox(height: 12),
+                      FilledButton(onPressed: _load, child: const Text('Retry')),
+                    ],
                   )
                 : ListView(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
