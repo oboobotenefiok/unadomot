@@ -58,14 +58,10 @@ struct Bucket {
 }
 
 impl RateLimiter {
-    pub fn new() -> Self {
+    pub fn new(limit: u32) -> Self {
         let redis = std::env::var("REDIS_URL")
             .ok()
             .and_then(|url| redis::Client::open(url).ok());
-        let limit = std::env::var("RATE_LIMIT_PER_MINUTE")
-            .ok()
-            .and_then(|value| value.parse().ok())
-            .unwrap_or(120);
 
         Self {
             redis,
@@ -74,7 +70,7 @@ impl RateLimiter {
         }
     }
 
-    async fn allow(&self, key: &str) -> bool {
+    pub async fn allow(&self, key: &str) -> bool {
         if let Some(client) = &self.redis {
             if let Ok(mut connection) = client.get_multiplexed_async_connection().await {
                 let redis_key = format!("ratelimit:{key}");
@@ -107,7 +103,7 @@ impl RateLimiter {
 
 impl Default for RateLimiter {
     fn default() -> Self {
-        Self::new()
+        Self::new(120)
     }
 }
 

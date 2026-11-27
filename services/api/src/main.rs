@@ -6,14 +6,13 @@ mod messaging_handlers;
 mod profile_handlers;
 
 use axum::{
-    extract::{DefaultBodyLimit, Request},
+    extract::{DefaultBodyLimit, Request, State},
     http::{header, HeaderName, HeaderValue, Method, StatusCode},
     middleware::{self, Next},
     response::Response,
 };
 use sqlx::postgres::PgPoolOptions;
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex, OnceLock};
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tower_http::{
     cors::{AllowOrigin, CorsLayer},
@@ -27,7 +26,9 @@ use unadomot_api::adapters::{
 };
 use unadomot_api::application::auth::UserRepository;
 use unadomot_api::application::calls::CallRepository;
-use unadomot_api::application::email;
+use unadomot_api::application::email::{
+    EmailSender, ResendEmailSender, UnconfiguredEmailSender,
+};
 use unadomot_api::application::listings::ListingRepository;
 use unadomot_api::application::media::MediaSigner;
 use unadomot_api::application::messaging::MessagingRepository;
@@ -54,13 +55,11 @@ type Repositories = (
     Arc<dyn CallRepository>,
 );
 
-static GLOBAL_LIMIT: OnceLock<Mutex<HashMap<String, (Instant, u32)>>> = OnceLock::new();
-
-fn global_limit_store() -> &'static Mutex<HashMap<String, (Instant, u32)>> {
-    GLOBAL_LIMIT.get_or_init(|| Mutex::new(HashMap::new()))
-}
-
-async fn global_rate_limit(request: Request, next: Next) -> Result<Response, StatusCode> {
+async fn global_rate_limit(
+    State(state): State<AppState>,
+    request: Request,
+    next: Next,
+) -> Result<Response, StatusCode> {
     let key = request
         .headers()
         .get("x-forwarded-for")
@@ -69,23 +68,7 @@ async fn global_rate_limit(request: Request, next: Next) -> Result<Response, Sta
         .map(|value| value.trim().to_string())
         .unwrap_or_else(|| "unknown".into());
 
-    let limit = std::env::var("RATE_LIMIT_PER_MINUTE")
-        .ok()
-        .and_then(|value| value.parse::<u32>().ok())
-        .unwrap_or(120);
-
-    let allowed = {
-        let mut store = global_limit_store().lock().expect("rate limiter lock");
-        let now = Instant::now();
-        let entry = store.entry(key).or_insert((now, 0));
-        if now.duration_since(entry.0) > Duration::from_secs(60) {
-            *entry = (now, 0);
-        }
-        entry.1 += 1;
-        entry.1 <= limit
-    };
-
-    if !allowed {
+    if !state.limiter.allow(&key).await {
         return Err(StatusCode::TOO_MANY_REQUESTS);
     }
 
@@ -141,10 +124,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let jwt_secret = config.jwt_secret.clone();
     let database_url = config.database_url.clone();
 
-    if std::env::var("PASSWORD_RESET_DEBUG").ok().as_deref() == Some("1") && is_production {
-        return Err("PASSWORD_RESET_DEBUG must not be enabled in production".into());
-    }
-
     let mut profile_pool: Option<sqlx::PgPool> = None;
 
     let (users, listings, messaging, reports, verification_repo, calls): Repositories =
@@ -187,27 +166,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         };
 
-    let media: Arc<dyn MediaSigner> = match (
-        std::env::var("CLOUDINARY_CLOUD_NAME"),
-        std::env::var("CLOUDINARY_API_KEY"),
-        std::env::var("CLOUDINARY_API_SECRET"),
-    ) {
-        (Ok(cloud), Ok(key), Ok(secret)) => Arc::new(CloudinarySigner::new(cloud, key, secret)),
-        _ if is_production => {
-            return Err("CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET are required in production".into())
-        }
-        _ => Arc::new(UnconfiguredMediaSigner),
+    let media: Arc<dyn MediaSigner> = match config.cloudinary.clone() {
+        Some(cloudinary) => Arc::new(CloudinarySigner::new(
+            cloudinary.cloud_name,
+            cloudinary.api_key,
+            cloudinary.api_secret,
+        )),
+        None => Arc::new(UnconfiguredMediaSigner),
     };
 
-    if is_production
-        && (std::env::var("RESEND_API_KEY").map_or(true, |value| value.trim().is_empty())
-            || std::env::var("EMAIL_FROM").map_or(true, |value| value.trim().is_empty()))
-    {
-        return Err("RESEND_API_KEY and EMAIL_FROM are required in production".into());
-    }
-
-    let email = email::from_env();
-    let allowed_origins = config.allowed_origins.clone();
+    let email: Arc<dyn EmailSender> = match config.resend.clone() {
+        Some(resend) => Arc::new(ResendEmailSender::new(resend.api_key, resend.from)),
+        None => Arc::new(UnconfiguredEmailSender),
+    };
 
     let state = AppState {
         users: users.clone(),
@@ -220,8 +191,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         pool: profile_pool.clone(),
         calls,
         jwt_secret: jwt_secret.clone(),
-        limiter: Arc::new(RateLimiter::new()),
-        allowed_origins,
+        limiter: Arc::new(RateLimiter::new(config.rate_limit_per_minute)),
+        allowed_origins: config.allowed_origins.clone(),
     };
 
     let cors = if state.allowed_origins.is_empty() {
@@ -254,7 +225,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .layer(DefaultBodyLimit::max(2 * 1024 * 1024))
         .layer(cors)
         .layer(TraceLayer::new_for_http())
-        .layer(middleware::from_fn(global_rate_limit))
+        .layer(middleware::from_fn_with_state(
+            state.clone(),
+            global_rate_limit,
+        ))
         .layer(middleware::from_fn(request_log))
         .layer(SetResponseHeaderLayer::overriding(
             header::STRICT_TRANSPORT_SECURITY,
@@ -282,7 +256,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             HeaderName::from_static("x-permitted-cross-domain-policies"),
             HeaderValue::from_static("none"),
         ))
-        .layer(middleware::from_fn(origin_guard));
+        .layer(middleware::from_fn_with_state(state.clone(), origin_guard));
 
     let address = std::env::var("BIND_ADDR")
         .or_else(|_| std::env::var("PORT").map(|port| format!("0.0.0.0:{port}")))
@@ -296,13 +270,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-async fn origin_guard(request: Request, next: Next) -> Result<Response, StatusCode> {
+async fn origin_guard(
+    State(state): State<AppState>,
+    request: Request,
+    next: Next,
+) -> Result<Response, StatusCode> {
     if let Some(origin) = request.headers().get(header::ORIGIN) {
         let origin = origin.to_str().unwrap_or_default();
-        let allowed = std::env::var("ALLOWED_ORIGINS").unwrap_or_default();
-        let is_allowed = allowed
-            .split(',')
-            .map(|value| value.trim())
+        let is_allowed = state
+            .allowed_origins
+            .iter()
             .any(|value| !value.is_empty() && value == origin);
         if !is_allowed {
             return Err(StatusCode::FORBIDDEN);

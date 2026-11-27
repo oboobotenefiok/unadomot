@@ -1,12 +1,29 @@
 use std::sync::Arc;
 
 #[derive(Clone)]
+pub struct CloudinaryConfig {
+    pub cloud_name: String,
+    pub api_key: String,
+    pub api_secret: String,
+}
+
+#[derive(Clone)]
+pub struct ResendConfig {
+    pub api_key: String,
+    pub from: String,
+}
+
+#[derive(Clone)]
 pub struct Config {
     pub is_production: bool,
     pub database_url: Option<String>,
     pub jwt_secret: Arc<String>,
     pub refresh_secret: Arc<String>,
     pub allowed_origins: Arc<Vec<String>>,
+    pub rate_limit_per_minute: u32,
+    pub cloudinary: Option<CloudinaryConfig>,
+    pub resend: Option<ResendConfig>,
+    pub password_reset_debug: bool,
 }
 
 impl Config {
@@ -49,12 +66,67 @@ impl Config {
                 .collect::<Vec<_>>(),
         );
 
+        let rate_limit_per_minute = std::env::var("RATE_LIMIT_PER_MINUTE")
+            .ok()
+            .and_then(|value| value.parse::<u32>().ok())
+            .unwrap_or(120);
+
+        let cloudinary = match (
+            std::env::var("CLOUDINARY_CLOUD_NAME"),
+            std::env::var("CLOUDINARY_API_KEY"),
+            std::env::var("CLOUDINARY_API_SECRET"),
+        ) {
+            (Ok(cloud_name), Ok(api_key), Ok(api_secret))
+                if !cloud_name.trim().is_empty()
+                    && !api_key.trim().is_empty()
+                    && !api_secret.trim().is_empty() =>
+            {
+                Some(CloudinaryConfig {
+                    cloud_name,
+                    api_key,
+                    api_secret,
+                })
+            }
+            _ => None,
+        };
+        if is_production && cloudinary.is_none() {
+            return Err(
+                "CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET are required in production"
+                    .into(),
+            );
+        }
+
+        let resend = match (
+            std::env::var("RESEND_API_KEY"),
+            std::env::var("EMAIL_FROM"),
+        ) {
+            (Ok(api_key), Ok(from))
+                if !api_key.trim().is_empty() && !from.trim().is_empty() =>
+            {
+                Some(ResendConfig { api_key, from })
+            }
+            _ => None,
+        };
+        if is_production && resend.is_none() {
+            return Err("RESEND_API_KEY and EMAIL_FROM are required in production".into());
+        }
+
+        let password_reset_debug =
+            std::env::var("PASSWORD_RESET_DEBUG").ok().as_deref() == Some("1");
+        if password_reset_debug && is_production {
+            return Err("PASSWORD_RESET_DEBUG must not be enabled in production".into());
+        }
+
         Ok(Self {
             is_production,
             database_url,
             jwt_secret: Arc::new(jwt_secret),
             refresh_secret: Arc::new(refresh_secret),
             allowed_origins,
+            rate_limit_per_minute,
+            cloudinary,
+            resend,
+            password_reset_debug,
         })
     }
 }
