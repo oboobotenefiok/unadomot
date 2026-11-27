@@ -29,6 +29,7 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _index = 0;
   final List<int> _history = [];
+  final ValueNotifier<String> _search = ValueNotifier('');
   String? _photoUrl;
   String? _displayName;
   bool _wasSignedIn = false;
@@ -44,6 +45,7 @@ class _MainShellState extends State<MainShell> {
   @override
   void dispose() {
     widget.appState.removeListener(_onAuthChanged);
+    _search.dispose();
     super.dispose();
   }
 
@@ -118,6 +120,7 @@ class _MainShellState extends State<MainShell> {
         api: widget.api,
         cache: widget.cache,
         appState: widget.appState,
+        searchNotifier: _search,
       ),
       FavoritesScreen(
         api: widget.api,
@@ -177,7 +180,17 @@ class _MainShellState extends State<MainShell> {
                     onPost: _openPost,
                     onProfile: _openProfile,
                   ),
-                  Expanded(child: content),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        _DesktopTopBar(
+                          search: _search,
+                          onMessages: () => _go(3),
+                        ),
+                        Expanded(child: content),
+                      ],
+                    ),
+                  ),
                 ],
               )
             : content,
@@ -239,6 +252,95 @@ class _MainShellState extends State<MainShell> {
                   ],
                 ),
               ),
+      ),
+    );
+  }
+}
+
+class _DesktopTopBar extends StatefulWidget {
+  final ValueNotifier<String> search;
+  final VoidCallback onMessages;
+
+  const _DesktopTopBar({required this.search, required this.onMessages});
+
+  @override
+  State<_DesktopTopBar> createState() => _DesktopTopBarState();
+}
+
+class _DesktopTopBarState extends State<_DesktopTopBar> {
+  late final TextEditingController _controller =
+      TextEditingController(text: widget.search.value);
+
+  @override
+  void initState() {
+    super.initState();
+    widget.search.addListener(_sync);
+  }
+
+  @override
+  void dispose() {
+    widget.search.removeListener(_sync);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _sync() {
+    if (_controller.text == widget.search.value) return;
+    _controller.value = TextEditingValue(
+      text: widget.search.value,
+      selection: TextSelection.collapsed(offset: widget.search.value.length),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      height: 72,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      decoration: BoxDecoration(
+        color: dark ? const Color(0xFF122019) : Colors.white,
+        border: Border(bottom: BorderSide(color: dark ? Colors.white12 : Colors.black12)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: TextField(
+                controller: _controller,
+                onChanged: (value) => widget.search.value = value,
+                decoration: InputDecoration(
+                  hintText: 'Search properties, locations...',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: widget.search.value.isEmpty
+                      ? null
+                      : IconButton(
+                          tooltip: 'Clear search',
+                          onPressed: () {
+                            _controller.clear();
+                            widget.search.value = '';
+                          },
+                          icon: const Icon(Icons.close, size: 18),
+                        ),
+                  isDense: true,
+                  filled: true,
+                  fillColor: dark ? const Color(0xFF0B1510) : const Color(0xFFF3F4F6),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const Spacer(),
+          IconButton(
+            tooltip: 'Messages',
+            onPressed: widget.onMessages,
+            icon: const Icon(Icons.chat_bubble_outline),
+          ),
+        ],
       ),
     );
   }
