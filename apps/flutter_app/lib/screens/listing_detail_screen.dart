@@ -41,6 +41,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
   bool _loading = true;
   bool _loadingComments = true;
   bool _postingComment = false;
+  bool _isOwner = false;
   String? _error;
   DateTime? _cachedAt;
   bool _favorite = false;
@@ -93,7 +94,20 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
 
     final favorite = await widget.cache.isFavorite(widget.listingId);
     if (mounted) setState(() => _favorite = favorite);
+    await _loadOwnership();
     _loadComments();
+  }
+
+  Future<void> _loadOwnership() async {
+    if (!widget.appState.signedIn) return;
+    try {
+      final mine = await widget.api.myListings();
+      if (mounted) {
+        setState(() => _isOwner = mine.any((item) => item['id'] == widget.listingId));
+      }
+    } catch (_) {
+      // Ownership controls are optional if this request fails.
+    }
   }
 
   Future<void> _loadComments() async {
@@ -256,6 +270,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
   }
 
   Future<void> _openChat() async {
+    if (_isOwner) return;
     if (!await requireAuth(context, widget.appState)) return;
     if (!mounted || _startingChat) return;
     setState(() => _startingChat = true);
@@ -553,19 +568,43 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                 const SizedBox(height: 20),
                                 _landlordCard(),
                                 const SizedBox(height: 20),
-                                FilledButton.icon(
-                                  onPressed: _startingChat ? null : _openChat,
-                                  icon: const Icon(Icons.chat_bubble_outline),
-                                  label: Text(
-                                    _startingChat ? 'Opening chat...' : 'Chat with lister',
+                                if (_isOwner)
+                                  Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(14),
+                                    decoration: BoxDecoration(
+                                      color: UnaColors.green100,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: const Row(
+                                      children: [
+                                        Icon(Icons.home_work_outlined, color: UnaColors.green900),
+                                        SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            'This is your listing. Manage it from your profile.',
+                                            style: TextStyle(color: UnaColors.green900, fontWeight: FontWeight.w600),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                else
+                                  FilledButton.icon(
+                                    onPressed: _startingChat ? null : _openChat,
+                                    icon: const Icon(Icons.chat_bubble_outline),
+                                    label: Text(
+                                      _startingChat ? 'Opening chat...' : 'Chat with lister',
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 8),
-                                TextButton.icon(
-                                  onPressed: _report,
-                                  icon: const Icon(Icons.flag_outlined),
-                                  label: const Text('Report this listing'),
-                                ),
+                                if (!_isOwner) ...[
+                                  const SizedBox(height: 8),
+                                  TextButton.icon(
+                                    onPressed: _report,
+                                    icon: const Icon(Icons.flag_outlined),
+                                    label: const Text('Report this listing'),
+                                  ),
+                                ],
                               ],
                             ),
                           ),
@@ -745,71 +784,49 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
           ),
           const SizedBox(height: 10),
           SizedBox(
-            height: 190,
+            height: 150,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: _similar.length,
               separatorBuilder: (_, __) => const SizedBox(width: 10),
               itemBuilder: (context, index) {
                 final item = _similar[index];
-                return InkWell(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ListingDetailScreen(
-                        api: widget.api,
-                        cache: widget.cache,
-                        appState: widget.appState,
-                        listingId: item.id,
+                final image = item.media.isEmpty ? null : item.media.first.url;
+                return SizedBox(
+                  width: 150,
+                  child: InkWell(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ListingDetailScreen(
+                          api: widget.api,
+                          cache: widget.cache,
+                          appState: widget.appState,
+                          listingId: item.id,
+                        ),
                       ),
                     ),
-                  ),
-                  child: Container(
-                    width: 150,
-                    decoration: BoxDecoration(
-                      color: UnaColors.surface,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: UnaColors.border),
-                    ),
-                    clipBehavior: Clip.antiAlias,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: item.media.isEmpty
-                              ? Container(
-                                  color: UnaColors.green100,
-                                  child: const Icon(Icons.home_work_outlined, color: UnaColors.green700),
-                                )
-                              : Image.network(item.media.first.url, fit: BoxFit.cover, width: double.infinity),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'N${item.price.toStringAsFixed(0)}',
-                                style: const TextStyle(
-                                  color: UnaColors.primary,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13,
-                                ),
-                              ),
-                              Text(
-                                item.title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                              Text(
-                                item.lga,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 11, color: UnaColors.text500),
-                              ),
-                            ],
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: image == null
+                                ? Container(color: UnaColors.green100)
+                                : Image.network(image, width: double.infinity, fit: BoxFit.cover),
                           ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          item.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                        ),
+                        Text(
+                          'N${item.price.toStringAsFixed(0)}',
+                          style: const TextStyle(color: UnaColors.primary, fontSize: 12, fontWeight: FontWeight.w700),
                         ),
                       ],
                     ),
@@ -821,6 +838,75 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
         ],
       );
 
+  Widget _landlordCard() {
+    final listing = _listing!;
+    final photo = listing.landlordPhotoUrl;
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: UnaColors.surface,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: UnaColors.border),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 22,
+            backgroundColor: UnaColors.green100,
+            backgroundImage: photo == null ? null : NetworkImage(photo),
+            child: photo == null
+                ? Text(
+                    listing.landlordName.isEmpty ? 'L' : listing.landlordName.characters.first.toUpperCase(),
+                    style: const TextStyle(color: UnaColors.green900, fontWeight: FontWeight.w700),
+                  )
+                : null,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  listing.landlordName.isEmpty ? 'Landlord' : listing.landlordName,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                if (listing.landlordVerified)
+                  const Row(
+                    children: [
+                      Icon(Icons.verified, size: 14, color: Color(0xFF16A34A)),
+                      SizedBox(width: 4),
+                      Text('Verified', style: TextStyle(fontSize: 11, color: Color(0xFF16A34A))),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _gallery() {
+    final media = _listing!.media;
+    if (media.isEmpty) {
+      return Container(
+        height: 240,
+        color: UnaColors.green100,
+        child: const Center(
+          child: Icon(Icons.home_work_outlined, size: 64, color: UnaColors.green700),
+        ),
+      );
+    }
+    return SizedBox(
+      height: 260,
+      child: PageView.builder(
+        itemCount: media.length,
+        onPageChanged: (index) => setState(() => _photoIndex = index),
+        itemBuilder: (context, index) => Image.network(media[index].url, fit: BoxFit.cover),
+      ),
+    );
+  }
+
   Widget _mapCard() => InkWell(
         onTap: _openMap,
         borderRadius: BorderRadius.circular(10),
@@ -829,167 +915,32 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
           decoration: BoxDecoration(
             color: UnaColors.green100,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: UnaColors.border),
           ),
-          child: Row(
+          child: const Row(
             children: [
-              const Icon(Icons.map_outlined, color: UnaColors.green900),
-              const SizedBox(width: 10),
+              Icon(Icons.map_outlined, color: UnaColors.green900),
+              SizedBox(width: 10),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${_listing!.lga}, ${_listing!.state}',
-                      style: const TextStyle(fontWeight: FontWeight.w600, color: UnaColors.green900),
-                    ),
-                    const Text(
-                      'View this area on the map',
-                      style: TextStyle(fontSize: 12, color: UnaColors.text600),
-                    ),
-                  ],
+                child: Text(
+                  'View on map',
+                  style: TextStyle(color: UnaColors.green900, fontWeight: FontWeight.w600),
                 ),
               ),
-              const Icon(Icons.chevron_right, color: UnaColors.green900),
+              Icon(Icons.chevron_right, color: UnaColors.green900),
             ],
           ),
         ),
       );
 
-  Widget _gallery() {
-    final media = _listing!.media;
-    if (media.isEmpty) {
-      return Container(
-        height: 220,
-        color: UnaColors.green100,
-        child: const Icon(
-          Icons.home_work_outlined,
-          size: 64,
-          color: UnaColors.green700,
-        ),
-      );
-    }
-
-    return SizedBox(
-      height: 240,
-      child: Stack(
-        children: [
-          PageView.builder(
-            itemCount: media.length,
-            onPageChanged: (index) => setState(() => _photoIndex = index),
-            itemBuilder: (context, index) => Image.network(
-              media[index].url,
-              fit: BoxFit.cover,
-              width: double.infinity,
-            ),
-          ),
-          if (media.length > 1)
-            Positioned(
-              bottom: 12,
-              right: 12,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.black54,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '${_photoIndex + 1}/${media.length}',
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
   Widget _chip(String text) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: UnaColors.green100,
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
           text,
-          style: const TextStyle(
-            color: UnaColors.green900,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
+          style: const TextStyle(color: UnaColors.green900, fontSize: 12),
         ),
       );
-
-  Widget _landlordCard() {
-    final name = _listing!.landlordName.trim().isEmpty
-        ? 'Landlord'
-        : _listing!.landlordName;
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: UnaColors.surface,
-        border: Border.all(color: UnaColors.border),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 22,
-            backgroundColor: UnaColors.green100,
-            backgroundImage: _listing!.landlordPhotoUrl == null
-                ? null
-                : NetworkImage(_listing!.landlordPhotoUrl!),
-            child: _listing!.landlordPhotoUrl == null
-                ? Text(
-                    name.characters.first.toUpperCase(),
-                    style: const TextStyle(
-                      color: UnaColors.green900,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  )
-                : null,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: UnaColors.text900,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    if (_listing!.landlordVerified) ...[
-                      const SizedBox(width: 4),
-                      const Icon(
-                        Icons.verified,
-                        size: 16,
-                        color: UnaColors.green700,
-                      ),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  _listing!.landlordVerified ? 'Verified lister' : 'Lister',
-                  style: const TextStyle(
-                    color: UnaColors.text500,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
