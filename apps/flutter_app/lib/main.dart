@@ -9,6 +9,7 @@ import 'screens/main_shell.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/public_profile_screen.dart';
 import 'screens/splash_screen.dart';
+import 'screens/static_page_screen.dart';
 import 'state/app_state.dart';
 import 'theme.dart';
 
@@ -182,6 +183,15 @@ class UnaDomotApp extends StatelessWidget {
 
   Route<dynamic>? _route(RouteSettings settings) {
     final name = settings.name ?? '/';
+    if (name == '/terms') {
+      return MaterialPageRoute(settings: settings, builder: (_) => StaticPageScreen.terms());
+    }
+    if (name == '/privacy') {
+      return MaterialPageRoute(settings: settings, builder: (_) => StaticPageScreen.privacy());
+    }
+    if (name == '/checkout-notice') {
+      return MaterialPageRoute(settings: settings, builder: (_) => StaticPageScreen.checkoutNotice());
+    }
     final listingMatch = RegExp(r'^/(?:listings|listing)/([0-9a-fA-F-]{36})$').firstMatch(name);
     if (listingMatch != null) {
       return MaterialPageRoute(
@@ -227,6 +237,10 @@ class UnaDomotApp extends StatelessWidget {
                 child: child ?? const SizedBox.shrink(),
               ),
               onGenerateRoute: _route,
+              onUnknownRoute: (settings) => MaterialPageRoute(
+                settings: settings,
+                builder: (_) => const NotFoundScreen(),
+              ),
               home: showOnboarding
                   ? OnboardingScreen(
                       cache: cache,
