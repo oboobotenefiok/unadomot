@@ -10,8 +10,9 @@ use unadomot_api::infrastructure::postgres::{
 };
 use uuid::Uuid;
 
-async fn setup() -> Option<(PostgresUserRepository, PostgresListingRepository)> {
-    let url = std::env::var("DATABASE_URL").ok()?;
+async fn setup() -> (PostgresUserRepository, PostgresListingRepository) {
+    let url = std::env::var("DATABASE_URL")
+        .expect("DATABASE_URL must be set for integration tests");
     let pool = PgPoolOptions::new()
         .max_connections(2)
         .connect(&url)
@@ -21,10 +22,10 @@ async fn setup() -> Option<(PostgresUserRepository, PostgresListingRepository)> 
         .run(&pool)
         .await
         .expect("migrations");
-    Some((
+    (
         PostgresUserRepository::new(pool.clone()),
         PostgresListingRepository::new(pool),
-    ))
+    )
 }
 
 fn sample_listing(owner: Uuid) -> NewListing {
@@ -46,9 +47,7 @@ fn sample_listing(owner: Uuid) -> NewListing {
 
 #[tokio::test]
 async fn ownership_and_soft_delete_are_enforced() {
-    let Some((users, listings)) = setup().await else {
-        return;
-    };
+    let (users, listings) = setup().await;
 
     let owner = register(
         &users,
@@ -96,9 +95,7 @@ async fn ownership_and_soft_delete_are_enforced() {
 
 #[tokio::test]
 async fn media_attachment_is_returned_with_listing() {
-    let Some((users, listings)) = setup().await else {
-        return;
-    };
+    let (users, listings) = setup().await;
 
     let owner = register(
         &users,
@@ -137,9 +134,7 @@ async fn media_attachment_is_returned_with_listing() {
 
 #[tokio::test]
 async fn invalid_listing_inputs_are_rejected() {
-    let Some((users, listings)) = setup().await else {
-        return;
-    };
+    let (users, listings) = setup().await;
 
     let owner = register(
         &users,
