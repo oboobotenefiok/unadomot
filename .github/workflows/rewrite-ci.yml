@@ -1,11 +1,6 @@
 name: Rewrite CI
 on:
   workflow_dispatch:
-  push:
-    branches: [rewrite/flutter-rust-postgres]
-    tags: ['ci']
-  pull_request:
-    branches: [rewrite/flutter-rust-postgres]
 permissions:
   contents: write
 concurrency:
