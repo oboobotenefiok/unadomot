@@ -1,5 +1,6 @@
 name: Build APK
 
+# Manual-only release build.
 on:
   workflow_dispatch:
 
