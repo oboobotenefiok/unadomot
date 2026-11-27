@@ -112,7 +112,7 @@ impl UserRepository for PostgresUserRepository {
             .map_err(|e| AuthError::Repository(e.to_string()))?;
 
         let existing = sqlx::query_as::<_, RefreshRow>(
-            "SELECT user_id, revoked_at, expires_at FROM refresh_tokens WHERE token_hash = $1",
+            "SELECT user_id, revoked_at, expires_at FROM refresh_tokens WHERE token_hash = $1 FOR UPDATE",
         )
         .bind(old_hash)
         .fetch_optional(&mut *transaction)
