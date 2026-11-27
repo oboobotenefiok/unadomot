@@ -2,7 +2,7 @@ name: Rewrite CI
 "on":
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 concurrency:
   group: "rewrite-ci-${{ github.ref }}"
   cancel-in-progress: true
@@ -146,7 +146,9 @@ jobs:
         run: flutter test --coverage
       - name: Build release APK
         working-directory: apps/flutter_app
-        run: flutter build apk --release --dart-define=API_BASE_URL=https://unadomot.fly.dev --dart-define=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+        run: |
+          set -o pipefail
+          flutter build apk --release --dart-define=API_BASE_URL=https://unadomot.fly.dev --dart-define=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} 2>&1 | tee /tmp/apk.log
       - name: Verify required Android permissions
         working-directory: apps/flutter_app
         run: |
@@ -162,3 +164,25 @@ jobs:
           path: apps/flutter_app/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
           retention-days: 14
+      - name: Publish release failure
+        if: failure()
+        run: |
+          cp /tmp/apk.log /tmp/apk-full.log 2>/dev/null || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan ci-logs-apk
+          git rm -rf . >/dev/null 2>&1 || true
+          git clean -fdx >/dev/null 2>&1 || true
+          cp /tmp/apk-full.log apk-full.log 2>/dev/null || true
+          {
+            echo "# Release APK failure"
+            echo
+            echo "- Commit: ${GITHUB_SHA}"
+            echo "- Ref: ${GITHUB_REF_NAME}"
+            echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "- Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > status.md
+          git add status.md
+          [ -f apk-full.log ] && git add apk-full.log
+          git commit -m "Release APK failure for ${GITHUB_SHA}"
+          git push --force origin ci-logs-apk
