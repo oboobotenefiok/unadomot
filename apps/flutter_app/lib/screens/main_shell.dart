@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import '../api/api_client.dart';
 import '../data/local_cache.dart';
+import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import 'auth_sheet.dart';
 import 'create_listing_screen.dart';
 import 'favorites_screen.dart';
 import 'listings_screen.dart';
+import 'map_screen.dart';
 import 'messages_screen.dart';
 import 'notifications_screen.dart';
 import 'profile_screen.dart';
@@ -150,6 +152,31 @@ class _MainShellState extends State<MainShell> {
     if (mounted) _loadUnread();
   }
 
+  Future<void> _openMap() async {
+    try {
+      final page = await widget.api.browse();
+      final listings = page.items.map(Listing.fromJson).toList();
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => MapScreen(
+            api: widget.api,
+            cache: widget.cache,
+            appState: widget.appState,
+            listings: listings,
+          ),
+        ),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final pages = [
@@ -226,6 +253,7 @@ class _MainShellState extends State<MainShell> {
                           search: _search,
                           onMessages: () => _go(3),
                           onNotifications: _openNotifications,
+                          onMap: _openMap,
                           unreadCount: _unreadCount,
                         ),
                         Expanded(child: content),
@@ -302,12 +330,14 @@ class _DesktopTopBar extends StatefulWidget {
   final ValueNotifier<String> search;
   final VoidCallback onMessages;
   final VoidCallback onNotifications;
+  final VoidCallback onMap;
   final int unreadCount;
 
   const _DesktopTopBar({
     required this.search,
     required this.onMessages,
     required this.onNotifications,
+    required this.onMap,
     required this.unreadCount,
   });
 
@@ -381,6 +411,12 @@ class _DesktopTopBarState extends State<_DesktopTopBar> {
                 ),
               ),
             ),
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            tooltip: 'Map view',
+            onPressed: widget.onMap,
+            icon: const Icon(Icons.map_outlined),
           ),
           const Spacer(),
           IconButton(
