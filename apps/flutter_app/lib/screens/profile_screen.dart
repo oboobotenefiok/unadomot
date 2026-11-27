@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import '../api/api_client.dart';
@@ -9,6 +8,7 @@ import '../data/local_cache.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import '../widgets/listing_card.dart';
 import '../widgets/share_listing_sheet.dart';
 import 'admin_screen.dart';
 import 'auth_sheet.dart';
@@ -243,9 +243,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _shareListing(Map<String, dynamic> listing) async {
-    final model = Listing.fromJson(listing);
-    await showShareListingSheet(context, model);
+    await showShareListingSheet(context, _listingFromMap(listing));
   }
+
+  Listing _listingFromMap(Map<String, dynamic> json) => Listing(
+        id: json['id'] as String,
+        title: json['title'] as String? ?? '',
+        description: json['description'] as String? ?? '',
+        price: double.tryParse(json['price']?.toString() ?? '') ?? 0,
+        address: json['address'] as String? ?? '',
+        state: json['state'] as String? ?? '',
+        lga: json['lga'] as String? ?? '',
+        isAgentListing: json['is_agent_listing'] as bool? ?? false,
+        status: json['status'] as String? ?? 'available',
+        media: const [],
+        bedrooms: json['bedrooms'] as int?,
+        bathrooms: json['bathrooms'] as int?,
+        propertyType: json['property_type'] as String?,
+        furnishing: json['furnishing'] as String?,
+        code: json['code'] as String?,
+        landlordName: json['landlord_name'] as String? ?? '',
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -528,10 +546,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         itemBuilder: (context, index) {
           final listing = listings[index];
           final deleted = listing['status'] == 'deleted';
-          return _ProfileListingCard(
-            listing: listing,
-            dark: dark,
-            deleted: deleted,
+          return ListingCard(
+            listing: _listingFromMap(listing),
+            imageUrl: listing['image_url'] as String?,
+            isOwner: true,
+            showOwnerActions: true,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
@@ -634,142 +653,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
         trailing: const Icon(Icons.chevron_right, size: 18),
         onTap: onTap,
       );
-}
-
-class _ProfileListingCard extends StatelessWidget {
-  final Map<String, dynamic> listing;
-  final bool dark;
-  final bool deleted;
-  final VoidCallback onTap;
-  final VoidCallback onShare;
-  final VoidCallback? onDelete;
-
-  const _ProfileListingCard({
-    required this.listing,
-    required this.dark,
-    required this.deleted,
-    required this.onTap,
-    required this.onShare,
-    required this.onDelete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final imageUrl = listing['image_url'] as String?;
-    final code = listing['code'] as String?;
-    return Material(
-      color: dark ? const Color(0xFF122019) : Colors.white,
-      borderRadius: BorderRadius.circular(10),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  if (imageUrl == null)
-                    Container(
-                      color: UnaColors.green100,
-                      child: const Icon(Icons.home_work_outlined, size: 40, color: UnaColors.green700),
-                    )
-                  else
-                    Image.network(imageUrl, fit: BoxFit.cover),
-                  Positioned(
-                    left: 6,
-                    bottom: 6,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: UnaColors.green900,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        '₦${(listing['price'] as num?)?.toStringAsFixed(0) ?? '0'}',
-                        style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ),
-                  if (deleted)
-                    Container(
-                      color: Colors.black54,
-                      alignment: Alignment.center,
-                      child: const Text('Deleted', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-                    ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    listing['title'] as String? ?? '',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    listing['address'] as String? ?? '',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 10, color: dark ? Colors.white60 : Colors.black54),
-                  ),
-                  if (code != null && code.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    InkWell(
-                      onTap: () async {
-                        await Clipboard.setData(ClipboardData(text: code));
-                        if (!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Code $code copied')),
-                        );
-                      },
-                      child: Row(
-                        children: [
-                          Icon(Icons.qr_code_2, size: 12, color: dark ? Colors.white54 : Colors.black54),
-                          const SizedBox(width: 4),
-                          Text(code, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: dark ? Colors.white70 : const Color(0xFF15803D))),
-                          const SizedBox(width: 4),
-                          Icon(Icons.copy, size: 10, color: dark ? Colors.white38 : Colors.black38),
-                        ],
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: onShare,
-                        borderRadius: BorderRadius.circular(20),
-                        child: const Padding(
-                          padding: EdgeInsets.all(4),
-                          child: Icon(Icons.share_outlined, size: 16, color: UnaColors.green700),
-                        ),
-                      ),
-                      if (onDelete != null) ...[
-                        const SizedBox(width: 4),
-                        InkWell(
-                          onTap: onDelete,
-                          borderRadius: BorderRadius.circular(20),
-                          child: const Padding(
-                            padding: EdgeInsets.all(4),
-                            child: Icon(Icons.delete_outline, size: 16, color: Colors.red),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
