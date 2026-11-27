@@ -137,6 +137,18 @@ async fn list_comments(
     Path(listing_id): Path<Uuid>,
     Query(query): Query<CommentQuery>,
 ) -> axum::response::Response {
+    let visible: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM listings WHERE id = $1 AND deleted_at IS NULL)",
+    )
+    .bind(listing_id)
+    .fetch_one(&state.pool)
+    .await
+    .unwrap_or(false);
+
+    if !visible {
+        return error(StatusCode::NOT_FOUND, "Listing not found");
+    }
+
     let limit = query.limit.unwrap_or(50).clamp(1, 100);
     let offset = query.offset.unwrap_or(0).max(0);
 
