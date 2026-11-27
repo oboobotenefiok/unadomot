@@ -1,10 +1,13 @@
 name: Rewrite CI
 on:
+  pull_request:
+  push:
+    branches: [rewrite/flutter-rust-postgres]
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 concurrency:
-  group: rewrite-ci
+  group: rewrite-ci-${{ github.ref }}
   cancel-in-progress: true
 env:
   CARGO_TERM_COLOR: never
@@ -34,85 +37,39 @@ jobs:
       run:
         working-directory: services/api
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: services/api -> target
-      - name: Rust checks
-        run: |
-          set +e
-          : > /tmp/rust.log
-          # cargo fmt --all -- --check
-          cargo fmt --all >> /tmp/rust.log 2>&1; fmt=$?
-          cargo clippy --all-targets -- -D warnings >> /tmp/rust.log 2>&1; clippy=$?
-          cargo test >> /tmp/rust.log 2>&1; tests=$?
-          if [ $fmt -ne 0 ] || [ $clippy -ne 0 ] || [ $tests -ne 0 ]; then
-            grep -E "error|warning|FAILED|panicked|assertion|expected|left|right" /tmp/rust.log > error-summary.txt || true
-            if [ ! -s error-summary.txt ]; then tail -n 300 /tmp/rust.log > error-summary.txt; fi
-            exit 1
-          fi
-      - name: Publish error summary
-        if: failure() && !cancelled()
-        working-directory: .
-        run: |
-          if [ -f services/api/error-summary.txt ]; then cp services/api/error-summary.txt error-summary.txt; fi
-          if [ ! -f error-summary.txt ]; then echo "CI failed before an error summary was generated." > error-summary.txt; fi
-          cp error-summary.txt /tmp/error-summary.txt
-          cp /tmp/rust.log /tmp/rust-full.log 2>/dev/null || true
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout --orphan ci-logs-rust
-          git rm -rf . >/dev/null 2>&1 || true
-          git clean -fdx >/dev/null 2>&1 || true
-          cp /tmp/error-summary.txt error-summary.txt
-          cp /tmp/rust-full.log rust-full.log 2>/dev/null || true
-          {
-            echo "# Rust CI failure"
-            echo
-            echo "- Commit: ${GITHUB_SHA}"
-            echo "- Ref: ${GITHUB_REF_NAME}"
-            echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-            echo "- Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          } > status.md
-          git add error-summary.txt status.md
-          [ -f rust-full.log ] && git add rust-full.log
-          git commit -m "Rust CI failure for ${GITHUB_SHA}"
-          git push --force origin ci-logs-rust
+      - name: Format check
+        run: cargo fmt --all -- --check
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Tests
+        run: cargo test
   docker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       - name: Build API image
         run: docker build -t unadomot-api:ci services/api
   android:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-java@v6
-        continue-on-error: true
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
       - uses: subosito/flutter-action@v2
-        continue-on-error: true
         with:
           channel: stable
           cache: true
-      - name: Toolchain diagnostics
-        run: |
-          : > /tmp/flutter.log
-          set -x
-          java -version >> /tmp/flutter.log 2>&1 || true
-          flutter --version >> /tmp/flutter.log 2>&1 || true
-          which flutter >> /tmp/flutter.log 2>&1 || true
-          which java >> /tmp/flutter.log 2>&1 || true
-          set +x
       - name: Cache Gradle
         uses: actions/cache@v4
-        continue-on-error: true
         with:
           path: |
             ~/.gradle/caches
@@ -121,55 +78,20 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
       - name: Ensure Android platform files
-        continue-on-error: true
         run: |
-          set -x
           if [ ! -d apps/flutter_app/android ]; then
-            flutter create --project-name unadomot --org com.unadomot --platforms android apps/flutter_app >> /tmp/flutter.log 2>&1
+            flutter create --project-name unadomot --org com.unadomot --platforms android apps/flutter_app
           fi
-          set +x
       - name: Apply Android permissions
-        continue-on-error: true
-        run: bash scripts/apply_android_permissions.sh >> /tmp/flutter.log 2>&1
+        run: bash scripts/apply_android_permissions.sh
       - name: Analyze, test and build
         working-directory: apps/flutter_app
         run: |
-          set +e
-          flutter pub get >> /tmp/flutter.log 2>&1; pub=$?
-          flutter analyze --no-fatal-infos >> /tmp/flutter.log 2>&1; analyze=$?
-          flutter test >> /tmp/flutter.log 2>&1; tests=$?
-          flutter build apk --debug --dart-define=API_BASE_URL=https://unadomot.fly.dev >> /tmp/flutter.log 2>&1; build=$?
-          if [ $pub -ne 0 ] || [ $analyze -ne 0 ] || [ $tests -ne 0 ] || [ $build -ne 0 ]; then
-            grep -E "error|warning|FAILED|Exception|failed|Error:" /tmp/flutter.log > ../../error-summary.txt || true
-            if [ ! -s ../../error-summary.txt ]; then tail -n 300 /tmp/flutter.log > ../../error-summary.txt; fi
-            exit 1
-          fi
-      - name: Publish error summary
-        if: failure() && !cancelled()
-        run: |
-          if [ ! -f error-summary.txt ]; then echo "CI failed before an error summary was generated." > error-summary.txt; fi
-          cp error-summary.txt /tmp/error-summary.txt
-          cp /tmp/flutter.log /tmp/flutter-full.log 2>/dev/null || true
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout --orphan ci-logs-android
-          git rm -rf . >/dev/null 2>&1 || true
-          git clean -fdx >/dev/null 2>&1 || true
-          cp /tmp/error-summary.txt error-summary.txt
-          cp /tmp/flutter-full.log flutter-full.log 2>/dev/null || true
-          {
-            echo "# Android CI failure"
-            echo
-            echo "- Commit: ${GITHUB_SHA}"
-            echo "- Ref: ${GITHUB_REF_NAME}"
-            echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-            echo "- Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          } > status.md
-          git add error-summary.txt status.md
-          [ -f flutter-full.log ] && git add flutter-full.log
-          git commit -m "Android CI failure for ${GITHUB_SHA}"
-          git push --force origin ci-logs-android
-      - uses: actions/upload-artifact@v7
+          flutter pub get
+          flutter analyze --no-fatal-infos
+          flutter test
+          flutter build apk --debug --dart-define=API_BASE_URL=https://unadomot.fly.dev
+      - uses: actions/upload-artifact@v4
         if: success()
         with:
           name: unadomot-debug-apk
