@@ -32,6 +32,7 @@ use unadomot_api::application::email::{
 use unadomot_api::application::listings::ListingRepository;
 use unadomot_api::application::media::MediaSigner;
 use unadomot_api::application::messaging::MessagingRepository;
+use unadomot_api::application::profiles::ProfileRepository;
 use unadomot_api::application::reports::ReportRepository;
 use unadomot_api::application::verification::VerificationRepository;
 use unadomot_api::config::Config;
@@ -40,8 +41,9 @@ use unadomot_api::infrastructure::cloudinary::CloudinarySigner;
 use unadomot_api::infrastructure::postgres::{
     call_repository::PostgresCallRepository, comment_repository::PostgresCommentRepository,
     listing_repository::PostgresListingRepository,
-    messaging_repository::PostgresMessagingRepository, report_repository::PostgresReportRepository,
-    user_repository::PostgresUserRepository,
+    messaging_repository::PostgresMessagingRepository,
+    profile_repository::PostgresProfileRepository,
+    report_repository::PostgresReportRepository, user_repository::PostgresUserRepository,
     verification_repository::PostgresVerificationRepository,
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -185,6 +187,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .as_ref()
         .map(|pool| Arc::new(PostgresCommentRepository::new(pool.clone())) as Arc<dyn unadomot_api::application::comments::CommentRepository>);
 
+    let profiles = profile_pool
+        .as_ref()
+        .map(|pool| Arc::new(PostgresProfileRepository::new(pool.clone())) as Arc<dyn ProfileRepository>);
+
     let state = AppState {
         users: users.clone(),
         listings,
@@ -196,6 +202,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         pool: profile_pool.clone(),
         calls,
         comments,
+        profiles,
         jwt_secret: jwt_secret.clone(),
         limiter: Arc::new(RateLimiter::new(config.rate_limit_per_minute)),
         allowed_origins: config.allowed_origins.clone(),

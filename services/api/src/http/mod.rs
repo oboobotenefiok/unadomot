@@ -15,6 +15,7 @@ use crate::application::messaging::{
     list_conversations, list_messages, mark_read, send_message, start_conversation, MessagingError,
     MessagingRepository,
 };
+use crate::application::profiles::ProfileRepository;
 use crate::application::reports::{
     create_report, list_reports, resolve_report, ReportError, ReportRepository,
 };
@@ -117,6 +118,7 @@ pub struct AppState {
     pub audit: Arc<dyn VerificationRepository>,
     pub calls: Arc<dyn CallRepository>,
     pub comments: Option<Arc<dyn CommentRepository>>,
+    pub profiles: Option<Arc<dyn ProfileRepository>>,
     pub media: Arc<dyn MediaSigner>,
     pub email: Arc<dyn EmailSender>,
     pub pool: Option<sqlx::PgPool>,
