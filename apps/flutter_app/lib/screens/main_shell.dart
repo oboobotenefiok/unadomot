@@ -3,6 +3,7 @@ import '../api/api_client.dart';
 import '../data/local_cache.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import 'auth_sheet.dart';
 import 'create_listing_screen.dart';
 import 'favorites_screen.dart';
 import 'listings_screen.dart';
@@ -75,6 +76,14 @@ class _MainShellState extends State<MainShell> {
   void _go(int index) {
     setState(() => _index = index);
     if (index == 4 && widget.appState.signedIn) _loadProfile();
+  }
+
+  Future<void> _openProfile() async {
+    if (!widget.appState.signedIn) {
+      final signedIn = await requireAuth(context, widget.appState);
+      if (!signedIn || !mounted) return;
+    }
+    _go(4);
   }
 
   @override
@@ -171,7 +180,7 @@ class _MainShellState extends State<MainShell> {
             _NavIcon(
               label: 'Profile',
               selected: _index == 4,
-              onTap: () => _go(4),
+              onTap: _openProfile,
               iconWidget: _ProfileIcon(
                 selected: _index == 4,
                 photoUrl: _photoUrl,
