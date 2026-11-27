@@ -9,7 +9,7 @@ extension ApiClientProfile on ApiClient {
         'Authorization': 'Bearer $token',
       };
 
-  Future<Map<String, dynamic>> updateProfile({
+  Future<void> updateProfile({
     required String name,
     required String phone,
     required String bio,
@@ -28,7 +28,6 @@ extension ApiClientProfile on ApiClient {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw ApiException(response.statusCode, 'Could not save profile.');
     }
-    return Map<String, dynamic>.from(jsonDecode(response.body) as Map);
   }
 
   Future<void> deleteListing(String listingId) async {
