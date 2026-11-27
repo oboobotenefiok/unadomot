@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../api/api_client.dart';
+import '../theme.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   final ApiClient api;
@@ -56,8 +57,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       setState(() => _error = 'Paste the reset token from your email');
       return;
     }
-    if (_password.text.length < 8) {
-      setState(() => _error = 'Use at least 8 characters');
+    if (_password.text.length < 6) {
+      setState(() => _error = 'Use at least 6 characters');
       return;
     }
     setState(() {
@@ -149,16 +150,32 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ],
               if (_success != null) ...[
                 const SizedBox(height: 16),
-                Text(
-                  _success!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: UnaColors.green100,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: UnaColors.green200),
+                  ),
+                  child: Text(
+                    _success!,
+                    style: const TextStyle(color: UnaColors.green900, fontSize: 13),
+                  ),
                 ),
               ],
               if (_error != null) ...[
                 const SizedBox(height: 16),
-                Text(
-                  _error!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF2F2),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFFFECACA)),
+                  ),
+                  child: Text(
+                    _error!,
+                    style: const TextStyle(color: UnaColors.error, fontSize: 13),
+                  ),
                 ),
               ],
             ],
