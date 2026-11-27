@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../api/api_client.dart';
 import '../data/local_cache.dart';
 import '../state/app_state.dart';
+import '../utils/currency.dart';
+import '../widgets/empty_state.dart';
 import 'listing_detail_screen.dart';
 
 class PublicProfileScreen extends StatefulWidget {
@@ -77,22 +79,12 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
       return Scaffold(
         backgroundColor: background,
         appBar: AppBar(title: Text('@${widget.username}')),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.person_off_outlined, size: 64, color: Colors.grey),
-                const SizedBox(height: 12),
-                const Text('User not found', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-                const SizedBox(height: 6),
-                Text(_error ?? 'This profile could not be loaded.', textAlign: TextAlign.center),
-                const SizedBox(height: 16),
-                FilledButton(onPressed: () => Navigator.pop(context), child: const Text('Go back')),
-              ],
-            ),
-          ),
+        body: EmptyState(
+          icon: Icons.person_off_outlined,
+          title: 'User not found',
+          message: _error ?? 'This profile could not be loaded.',
+          actionLabel: 'Go back',
+          onAction: () => Navigator.pop(context),
         ),
       );
     }
@@ -250,16 +242,10 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
             const SizedBox(height: 16),
             if (_tab == 0)
               _listings.isEmpty
-                  ? Container(
-                      padding: const EdgeInsets.symmetric(vertical: 48),
-                      alignment: Alignment.center,
-                      child: const Column(
-                        children: [
-                          Icon(Icons.home_work_outlined, size: 48, color: Colors.grey),
-                          SizedBox(height: 10),
-                          Text('No active listings at the moment.'),
-                        ],
-                      ),
+                  ? const EmptyState(
+                      icon: Icons.home_work_outlined,
+                      title: 'No active listings',
+                      message: 'This user has no active listings at the moment.',
                     )
                   : GridView.builder(
                       shrinkWrap: true,
@@ -310,7 +296,7 @@ class _PublicProfileScreenState extends State<PublicProfileScreen> {
                                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                           color: const Color(0xFF052E16),
                                           child: Text(
-                                            'N${(listing['price'] as num?)?.toStringAsFixed(0) ?? '0'}',
+                                            formatNaira((listing['price'] as num?)?.toDouble() ?? 0),
                                             style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12),
                                           ),
                                         ),
