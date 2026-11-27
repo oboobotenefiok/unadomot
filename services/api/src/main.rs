@@ -258,6 +258,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         media,
         email,
         pool: profile_pool.clone(),
+        calls,
         jwt_secret: jwt_secret.clone(),
         limiter: Arc::new(RateLimiter::new()),
         allowed_origins,
@@ -269,17 +270,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         jwt_secret: jwt_secret.clone(),
     };
 
-    let call_state = call_handlers::CallState {
-        calls,
-        users: users.clone(),
-        jwt_secret: jwt_secret.clone(),
-    };
-
     let mut app = router(state.clone())
         .merge(public_pages::router(state.clone()))
         .merge(verification::router(verification_state))
         .merge(messaging_handlers::router(state.clone()))
-        .merge(call_handlers::router(call_state));
+        .merge(call_handlers::router(state.clone()));
 
     if profile_pool.is_some() {
         app = app

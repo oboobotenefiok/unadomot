@@ -1,6 +1,6 @@
 use axum::{
     extract::{Path, State},
-    http::{HeaderMap, StatusCode},
+    http::StatusCode,
     response::IntoResponse,
     routing::{get, post},
     Json, Router,
@@ -11,24 +11,15 @@ use hmac::{Hmac, Mac};
 use serde::Deserialize;
 use serde_json::json;
 use sha1::Sha1;
-use std::sync::Arc;
-use unadomot_api::application::auth::{
-    bearer_token, require_active, verify_session, UserRepository,
-};
-use unadomot_api::application::calls::{CallError, CallRepository};
+use unadomot_api::application::calls::CallError;
+use unadomot_api::extract::AuthUser;
+use unadomot_api::http::AppState;
 use uuid::Uuid;
 
 const MAX_SDP_BYTES: usize = 64 * 1024;
 const TURN_TTL_SECONDS: i64 = 3600;
 
-#[derive(Clone)]
-pub struct CallState {
-    pub calls: Arc<dyn CallRepository>,
-    pub users: Arc<dyn UserRepository>,
-    pub jwt_secret: Arc<String>,
-}
-
-pub fn router(state: CallState) -> Router {
+pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/api/conversations/{id}/calls", post(start_call_handler))
         .route("/api/conversations/{id}/calls/history", get(call_history_handler))
@@ -62,20 +53,6 @@ fn turn_credential(secret: &str, username: &str) -> String {
     base64::engine::general_purpose::STANDARD.encode(mac.finalize().into_bytes())
 }
 
-async fn authorize(state: &CallState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
-    let token = bearer_token(headers)
-        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Please sign in"))?;
-
-    let user = verify_session(token, &state.jwt_secret)
-        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Session expired"))?;
-
-    require_active(state.users.as_ref(), user.id)
-        .await
-        .map_err(|_| error(StatusCode::FORBIDDEN, "This account is suspended"))?;
-
-    Ok(user.id)
-}
-
 fn call_error(error_value: CallError) -> axum::response::Response {
     match error_value {
         CallError::NotFound => error(StatusCode::NOT_FOUND, "Call not found"),
@@ -89,14 +66,9 @@ fn call_error(error_value: CallError) -> axum::response::Response {
 }
 
 async fn ice_servers_handler(
-    State(state): State<CallState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    user: AuthUser,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
-    };
-
     let mut servers = vec![json!({
         "urls": "stun:stun.l.google.com:19302"
     })];
@@ -107,7 +79,7 @@ async fn ice_servers_handler(
     ) {
         if !urls.trim().is_empty() && !secret.trim().is_empty() {
             let expiry = Utc::now().timestamp() + TURN_TTL_SECONDS;
-            let username = format!("{expiry}:{user_id}");
+            let username = format!("{expiry}:{}", user.id);
             let credential = turn_credential(&secret, &username);
 
             servers.push(json!({
@@ -122,16 +94,11 @@ async fn ice_servers_handler(
 }
 
 async fn start_call_handler(
-    State(state): State<CallState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    user: AuthUser,
     Path(conversation_id): Path<Uuid>,
     Json(request): Json<StartCallRequest>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
-    };
-
     let kind = request.kind.trim();
     if !matches!(kind, "audio" | "video") {
         return error(StatusCode::BAD_REQUEST, "Call kind must be audio or video");
@@ -148,7 +115,7 @@ async fn start_call_handler(
         .calls
         .create(
             conversation_id,
-            user_id,
+            user.id,
             kind,
             request.offer_sdp.trim(),
         )
@@ -160,47 +127,32 @@ async fn start_call_handler(
 }
 
 async fn call_history_handler(
-    State(state): State<CallState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    user: AuthUser,
     Path(conversation_id): Path<Uuid>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
-    };
-
-    match state.calls.history(conversation_id, user_id).await {
+    match state.calls.history(conversation_id, user.id).await {
         Ok(calls) => Json(calls).into_response(),
         Err(error_value) => call_error(error_value),
     }
 }
 
 async fn incoming_calls_handler(
-    State(state): State<CallState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    user: AuthUser,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
-    };
-
-    match state.calls.incoming(user_id).await {
+    match state.calls.incoming(user.id).await {
         Ok(calls) => Json(calls).into_response(),
         Err(error_value) => call_error(error_value),
     }
 }
 
 async fn get_call_handler(
-    State(state): State<CallState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    user: AuthUser,
     Path(id): Path<Uuid>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
-    };
-
-    match state.calls.get(id, user_id).await {
+    match state.calls.get(id, user.id).await {
         Ok(Some(call)) => Json(call).into_response(),
         Ok(None) => error(StatusCode::NOT_FOUND, "Call not found"),
         Err(error_value) => call_error(error_value),
@@ -208,16 +160,11 @@ async fn get_call_handler(
 }
 
 async fn answer_call_handler(
-    State(state): State<CallState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    user: AuthUser,
     Path(id): Path<Uuid>,
     Json(request): Json<AnswerCallRequest>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
-    };
-
     if request.answer_sdp.trim().is_empty() {
         return error(StatusCode::BAD_REQUEST, "Call answer is required");
     }
@@ -227,7 +174,7 @@ async fn answer_call_handler(
 
     match state
         .calls
-        .answer(id, user_id, request.answer_sdp.trim())
+        .answer(id, user.id, request.answer_sdp.trim())
         .await
     {
         Ok(call) => Json(call).into_response(),
@@ -236,16 +183,11 @@ async fn answer_call_handler(
 }
 
 async fn end_call_handler(
-    State(state): State<CallState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    user: AuthUser,
     Path(id): Path<Uuid>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
-    };
-
-    match state.calls.end(id, user_id).await {
+    match state.calls.end(id, user.id).await {
         Ok(call) => Json(call).into_response(),
         Err(error_value) => call_error(error_value),
     }
