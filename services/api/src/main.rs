@@ -23,6 +23,7 @@ use unadomot_api::adapters::{
 };
 use unadomot_api::application::auth::UserRepository;
 use unadomot_api::application::calls::CallRepository;
+use unadomot_api::application::email;
 use unadomot_api::application::listings::ListingRepository;
 use unadomot_api::application::media::MediaSigner;
 use unadomot_api::application::messaging::MessagingRepository;
@@ -230,6 +231,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         _ => Arc::new(UnconfiguredMediaSigner),
     };
 
+    if is_production
+        && (std::env::var("RESEND_API_KEY").map_or(true, |value| value.trim().is_empty())
+            || std::env::var("EMAIL_FROM").map_or(true, |value| value.trim().is_empty()))
+    {
+        return Err("RESEND_API_KEY and EMAIL_FROM are required in production".into());
+    }
+
+    let email = email::from_env();
+
     let allowed_origins = Arc::new(
         std::env::var("ALLOWED_ORIGINS")
             .unwrap_or_default()
@@ -246,6 +256,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         reports,
         audit: verification_repo.clone(),
         media,
+        email,
         jwt_secret: jwt_secret.clone(),
         limiter: Arc::new(RateLimiter::new()),
         allowed_origins,

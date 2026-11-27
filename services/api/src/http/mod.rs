@@ -2,6 +2,7 @@ use crate::application::auth::{
     hash_password, hash_refresh_token, issue_session, login, new_refresh_token, register,
     verify_session, AuthError, UserRepository,
 };
+use crate::application::email::EmailSender;
 use crate::application::listings::{
     add_listing_media, admin_remove_listing, admin_restore_listing, browse_listings,
     create_listing, delete_listing, get_public_listing, list_my_listings, update_listing,
@@ -121,6 +122,7 @@ pub struct AppState {
     pub reports: Arc<dyn ReportRepository>,
     pub audit: Arc<dyn VerificationRepository>,
     pub media: Arc<dyn MediaSigner>,
+    pub email: Arc<dyn EmailSender>,
     pub jwt_secret: Arc<String>,
     pub limiter: Arc<RateLimiter>,
     pub allowed_origins: Arc<Vec<String>>,
@@ -621,7 +623,7 @@ async fn login_handler(
     )
     .await
     .map_err(|error| {
-        tracing::warn!(email = %request.email, "login failed");
+        tracing::warn!("login failed");
         auth_error(error)
     })?;
 
@@ -714,10 +716,19 @@ async fn password_reset_request_handler(
         .await
         .map_err(auth_error)?;
 
-    if user_id.is_some()
-        && std::env::var("PASSWORD_RESET_DEBUG").ok().as_deref() == Some("1")
-    {
-        tracing::info!("password reset token for {}: {}", request.email, token);
+    if user_id.is_some() {
+        let reset_link = format!(
+            "{}/reset-password?token={}",
+            public_base_url(),
+            token
+        );
+        if let Err(error) = state
+            .email
+            .send_password_reset(request.email.trim(), &reset_link)
+            .await
+        {
+            tracing::error!(error = ?error, "password reset email delivery failed");
+        }
     }
 
     Ok(StatusCode::NO_CONTENT)
@@ -743,6 +754,29 @@ async fn password_reset_confirm_handler(
     }
 
     Ok(StatusCode::NO_CONTENT)
+}
+
+fn public_base_url() -> String {
+    std::env::var("APP_BASE_URL")
+        .or_else(|_| std::env::var("PUBLIC_APP_URL"))
+        .unwrap_or_else(|_| "https://unadomot.com".into())
+        .trim_end_matches('/')
+        .to_string()
+}
+
+fn valid_media_url(url: &str) -> bool {
+    url.starts_with("https://res.cloudinary.com/")
+        && url.contains("/upload/")
+        && url.len() <= 2048
+        && !url.contains(char::is_whitespace)
+}
+
+fn valid_cloudinary_public_id(public_id: &str) -> bool {
+    public_id.starts_with("unadomot/")
+        && public_id.len() <= 255
+        && public_id
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '/' | '_' | '-' | '.'))
 }
 
 #[derive(Deserialize, Default)]
@@ -1079,6 +1113,22 @@ async fn add_media_handler(
     Json(request): Json<AddMediaRequest>,
 ) -> Result<Json<MediaResponse>, ApiError> {
     let user = authorize(&state, &headers).await?;
+
+    if !valid_cloudinary_public_id(&request.cloudinary_public_id) {
+        return Err(ApiError::new(
+            StatusCode::BAD_REQUEST,
+            "validation_error",
+            "Media must be uploaded to the UnaDomot Cloudinary folder",
+        ));
+    }
+    if !valid_media_url(&request.url) {
+        return Err(ApiError::new(
+            StatusCode::BAD_REQUEST,
+            "validation_error",
+            "Media URL must be a Cloudinary HTTPS upload URL",
+        ));
+    }
+
     let media = NewListingMedia {
         cloudinary_public_id: request.cloudinary_public_id,
         url: request.url,
@@ -1333,5 +1383,32 @@ fn media_error(error: MediaError) -> ApiError {
             "media_signing_failed",
             "Could not sign the upload",
         ),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn accepts_cloudinary_https_media() {
+        assert!(valid_media_url(
+            "https://res.cloudinary.com/demo/image/upload/v1/sample.jpg"
+        ));
+    }
+
+    #[test]
+    fn rejects_non_cloudinary_or_http_media() {
+        assert!(!valid_media_url("http://res.cloudinary.com/demo/image/upload/a.jpg"));
+        assert!(!valid_media_url("https://evil.example/image/upload/a.jpg"));
+        assert!(!valid_media_url("https://res.cloudinary.com/demo/image/a.jpg"));
+        assert!(!valid_media_url("https://res.cloudinary.com/demo/image/upload/a b.jpg"));
+    }
+
+    #[test]
+    fn requires_unadomot_folder_for_public_id() {
+        assert!(valid_cloudinary_public_id("unadomot/listings/photo-1"));
+        assert!(!valid_cloudinary_public_id("other/listings/photo-1"));
+        assert!(!valid_cloudinary_public_id("unadomot/listings/../secret"));
     }
 }
