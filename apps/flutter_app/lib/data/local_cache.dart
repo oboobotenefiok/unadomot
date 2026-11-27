@@ -28,7 +28,7 @@ class LocalCache {
         p.join(await getDatabasesPath(), 'unadomot_cache.db');
     _database = await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE cached_listings (
@@ -70,6 +70,21 @@ class LocalCache {
             value TEXT NOT NULL
           )
         ''');
+        await db.execute('''
+          CREATE TABLE saved_searches (
+            id TEXT PRIMARY KEY,
+            payload TEXT NOT NULL,
+            created_at INTEGER NOT NULL
+          )
+        ''');
+        await db.execute('''
+          CREATE TABLE conversations (
+            id TEXT PRIMARY KEY,
+            payload TEXT NOT NULL,
+            unread_count INTEGER NOT NULL DEFAULT 0,
+            updated_at INTEGER NOT NULL
+          )
+        ''');
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -86,6 +101,23 @@ class LocalCache {
             CREATE TABLE settings (
               key TEXT PRIMARY KEY,
               value TEXT NOT NULL
+            )
+          ''');
+        }
+        if (oldVersion < 4) {
+          await db.execute('''
+            CREATE TABLE saved_searches (
+              id TEXT PRIMARY KEY,
+              payload TEXT NOT NULL,
+              created_at INTEGER NOT NULL
+            )
+          ''');
+          await db.execute('''
+            CREATE TABLE conversations (
+              id TEXT PRIMARY KEY,
+              payload TEXT NOT NULL,
+              unread_count INTEGER NOT NULL DEFAULT 0,
+              updated_at INTEGER NOT NULL
             )
           ''');
         }
@@ -264,6 +296,8 @@ class LocalCache {
     await db.delete('favorites');
     await db.delete('drafts');
     await db.delete('affinity');
+    await db.delete('saved_searches');
+    await db.delete('conversations');
   }
 
   Future<void> close() async {

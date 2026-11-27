@@ -181,6 +181,7 @@ class UnaDomotApp extends StatelessWidget {
             valueListenable: appLargeText,
             builder: (context, largeText, _) => MaterialApp(
               title: 'UnaDomot',
+              navigatorKey: state.navigatorKey,
               theme: contrast ? unaHighContrastTheme() : unaTheme(),
               darkTheme: unaDarkTheme(),
               themeMode: mode,

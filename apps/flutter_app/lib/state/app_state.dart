@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../api/api_client.dart';
 import '../data/local_cache.dart';
@@ -11,6 +11,9 @@ class AppState extends ChangeNotifier {
   final ApiClient api;
   final LocalCache cache;
   final FlutterSecureStorage _storage;
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  int _sessionEpoch = 0;
 
   AppState({
     required this.api,
@@ -21,6 +24,8 @@ class AppState extends ChangeNotifier {
   }
 
   bool get signedIn => api.signedIn;
+
+  int get sessionEpoch => _sessionEpoch;
 
   Future<void> restore() async {
     final token = await _storage.read(key: _tokenKey);
@@ -70,12 +75,18 @@ class AppState extends ChangeNotifier {
     try {
       await api.logout();
     } finally {
-      api.signOut();
-      await _storage.delete(key: _tokenKey);
-      await _storage.delete(key: _refreshKey);
-      await _storage.delete(key: _expiryKey);
-      await cache.clearUserData();
-      notifyListeners();
+      await _resetSession();
     }
+  }
+
+  Future<void> _resetSession() async {
+    api.signOut();
+    _sessionEpoch++;
+    await _storage.delete(key: _tokenKey);
+    await _storage.delete(key: _refreshKey);
+    await _storage.delete(key: _expiryKey);
+    await cache.clearUserData();
+    navigatorKey.currentState?.popUntil((route) => route.isFirst);
+    notifyListeners();
   }
 }
