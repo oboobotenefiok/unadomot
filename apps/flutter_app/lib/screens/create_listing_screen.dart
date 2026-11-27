@@ -355,7 +355,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                 labelText: 'Monthly rent',
-                prefixText: 'N ',
+                prefixText: '₦ ',
               ),
               validator: (value) {
                 final price = double.tryParse(value ?? '');
