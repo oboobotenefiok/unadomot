@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import '../api/api_client.dart';
 import '../data/local_cache.dart';
@@ -29,8 +32,13 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  final MapController _mapController = MapController();
   String? _selectedState;
   List<Listing> _selectedListings = const [];
+  LatLng? _myLocation;
+  LatLng? _pinnedLocation;
+  bool _locating = false;
+  String? _locationError;
 
   void _selectState(String state, List<Listing> listings) {
     setState(() {
@@ -44,6 +52,70 @@ class _MapScreenState extends State<MapScreen> {
       _selectedState = null;
       _selectedListings = const [];
     });
+  }
+
+  Future<void> _locateMe() async {
+    if (_locating) return;
+    setState(() {
+      _locating = true;
+      _locationError = null;
+    });
+
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        throw const _LocationFailure('Turn on location services to find your position.');
+      }
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied) {
+        throw const _LocationFailure('Location permission was denied.');
+      }
+      if (permission == LocationPermission.deniedForever) {
+        throw const _LocationFailure(
+          'Location permission is blocked. Enable it in system settings.',
+        );
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      ).timeout(const Duration(seconds: 12));
+      final point = LatLng(position.latitude, position.longitude);
+      if (!mounted) return;
+      setState(() {
+        _myLocation = point;
+        _pinnedLocation = point;
+        _selectedState = null;
+        _selectedListings = const [];
+      });
+      _mapController.move(point, 15);
+    } on TimeoutException {
+      if (mounted) {
+        setState(() => _locationError = 'Location timed out. Try again.');
+      }
+    } on _LocationFailure catch (error) {
+      if (mounted) setState(() => _locationError = error.message);
+    } catch (_) {
+      if (mounted) {
+        setState(() => _locationError = 'Could not get your location.');
+      }
+    } finally {
+      if (mounted) setState(() => _locating = false);
+    }
+  }
+
+  void _pinAt(LatLng point) {
+    setState(() {
+      _pinnedLocation = point;
+      _selectedState = null;
+      _selectedListings = const [];
+    });
+  }
+
+  void _clearPin() {
+    setState(() => _pinnedLocation = null);
   }
 
   Future<void> _openChat(Listing listing) async {
@@ -126,10 +198,46 @@ class _MapScreenState extends State<MapScreen> {
       );
     }).toList();
 
+    if (_myLocation != null) {
+      markers.add(
+        Marker(
+          point: _myLocation!,
+          width: 26,
+          height: 26,
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF2563EB),
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 3),
+              boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8)],
+            ),
+          ),
+        ),
+      );
+    }
+
+    if (_pinnedLocation != null) {
+      markers.add(
+        Marker(
+          point: _pinnedLocation!,
+          width: 44,
+          height: 44,
+          child: const Icon(
+            Icons.location_on,
+            color: Color(0xFFDC2626),
+            size: 44,
+            shadows: [Shadow(color: Colors.black38, blurRadius: 6)],
+          ),
+        ),
+      );
+    }
+
     final map = FlutterMap(
-      options: const MapOptions(
-        initialCenter: LatLng(9.0820, 8.6753),
+      mapController: _mapController,
+      options: MapOptions(
+        initialCenter: const LatLng(9.0820, 8.6753),
         initialZoom: 6,
+        onLongPress: (_, point) => _pinAt(point),
       ),
       children: [
         TileLayer(
@@ -155,6 +263,67 @@ class _MapScreenState extends State<MapScreen> {
                   )
                 : map,
           ),
+          Positioned(
+            top: 12,
+            right: 12,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                FloatingActionButton.small(
+                  heroTag: 'locate-me',
+                  tooltip: 'Find my location',
+                  onPressed: _locating ? null : _locateMe,
+                  child: _locating
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.my_location),
+                ),
+                if (_pinnedLocation != null) ...[
+                  const SizedBox(height: 8),
+                  FloatingActionButton.small(
+                    heroTag: 'clear-pin',
+                    tooltip: 'Clear pin',
+                    onPressed: _clearPin,
+                    child: const Icon(Icons.location_off_outlined),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (_locationError != null)
+            Positioned(
+              left: 12,
+              right: 12,
+              top: 12,
+              child: Material(
+                color: Theme.of(context).colorScheme.errorContainer,
+                borderRadius: BorderRadius.circular(10),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _locationError!,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onErrorContainer,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        onPressed: () => setState(() => _locationError = null),
+                        icon: const Icon(Icons.close, size: 18),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           if (_selectedState != null)
             Positioned(
               left: 12,
@@ -172,6 +341,12 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
   }
+}
+
+class _LocationFailure implements Exception {
+  final String message;
+
+  const _LocationFailure(this.message);
 }
 
 class _MapPopup extends StatelessWidget {
@@ -263,7 +438,7 @@ class _MapPopup extends StatelessWidget {
                                     style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
                                   ),
                                   Text(
-                                    'N${listing.price.toStringAsFixed(0)} • ${listing.lga}',
+                                    '₦${listing.price.toStringAsFixed(0)} • ${listing.lga}',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(color: UnaColors.primary, fontSize: 11, fontWeight: FontWeight.w600),
