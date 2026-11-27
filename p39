@@ -1,0 +1,247 @@
+ngs in this file.**
+- `bg-white rounded-lg shadow-md p-6 space-y-2`
+- `border-b border-gray-100 pb-2`
+- `w-full flex items-center justify-between py-3 text-left px-2 rounded-lg transition hover:bg-gray-50`
+- `flex items-center gap-3`
+- `font-medium text-gray-800`
+- `Get Verified`
+- `text-sm text-gray-400`
+- `w-full flex items-center justify-between py-3 text-left px-2 rounded-lg transition`
+- `text-sm text-gray-500`
+- `ml-10 mt-1 space-y-1 animate-slide-down`
+- `w-full flex items-center justify-between py-2 px-2 text-sm text-gray-600 rounded-lg transition hover:bg-gray-50`
+- `ml-10 mt-1 space-y-2 animate-slide-down`
+- `py-2 px-2 text-sm text-gray-600`
+- `font-mono bg-gray-100 px-2 py-1 rounded`
+- `w-full flex items-center justify-between py-2 px-2 text-sm text-gray-600 rounded-lg transition hover:bg-gray-50 disabled:opacity-50`
+- `🔄 Check for Updates`
+- `bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full`
+- `New!`
+- `w-full flex items-center gap-3 py-3 text-left px-2 rounded-lg transition text-red-600 font-medium hover:bg-red-50`
+
+**Responsive.**
+- Component-local responsive utility tokens, if any, are included in the class inventory above (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`). Global stylesheet switching and breakpoint behavior: HANDOFF §2.9 and §3.2–§3.4.
+
+**Animation.** See §4 for source keyframes and transition declarations. Component-local `animate-*`, `transition-*`, `duration-*`, and `ease-*` tokens are recorded in §4.
+
+**Accessibility.**
+- [NOT SPECIFIED] No literal aria/role/title attribute matched in this file; inspect semantic element type and parent usage.
+
+**Flutter notes.** Map source DOM positioning and utility behavior to `Stack`/`Positioned`, `SafeArea`, `Padding`, `DecoratedBox`, `ClipRRect`, `BoxShadow`, `TextStyle`, `InkWell`/`GestureDetector`, `Focus`, and `Semantics` as applicable. Use HANDOFF §12.2 for the baseline mapping; this source-specific subsection adds only the exact visual evidence above.
+
+**Evidence flags.** [SOURCE] class/copy/attributes above are extracted from the named file. [INFERRED] Flutter widget mapping. [NOT SPECIFIED] Any state not represented by a source conditional or stylesheet.
+
+## 7. Page-level visual specs (G1, G3, G4, G7)
+
+Page ordering follows HANDOFF §6. Page modules and page-local component files are included; source modules absent from the dumps are explicitly marked. The full page tree is conditional on data/auth/viewport state, so literal return snippets and class inventories are preserved rather than collapsing mutually exclusive branches.
+
+### 7.1 pages/home/index.js
+
+**Purpose & usage sites.** Literal source: `pages/home/index.js` (1241 lines). See the relevant usage and routing context in HANDOFF §5 and §6. The implementation is React `createElement`; this subsection extracts the actual class, copy, and inline-SVG evidence from that module.
+
+**Element tree / literal structure.** The source's returned tree is represented by the following concrete structural evidence; where the source constructs children conditionally or via helper functions, the branch is preserved as a source condition rather than flattened into a fabricated single tree.
+```javascript
+    return (hasActiveFilters || hasSearchTerm) && hasNoResults && recommendedListings.length > 0;
+  }, [filtersHook.activeFilterCount, searchHook.searchTerm, sortedListings.length, recommendedListings.length]);
+
+  // ===== RENDER =====
+  return React.createElement(React.Fragment, null,
+    
+    // Toast notification (from hook)
+    ToastComponent,
+
+    // Main scrollable container
+    React.createElement('div', {
+      ref: feedContainerRef,
+      className: `h-full overflow-y-auto bg-green-50 ${bodyTextSize} ${
+        isDesktop 
+          ? 'desktop-content-wrapper' 
+          : ''
+      }`,
+      onScroll: function(e) {
+        if (listingsHook.handleScroll) listingsHook.handleScroll(e);
+      }
+    },
+
+      // ===== MOBILE STICKY SEARCH/FILTER BAR (hidden on desktop) =====
+      !isDesktop && viewMode === 'grid' && React.createElement('div', { 
+        className: `sticky top-0 z-30 bg-green-50/95 backdrop-blur-sm border-b border-gray-200 px-4 py-4 transition-transform duration-300 ${
+          showSearchBar ? 'translate-y-0' : '-translate-y-full'
+        }`
+      },
+        React.createElement('div', { className: 'flex items-center gap-2' },
+
+          // Filter button
+          React.createElement(window.FilterBar || FilterBar, {
+            activeFilterCount: filtersHook.activeFilterCount,
+            onOpenFilters: filtersHook.openFilterModal,
+            touchTargetSize: 'min-h-[44px] min-w-[44px]'
+          }),
+
+          // Search bar with toggle props
+          React.createElement(window.SearchBar || SearchBar, {
+            searchTerm: searchHook.searchTerm,
+            onSearchChange: searchHook.setSearchTerm,
+            onSearchSubmit: handleSearchSubmit,
+            onClearSearch: handleClearSearch,
+            showDropdown: searchHook.showSearchDropdown,
+            setShowDropdown: searchHook.setShowSearchDropdown,
+            searchHistory: searchHook.searchHistory,
+            suggestions: searchSuggestions,
+            onSelectSuggestion: handleSelectSuggestion,
+            onClearHistory: searchHook.clearSearchHistory,
+            searchInputRef: searchHook.searchInputRef,
+            searchDropdownRef: searchHook.searchDropdownRef,
+            touchTargetSize: 'min-h-[44px] min-w-[44px]',
+            showToast: showToastMessage,
+            isSearchActive: isSearchActive
+          }),
+
+          // View toggle button
+          React.createElement(ViewToggle, {
+            viewMode: viewMode,
+            onToggle: handleViewToggle
+          }),
+
+          // Notification bell
+          user && window.NotificationBell ? 
+            React.createElement(window.NotificationBell, { key: 'notif' }) : null,
+
+          // Accessibility button
+          React.createElement('button', {
+            onClick: function() { setShowAccessibility(true); document.body.style.overflow = 'hidden'; },
+            className: 'p-2 text-gray-600 hover:text-green-950 rounded-full hover:bg-gray-100 transition min-h-[44px] min-w-[44px]',
+            'aria-label': 'Accessibility options'
+          },
+            React.createElement('img', { 
+              src: '/vault/img/accessibility.png', 
+              alt: '', 
+              className: 'w-5 h-5', 
+              'aria-hidden': 'true' 
+            })
+          )
+        )
+      ),
+
+      // ===== FILTER MODAL =====
+      filtersHook.showFilters && React.createElement(FilterModal, {
+        show: filtersHook.showFilters,
+        onClose: filtersHook.closeFilterModal,
+        filters: filtersHook.filters,
+        tempFilters: filtersHook.tempFilters,
+        availableLgas: filtersHook.availableLgas,
+        onUpdateFilter: filtersHook.updateFilter,
+        onApply: filtersHook.applyFilters,
+        onClear: filtersHook.clearAllFilters,
+        activeFilterCount: filtersHook.activeFilterCount,
+        hideLocationFilters: false,
+        onLocationSelect: handleLocationSelect,
+        mapInstance: mapInstance,
+        isDesktop: isDesktop
+      }),
+
+      // Accessibility modal
+```
+
+**Box model, color & typography — literal class inventory.**
+- `h-full overflow-y-auto bg-green-50 ${bodyTextSize} ${
+        isDesktop 
+          ? 'desktop-content-wrapper' 
+          : ''
+      }`
+- `sticky top-0 z-30 bg-green-50/95 backdrop-blur-sm border-b border-gray-200 px-4 py-4 transition-transform duration-300 ${
+          showSearchBar ? 'translate-y-0' : '-translate-y-full'
+        }`
+- `flex items-center gap-2`
+- `p-2 text-gray-600 hover:text-green-950 rounded-full hover:bg-gray-100 transition min-h-[44px] min-w-[44px]`
+- `w-5 h-5`
+- `w-full h-full object-cover`
+- `absolute top-1 right-1 flex gap-0.5 z-10`
+- `bg-blue-600 text-white p-1 rounded-full shadow-lg hover:bg-blue-700 transition`
+- `w-3 h-3`
+- `bg-red-500 text-white p-1 rounded-full shadow-lg hover:bg-red-600 transition`
+- `absolute bottom-2 left-2 bg-green-950 text-white px-2 py-1 rounded-md font-bold text-sm shadow-lg z-20`
+- `flex gap-1`
+- `text-gray-500 hover:text-green-950 p-1 rounded hover:bg-gray-100 transition text-xs`
+- `w-4 h-4`
+- `text-gray-500 hover:text-blue-600 p-1 rounded hover:bg-gray-100 transition text-xs`
+- `p-1 rounded hover:bg-gray-100 transition text-xs ${
+                            isFav ? 'text-red-500 hover:text-red-700' : 'text-gray-500 hover:text-red-500'
+                          } ${isChecking ? ' opacity-50 cursor-wait' : ''}`
+- `mb-4 flex items-center gap-2`
+- `w-1 h-6 bg-green-950 rounded-full`
+- `text-lg font-bold text-gray-900`
+- `mb-6 p-4 bg-green-50 rounded-xl border border-green-200 text-center`
+- `text-gray-700 mb-3`
+- `bg-green-950 text-white px-6 py-2 rounded-lg hover:bg-green-800 transition font-medium inline-flex items-center gap-2`
+- `flex flex-wrap gap-0.5 mb-1`
+- `bg-blue-100 text-blue-700 px-1 py-0.5 rounded text-[10px]`
+- `flex items-center justify-between pt-1 border-t border-gray-100`
+- `p-1 rounded hover:bg-gray-100 transition text-xs ${
+                                  isFav ? 'text-red-500 hover:text-red-700' : 'text-gray-500 hover:text-red-500'
+                                } ${isChecking ? ' opacity-50 cursor-wait' : ''}`
+- `bg-white rounded-lg shadow-md overflow-hidden animate-pulse`
+- `h-40 bg-gray-200`
+- `p-2 space-y-2`
+- `h-4 bg-gray-200 rounded w-3/4`
+- `h-3 bg-gray-200 rounded w-full`
+- `mt-4 w-full text-center text-green-950 text-sm py-2 hover:underline`
+- `w-1 h-6 bg-blue-600 rounded-full`
+- `p-1 rounded hover:bg-gray-100 transition text-xs ${
+                                isFav ? 'text-red-500 hover:text-red-700' : 'text-gray-500 hover:text-red-500'
+                              } ${isChecking ? ' opacity-50 cursor-wait' : ''}`
+- `text-center py-4 text-gray-400 text-sm`
+- `desktop-empty-state-description`
+- `relative bg-transparent w-full h-full`
+- `absolute top-20 right-3 flex flex-col gap-2 z-10`
+
+**Resolved values.** Utility classes resolve through the legend in §2 and theme overrides in HANDOFF §2. Where no corresponding CSS override exists, standard Tailwind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- Icon 1: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/index.js`.
+- Icon 2: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/index.js`.
+- Icon 3: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/index.js`.
+- Icon 4: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/index.js`.
+- Icon 5: viewBox `0 0 20 20`; fill `currentColor`; stroke `not explicitly set`; strokeWidth `not explicitly set`; linecap `not explicitly set`; linejoin `not explicitly set`; paths: 1. Full path data appears in §3 under `pages/home/index.js`.
+- Icon 6: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/index.js`.
+- Icon 7: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/index.js`.
+- Icon 8: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/index.js`.
+- Icon 9: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/index.js`.
+- Icon 10: viewBox `0 0 20 20`; fill `currentColor`; stroke `not explicitly set`; strokeWidth `not explicitly set`; linecap `not explicitly set`; linejoin `not explicitly set`; paths: 1. Full path data appears in §3 under `pages/home/index.js`.
+- Icon 11: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/index.js`.
+- Icon 12: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/index.js`.
+- Icon 13: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/index.js`.
+- Icon 14: viewBox `0 0 20 20`; fill `currentColor`; stroke `not explicitly set`; strokeWidth `not explicitly set`; linecap `not explicitly set`; linejoin `not explicitly set`; paths: 1. Full path data appears in §3 under `pages/home/index.js`.
+- Icon 15: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `pages/home/index.js`.
+
+**States (G4).**
+- Literal conditional class expression: `className: isDesktop ? 'desktop-carousel' : 'px-4' }`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? '' : 'px-4 pb-20' }`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? 'mb-4 text-sm text-gray-600 px-6' : 'mb-3 text-sm text-gray-600' }`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? desktopGridCols : 'grid ' + layout.getGridCols(settings.fontSize`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? 'desktop-card' : 'bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition page-transition'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? 'desktop-card-image' : 'relative ' + cardSizes.image + ' bg-gray-200' }`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? 'desktop-card-content' : 'p-2 ' + spacing }`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? 'desktop-card-title' : 'font-bold text-gray-900 mb-0.5 line-clamp-1 ' + cardSizes.title }`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? 'desktop-card-location' : 'text-gray-600 mb-1 line-clamp-1 ' + cardSizes.address }`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? 'flex items-center gap-2 mb-2' : 'flex flex-wrap gap-0.5 mb-1' }`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? 'flex items-center justify-between mt-2' : 'flex items-center justify-between pt-1 border-t border-gray-100' }`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? 'mt-8 pt-6 border-t-2 border-green-200 px-6' : 'mt-8 pt-6 border-t-2 border-green-200' }`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? 'mt-8 pt-6 border-t-2 border-blue-200 px-6' : 'mt-8 pt-6 border-t-2 border-blue-200' }`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? 'desktop-empty-state' : 'text-center py-12' }`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? 'desktop-empty-state-icon' : 'text-5xl mb-4' }`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? 'desktop-empty-state-title' : 'text-gray-500' }`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: isDesktop ? 'desktop-empty-state-btn' : 'mt-4 bg-green-950 text-white px-6 py-2 rounded-lg hover:bg-green-800 transition ' + bodyTextSize`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: `h-full overflow-y-auto bg-green-50 ${bodyTextSize} ${ isDesktop ? 'desktop-content-wrapper' : '' }``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: `sticky top-0 z-30 bg-green-50/95 backdrop-blur-sm border-b border-gray-200 px-4 py-4 transition-transform duration-300 ${ showSearchBar ? 'translate-y-0' : '-translate-y-full' }``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: `p-1 rounded hover:bg-gray-100 transition text-xs ${ isFav ? 'text-red-500 hover:text-red-700' : 'text-gray-500 hover:text-red-500' } ${isChecking ? ' opacity-50 cursor-wait' : ''}``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex items-center gap-2'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'p-2 text-gray-600 hover:text-green-950 rounded-full hover:bg-gray-100 transition min-h-[44px] min-w-[44px]'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-5 h-5'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-full h-full object-cover'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'absolute top-1 right-1 flex gap-0.5 z-10'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'bg-blue-600 text-white p-1 rounded-full shadow-lg hover:bg-blue-700 transition'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-3 h-3'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'bg-red-500 text-white p-1 rounded-full shadow-lg hover:bg-red-600 transition'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'absolute bottom-2 left-2 bg-green-950 text-white px-2 py-1 rounded-md font-bold text-sm shadow-lg z-20'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex gap-1'`. The source expre

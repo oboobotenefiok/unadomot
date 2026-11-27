@@ -1,0 +1,559 @@
+ew.`
+- `text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-medium`
+- `text-sm font-semibold text-gray-900`
+- `By: `
+- `flex gap-2 mb-4 overflow-x-auto pb-2`
+- `w-16 h-16 rounded-lg object-cover`
+- `w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center text-xs text-gray-500`
+- `bg-gray-50 rounded-lg p-3 mb-3 text-xs text-gray-600`
+- `text-sm text-gray-700 mb-4 line-clamp-2`
+- `No description provided.`
+- `e.g., Incomplete information, inappropriate content...`
+- `px-4 py-2 text-sm font-medium text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition`
+- `min-h-screen bg-green-50 py-8`
+- `max-w-6xl mx-auto px-4`
+- `text-3xl font-bold text-gray-900`
+- `🛡 Admin Dashboard`
+- `text-gray-500 mt-1`
+- `Logged in as `
+- `bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-lg mb-6 text-sm`
+- `⚠️ Actions taken here are permanent. Always review content before approving or rejecting.`
+- `flex gap-1 border-b border-gray-200 mb-6 flex-wrap`
+- `📋 All Listings`
+- `📝 Pending Review`
+- `📊 Reports`
+- `🏠 Landlord Verifications`
+- `🤝 Agent Verifications`
+### `pages/ChatPage.js`
+- `min-h-screen bg-green-50`
+- `p-4 space-y-3`
+- `bg-white rounded-lg p-4 flex gap-3 animate-pulse`
+- `w-12 h-12 rounded-full bg-gray-200 flex-shrink-0`
+- `flex-1 space-y-2`
+- `h-4 bg-gray-200 rounded w-1/3`
+- `h-3 bg-gray-200 rounded w-2/3`
+- `absolute inset-0 top-0 left-0 right-0 bottom-0`
+- `fixed inset-0 z-40 bg-green-50 pt-0`
+- `max-w-4xl mx-auto px-4 py-8`
+- `pt-4 space-y-2`
+- `w-full max-w-4xl h-full flex flex-col mx-auto`
+- `h-full flex flex-col w-full`
+### `pages/CheckoutNoticePage.js`
+- `Failed to load your checkout notices`
+- `min-h-screen bg-gray-50 py-12`
+- `max-w-4xl mx-auto px-4`
+- `mb-6 flex justify-between items-center`
+- `text-blue-600 hover:underline cursor-pointer`
+- `← Back to Profile`
+- `text-gray-600 hover:underline cursor-pointer`
+- `bg-white rounded-lg shadow-md p-8 mb-8`
+- `text-3xl font-bold mb-8`
+- `Post Checkout Notice`
+- `bg-red-50 text-red-600 p-4 rounded mb-6`
+- `block text-gray-700 font-bold mb-2`
+- `Property Address`
+- `Full address of property you're leaving`
+- `text-red-500 text-sm mt-1`
+- `Move-out Date`
+- `Reason (optional)`
+- `e.g., Lease ended, relocation, etc.`
+- `w-full bg-blue-600 text-white py-4 rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50 cursor-pointer`
+- `bg-white rounded-lg shadow-md p-8`
+- `text-xl font-bold mb-6`
+- `Your Checkout Notices`
+- `flex justify-center py-8`
+- `w-6 h-6 rounded-full bg-gray-200 animate-pulse mx-auto`
+- `border-b pb-4 last:border-0`
+- `text-sm text-gray-600`
+- `Moving out: `
+- `text-sm text-gray-500 mt-1`
+- `inline-block mt-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded`
+- `✓ Verified Move-out`
+### `pages/FavoritesPage.js`
+- `send messages`
+- `Please verify your email to send messages`
+- `You cannot message yourself`
+- `Starting conversation...`
+- `Is this still available?`
+- `Failed to start chat. Please try again.`
+- `✓ Removed from favorites`
+- `Failed to remove from favorites`
+- `Remove all unavailable listings from your favourites?`
+- `All unavailable listings removed`
+- `Failed to remove all listings`
+- `min-h-screen bg-green-50 flex items-center justify-center`
+- `w-10 h-10 rounded-full bg-gray-200 animate-pulse mx-auto mb-4`
+- `Redirecting to login...`
+- `min-h-screen bg-green-50 py-8`
+- `max-w-7xl mx-auto px-4`
+- `text-3xl font-bold mb-8`
+- `Saved Listings`
+- `text-center py-16 bg-white rounded-lg shadow-md`
+- `w-20 h-20 mx-auto text-gray-400 mb-4`
+- `M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z`
+- `text-gray-500 text-lg mb-2`
+- `No saved listings yet`
+- `text-gray-400 mb-6`
+- `Tap the heart icon on any listing to save it here`
+- `inline-block bg-green-950 text-white px-6 py-3 rounded-lg hover:bg-green-800 transition`
+- `Browse Listings`
+- `fixed bottom-24 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2 rounded-lg shadow-lg text-white text-sm animate-fade-in-up `
+- `min-h-screen bg-green-50 py-8 overflow-y-auto`
+- `text-xl font-semibold mb-4 text-gray-700`
+- `Available Listings`
+- `grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4`
+- `bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition`
+- `relative h-40 bg-gray-200`
+- `w-full h-full object-cover`
+- `absolute bottom-1 left-1 bg-green-950 text-white px-1.5 py-0.5 rounded font-bold text-sm`
+- `font-bold text-gray-900 mb-0.5 line-clamp-1 text-sm`
+- `text-gray-600 mb-1 line-clamp-1 text-xs`
+- `flex flex-wrap gap-0.5 mb-1`
+- `bg-gray-100 text-gray-700 px-1 py-0.5 rounded text-[10px]`
+- `flex items-center justify-between pt-1 border-t border-gray-100`
+- `flex gap-1`
+- `text-gray-500 hover:text-green-950 p-1 rounded hover:bg-gray-100 transition text-xs`
+- `Send message about this property`
+- `w-4 h-4`
+- `M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z`
+- `text-gray-500 hover:text-blue-600 p-1 rounded hover:bg-gray-100 transition text-xs`
+- `M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z`
+- `p-1 rounded hover:bg-gray-100 transition text-xs text-red-500 hover:text-red-700`
+- `Remove from favorites`
+- `M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z`
+- `flex items-center justify-between mb-4`
+- `text-xl font-semibold text-gray-500`
+- `Unavailable Listings`
+- `text-sm text-red-600 hover:text-red-800 cursor-pointer`
+- `Remove all`
+- `grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 opacity-75`
+- `bg-white rounded-lg shadow-md overflow-hidden opacity-75`
+- `w-full h-full object-cover grayscale`
+- `absolute inset-0 bg-black/50 flex items-center justify-center`
+- `bg-red-500 text-white px-2 py-1 rounded text-xs font-bold`
+- `font-bold text-gray-900 mb-0.5 line-clamp-1 text-sm line-through`
+- `bg-red-100 text-red-700 px-1 py-0.5 rounded text-[10px]`
+- `text-gray-300 p-1 rounded text-xs cursor-not-allowed`
+- `Cannot message on removed listing`
+- `Cannot share removed listing`
+### `pages/ListingByCodePage.js`
+- `No listing code provided`
+- `Invalid listing code format`
+- `Listing not found`
+- `This listing has been removed`
+- `This listing is pending review and not yet available`
+- `Error resolving listing code:`
+- `Failed to load listing. Please try again.`
+- `min-h-screen bg-green-50 flex items-center justify-center`
+- `w-10 h-10 rounded-full bg-gray-200 animate-pulse mx-auto mb-4`
+- `Finding listing...`
+- `text-center max-w-md mx-auto px-4`
+- `text-6xl mb-4`
+- `text-2xl font-bold text-gray-900 mb-2`
+- `Listing Not Available`
+- `text-gray-600 mb-6`
+- `bg-green-950 text-white px-6 py-3 rounded-lg hover:bg-green-800 transition cursor-pointer`
+- `Go Home`
+### `pages/NotFoundPage.js`
+- `min-h-screen bg-green-50`
+- `max-w-2xl mx-auto text-center py-20 px-4`
+- `text-8xl font-bold text-gray-200 mb-4`
+- `text-3xl font-bold text-gray-900 mb-4`
+- `Page not found`
+- `text-gray-600 mb-8`
+- `The page you're looking for doesn't exist or has been moved.`
+- `inline-block bg-green-950 text-white px-6 py-3 rounded-lg hover:bg-green-100 cursor-pointer`
+- `Go back home`
+### `pages/PrivacyPage.js`
+- `min-h-screen bg-green-50 py-12`
+- `max-w-4xl mx-auto px-4`
+- `text-green-950 hover:underline cursor-pointer inline-flex items-center gap-2`
+- `← Back to Home`
+- `bg-white rounded-lg shadow-md p-8`
+- `text-3xl font-bold mb-6`
+- `Privacy Policy`
+- `Last updated: `
+- `text-xl font-bold mb-3`
+- `Information We Collect`
+- `list-disc pl-6 text-gray-700 space-y-1`
+- `Account information (name, email, phone)`
+- `Profile information (bio, photo)`
+- `Listing details you post`
+- `Messages sent through our platform`
+- `Verification documents (encrypted)`
+- `How We Use Your Information`
+- `Provide and maintain our service`
+- `Verify user identities`
+- `Facilitate communication between users`
+- `Improve our platform`
+- `Prevent fraud and abuse`
+- `Information Sharing`
+- `We do not sell your personal information. We share information only:`
+- `list-disc pl-6 text-gray-700 mt-2 space-y-1`
+- `With other users as necessary for platform functionality`
+- `When required by law`
+- `To protect our rights and safety`
+- `Data Security`
+- `We encrypt sensitive data and follow industry standards. However, no method of transmission is 100% secure.`
+- `Your Rights`
+- `Access your personal data`
+- `Correct inaccurate data`
+- `Delete your account`
+- `Export your data`
+- `Contact Us`
+- `Privacy questions: privacy@unadomot.com`
+### `pages/ProfileRedirectPage.js`
+- `min-h-screen bg-green-50 flex items-center justify-center`
+- `w-10 h-10 rounded-full bg-gray-200 animate-pulse mx-auto mb-4`
+### `pages/PublicProfilePage.js`
+- `, type: `
+- ` });
+    }, 3000);
+  };
+
+  // ===== FETCH CURRENT USER`
+- `Error fetching current user:`
+- `No username provided`
+- `s username
+    if (user && currentUserUsername && currentUserUsername === username) {
+      navigate(`
+- `);
+      return;
+    }
+
+    var isMounted = true;
+    setLoading(true);
+    setError(`
+- `);
+
+    async function fetchUserByUsername() {
+      try {
+        // Query Firestore by username
+        const result = await FirestoreQueries.query({
+          collection: `
+- `,
+          where: [[`
+- `, username.toLowerCase()]],
+          limit: 1
+        });
+        
+        if (result.data.length === 0) {
+          if (isMounted) {
+            setError(`
+- `User not found`
+- `Error fetching user by username:`
+- `Failed to load profile`
+- `,
+          where: [
+            [`
+- `, profileUser.id],
+            [`
+- `]
+          ],
+          orderBy: `
+- `,
+          orderDirection: `
+- `, window.location.pathname);
+      return;
+    }
+    
+    const verificationCheck = window.VerificationHelpers?.checkEmailVerification(user, `
+- `);
+    if (!verificationCheck?.allowed) {
+      const message = verificationCheck?.message || `
+- `;
+      ToastHelpers?.warning(message);
+      
+      const warningEvent = new CustomEvent(`
+- `, {
+        detail: { message }
+      });
+      window.dispatchEvent(warningEvent);
+      
+      return;
+    }
+    
+    if (user.uid === userId) {
+      showToast(`
+- `);
+      return;
+    }
+    
+    try {
+      showToast(`
+- `);
+      
+      const chatId = await ChatHelpers.getOrCreateListingChat(
+        user.uid,
+        userId,
+        listingId,
+        `
+- `
+      );
+      
+      navigate(`
+- ` + chatId);
+      
+    } catch (error) {
+      showToast(`
+- `;
+    try {
+      var date = timestamp.seconds ? new Date(timestamp.seconds * 1000) : new Date(timestamp);
+      return date.toLocaleDateString(`
+- `, { year: `
+- `, month: `
+- ` });
+    } catch (e) {
+      return `
+- `;
+  const isAgentVerified = profileUser?.verified?.agent?.status === `
+- `, {
+          key: `
+- `, {
+          onClick: function() { navigate(`
+- ` +
+        (toast.type === `
+- ` : 
+         toast.type === `
+- `,
+                  onError: function(e) {
+                    e.target.style.display = `
+- `;
+                    e.target.parentNode.innerHTML = `
+- `w-full h-full flex items-center justify-center bg-green-200`
+- `text-3xl font-bold text-green-800`
+- ` + 
+                      (profileUser.displayName ? profileUser.displayName.charAt(0).toUpperCase() : `
+- ` },
+                    profileUser.displayName ? profileUser.displayName.charAt(0).toUpperCase() : `
+- ` },
+                    profileUser.displayName || `
+- ` + (profileUser.username || `
+- `, fill: `
+- `, stroke: `
+- `, viewBox: `
+- `, { strokeLinecap: `
+- `, strokeLinejoin: `
+- `, strokeWidth: `
+- `, d: `
+- ` })
+                    ),
+                    listings.length + `
+- ` + (listings.length !== 1 ? `
+- ` })
+                    ),
+                    responseRate + `
+- `, {
+                  onClick: function() { navigate(`
+- `, {
+              onClick: function() { setActiveTab(`
+- ` + (activeTab === `
+- ` + listings.length + `
+- `)
+          )
+        ),
+
+        activeTab === `
+- `,
+                      onClick: function() { navigate(`
+- `, {
+                          src: listing.images?.[0]
+                            ? window.CloudinaryHelpers.getCardUrl(listing.images[0])
+                            : `
+- `,
+                          loading: `
+- ` + (listing.price ? listing.price.toLocaleString() : `
+- ` },
+                          listing.listingRole === `
+- `),
+                          listing.listingRole === `
+- `,
+                              title: `
+- ` +
+                              (isFav ? `
+- `) +
+                              (isChecking ? `
+- `),
+                            title: isFav ? `
+- `, { fillRule: `
+- `, clipRule: `
+- ` })
+                              )
+                          )
+                        )
+                      )
+                    );
+                  })
+                )
+              )
+          ) : null,
+
+        activeTab === `
+- `
+                      }\`
+                    }, isLandlordVerified ? `
+- `
+                      }\`
+                    }, isAgentVerified ? `
+- ` }, responseRate + `
+- ` }, profileUser.responseTime || `
+- ` + (profileUser.displayName || `
+### `pages/TermsPage.js`
+- `min-h-screen bg-green-50 py-12`
+- `max-w-4xl mx-auto px-4`
+- `text-green-950 hover:underline cursor-pointer inline-flex items-center gap-2`
+- `← Back to Home`
+- `bg-white rounded-lg shadow-md p-8`
+- `text-3xl font-bold mb-6`
+- `Terms & Conditions`
+- `prose prose-green max-w-none space-y-6`
+- `Last updated: `
+- `text-xl font-bold mb-3`
+- `1. Acceptance of Terms`
+- `By accessing or using UnaDomot, you agree to be bound by these Terms. If you disagree with any part, you may not access our service.`
+- `2. User Accounts`
+- `When you create an account, you must provide accurate information. You are responsible for maintaining account security.`
+- `3. Listings`
+- `Users may post property listings. All listings must be accurate and not misleading. We reserve the right to remove any listing.`
+- `4. Verification`
+- `Verified badges indicate users who have completed our verification process. We do not guarantee the accuracy of user-submitted information.`
+- `5. Prohibited Activities`
+- `list-disc pl-6 text-gray-700 space-y-1`
+- `Posting false or misleading information`
+- `Harassing other users`
+- `Using the platform for illegal purposes`
+- `Attempting to bypass our verification system`
+- `6. Limitation of Liability`
+- `UnaDomot is not liable for any disputes between users. We facilitate connections but are not a party to rental agreements.`
+- `7. Changes to Terms`
+- `We may modify these terms at any time. Continued use of the platform constitutes acceptance of new terms.`
+- `8. Contact`
+- `For questions about these Terms, contact: legal@unadomot.com`
+### `pages/VerificationPage.js`
+- `Failed to load profile. Please refresh the page.`
+- `Upload failed`
+- `Failed to upload document. Please try again.`
+- `ID Number is required`
+- `Phone number is required`
+- `Property ownership proof is required`
+- `Business registration is required`
+- `Landlord verification submitted! Pending review.`
+- `Failed to submit verification. Please try again.`
+- `Agent verification submitted! Pending review.`
+- `min-h-screen bg-green-50 flex items-center justify-center`
+- `w-10 h-10 rounded-full bg-gray-200 animate-pulse mx-auto mb-4`
+- `Redirecting to login...`
+- `min-h-screen bg-green-50`
+- `max-w-3xl mx-auto px-4 py-12`
+- `bg-white rounded-lg shadow-md p-8`
+- `text-3xl font-bold mb-4 text-gray-900`
+- `text-gray-600 mb-6`
+- `Get verified to build trust. Verified users receive badges on their profiles and listings.`
+- `mb-8 pb-6 border-b border-gray-200`
+- `block text-sm font-medium text-gray-700 mb-3`
+- `Choose what to verify as:`
+- `flex gap-6`
+- `flex items-center gap-2 cursor-pointer`
+- `w-4 h-4 accent-green-950`
+- `🏠 Landlord`
+- `🤝 Agent`
+- `bg-green-50 border border-green-200 rounded-lg p-4 mb-6`
+- `flex items-center gap-3`
+- `w-6 h-6 text-green-600`
+- `M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z`
+- `font-bold text-green-800`
+- `✓ Landlord Verified`
+- `text-sm text-green-700`
+- `Your landlord status has been verified.`
+- `bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6`
+- `w-6 h-6 text-yellow-600`
+- `M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z`
+- `font-bold text-yellow-800`
+- `⏳ Landlord Verification Pending`
+- `text-sm text-yellow-700`
+- `We\'re reviewing your submission.`
+- `bg-red-50 border border-red-200 rounded-lg p-4 mb-6`
+- `w-6 h-6 text-red-600`
+- `M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z`
+- `font-bold text-red-800`
+- `✕ Landlord Verification Rejected`
+- `text-sm text-red-700`
+- `Please update your information and resubmit.`
+- `bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-200`
+- `text-xl font-bold text-gray-800`
+- `Landlord Verification`
+- `block text-gray-700 font-bold mb-2`
+- `ID Type *`
+- `w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-950`
+- `National ID (NIN)`
+- `Bank Verification Number (BVN)`
+- `Driver's License`
+- `International Passport`
+- `ID Number *`
+- `Enter your ID number`
+- `text-red-500 text-sm mt-1`
+- `Phone Number *`
+- `e.g., 08012345678`
+- `Property Ownership Proof *`
+- `text-xs text-gray-500 mb-2`
+- `Upload deed of assignment, title document, or any proof of property ownership`
+- `flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200`
+- `w-5 h-5 text-green-600`
+- `M5 13l4 4L19 7`
+- `Document uploaded`
+- `ml-auto text-red-500 text-xs hover:text-red-700`
+- `image/*,.pdf`
+- `w-full p-2 border border-gray-300 rounded-lg text-sm`
+- `text-xs text-gray-500 mt-1`
+- `w-full bg-green-950 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition disabled:opacity-50`
+- `Submit Landlord Verification`
+- `✓ Agent Verified`
+- `Your agent status has been verified.`
+- `⏳ Agent Verification Pending`
+- `✕ Agent Verification Rejected`
+- `Agent Verification`
+- `Business Registration (CAC) *`
+- `Upload your business registration certificate (CAC)`
+- `Business registration uploaded`
+- `Agency License (Optional)`
+- `Upload your agency license if available`
+- `License uploaded`
+- `Submit Agent Verification`
+### `pages/home/components/AccessibilityModal.js`
+- `fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm`
+- `relative w-64 bg-white rounded-xl shadow-2xl overflow-hidden`
+- `flex items-center justify-between p-3 border-b border-gray-200 bg-gray-50`
+- `font-bold text-sm text-gray-900`
+- `text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-200`
+- `w-3 h-3`
+- `M6 18L18 6M6 6l12 12`
+- `p-3 space-y-4`
+- `mb-3 pb-3 border-b border-gray-200`
+- `flex items-center justify-between cursor-pointer`
+- `text-xs font-medium text-gray-700 flex items-center gap-1`
+- `Dark Mode`
+- `relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none `
+- `inline-block h-4 w-4 transform rounded-full bg-white transition-transform `
+- `block text-xs font-medium text-gray-700 mb-1`
+- `Text Size`
+- `w-full p-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-green-950`
+- `Extra Large`
+- `High Contrast`
+- `Reduce Motion`
+- `Dyslexia Font`
+- `Underline Links`
+- `flex items-center justify-between cursor-pointer p-1.5 bg-gray-50 rounded hover:bg-gray-100`
+- `text-xs font-medium text-gray-700`
+- `w-3.5 h-3.5 accent-green-900`
+- `w-full mt-2 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium text-xs`
+- `Reset to Default`
+### `pages/home/components/Carousel.js`
+- `px-0 py-4`
+- `h-6 w-40 bg-gray-200 rounded animate-pulse mb-3 ml-4`
+- `relative w-full overflow-hidden shadow-lg animate-pulse`
+- `aspect-[16/9] bg-gray-200 w-full`
+- `w-full px-0 py-4`
+- `font-bold text-gray-900 mb-3 px-0 `
+- `Welcome Home 💚`
+- `relative w-full overflow-hidden shadow-lg touch-pan-y`
+- `relative aspect-[16/9] bg-gray-200 w-full 

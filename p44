@@ -1,0 +1,253 @@
+atives.
+- Literal conditional class expression: `className: 'bg-green-50 border border-green-200 rounded-lg p-4 mb-6'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex items-center gap-3'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-6 h-6 text-green-600'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'font-bold text-green-800'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-sm text-green-700'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-6 h-6 text-yellow-600'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'font-bold text-yellow-800'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-sm text-yellow-700'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'bg-red-50 border border-red-200 rounded-lg p-4 mb-6'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-6 h-6 text-red-600'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'font-bold text-red-800'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-sm text-red-700'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Default: source's unconditional class string(s) above.
+- hover: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- focus: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- active: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- disabled: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- loading: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- error: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- success: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- selected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- unselected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- dark-mode: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- high-contrast: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- reduce-motion: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+
+**Copy (G3) — exact candidate strings in this file.**
+- `Failed to load profile. Please refresh the page.`
+- `Upload failed`
+- `Failed to upload document. Please try again.`
+- `ID Number is required`
+- `Phone number is required`
+- `Property ownership proof is required`
+- `Business registration is required`
+- `Landlord verification submitted! Pending review.`
+- `Failed to submit verification. Please try again.`
+- `Agent verification submitted! Pending review.`
+- `min-h-screen bg-green-50 flex items-center justify-center`
+- `w-10 h-10 rounded-full bg-gray-200 animate-pulse mx-auto mb-4`
+- `Redirecting to login...`
+- `min-h-screen bg-green-50`
+- `max-w-3xl mx-auto px-4 py-12`
+- `bg-white rounded-lg shadow-md p-8`
+- `text-3xl font-bold mb-4 text-gray-900`
+- `text-gray-600 mb-6`
+- `Get verified to build trust. Verified users receive badges on their profiles and listings.`
+- `mb-8 pb-6 border-b border-gray-200`
+- `block text-sm font-medium text-gray-700 mb-3`
+- `Choose what to verify as:`
+- `flex gap-6`
+- `flex items-center gap-2 cursor-pointer`
+- `w-4 h-4 accent-green-950`
+- `🏠 Landlord`
+- `🤝 Agent`
+- `bg-green-50 border border-green-200 rounded-lg p-4 mb-6`
+- `flex items-center gap-3`
+- `w-6 h-6 text-green-600`
+- `M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z`
+- `font-bold text-green-800`
+- `✓ Landlord Verified`
+- `text-sm text-green-700`
+- `Your landlord status has been verified.`
+- `bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6`
+- `w-6 h-6 text-yellow-600`
+- `M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z`
+- `font-bold text-yellow-800`
+- `⏳ Landlord Verification Pending`
+- `text-sm text-yellow-700`
+- `We\'re reviewing your submission.`
+- `bg-red-50 border border-red-200 rounded-lg p-4 mb-6`
+- `w-6 h-6 text-red-600`
+- `M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z`
+- `font-bold text-red-800`
+- `✕ Landlord Verification Rejected`
+- `text-sm text-red-700`
+- `Please update your information and resubmit.`
+- `bg-red-50 text-red-600 p-4 rounded-lg mb-6 border border-red-200`
+- `text-xl font-bold text-gray-800`
+- `Landlord Verification`
+- `block text-gray-700 font-bold mb-2`
+- `ID Type *`
+- `w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-950`
+- `National ID (NIN)`
+- `Bank Verification Number (BVN)`
+- `Driver's License`
+- `International Passport`
+- `ID Number *`
+- `Enter your ID number`
+- `text-red-500 text-sm mt-1`
+- `Phone Number *`
+- `e.g., 08012345678`
+- `Property Ownership Proof *`
+- `text-xs text-gray-500 mb-2`
+- `Upload deed of assignment, title document, or any proof of property ownership`
+- `flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200`
+- `w-5 h-5 text-green-600`
+- `M5 13l4 4L19 7`
+- `Document uploaded`
+- `ml-auto text-red-500 text-xs hover:text-red-700`
+- `image/*,.pdf`
+- `w-full p-2 border border-gray-300 rounded-lg text-sm`
+- `text-xs text-gray-500 mt-1`
+- `w-full bg-green-950 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition disabled:opacity-50`
+- `Submit Landlord Verification`
+- `✓ Agent Verified`
+- `Your agent status has been verified.`
+- `⏳ Agent Verification Pending`
+- `✕ Agent Verification Rejected`
+- `Agent Verification`
+- `Business Registration (CAC) *`
+- `Upload your business registration certificate (CAC)`
+- `Business registration uploaded`
+- `Agency License (Optional)`
+- `Upload your agency license if available`
+- `License uploaded`
+- `Submit Agent Verification`
+
+**Responsive.**
+- Component-local responsive utility tokens, if any, are included in the class inventory above (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`). Global stylesheet switching and breakpoint behavior: HANDOFF §2.9 and §3.2–§3.4.
+
+**Animation.** See §4 for source keyframes and transition declarations. Component-local `animate-*`, `transition-*`, `duration-*`, and `ease-*` tokens are recorded in §4.
+
+**Accessibility.**
+- [NOT SPECIFIED] No literal aria/role/title attribute matched in this file; inspect semantic element type and parent usage.
+
+**Flutter notes.** Map source DOM positioning and utility behavior to `Stack`/`Positioned`, `SafeArea`, `Padding`, `DecoratedBox`, `ClipRRect`, `BoxShadow`, `TextStyle`, `InkWell`/`GestureDetector`, `Focus`, and `Semantics` as applicable. Use HANDOFF §12.2 for the baseline mapping; this source-specific subsection adds only the exact visual evidence above.
+
+**Evidence flags.** [SOURCE] class/copy/attributes above are extracted from the named file. [INFERRED] Flutter widget mapping. [NOT SPECIFIED] Any state not represented by a source conditional or stylesheet.
+
+### 7.8 pages/CheckoutNoticePage.js
+
+**Purpose & usage sites.** Literal source: `pages/CheckoutNoticePage.js` (230 lines). See the relevant usage and routing context in HANDOFF §5 and §6. The implementation is React `createElement`; this subsection extracts the actual class, copy, and inline-SVG evidence from that module.
+
+**Element tree / literal structure.** The source's returned tree is represented by the following concrete structural evidence; where the source constructs children conditionally or via helper functions, the branch is preserved as a source condition rather than flattened into a fabricated single tree.
+- [NOT SPECIFIED] No direct `return (` block found; component may return via expression/helper.
+
+**Box model, color & typography — literal class inventory.**
+- `min-h-screen bg-gray-50 py-12`
+- `max-w-4xl mx-auto px-4`
+- `mb-6 flex justify-between items-center`
+- `text-blue-600 hover:underline cursor-pointer`
+- `text-gray-600 hover:underline cursor-pointer`
+- `bg-white rounded-lg shadow-md p-8 mb-8`
+- `text-3xl font-bold mb-8`
+- `bg-red-50 text-red-600 p-4 rounded mb-6`
+- `space-y-6`
+- `block text-gray-700 font-bold mb-2`
+- `w-full p-3 border rounded-lg ${errors.propertyAddress ? 'border-red-500' : ''}`
+- `text-red-500 text-sm mt-1`
+- `w-full p-3 border rounded-lg ${errors.moveOutDate ? 'border-red-500' : ''}`
+- `w-full p-3 border rounded-lg ${errors.reason ? 'border-red-500' : ''}`
+- `w-full bg-blue-600 text-white py-4 rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50 cursor-pointer`
+- `bg-white rounded-lg shadow-md p-8`
+- `text-xl font-bold mb-6`
+- `flex justify-center py-8`
+- `w-6 h-6 rounded-full bg-gray-200 animate-pulse mx-auto`
+- `space-y-4`
+- `border-b pb-4 last:border-0`
+- `font-medium`
+- `text-sm text-gray-600`
+- `text-sm text-gray-500 mt-1`
+- `inline-block mt-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded`
+
+**Resolved values.** Utility classes resolve through the legend in §2 and theme overrides in HANDOFF §2. Where no corresponding CSS override exists, standard Tailwind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- No inline SVG found in this module. External image/icon use, if any, remains literal at the path/alt attributes in source.
+
+**States (G4).**
+- Literal conditional class expression: `className: `w-full p-3 border rounded-lg ${errors.propertyAddress ? 'border-red-500' : ''}``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: `w-full p-3 border rounded-lg ${errors.moveOutDate ? 'border-red-500' : ''}``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: `w-full p-3 border rounded-lg ${errors.reason ? 'border-red-500' : ''}``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'min-h-screen bg-gray-50 py-12'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'max-w-4xl mx-auto px-4'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'mb-6 flex justify-between items-center'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-blue-600 hover:underline cursor-pointer'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-gray-600 hover:underline cursor-pointer'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'bg-white rounded-lg shadow-md p-8 mb-8'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-3xl font-bold mb-8'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'bg-red-50 text-red-600 p-4 rounded mb-6'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'space-y-6'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'block text-gray-700 font-bold mb-2'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-red-500 text-sm mt-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-full bg-blue-600 text-white py-4 rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50 cursor-pointer'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'bg-white rounded-lg shadow-md p-8'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-xl font-bold mb-6'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex justify-center py-8'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-6 h-6 rounded-full bg-gray-200 animate-pulse mx-auto'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'space-y-4'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'border-b pb-4 last:border-0'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'font-medium'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-sm text-gray-600'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-sm text-gray-500 mt-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'inline-block mt-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Default: source's unconditional class string(s) above.
+- hover: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- focus: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- active: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- disabled: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- loading: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- error: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- success: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- selected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- unselected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- dark-mode: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- high-contrast: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- reduce-motion: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+
+**Copy (G3) — exact candidate strings in this file.**
+- `Failed to load your checkout notices`
+- `min-h-screen bg-gray-50 py-12`
+- `max-w-4xl mx-auto px-4`
+- `mb-6 flex justify-between items-center`
+- `text-blue-600 hover:underline cursor-pointer`
+- `← Back to Profile`
+- `text-gray-600 hover:underline cursor-pointer`
+- `bg-white rounded-lg shadow-md p-8 mb-8`
+- `text-3xl font-bold mb-8`
+- `Post Checkout Notice`
+- `bg-red-50 text-red-600 p-4 rounded mb-6`
+- `block text-gray-700 font-bold mb-2`
+- `Property Address`
+- `Full address of property you're leaving`
+- `text-red-500 text-sm mt-1`
+- `Move-out Date`
+- `Reason (optional)`
+- `e.g., Lease ended, relocation, etc.`
+- `w-full bg-blue-600 text-white py-4 rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50 cursor-pointer`
+- `bg-white rounded-lg shadow-md p-8`
+- `text-xl font-bold mb-6`
+- `Your Checkout Notices`
+- `flex justify-center py-8`
+- `w-6 h-6 rounded-full bg-gray-200 animate-pulse mx-auto`
+- `border-b pb-4 last:border-0`
+- `text-sm text-gray-600`
+- `Moving out: `
+- `text-sm text-gray-500 mt-1`
+- `inline-block mt-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded`
+- `✓ Verified Move-out`
+
+**Responsive.**
+- Component-local responsive utility tokens, if any, are included in the class inventory above (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`). Global stylesheet switching and breakpoint behavior: HANDOFF §2.9 and §3.2–§3.4.
+
+**Animation.** See §4 for source keyframes and transition declarations. Component-local `animate-*`, `transition-*`, `duration-*`, and `ease-*` tokens are recorded in §4.
+
+**Accessibility.**
+- [NOT SPECIFIED] No literal aria/role/title attribute matched in this file; inspect semantic element type and parent usage.
+
+**Flutter notes.** Map source DOM positioning and utility behavior to `Stack`/`Positioned`, `SafeArea`, `Padding`, `DecoratedBox`, `ClipRRect`, `BoxShadow`, `TextStyle`, `InkWell`/`GestureDetector`, `Focus`, and `Semantics` as applicable. Use HANDOFF §12.2 for the baseline mapping; this source-specific subsection adds only the exact visual evidence above.
+
+**Evidence flags.** [SOURCE] class/copy/attributes above are extracted from the named file. [INFERRED] Flutter widget mapping. [NOT SPECIFIED] Any state not represented by a so

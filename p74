@@ -1,0 +1,71 @@
+ble; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/home/components/map/MapControls.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/home/components/map/MapCore.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/home/components/map/MapGeolocation.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/home/components/map/MapLayers.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/home/components/map/MapMarkers.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/home/components/map/MapPopup.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/home/components/map/SearchBar.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/home/components/map/index.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/home/components/map/useNavigation.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/home/components/map/utils.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/listing-detail/components/ActionButtons.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/listing-detail/components/Amenities.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/listing-detail/components/Badges.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/listing-detail/components/CommentForm.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/listing-detail/components/CommentItem.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/listing-detail/components/CommentsSection.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/listing-detail/components/Description.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/listing-detail/components/ImageGallery.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/listing-detail/components/LandlordCard.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/listing-detail/components/Lightbox.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/listing-detail/components/ListingInfo.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/listing-detail/components/MessageButton.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/listing-detail/components/ProfileCard.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/listing-detail/components/PropertyDetails.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/listing-detail/components/ReportButton.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/profile/components/EditProfileModal.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/profile/components/ListingsTab.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/profile/components/PopupModal.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/profile/components/ProfileHeader.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/profile/components/ProfileTabs.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/profile/components/SettingsTab.js` | §6.31 / §6.32 or owning §6.x; §3 icon table; §10 copy deck | HANDOFF §6 (page-local components) / §5.31 |
+| `pages/AdminPage.js` | §7 | HANDOFF §6 |
+| `pages/ChatPage.js` | §7 | HANDOFF §6 |
+| `pages/CheckoutNoticePage.js` | §7 | HANDOFF §6 |
+| `pages/FavoritesPage.js` | §7 | HANDOFF §6 |
+| `pages/ListingByCodePage.js` | §7 | HANDOFF §6 |
+| `pages/NotFoundPage.js` | §7 | HANDOFF §6 |
+| `pages/PrivacyPage.js` | §7 | HANDOFF §6 |
+| `pages/ProfileRedirectPage.js` | §7 | HANDOFF §6 |
+| `pages/PublicProfilePage.js` | §7 | HANDOFF §6 |
+| `pages/TermsPage.js` | §7 | HANDOFF §6 |
+| `pages/VerificationPage.js` | §7 | HANDOFF §6 |
+| `pages/home/hooks/useCarousel.js` | §7 | HANDOFF §6 |
+| `pages/home/hooks/useFavorites.js` | §7 | HANDOFF §6 |
+| `pages/home/hooks/useFilters.js` | §7 | HANDOFF §6 |
+| `pages/home/hooks/useListings.js` | §7 | HANDOFF §6 |
+| `pages/home/hooks/useOtherLocations.js` | §7 | HANDOFF §6 |
+| `pages/home/hooks/useSearch.js` | §7 | HANDOFF §6 |
+| `pages/home/index.js` | §7 | HANDOFF §6 |
+| `pages/home/utils/affinity.js` | §7 | HANDOFF §6 |
+| `pages/home/utils/constants.js` | §7 | HANDOFF §6 |
+| `pages/home/utils/scoring.js` | §7 | HANDOFF §6 |
+| `pages/listing-detail/hooks/useComments.js` | §7 | HANDOFF §6 |
+| `pages/listing-detail/hooks/useImageGallery.js` | §7 | HANDOFF §6 |
+| `pages/listing-detail/hooks/useListing.js` | §7 | HANDOFF §6 |
+| `pages/listing-detail/index.js` | §7 | HANDOFF §6 |
+| `pages/listing-detail/utils/commentHelpers.js` | §7 | HANDOFF §6 |
+| `pages/listing-detail/utils/constants.js` | §7 | HANDOFF §6 |
+| `pages/profile/hooks/useListings.js` | §7 | HANDOFF §6 |
+| `pages/profile/hooks/useProfile.js` | §7 | HANDOFF §6 |
+| `pages/profile/hooks/useSettings.js` | §7 | HANDOFF §6 |
+| `pages/profile/hooks/useUsername.js` | §7 | HANDOFF §6 |
+| `pages/profile/index.js` | §7 | HANDOFF §6 |
+| `pages/profile/utils/constants.js` | §7 | HANDOFF §6 |
+| `pages/userByUsernamePage.js` | §7 | HANDOFF §6 |
+
+**Non-visual support files in dumps:** `app.js`, `contexts/*`, `hooks/*`, `services/*`, `utils/*`, `data/*`, `*.rules`, `index.html`, `service-worker.js`, `manifest.json`, `netlify.toml`, `env-loader*`, `inject-env.js`, `offline.html`, `verify-email.html`, and `version.js` are not page/component visual modules. They are not omitted from the input inventory: consult HANDOFF §1–§4, §7–§12 and its source coverage crosswalk for their architectural/data/security roles. Their visible HTML shells and inline motion are included in §3–§5 where relevant.
+
+
+**Coverage gaps / limitations:** the dumps contain no `pages/ListingsPage.js` or `pages/ForgotPasswordPage.js`; these are `[MISSING FILE]` in §7.16. The extractor cannot prove rendered pixel values for dynamic data, remote images, browser-native controls, or CSS rules not represented by a matched class string. Where a component's visual state is derived from CSS selectors or a parent component, the exact source is identified but not flattened into a false single-state specification. This is an explicit evidence boundary, not a claim that every possible runtime state has been screenshot-verified.

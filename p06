@@ -1,0 +1,261 @@
+ alternatives.
+- Literal conditional class expression: `className: 'flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition font-medium'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex-1 bg-green-950 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition disabled:opacity-50'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'px-6 pb-6 text-center text-xs text-gray-500 border-t border-gray-100 pt-4'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-green-950 hover:underline'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Default: source's unconditional class string(s) above.
+- hover: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- focus: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- active: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- disabled: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- loading: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- error: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- success: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- selected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- unselected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- dark-mode: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- high-contrast: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- reduce-motion: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+
+**Copy (G3) — exact candidate strings in this file.**
+- `Email is required`
+- `Please enter a valid email address`
+- `Too many password reset attempts. Please try again later.`
+- `No account found with this email address.`
+- `Too many requests. Please try again later.`
+- `Failed to send reset email.`
+- `fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm`
+- `w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden`
+- `text-center pt-6 px-6 pb-2`
+- `w-16 h-16 rounded-full mx-auto mb-2`
+- `px-6 pb-6`
+- `bg-green-50 text-green-700 p-4 rounded-lg mb-4`
+- `Password reset email sent! Check your inbox.`
+- `text-green-950 hover:underline text-sm`
+- `text-gray-600 mb-6 text-sm text-center`
+- `Enter your email address and we\'ll send you a link to reset your password.`
+- `bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm`
+- `block text-gray-700 text-sm font-medium mb-2`
+- `your@email.com`
+- `text-red-500 text-xs mt-1`
+- `flex gap-3`
+- `flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition font-medium`
+- `flex-1 bg-green-950 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition disabled:opacity-50`
+- `Send Reset Link`
+- `px-6 pb-6 text-center text-xs text-gray-500 border-t border-gray-100 pt-4`
+- `text-green-950 hover:underline`
+- `← Back to Sign In`
+
+**Responsive.**
+- Component-local responsive utility tokens, if any, are included in the class inventory above (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`). Global stylesheet switching and breakpoint behavior: HANDOFF §2.9 and §3.2–§3.4.
+
+**Animation.** See §4 for source keyframes and transition declarations. Component-local `animate-*`, `transition-*`, `duration-*`, and `ease-*` tokens are recorded in §4.
+
+**Accessibility.**
+- [NOT SPECIFIED] No literal aria/role/title attribute matched in this file; inspect semantic element type and parent usage.
+
+**Flutter notes.** Map source DOM positioning and utility behavior to `Stack`/`Positioned`, `SafeArea`, `Padding`, `DecoratedBox`, `ClipRRect`, `BoxShadow`, `TextStyle`, `InkWell`/`GestureDetector`, `Focus`, and `Semantics` as applicable. Use HANDOFF §12.2 for the baseline mapping; this source-specific subsection adds only the exact visual evidence above.
+
+**Evidence flags.** [SOURCE] class/copy/attributes above are extracted from the named file. [INFERRED] Flutter widget mapping. [NOT SPECIFIED] Any state not represented by a source conditional or stylesheet.
+
+### 6.6 SignupForm
+
+**Purpose & usage sites.** Literal source: `components/SignupForm.js` (653 lines). See the relevant usage and routing context in HANDOFF §5 and §6. The implementation is React `createElement`; this subsection extracts the actual class, copy, and inline-SVG evidence from that module.
+
+**Element tree / literal structure.** The source's returned tree is represented by the following concrete structural evidence; where the source constructs children conditionally or via helper functions, the branch is preserved as a source condition rather than flattened into a fabricated single tree.
+- [NOT SPECIFIED] No direct `return (` block found; component may return via expression/helper.
+
+**Box model, color & typography — literal class inventory.**
+- `w-full`
+- `flex justify-center gap-1 mb-3`
+- `h-1 w-6 rounded-full transition-colors ${
+            step === currentStep ? 'bg-green-950' : 'bg-gray-200'
+          }`
+- `mb-3 bg-red-50 border border-red-200 text-red-600 p-2 rounded-lg text-xs`
+- `mb-3`
+- `w-full bg-white border border-gray-300 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-50 flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all ${googleLoading ? 'animate-pulse' : ''}`
+- `w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin`
+- `w-5 h-5`
+- `relative my-3`
+- `absolute inset-0 flex items-center`
+- `w-full border-t border-gray-200`
+- `relative flex justify-center text-xs`
+- `px-2 bg-white text-gray-400`
+- `space-y-3`
+- `text-red-500 text-xs mt-1`
+- `text-xs text-gray-500 mt-1 flex items-center gap-1`
+- `w-3 h-3 border-2 border-gray-500 border-t-transparent rounded-full animate-spin`
+- `text-xs text-amber-600 mt-1`
+- `text-green-950 hover:underline font-medium`
+- `w-full bg-green-950 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition disabled:opacity-50 disabled:cursor-not-allowed mt-1 ${
+            emailExists ? 'opacity-50 cursor-not-allowed' : ''
+          }`
+- `flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 text-sm`
+- `flex items-center gap-2 overflow-hidden`
+- `text-gray-500 text-xs flex-shrink-0`
+- `font-medium truncate`
+- `text-gray-300 mx-1`
+- `text-gray-600 text-xs truncate`
+- `text-xs text-green-950 hover:underline flex-shrink-0 ml-2`
+- `relative`
+- `absolute right-3 top-3 text-gray-400 hover:text-gray-600 text-sm`
+- `mt-1`
+- `h-1 rounded-full bg-gray-200 overflow-hidden`
+- `h-full rounded-full transition-all duration-300`
+- `text-[10px] mt-0.5`
+- `text-xs text-green-600 mt-1 flex items-center gap-1`
+- `w-3 h-3`
+- `mt-2 text-xs text-gray-500 text-center`
+- `flex gap-2 mt-3`
+- `flex-1 border border-gray-300 text-gray-700 py-2.5 rounded-lg hover:bg-gray-200 transition font-medium text-sm`
+- `flex-1 bg-green-950 text-white py-2.5 rounded-lg font-bold hover:bg-green-800 transition disabled:opacity-50 text-sm`
+
+**Resolved values.** Utility classes resolve through the legend in §2 and theme overrides in HANDOFF §2. Where no corresponding CSS override exists, standard Tailwind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- Icon 1: viewBox `0 0 24 24`; fill `#4285F4`; stroke `not explicitly set`; strokeWidth `not explicitly set`; linecap `not explicitly set`; linejoin `not explicitly set`; paths: 4. Full path data appears in §3 under `components/SignupForm.js`.
+- Icon 2: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `components/SignupForm.js`.
+
+**States (G4).**
+- Literal conditional class expression: `className: `w-full bg-white border border-gray-300 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-50 flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all ${googleLoading ? 'animate-pulse' : ''}``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: `h-1 w-6 rounded-full transition-colors ${ step === currentStep ? 'bg-green-950' : 'bg-gray-200' }``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: `w-full bg-green-950 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition disabled:opacity-50 disabled:cursor-not-allowed mt-1 ${ emailExists ? 'opacity-50 cursor-not-allowed' : '' }``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-full'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex justify-center gap-1 mb-3'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'mb-3 bg-red-50 border border-red-200 text-red-600 p-2 rounded-lg text-xs'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'mb-3'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-5 h-5'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'relative my-3'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'absolute inset-0 flex items-center'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-full border-t border-gray-200'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'relative flex justify-center text-xs'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'px-2 bg-white text-gray-400'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'space-y-3'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-red-500 text-xs mt-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-xs text-gray-500 mt-1 flex items-center gap-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-3 h-3 border-2 border-gray-500 border-t-transparent rounded-full animate-spin'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-xs text-amber-600 mt-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-green-950 hover:underline font-medium'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 text-sm'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex items-center gap-2 overflow-hidden'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-gray-500 text-xs flex-shrink-0'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'font-medium truncate'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-gray-300 mx-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-gray-600 text-xs truncate'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-xs text-green-950 hover:underline flex-shrink-0 ml-2'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'relative'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'absolute right-3 top-3 text-gray-400 hover:text-gray-600 text-sm'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'mt-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Default: source's unconditional class string(s) above.
+- hover: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- focus: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- active: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- disabled: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- loading: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- error: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- success: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- selected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- unselected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- dark-mode: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- high-contrast: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- reduce-motion: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+
+**Copy (G3) — exact candidate strings in this file.**
+- `Email is required`
+- `Please enter a valid email address`
+- `Name is required`
+- `Name must be at least 2 characters`
+- `Name is too long`
+- `-]+$/.test(value)) return `
+- `;
+    if (value.length < 6) return `
+- `;
+    if (value.length > 128) return `
+- `;
+    if (value !== form.password) return `
+- `);
+      } else {
+        setError(`
+- `);
+      }
+      
+      return exists;
+    } catch (err) {
+      if (err.code === `
+- `) {
+        setError(`
+- `);
+      } else if (err.code === `
+- `);
+    
+    const exists = await checkEmailExists(form.email);
+    
+    if (exists) {
+      setError(`
+- `Sign in`
+- `ll need to verify your email to post listings, comment, and message.`
+- `✅ Verification email sent! Check your inbox.`
+- `⚠️ Account created but verification email could not be sent. You can request one later.`
+- `An account with this email already exists. Please log in instead.`
+- `Password is too weak. Use at least 6 characters.`
+- `Invalid email address.`
+- `Network error. Please check your connection and try again.`
+- `Email/password sign up is not enabled. Please contact support.`
+- `Failed to create account. Please try again.`
+- `✅ Signed up successfully with Google!`
+- `Popup was blocked. Redirecting to Google...`
+- `Popup blocked - redirecting to Google`
+- `Sign-up was cancelled. Please try again.`
+- `Network error. Please check your connection.`
+- `An account already exists with the same email. Try logging in instead.`
+- `Failed to sign up with Google. Please try again.`
+- `Too short`
+- `#ef4444`
+- `#f97316`
+- `#eab308`
+- `#3b82f6`
+- `#22c55e`
+- `flex justify-center gap-1 mb-3`
+- `mb-3 bg-red-50 border border-red-200 text-red-600 p-2 rounded-lg text-xs`
+- `44px`
+- `w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin`
+- `Connecting to Google...`
+- `w-5 h-5`
+- `#4285F4`
+- `M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z`
+- `#34A853`
+- `M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z`
+- `#FBBC05`
+- `M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z`
+- `#EA4335`
+- `M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z`
+- `Sign up with Google`
+- `relative my-3`
+- `absolute inset-0 flex items-center`
+- `w-full border-t border-gray-200`
+- `relative flex justify-center text-xs`
+- `px-2 bg-white text-gray-400`
+- `or sign up with email`
+- `Full name`
+- `text-red-500 text-xs mt-1`
+- `Email address`
+- `text-xs text-gray-500 mt-1 flex items-center gap-1`
+- `w-3 h-3 border-2 border-gray-500 border-t-transparent rounded-full animate-spin`
+- `Checking email...`
+- `text-xs text-amber-600 mt-1`
+- `Email already registered. `
+- `text-green-950 hover:underline font-medium`
+- `Sign in instead`
+- `Continue →`
+- `flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 text-sm`
+- `flex items-center gap-2 overflow-hidden`
+- `text-gray-500 text-xs flex-shrink-0`
+- `font-medium truncate`
+- `text-gray-300 mx-1`
+- `text-gray-600 text-xs truncate`
+- `text-xs text-green-950 hover:underline flex-shrink-0 ml-2`
+- ` pr-10`
+- `absolute right-3 top-3 text-gray-400 hover:text-gray-600 text-sm`
+- `h-1 rounded-full bg-gray-200 overflow-hidden`
+- `h-full rounded-full transition-all duration-300

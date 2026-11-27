@@ -1,0 +1,310 @@
+ext-sm text-gray-500 mr-1`
+- `bg-white rounded-xl border border-gray-200 p-5 shadow-sm`
+- `flex flex-wrap items-start justify-between gap-3 mb-3`
+- `text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-medium capitalize`
+- `text-xs bg-red-50 text-red-700 px-2 py-0.5 rounded-full font-medium`
+- `text-xs text-gray-400`
+- `bg-gray-50 rounded-lg p-3 mb-4 font-mono text-xs text-gray-600 break-all`
+- `font-semibold text-gray-800`
+- `ml-2 text-blue-600 hover:underline`
+- `mb-4`
+- `text-xs font-medium text-gray-500 mb-1`
+- `text-sm text-gray-700 italic bg-yellow-50 p-2 rounded-lg border border-yellow-100`
+- `flex flex-wrap gap-2 pt-3 border-t border-gray-100`
+- `px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition`
+- `px-3 py-1.5 text-xs font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition`
+- `flex flex-wrap items-center gap-3 mb-4`
+- `w-10 h-10 bg-green-200 rounded-full flex items-center justify-center flex-shrink-0`
+- `text-green-800 font-bold text-sm`
+- `grid grid-cols-2 gap-3 mb-4`
+- `bg-gray-50 p-3 rounded-lg`
+- `text-xs text-gray-500 mb-0.5`
+- `text-sm font-semibold text-gray-800 uppercase`
+- `text-sm font-semibold text-gray-800 font-mono`
+- `text-sm font-semibold text-gray-800`
+- `text-blue-600 text-sm hover:underline break-all`
+- `text-xs text-gray-400 mb-4`
+- `block text-xs font-medium text-gray-700 mb-1.5`
+- `w-full p-2.5 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-green-950`
+- `flex flex-wrap gap-2`
+- `px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition`
+- `px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition`
+- `px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition`
+- `px-4 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition`
+- `text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-medium`
+- `text-sm font-semibold text-gray-900`
+- `text-right`
+- `flex gap-2 mb-4 overflow-x-auto pb-2`
+- `w-16 h-16 rounded-lg object-cover`
+- `w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center text-xs text-gray-500`
+- `bg-gray-50 rounded-lg p-3 mb-3 text-xs text-gray-600`
+- `text-sm text-gray-700 mb-4 line-clamp-2`
+- `px-4 py-2 text-sm font-medium text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition`
+- `min-h-screen bg-green-50 py-8`
+- `max-w-6xl mx-auto px-4`
+- `mb-6`
+- `text-3xl font-bold text-gray-900`
+- `text-gray-500 mt-1`
+- `bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-lg mb-6 text-sm`
+- `flex gap-1 border-b border-gray-200 mb-6 flex-wrap`
+
+**Resolved values.** Utility classes resolve through the legend in §2 and theme overrides in HANDOFF §2. Where no corresponding CSS override exists, standard Tailwind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- No inline SVG found in this module. External image/icon use, if any, remains literal at the path/alt attributes in source.
+
+**States (G4).**
+- Literal conditional class expression: `className: `px-3 py-1.5 text-xs font-medium rounded-lg border transition capitalize ${ allListingsFilter === f ? 'bg-green-950 text-white border-green-950' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50' }``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: `bg-white rounded-xl border p-5 shadow-sm transition ${ isSelected ? 'border-blue-500 bg-blue-50/30' : 'border-gray-200' }``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'p-6'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-xl font-bold text-gray-900 mb-2'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-gray-600 mb-6'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex gap-3'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'min-h-screen bg-green-50 flex items-center justify-center'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-6 h-6 rounded-full bg-gray-200 animate-pulse mx-auto'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-center'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-10 h-10 rounded-full bg-gray-200 animate-pulse mx-auto mb-4'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-gray-600'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-center max-w-sm mx-auto px-4'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-6xl mb-4'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-2xl font-bold text-gray-900 mb-2'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'bg-green-950 text-white px-6 py-3 rounded-lg hover:bg-green-800 transition cursor-pointer'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'px-4 py-2 text-sm font-medium rounded-t-lg transition border-b-2 '`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'inline-block px-2 py-0.5 rounded-full text-xs font-medium '`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex justify-center py-16'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'mb-4 space-y-3'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex items-center gap-2 flex-wrap'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-sm text-gray-500'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex gap-2'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-950'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'px-4 py-2 bg-green-950 text-white rounded-lg text-sm hover:bg-green-800 transition'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex items-center justify-between bg-blue-50 p-3 rounded-lg border border-blue-200'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-sm font-medium text-blue-800'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Default: source's unconditional class string(s) above.
+- hover: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- focus: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- active: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- disabled: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- loading: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- error: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- success: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- selected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- unselected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- dark-mode: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- high-contrast: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- reduce-motion: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+
+**Copy (G3) — exact candidate strings in this file.**
+- `oboobotenefiok@gmail.com`
+- `⚠️ Permanently Delete Listing`
+- `❌ Failed to delete listing.`
+- `📢 Your listing has been hidden`
+- `❌ Failed to hide listing`
+- `✅ Your listing has been restored`
+- `❌ Failed to restore listing`
+- `❌ Failed to hide some listings`
+- `⚠️ PERMANENTLY DELETE Multiple Listings`
+- `❌ Failed to delete some listings`
+- `Failed to dismiss report.`
+- `Remove this `
+- `Content removed`
+- `Failed to remove content.`
+- `Cannot ban: no user target.`
+- `Ban user `
+- `User banned`
+- `Failed to ban user.`
+- `✅ Landlord Verification Approved`
+- `Your landlord verification has been approved! You now have a Landlord badge.`
+- `✅ Landlord verification approved`
+- `Failed to approve.`
+- `Please enter a rejection reason.`
+- `✕ Landlord Verification Rejected`
+- `✕ Landlord verification rejected`
+- `Failed to reject.`
+- `✅ Agent Verification Approved`
+- `Your agent verification has been approved! You now have an Agent badge.`
+- `✅ Agent verification approved`
+- `✕ Agent Verification Rejected`
+- `✕ Agent verification rejected`
+- `Error generating listing code:`
+- `Failed to generate listing code. Please try again.`
+- `Listing Approved! ✅`
+- `Failed to approve listing.`
+- `Listing Needs Changes ✏️`
+- `Failed to reject listing.`
+- `2-digit`
+- `fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm`
+- `bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden`
+- `text-xl font-bold text-gray-900 mb-2`
+- `text-gray-600 mb-6`
+- `flex gap-3`
+- `flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium`
+- `flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium`
+- `min-h-screen bg-green-50 flex items-center justify-center`
+- `w-6 h-6 rounded-full bg-gray-200 animate-pulse mx-auto`
+- `w-10 h-10 rounded-full bg-gray-200 animate-pulse mx-auto mb-4`
+- `Setting up admin access...`
+- `Verifying admin access...`
+- `text-center max-w-sm mx-auto px-4`
+- `text-6xl mb-4`
+- `text-2xl font-bold text-gray-900 mb-2`
+- `Access Denied`
+- `You do not have admin privileges.`
+- `bg-green-950 text-white px-6 py-3 rounded-lg hover:bg-green-800 transition cursor-pointer`
+- `Go Home`
+- `px-4 py-2 text-sm font-medium rounded-t-lg transition border-b-2 `
+- `border-green-950 text-green-950 bg-white`
+- `border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300`
+- `bg-yellow-100 text-yellow-800`
+- `bg-green-100 text-green-700`
+- `bg-gray-100 text-gray-600`
+- `bg-red-100 text-red-700`
+- `bg-orange-100 text-orange-800`
+- `bg-gray-100 text-gray-600 line-through`
+- `inline-block px-2 py-0.5 rounded-full text-xs font-medium `
+- `bg-gray-100 text-gray-700`
+- `flex justify-center py-16`
+- `mb-4 space-y-3`
+- `flex items-center gap-2 flex-wrap`
+- `text-sm text-gray-500`
+- `Filter:`
+- `flex gap-2`
+- `Search listings...`
+- `flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-950`
+- `px-4 py-2 bg-green-950 text-white rounded-lg text-sm hover:bg-green-800 transition`
+- `flex items-center justify-between bg-blue-50 p-3 rounded-lg border border-blue-200`
+- `text-sm font-medium text-blue-800`
+- `px-3 py-1.5 text-xs font-medium bg-orange-500 text-white rounded hover:bg-orange-600 transition disabled:opacity-50`
+- `Hide Selected`
+- `px-3 py-1.5 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-700 transition disabled:opacity-50`
+- `Delete Permanently`
+- `mb-2 text-xs text-right `
+- `⚡ Using Index`
+- `🔄 JS Fallback`
+- `mb-2 flex items-center gap-2`
+- `w-4 h-4 accent-green-900`
+- `text-sm text-gray-600`
+- `Select All`
+- `text-center py-16 bg-white rounded-xl border border-gray-200`
+- `text-5xl mb-3`
+- `text-gray-600 font-medium`
+- `No listings found.`
+- `flex items-start gap-3`
+- `mt-1 w-4 h-4 accent-green-900 flex-shrink-0`
+- `w-16 h-16 rounded-lg overflow-hidden bg-gray-200 flex-shrink-0`
+- `w-full h-full object-cover`
+- `w-full h-full flex items-center justify-center text-gray-400`
+- `flex flex-wrap items-start justify-between gap-2 mb-1`
+- `flex items-center gap-2 mb-1`
+- `text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full`
+- `font-semibold text-gray-900`
+- `text-xs text-gray-500`
+- `text-lg font-bold text-green-950`
+- `text-xs text-gray-600 mb-2`
+- `flex flex-wrap gap-2 mt-3`
+- `px-3 py-1.5 text-xs font-medium bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition`
+- `👁️ Preview`
+- `px-3 py-1.5 text-xs font-medium bg-green-600 text-white rounded hover:bg-green-700 transition`
+- `🔄 Restore`
+- `px-3 py-1.5 text-xs font-medium bg-orange-500 text-white rounded hover:bg-orange-600 transition`
+- `👁️ Hide`
+- `px-3 py-1.5 text-xs font-medium bg-red-600 text-white rounded hover:bg-red-700 transition`
+- `🗑️ Delete`
+- `px-3 py-1.5 text-xs font-medium bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition`
+- `👤 User`
+- `px-3 py-1.5 text-xs font-medium rounded-lg border transition capitalize `
+- `bg-green-950 text-white border-green-950`
+- `bg-white text-gray-600 border-gray-300 hover:bg-gray-50`
+- `flex items-center gap-2 mb-6`
+- `text-sm text-gray-500 mr-1`
+- `Status:`
+- `No `
+- ` reports.`
+- `bg-white rounded-xl border border-gray-200 p-5 shadow-sm`
+- `flex flex-wrap items-start justify-between gap-3 mb-3`
+- `text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-medium capitalize`
+- `text-xs bg-red-50 text-red-700 px-2 py-0.5 rounded-full font-medium`
+- `text-xs text-gray-400`
+- `Filed `
+- ` by `
+- `bg-gray-50 rounded-lg p-3 mb-4 font-mono text-xs text-gray-600 break-all`
+- `font-semibold text-gray-800`
+- `Target ID: `
+- `ml-2 text-blue-600 hover:underline`
+- `↗ View Listing`
+- `text-xs font-medium text-gray-500 mb-1`
+- `Reporter\'s note:`
+- `text-sm text-gray-700 italic bg-yellow-50 p-2 rounded-lg border border-yellow-100`
+- `flex flex-wrap gap-2 pt-3 border-t border-gray-100`
+- `px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition`
+- `px-3 py-1.5 text-xs font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition`
+- `🗑 Remove Listing`
+- `🚫 Ban User`
+- `No pending landlord verification requests.`
+- `flex flex-wrap items-center gap-3 mb-4`
+- `w-10 h-10 bg-green-200 rounded-full flex items-center justify-center flex-shrink-0`
+- `text-green-800 font-bold text-sm`
+- `(No name)`
+- `User ID: `
+- `grid grid-cols-2 gap-3 mb-4`
+- `bg-gray-50 p-3 rounded-lg`
+- `text-xs text-gray-500 mb-0.5`
+- `ID Type`
+- `text-sm font-semibold text-gray-800 uppercase`
+- `ID Number`
+- `text-sm font-semibold text-gray-800 font-mono`
+- `text-sm font-semibold text-gray-800`
+- `Property Proof`
+- `text-blue-600 text-sm hover:underline break-all`
+- `View Document`
+- `text-xs text-gray-400 mb-4`
+- `Submitted: `
+- `block text-xs font-medium text-gray-700 mb-1.5`
+- `Rejection reason (required):`
+- `e.g., ID number does not match property document...`
+- `w-full p-2.5 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-green-950`
+- `flex flex-wrap gap-2`
+- `px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition`
+- `✅ Approve`
+- `px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition`
+- `✕ Reject`
+- `px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition`
+- `Confirm Reject`
+- `px-4 py-2 text-sm font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition`
+- `No pending agent verification requests.`
+- `Business Registration`
+- `Agency License (Optional)`
+- `e.g., Business registration is invalid...`
+- `No pending listings to review.`
+- `text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-medium`
+- `text-sm font-semibold text-gray-900`
+- `By: `
+- `flex gap-2 mb-4 overflow-x-auto pb-2`
+- `w-16 h-16 rounded-lg object-cover`
+- `w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center text-xs text-gray-500`
+- `bg-gray-50 rounded-lg p-3 mb-3 text-xs text-gray-600`
+- `text-sm text-gray-700 mb-4 line-clamp-2`
+- `No description provided.`
+- `e.g., Incomplete information, inappropriate content...`
+- `px-4 py-2 text-sm font-medium text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition`
+- `min-h-screen bg-green-50 py-8`
+- `max-w-6xl mx-auto px-4`
+- `text-3xl font-bold text-gray-900`
+- `🛡 Admin Dashboard`
+- `text-gray-500 mt-1`
+- `Logged in as `
+- `bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-lg mb-6 text-sm`
+- `⚠️ Actions taken here are permanent. Always review content before approving or rejecting.`
+- `flex gap-1 border-b border-gray-200 mb-6 flex-wrap`
+- `📋 All Listings`
+- `📝 Pending Review`
+- `📊 Reports`
+- `🏠 Landlord Verifications`
+- `🤝 Agent Verifications`
+
+**Responsive.**
+- Component-local responsive utility tokens, if any, ar

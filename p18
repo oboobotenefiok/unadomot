@@ -1,0 +1,381 @@
+tle must be at least 5 characters`
+- `Title is too long (max 100)`
+- `Description must be at least 20 characters`
+- `Description is too long`
+- `Enter a valid number`
+- `Price must be at least ₦1,000`
+- `Price cannot exceed ₦100,000,000`
+- `Address must be at least 5 characters`
+- `Please select whether you are posting as a Landlord or Agent`
+- `Title is required`
+- `Price is required`
+- `Address is required`
+- `Please select a state`
+- `Please select an LGA`
+- `Please select property type`
+- `Please select number of bedrooms`
+- `Please select number of bathrooms`
+- `Please select furnishing status`
+- `Please add at least one photo`
+- `.photos-section`
+- `⚠️ nigeriaStates not loaded`
+- `Please fill in address, state, and LGA first`
+- `Searching for coordinates...`
+- `✓ Location found (LGA center)`
+- `✓ Location found (State center)`
+- `⚠ Could not find coordinates. Listing will save without map pin.`
+- `⚠ Location not found - listing will save without map pin`
+- `Geocoding error:`
+- `⚠ Geocoding service error. Try again later.`
+- `Verification email sent! Please check your inbox.`
+- `Failed to send verification email. Please try again.`
+- `Please select a role for this listing`
+- `post listings`
+- `Listing Updated ✏️`
+- `Property Owner`
+- `Listing Submitted for Review 📋`
+- `❌ Error saving listing:`
+- `Failed to save listing. Please try again.`
+- `p-8 text-center`
+- `loading-spinner mx-auto mb-4`
+- `Loading listing...`
+- `text-5xl mb-4`
+- `font-bold text-lg mb-2`
+- `Error Loading Listing`
+- `text-gray-600 mb-4`
+- `bg-green-950 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition`
+- `text-6xl mb-4`
+- `Listing Not Found`
+- `This listing does not exist or has been removed.`
+- `Not Authorised`
+- `You can only edit your own listings.`
+- `Edit Listing`
+- `Post a Listing`
+- `Save Changes`
+- `Submit for Review`
+- `mb-4 pb-3 border-b border-gray-200`
+- `block text-xs font-medium text-gray-700 mb-2`
+- `Post as:`
+- `flex gap-4`
+- `flex items-center gap-2 cursor-pointer`
+- `w-4 h-4 accent-green-950`
+- `font-medium text-gray-800`
+- `🏠 Landlord`
+- `text-xs text-gray-500 ml-2`
+- `Shows Landlord badge`
+- `🤝 Agent`
+- `Shows Agent badge`
+- `text-red-500 text-xs mt-2`
+- `text-xs text-blue-600 mt-2 flex items-center gap-1`
+- `You are verified for both roles. Choose how to present this listing.`
+- `block text-xs font-medium text-gray-700 mb-1`
+- `Title *`
+- `e.g., 3-Bedroom Flat in Ikeja`
+- `text-red-500 text-xs mt-1`
+- `text-blue-600 text-xs mt-1 flex items-center gap-1`
+- `Monthly Rent (₦) *`
+- `text-xs text-gray-400 mt-1`
+- `Min ₦1,000`
+- `Address *`
+- `Street, building, landmark`
+- `grid grid-cols-2 gap-2`
+- `State *`
+- `LGA *`
+- ` bg-gray-100 cursor-not-allowed`
+- `mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200`
+- `flex items-center justify-between flex-wrap gap-2`
+- `flex items-center gap-2 flex-wrap`
+- `w-4 h-4 border-2 border-green-950 border-t-transparent rounded-full animate-spin`
+- `text-xs text-gray-600`
+- `Finding coordinates...`
+- `text-xs text-green-700 font-medium`
+- `Location found`
+- `text-xs text-gray-400 ml-1`
+- `LGA center`
+- `State center`
+- `text-xs text-amber-700`
+- `Could not get coordinates`
+- `text-xs text-gray-500`
+- `📍 Coordinates will be fetched automatically`
+- `text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded hover:bg-blue-100 transition`
+- `mt-2 text-xs text-gray-500 bg-white p-2 rounded border border-gray-100`
+- `Type *`
+- `Bedrooms *`
+- `Bathrooms *`
+- `Furnishing *`
+- `Size (sqm)`
+- `e.g., 120`
+- `w-full p-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-950`
+- `Description *`
+- `Describe the property...`
+- ` resize-none`
+- `flex justify-between mt-1`
+- `text-red-500 text-xs`
+- `text-blue-600 text-xs flex items-center gap-1`
+- `text-xs text-gray-400`
+- `Min 20 characters`
+- `space-y-3 photos-section`
+- `Current Photos`
+- `Uploaded Photos`
+- `flex flex-wrap gap-2 mb-3`
+- `relative w-16 h-16 rounded-lg overflow-hidden border border-gray-200 group`
+- `Property photo`
+- `w-full h-full object-cover`
+- `absolute inset-0 bg-red-500/80 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs`
+- `text-blue-600 text-xs mb-2 flex items-center gap-1`
+- `📸 This will be your cover photo`
+- `✨ Great variety! Multiple photos increase interest`
+- `Photos *`
+- `Add More Photos`
+- `w-4 h-4`
+- `M12 4v16m8-8H4`
+- `Upload Photos`
+- `ml-2 text-xs text-gray-500`
+- `flex items-center gap-2`
+- `loading-spinner w-5 h-5`
+- `text-xs text-gray-400 mt-2`
+- `Upload up to 5 photos. First photo will be the cover.`
+- `text-blue-600 text-xs mt-2 flex items-center gap-1`
+- `📷 Properties with photos get 10x more views!`
+- `mt-4 p-3 bg-green-50 rounded-lg border border-green-200`
+- `text-xs text-green-800 flex items-center gap-1`
+- `M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z`
+- `Your listing will be reviewed by admin before going live.`
+- `Please verify your email to post listings.`
+- `flex items-center justify-between p-3 border-b border-gray-200 bg-gray-50`
+- `font-bold text-base text-gray-900`
+- `text-gray-400 hover:text-gray-600 transition p-1 rounded-full hover:bg-gray-200`
+- `M6 18L18 6M6 6l12 12`
+- `bg-red-50 text-red-600 p-2 text-xs border-b border-red-200`
+- `p-3 max-h-[50vh] overflow-y-auto`
+- `flex gap-2 p-3 border-t border-gray-200 bg-gray-50`
+- `flex gap-4 pt-4`
+- `flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition font-medium text-xs`
+- `px-6 py-3 border border-gray-300 rounded-lg font-bold hover:bg-gray-50 transition`
+- `← Back`
+- `flex-1 bg-green-950 text-white py-2 rounded-lg hover:bg-green-800 transition font-bold text-xs disabled:opacity-50`
+- `flex-1 bg-green-950 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition disabled:opacity-50`
+- `Next →`
+
+**Responsive.**
+- Component-local responsive utility tokens, if any, are included in the class inventory above (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`). Global stylesheet switching and breakpoint behavior: HANDOFF §2.9 and §3.2–§3.4.
+
+**Animation.** See §4 for source keyframes and transition declarations. Component-local `animate-*`, `transition-*`, `duration-*`, and `ease-*` tokens are recorded in §4.
+
+**Accessibility.**
+- `'`
+- `'`
+- `'`
+- `'`
+
+**Flutter notes.** Map source DOM positioning and utility behavior to `Stack`/`Positioned`, `SafeArea`, `Padding`, `DecoratedBox`, `ClipRRect`, `BoxShadow`, `TextStyle`, `InkWell`/`GestureDetector`, `Focus`, and `Semantics` as applicable. Use HANDOFF §12.2 for the baseline mapping; this source-specific subsection adds only the exact visual evidence above.
+
+**Evidence flags.** [SOURCE] class/copy/attributes above are extracted from the named file. [INFERRED] Flutter widget mapping. [NOT SPECIFIED] Any state not represented by a source conditional or stylesheet.
+
+### 6.28 Header
+
+**Purpose & usage sites.** Literal source: `components/ReactionButton.js` (96 lines). See the relevant usage and routing context in HANDOFF §5 and §6. The implementation is React `createElement`; this subsection extracts the actual class, copy, and inline-SVG evidence from that module.
+
+**Element tree / literal structure.** The source's returned tree is represented by the following concrete structural evidence; where the source constructs children conditionally or via helper functions, the branch is preserved as a source condition rather than flattened into a fabricated single tree.
+- [NOT SPECIFIED] No direct `return (` block found; component may return via expression/helper.
+
+**Box model, color & typography — literal class inventory.**
+- `inline-flex items-center gap-1 rounded-full bg-gray-100 animate-pulse ${className}`
+- `opacity-0`
+- `text-base`
+- `font-medium`
+
+**Resolved values.** Utility classes resolve through the legend in §2 and theme overrides in HANDOFF §2. Where no corresponding CSS override exists, standard Tailwind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- No inline SVG found in this module. External image/icon use, if any, remains literal at the path/alt attributes in source.
+
+**States (G4).**
+- Literal conditional class expression: `className: `inline-flex items-center gap-1 rounded-full bg-gray-100 animate-pulse ${className}``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'opacity-0'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-base'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'font-medium'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Default: source's unconditional class string(s) above.
+- hover: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- focus: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- active: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- disabled: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- loading: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- error: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- success: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- selected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- unselected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- dark-mode: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- high-contrast: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- reduce-motion: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+
+**Copy (G3) — exact candidate strings in this file.**
+- `inline-flex items-center gap-1 rounded-full transition`
+- `text-xs px-2 py-1`
+- `text-sm px-3 py-1.5`
+- `text-base px-4 py-2`
+- `text-lg px-5 py-2.5`
+- `bg-green-100 text-green-700 border border-green-200`
+- `bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200`
+
+**Responsive.**
+- Component-local responsive utility tokens, if any, are included in the class inventory above (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`). Global stylesheet switching and breakpoint behavior: HANDOFF §2.9 and §3.2–§3.4.
+
+**Animation.** See §4 for source keyframes and transition declarations. Component-local `animate-*`, `transition-*`, `duration-*`, and `ease-*` tokens are recorded in §4.
+
+**Accessibility.**
+- [NOT SPECIFIED] No literal aria/role/title attribute matched in this file; inspect semantic element type and parent usage.
+
+**Flutter notes.** Map source DOM positioning and utility behavior to `Stack`/`Positioned`, `SafeArea`, `Padding`, `DecoratedBox`, `ClipRRect`, `BoxShadow`, `TextStyle`, `InkWell`/`GestureDetector`, `Focus`, and `Semantics` as applicable. Use HANDOFF §12.2 for the baseline mapping; this source-specific subsection adds only the exact visual evidence above.
+
+**Evidence flags.** [SOURCE] class/copy/attributes above are extracted from the named file. [INFERRED] Flutter widget mapping. [NOT SPECIFIED] Any state not represented by a source conditional or stylesheet.
+
+### 6.29 LoadingSpinner
+
+**Purpose & usage sites.** Literal source: `components/Header.js` (485 lines). See the relevant usage and routing context in HANDOFF §5 and §6. The implementation is React `createElement`; this subsection extracts the actual class, copy, and inline-SVG evidence from that module.
+
+**Element tree / literal structure.** The source's returned tree is represented by the following concrete structural evidence; where the source constructs children conditionally or via helper functions, the branch is preserved as a source condition rather than flattened into a fabricated single tree.
+```javascript
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('focusin', handleFocusIn);
+      document.removeEventListener('focusout', handleFocusOut);
+    };
+  }, []);
+  
+  // Protected navigation
+  const handleProtectedNavigation = React.useCallback((path, mode = 'login') => {
+    if (user) {
+      navigate(path);
+    } else {
+      openModal(mode, path);
+    }
+  }, [user, navigate, openModal]);
+  
+  // Header classes
+  const getHeaderClasses = React.useCallback(() => {
+    if (!isBottom) {
+      return 'bg-green-50 shadow-sm sticky top-0 z-50 border-b border-gray-200';
+    }
+    
+    const hide = !isVisible || keyboardVisible;
+    
+    return `bg-green-50 py-0 shadow-lg border-t border-gray-200 w-full transition-transform duration-300 transform-gpu ${
+      hide ? 'translate-y-full' : 'translate-y-0'
+    }`;
+  }, [isBottom, keyboardVisible, isVisible]);
+  
+  return React.createElement('header', {
+      className: getHeaderClasses()
+    },
+    React.createElement('div', {
+        className: 'container mx-auto px-4 py-4'
+      },
+      React.createElement('div', {
+          className: 'flex items-center justify-between'
+        },
+        
+        // Navigation icons
+        React.createElement('div', {
+            className: 'flex items-center justify-center flex-1 mx-6'
+          },
+          React.createElement('div', {
+              className: 'flex items-center space-x-8'
+            },
+            
+            // Home button
+            React.createElement('button', {
+                onClick: React.useCallback(() => navigate('/'), [navigate]),
+                className: 'flex flex-col items-center text-gray-600 hover:text-green-950 transition',
+                title: 'Go to Home'
+              },
+              React.createElement('img', {
+                src: '/vault/img/unadomot.jpg',
+                alt: 'UnaDomot Home',
+                className: 'w-8 h-8 rounded-full object-cover hover:opacity-80 transition-opacity',
+                onError: function(e) {
+                  e.target.style.display = 'none';
+                }
+              }),
+              isBottom && React.createElement('span', { className: 'text-xs mt-1' }, '')
+            ),
+            
+            // Favorites
+            React.createElement('button', {
+                onClick: React.useCallback(() => handleProtectedNavigation('/favorites', 'login'), [handleProtectedNavigation]),
+                className: 'flex flex-col items-center text-gray-600 hover:text-green-950 transition'
+              },
+              React.createElement('svg', { className: 'w-8 h-8', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+                React.createElement('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' })
+              ),
+              isBottom && React.createElement('span', { className: 'text-xs mt-1' }, '')
+            ),
+            
+            // Post listing
+            React.createElement('button', {
+                onClick: React.useCallback(() => {
+                  if (user) {
+                    openModal('post', {});
+                  } else {
+                    openModal('signup', { path: '/', openPostAfterLogin: true });
+                  }
+                }, [user, openModal]),
+                className: 'flex flex-col items-center text-gray-600 hover:text-green-950 transition'
+              },
+              React.createElement('svg', { className: 'w-8 h-8', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+                React.createElement('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M12 4v16m8-8H4' })
+              ),
+              isBottom && React.createElement('span', { className: 'text-xs mt-1' }, '')
+            ),
+            
+            // Chat
+            React.createElement('button', {
+                onClick: React.useCallback(() => handleProtectedNavigation('/chat', 'login'), [handleProtectedNavigation]),
+                className: 'flex flex-col items-center text-gray-600 hover:text-green-950 transition relative'
+              },
+              React.createElement('div', { className: 'relative' },
+                React.createElement('svg', { className: 'w-8 h-8', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' },
+                  React.createElement('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z' })
+```
+
+**Box model, color & typography — literal class inventory.**
+- `desktop-top-bar`
+- `desktop-search-section`
+- `desktop-filter-icon`
+- `w-5 h-5`
+- `desktop-search-wrapper`
+- `desktop-search-input`
+- `desktop-search-icon`
+- `absolute right-12 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600`
+- `w-4 h-4`
+- `absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-60 overflow-y-auto`
+- `w-full text-left px-4 py-2 hover:bg-green-50 text-sm border-b last:border-0`
+- `desktop-actions`
+- `desktop-action-btn`
+- `w-full h-full flex items-center justify-center`
+- `container mx-auto px-4 py-4`
+- `flex items-center justify-between`
+- `flex items-center justify-center flex-1 mx-6`
+- `flex items-center space-x-8`
+- `flex flex-col items-center text-gray-600 hover:text-green-950 transition`
+- `w-8 h-8 rounded-full object-cover hover:opacity-80 transition-opacity`
+- `text-xs mt-1`
+- `w-8 h-8`
+- `flex flex-col items-center text-gray-600 hover:text-green-950 transition relative`
+- `relative`
+- `w-8 h-8 rounded-full object-cover`
+- `flex items-center space-x-2`
+- `bg-green-950 text-white px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-green-800 transition flex items-center gap-1 hidden sm:flex`
+- `hidden md:inline`
+
+**Resolved values.** Utility classes resolve through the legend in §2 and theme overrides in HANDOFF §2. Where no corresponding CSS override exists, standard Tailwind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- Icon 1: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `components/Header.js`.
+- Icon 2: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `components/Header.js`.
+- Icon 3: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `components/Header.js`.
+- Icon 4: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `components/Header.js`.
+- Icon 5: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `components/Header.js`.
+- Icon 6: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `components/Header.js`.
+- Icon 7: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `components/Header.js`.
+- Icon 8: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 

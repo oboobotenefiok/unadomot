@@ -1,0 +1,608 @@
+cursor-pointer`
+- `w-full h-full object-cover`
+- `absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent`
+- `absolute bottom-0 left-0 right-0 p-4 text-white`
+- `font-bold mb-1 line-clamp-1 `
+- `opacity-90 mb-1 `
+- `opacity-75 line-clamp-1 `
+- `absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition backdrop-blur-sm hidden md:block`
+- `w-5 h-5`
+- `M15 19l-7-7 7-7`
+- `absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-2 rounded-full transition backdrop-blur-sm hidden md:block`
+- `M9 5l7 7-7 7`
+- `absolute top-2 right-2 flex gap-1 z-10`
+- `bg-blue-600 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 transition`
+- `w-4 h-4`
+- `M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z`
+- `bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition`
+- `M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16`
+- `absolute bottom-2 right-2 flex gap-1 z-10`
+- `p-1 `
+- `text-white drop-shadow-lg`
+- ` opacity-50 cursor-wait`
+- `M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z`
+- `M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z`
+- `send messages`
+- `Please verify your email to send messages`
+- `p-1 text-white drop-shadow-lg hover:text-green-300`
+- `Send message`
+- `M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z`
+- `p-1 text-white drop-shadow-lg hover:text-blue-300`
+- `M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z`
+- `absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10`
+- `w-2 h-2 rounded-full transition `
+- `bg-white scale-125`
+- `bg-white/50`
+### `pages/home/components/FilterBar.js`
+- `p-2 text-gray-600 hover:text-green-950 rounded-full hover:bg-gray-100 transition `
+- `Filter listings`
+- `w-5 h-5`
+- `M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4`
+- `absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center text-[10px]`
+- `fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm`
+- `relative w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden`
+- `flex items-center justify-between p-3 border-b border-gray-200 bg-gray-50`
+- `font-bold text-base text-gray-900`
+- `Filter Listings`
+- `ml-2 text-xs font-normal text-gray-500`
+- `text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-200`
+- `w-4 h-4`
+- `M6 18L18 6M6 6l12 12`
+- `p-3 max-h-[50vh] overflow-y-auto`
+- `grid grid-cols-2 gap-2`
+- `col-span-2 mb-1`
+- `block text-xs font-medium text-gray-700 mb-1`
+- `Price (₦)`
+- `flex gap-1`
+- `w-full p-1.5 text-xs border rounded focus:outline-none focus:ring-1 focus:ring-green-950`
+- ` bg-gray-100 cursor-not-allowed`
+- `Self Contain`
+- `Price ↓`
+- `Price ↑`
+- `flex items-center justify-between cursor-pointer p-1.5 bg-gray-50 rounded hover:bg-gray-100`
+- `text-xs font-medium text-gray-700`
+- `Agent Only`
+- `w-3.5 h-3.5 accent-green-900`
+- `No Fees`
+- `flex gap-2 p-3 border-t border-gray-200 bg-gray-50`
+- `flex-1 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition font-medium text-xs`
+- `flex-1 bg-green-950 text-white py-2 rounded-lg hover:bg-green-800 transition font-bold text-xs`
+- `Apply Filters`
+### `pages/home/components/ListingGrid.js`
+- `SHOW IN THIS LOCATION`
+- `mt-8 pt-6 border-t border-gray-200`
+- `flex items-center justify-between mb-4`
+- `font-bold text-gray-800`
+- `text-xs text-green-950 hover:underline flex items-center gap-1`
+- `Show all in this location`
+- `w-3 h-3`
+- `M9 5l7 7-7 7`
+- `grid `
+- ` gap-3 mb-2`
+- `bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition page-transition`
+- `relative `
+- ` bg-gray-200`
+- `w-full h-full object-cover`
+- `absolute bottom-1 left-1 bg-green-950 text-white px-1.5 py-0.5 rounded font-bold `
+- `absolute top-1 left-1 bg-black/60 text-white text-[8px] px-1.5 py-0.5 rounded-full backdrop-blur-sm`
+- `p-2 `
+- `font-bold text-gray-900 mb-0.5 line-clamp-1 `
+- `text-gray-600 mb-1 line-clamp-1 text-[10px]`
+- `flex items-center justify-between pt-1 border-t border-gray-100 mt-1`
+- `flex gap-1`
+- `text-gray-500 hover:text-green-950 p-0.5 rounded hover:bg-gray-100 transition`
+- `M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z`
+- `text-gray-500 hover:text-blue-600 p-0.5 rounded hover:bg-gray-100 transition`
+- `M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z`
+- `p-0.5 rounded hover:bg-gray-100 transition `
+- `M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z`
+- `M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z`
+- `w-full text-center text-xs text-green-950 py-2 hover:underline flex items-center justify-center gap-1`
+- `Show less`
+- `w-3 h-3 transition-transform `
+- `M19 9l-7 7-7-7`
+- ` gap-3`
+- `bg-white rounded-lg shadow-md overflow-hidden animate-pulse`
+- `h-40 bg-gray-200`
+- `p-2 space-y-2`
+- `h-4 bg-gray-200 rounded w-3/4`
+- `h-3 bg-gray-200 rounded w-full`
+- `px-4 pb-20`
+- `mb-3 text-sm text-gray-600`
+- ` result`
+- ` found for "`
+- `text-gray-600 mb-1 line-clamp-1 `
+- `flex flex-wrap gap-0.5 mb-1`
+- `bg-green-100 text-green-700 px-1 py-0.5 rounded `
+- `bg-gray-100 text-gray-700 px-1 py-0.5 rounded `
+- `flex items-center justify-between pt-1 border-t border-gray-100`
+- `text-gray-500 hover:text-green-950 p-1 rounded hover:bg-gray-100 transition `
+- `w-4 h-4`
+- `text-gray-500 hover:text-blue-600 p-1 rounded hover:bg-gray-100 transition `
+- `p-1 rounded hover:bg-gray-100 transition `
+- `text-red-500 hover:text-red-700`
+- `text-gray-500 hover:text-red-500`
+- ` opacity-50 cursor-wait`
+- `text-center py-12 mb-8 bg-white rounded-xl shadow-sm`
+- `text-5xl mb-3`
+- `text-gray-500 text-lg mb-2`
+- `No listings match "`
+- `text-gray-400 text-sm mb-6`
+- `Try adjusting your search or filters`
+- `max-w-md mx-auto`
+- `text-xs text-gray-500 mb-3`
+- `Try searching for:`
+- `flex flex-wrap gap-2 justify-center`
+- `Port Harcourt`
+- `2 bedroom`
+- `Self contain`
+- `bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-full text-sm transition`
+- `mt-6 bg-green-950 text-white px-6 py-3 rounded-lg hover:bg-green-800 transition `
+- `Post a Listing`
+- ` gap-3 mt-3`
+- `text-center py-4 text-gray-400 text-sm`
+- `You've reached the end`
+### `pages/home/components/LocationSearch.js`
+- `UnaDomot/1.0`
+- `relative flex-1`
+- `Search location...`
+- `w-full pl-9 pr-8 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-green-950`
+- `absolute left-3 top-2.5 w-4 h-4 text-gray-400`
+- `M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z`
+- `absolute right-3 top-2.5 w-4 h-4 border-2 border-green-950 border-t-transparent rounded-full animate-spin`
+- `absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-60 overflow-y-auto`
+- `w-full text-left px-4 py-2 hover:bg-green-50 text-sm border-b last:border-0`
+### `pages/home/components/PriceRangeSlider.js`
+- `Under ₦500k`
+- `₦500k - ₦1M`
+- `₦1M - ₦3M`
+- `₦3M - ₦5M`
+- `Above ₦5M`
+- `bg-white rounded-xl shadow-lg p-4`
+- `flex justify-between items-center mb-3`
+- `font-bold text-gray-900`
+- `Price Range`
+- `text-xs text-green-950 hover:underline flex items-center gap-1`
+- `Quick picks`
+- `M19 9l-7 7-7-7`
+- `mb-4 space-y-1`
+- `w-full text-left px-3 py-2 text-sm hover:bg-green-50 rounded-lg transition`
+- `block text-xs text-gray-600 mb-1`
+- `absolute left-3 top-2 text-gray-500`
+- `w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-950`
+- `relative h-2 bg-gray-200 rounded-full mt-4`
+- `absolute h-full bg-green-950 rounded-full`
+- `w-full bg-green-950 text-white py-2 rounded-lg text-sm font-medium hover:bg-green-800 transition mt-2`
+- `Apply Price Filter`
+### `pages/home/components/RecentViews.js`
+- `Error loading recent views:`
+- `bg-white rounded-full shadow-lg p-3 transition-all hover:scale-110 relative`
+- `w-5 h-5`
+- `M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z`
+- `absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center`
+- `absolute bottom-20 left-4 right-4 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-96 overflow-y-auto`
+- `p-3 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white`
+- `font-bold text-gray-900`
+- `Recently Viewed`
+- `flex gap-2`
+- `text-xs text-red-500 hover:text-red-700`
+- `text-gray-400 hover:text-gray-600`
+- `flex gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition`
+- `w-16 h-16 rounded-lg object-cover`
+- `font-medium text-sm`
+- `text-xs text-gray-500 mt-1`
+- `text-sm font-bold text-green-950 mt-1`
+### `pages/home/components/SearchBar.js`
+- `re in search mode
+}) {
+  const handleKeyDown = function(e) {
+    if (e.key === `
+- `) {
+      e.preventDefault();
+      onSearchSubmit(searchTerm);
+      setShowDropdown(false);
+    }
+    if (e.key === `
+- `, {
+        ref: searchInputRef,
+        type: `
+- `,
+        placeholder: `
+- `,
+          fill: `
+- `,
+          stroke: `
+- `,
+          viewBox: `
+- `, {
+          strokeLinecap: `
+- `,
+          strokeLinejoin: `
+- `,
+          strokeWidth: `
+- `,
+          d: `
+- `: showArrow ? `
+- `,
+            fill: `
+- `,
+            stroke: `
+- `,
+            viewBox: `
+- `, {
+            strokeLinecap: `
+- `,
+            strokeLinejoin: `
+- `,
+            strokeWidth: `
+- `,
+            d: `
+- `,
+                fill: `
+- `,
+                stroke: `
+- `,
+                viewBox: `
+- `, {
+                strokeLinecap: `
+- `,
+                strokeLinejoin: `
+- `,
+                strokeWidth: `
+- `,
+                d: `
+- `, null,
+        suggestions.map(function(item, index) {
+          // Render header
+          if (item.type === `
+- `, {
+              key: `
+- `, {
+              key: item.type + `
+- ` + item.text + `
+- `', searchTerm, '`
+### `pages/home/components/ViewToggle.js`
+- `Switch to map view`
+- `Switch to grid view`
+- `View properties on map`
+- `View properties as grid`
+- `w-5 h-5`
+- `M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7`
+### `pages/home/components/map/LocationSearch.js`
+- `UnaDomot/1.0`
+- `relative flex-1`
+- `Search location...`
+- `w-full pl-9 pr-8 py-2 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-green-950`
+- `absolute left-3 top-2.5 w-4 h-4 text-gray-400`
+- `M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z`
+- `absolute right-3 top-2.5 w-4 h-4 border-2 border-green-950 border-t-transparent rounded-full animate-spin`
+- `absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-60 overflow-y-auto`
+- `w-full text-left px-4 py-2 hover:bg-green-50 text-sm border-b last:border-0`
+### `pages/home/components/map/MapControls.js`
+- `re at
+  let zoomLevel = `
+- `;
+  if (currentZoom >= 4 && currentZoom <= 5) zoomLevel = `
+- `;
+  else if (currentZoom >= 6 && currentZoom <= 8) zoomLevel = `
+- `;
+  else if (currentZoom >= 9 && currentZoom <= 11) zoomLevel = `
+- `;
+  else if (currentZoom >= 12) zoomLevel = `
+- `, {
+        key: `
+- `
+          }\`
+        }, legendCollapsed ? `
+- `, {
+          onClick: onGetUserLocation,
+          disabled: locationStatus === `
+- `
+        }\`,
+          title: `
+- `
+        },
+        locationStatus === `
+- `)
+      ),
+      
+      locationStatus === `
+- `,
+        title: `
+- `,
+          fill: `
+- `,
+          stroke: `
+- `,
+          viewBox: `
+- `, {
+          strokeLinecap: `
+- `,
+          strokeLinejoin: `
+- `,
+          strokeWidth: `
+- `,
+          d: `
+### `pages/home/components/map/MapCore.js`
+- `ll let the component call initMap explicitly
+      return true;
+    } else {
+      console.error(`
+- `);
+      return null;
+    }
+    
+    if (!mapReady) {
+      console.error(`
+- `);
+      return null;
+    }
+    
+    if (!mapRef || !mapRef.current) {
+      console.error(`
+- `, {
+        attribution: `
+- `,
+        maxZoom: 19
+      }).addTo(map);
+      
+      // Add zoom control
+      window.L.control.zoom({
+        position: `
+- `) {
+        onMapReady(map);
+      }
+      
+      return map;
+    } catch (error) {
+      console.error(`
+### `pages/home/components/map/MapGeolocation.js`
+- `Geolocation is not supported by your browser`
+- `📍 GPS not supported on this device`
+- `#3b82f6`
+- `#60a5fa`
+- `📍 Found your location!`
+- `Please allow location access in your browser settings`
+- `GPS signal not found. Try moving to an open area.`
+- `GPS taking too long. Check your connection and try again.`
+- `Could not determine your location`
+### `pages/home/components/map/MapMarkers.js`
+- `<div class="custom-listing-pin"></div>`
+### `pages/home/components/map/MapPopup.js`
+- `t use
+  onClose,
+  onPrevListing,
+  onNextListing
+) {
+  const popupDiv = document.createElement(`
+- `;
+  imageContainer.style.height = `
+- `;
+  
+  let currentImageIndex = 0;
+  
+  if (listingImages.length > 0) {
+    const img = document.createElement(`
+- `;
+    img.src = window.getListingImageUrl(currentListing, currentImageIndex);
+    img.alt = currentListing.title || `
+- `;
+    img.loading = `
+- `;
+    
+    img.onerror = function() {
+      this.src = `
+- `;
+    };
+    
+    imageContainer.appendChild(img);
+    
+    // ===== IMAGE NAVIGATION CONTROLS =====
+    if (hasMultipleImages) {
+      const imageCounter = document.createElement(`
+- `;
+      prevImageBtn.innerHTML = `
+- `w-3 h-3 text-gray-700`
+- `M15 19l-7-7 7-7`
+- `;
+      
+      const nextImageBtn = document.createElement(`
+- `;
+      nextImageBtn.innerHTML = `
+- `M9 5l7 7-7 7`
+- `;
+    priceTag.innerText = `
+- ` + (currentListing.price ? currentListing.price.toLocaleString() : `
+- `);
+    imageContainer.appendChild(priceTag);
+    
+  } else {
+    const fallbackDiv = document.createElement(`
+- `;
+    fallbackDiv.innerHTML = `
+- `);
+  mainContainer.insertBefore(imageContainer, mainContainer.firstChild);
+  
+  // ===== OWNER CONTROLS - AT BOTTOM RIGHT OF IMAGE =====
+  if (isOwner) {
+    const ownerControls = document.createElement(`
+- `;
+  
+  // ===== ROLE BADGE HTML (will be conditionally added) =====
+  const userType = currentListing.userType || `
+- `;
+  const roleBadgeHtml = (userType && userType !== `
+- `}
+        </span>
+      </div>\`
+    : `
+- `;
+  
+  // Content section
+  const contentDiv = document.createElement(`
+- `);
+      const toastEvent = new CustomEvent(`
+- `, {
+        detail: { message: `
+- `, type: `
+- ` }
+      });
+      window.dispatchEvent(toastEvent);
+      return;
+    }
+    
+    // Create container for modal
+    const deleteModalContainer = document.createElement(`
+- `);
+    deleteModalContainer.id = `
+- `).doc(currentListing.id).update({
+                status: `
+- `,
+                deletedAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+              
+              // Show success toast
+              const toastEvent = new CustomEvent(`
+- `, {
+                detail: { message: `
+- `, error);
+              const toastEvent = new CustomEvent(`
+- ` }
+      });
+      window.dispatchEvent(toastEvent);
+      return;
+    }
+    
+    if (!reportModalContainer) {
+      reportModalContainer = document.createElement(`
+- `);
+      reportModalContainer.id = `
+- `, {
+              detail: { message: `
+- `);
+    const currentIsFav = favBtn?.classList.contains(`
+- `) || false;
+    
+    if (favBtn && newIsFav !== currentIsFav) {
+      const svg = favBtn.querySelector(`
+- `);
+      
+      if (newIsFav) {
+        favBtn.classList.add(`
+- `);
+        favBtn.classList.remove(`
+- `);
+        if (svg) svg.setAttribute(`
+- `);
+        favBtn.title = `
+- `;
+      } else {
+        favBtn.classList.remove(`
+- `);
+        favBtn.classList.add(`
+- `;
+      }
+    }
+  });
+  
+  // Close button
+  popupDiv.querySelector(`
+- `)?.addEventListener(`
+- `, window.location.pathname);
+      return;
+    }
+    
+    const verificationCheck = window.VerificationHelpers?.checkEmailVerification(currentUser, `
+- `);
+    if (!verificationCheck?.allowed) {
+      const message = verificationCheck?.message || `
+- `;
+      const toastEvent = new CustomEvent(`
+- `, {
+        detail: { message, type: `
+- `, { listingId: currentListing.id });
+    }
+    if (onClose) onClose();
+  });
+  
+  // Delete button - DIRECT DATABASE DELETE
+  popupDiv.querySelector(`
+### `pages/home/components/map/SearchBar.js`
+- `flex-1 relative`
+- `Search properties, locations...`
+- `w-full pl-9 pr-8 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-950 focus:border-transparent text-sm`
+- `absolute left-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none`
+- `M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z`
+- `absolute right-2.5 top-1.5 bg-green-950 text-white rounded-full w-7 h-7 flex items-center justify-center hover:bg-green-800 transition`
+- `w-3.5 h-3.5`
+- `M9 5l7 7-7 7`
+- `absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden`
+- `flex items-center justify-between px-3 py-2 border-b border-gray-50`
+- `text-xs font-medium text-gray-400 uppercase tracking-wide`
+- `Recent searches`
+- `text-xs text-gray-400 hover:text-red-500 transition`
+- `w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-left text-sm text-gray-700 transition`
+- `w-3.5 h-3.5 text-gray-400 flex-shrink-0`
+- `M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z`
+- `w-full flex items-center gap-2 px-3 py-2 hover:bg-green-50 text-left text-sm text-gray-700 transition`
+- `w-3.5 h-3.5 text-green-600 flex-shrink-0`
+### `pages/home/components/map/index.js`
+- `calc(100vh - 250px)`
+- `w-full flex items-center justify-center bg-gray-100 rounded-lg`
+- `animate-spin rounded-full h-8 w-8 border-3 border-green-950 border-t-transparent mx-auto mb-2`
+- `text-xs text-gray-600`
+- `Loading map...`
+- `relative w-full`
+- `absolute top-2 left-0 right-0 flex items-center justify-between px-3 z-30`
+- `flex gap-2`
+- `bg-white/90 backdrop-blur-sm hover:bg-white rounded-full w-9 h-9 flex items-center justify-center shadow-md transition hover:scale-110`
+- `Accessibility options`
+- `w-5 h-5`
+- `bg-white/90 backdrop-blur-sm hover:bg-white rounded-full px-4 py-2 flex items-center gap-2 shadow-md transition hover:scale-105 font-medium text-sm`
+- `Switch to grid view`
+- `w-4 h-4`
+- `absolute inset-0 rounded-lg shadow-lg`
+- `#1a2634`
+- `#f0f0f0`
+### `pages/home/hooks/useFavorites.js`
+- `✓ Saved to favorites`
+- `✓ Removed from favorites`
+- `Failed to update favorites`
+### `pages/home/hooks/useOtherLocations.js`
+- `)
+        .where(`
+- `)
+        .orderBy(`
+- `)
+        .limit(12);
+
+      // Apply existing filters (price, property type, etc.) but NOT location
+      if (currentFilters.minPrice) {
+        query = query.where(`
+- `, Number(currentFilters.minPrice));
+      }
+      if (currentFilters.maxPrice) {
+        query = query.where(`
+- `, Number(currentFilters.maxPrice));
+      }
+      if (currentFilters.propertyType) {
+        query = query.where(`
+- `, currentFilters.propertyType);
+      }
+      if (currentFilters.bedrooms) {
+        if (currentFilters.bedrooms === `
+- `) {
+          query = query.where(`
+- `);
+        } else {
+          query = query.where(`
+- `, currentFilters.bedrooms);
+        }
+      }
+      if (currentFilters.furnishing) {
+        query = query.where(`
+- `;
+        const listingState = data.state?.toLowerCase() || `
+### `pages/home/hooks/useSearch.js`
+- `Property Type`
+- ` Bedroom

@@ -1,0 +1,213 @@
+sing more accessible for everyone.`
+- `Founded in 2026, we\'re helping Nigerians find their `
+- `perfect homes without the stress and cost of middlemen.`
+- `Terms & Conditions`
+- `prose prose-sm max-w-none`
+- `By using UnaDomot, you agree to these terms...`
+- `Privacy Policy`
+- `We respect your privacy...`
+- `Billing Policy`
+- `UnaDomot is currently free...`
+- `Cookie Policy`
+- `We use cookies to improve your experience...`
+- `© 2026 UnaDomot. All rights reserved.`
+- `All content, logos, and designs are the property of UnaDomot.`
+- `Content coming soon.`
+- `fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm`
+- `bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[80vh] overflow-hidden`
+- `flex items-center justify-between p-4 border-b border-gray-200`
+- `font-bold text-lg`
+- `text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100`
+- `p-4 overflow-y-auto max-h-[60vh]`
+- `p-4 border-t border-gray-200 bg-gray-50`
+- `w-full bg-green-950 text-white py-2 rounded-lg hover:bg-green-800 transition`
+### `pages/profile/components/ProfileHeader.js`
+- `oboobotenefiok@gmail.com`
+- `bg-white rounded-lg shadow-md p-6 mb-8`
+- `flex justify-between items-start`
+- `text-2xl font-bold flex items-center gap-2`
+- `flex items-center gap-2 mt-1`
+- `text-sm text-gray-500`
+- `flex gap-2`
+- `flex items-center gap-2 px-3 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium shadow-md`
+- `w-4 h-4`
+- `M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z`
+- `flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition text-sm font-medium border border-green-200`
+- `M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z`
+- `mt-4 space-y-2 text-gray-700`
+- `flex items-center gap-2`
+### `pages/profile/components/ProfileTabs.js`
+- `mb-6 border-b border-gray-200`
+- `flex items-center`
+- `h-6 w-px bg-gray-300 mx-2`
+- `w-6 h-6`
+- `M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z`
+### `pages/profile/components/SettingsTab.js`
+- `bg-white rounded-lg shadow-md p-6 space-y-2`
+- `border-b border-gray-100 pb-2`
+- `w-full flex items-center justify-between py-3 text-left px-2 rounded-lg transition hover:bg-gray-50`
+- `flex items-center gap-3`
+- `font-medium text-gray-800`
+- `Get Verified`
+- `text-sm text-gray-400`
+- `w-full flex items-center justify-between py-3 text-left px-2 rounded-lg transition`
+- `text-sm text-gray-500`
+- `ml-10 mt-1 space-y-1 animate-slide-down`
+- `w-full flex items-center justify-between py-2 px-2 text-sm text-gray-600 rounded-lg transition hover:bg-gray-50`
+- `ml-10 mt-1 space-y-2 animate-slide-down`
+- `py-2 px-2 text-sm text-gray-600`
+- `font-mono bg-gray-100 px-2 py-1 rounded`
+- `w-full flex items-center justify-between py-2 px-2 text-sm text-gray-600 rounded-lg transition hover:bg-gray-50 disabled:opacity-50`
+- `🔄 Check for Updates`
+- `bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full`
+- `New!`
+- `w-full flex items-center gap-3 py-3 text-left px-2 rounded-lg transition text-red-600 font-medium hover:bg-red-50`
+### `pages/profile/hooks/useProfile.js`
+- `Error fetching profile:`
+- `Failed to load profile. Please refresh.`
+### `pages/profile/hooks/useUsername.js`
+- `Username already taken`
+- `Error checking username`
+### `pages/profile/index.js`
+- `Display name is required`
+- `Display name must be at least 2 characters`
+- `Display name is too long`
+- `-]+$/.test(value)) {
+      return `
+- `;
+      }
+      
+      if (form.bio !== profileHook.profile?.bio) {
+        updateData.bio = form.bio ? ValidationHelpers.sanitizeInput(form.bio, `
+- `;
+      }
+      
+      await db.collection(`
+- `).doc(user.uid).update(updateData);
+      
+      await profileHook.refetch();
+      handleEditClose();
+      setFormErrors({});
+      
+      // Show success toast
+      if (displayNameChanged) {
+        ToastHelpers?.success(`
+- `);
+      } else {
+        ToastHelpers?.success(`
+- `);
+      }
+      
+    } catch (err) {
+      console.error(`
+- `, err);
+      profileHook.setError(err.code === `
+- `)) return;
+    
+    const success = await listingsHook.deleteListing(listingId);
+    if (!success) {
+      profileHook.setError(`
+- `, JSON.stringify({
+          activeTab,
+          timestamp: Date.now()
+        }));
+      } catch (e) {}
+    };
+    
+    window.addEventListener(`
+- `);
+          } catch (err) {
+            profileHook.setError(`
+### `pages/profile/utils/constants.js`
+- `bg-green-100 text-green-700 border-green-200`
+- `bg-blue-100 text-blue-700 border-blue-200`
+- `bg-yellow-100 text-yellow-700 border-yellow-200`
+- `bg-gray-400 text-white border-gray-500`
+- `bg-gray-300 text-gray-700 border-gray-400`
+### `pages/userByUsernamePage.js`
+- `No username provided`
+- `User not found`
+- `Error resolving username:`
+- `Failed to load user. Please try again.`
+- `min-h-screen bg-green-50 flex items-center justify-center`
+- `w-10 h-10 rounded-full bg-gray-200 animate-pulse mx-auto mb-4`
+- `Finding user...`
+- `text-center max-w-md mx-auto px-4`
+- `text-6xl mb-4`
+- `text-2xl font-bold text-gray-900 mb-2`
+- `User Not Found`
+- `text-gray-600 mb-6`
+- `bg-green-950 text-white px-6 py-3 rounded-lg hover:bg-green-800 transition cursor-pointer`
+- `Go Home`
+
+**Dynamic copy:** exact concatenation/interpolation expressions are retained in source snippets in §6–§7. Do not convert concatenation to a different punctuation or spacing convention. Any string not captured by the conservative extractor remains available in the included return snippets and source-class context; this deck is an extraction aid, not permission to normalize copy.
+
+## 11. State matrix appendix (G4)
+
+| Component / page | State evidence | Exact source class expression / delta | Flutter mapping |
+|---|---|---|---|
+| `components/AccessibilityProvider.js` | Not specified | No explicit conditional `className` matched; default class inventory in §6–§7 | Use source state model; do not invent visual delta |
+| `components/AccessibilityPanel.js` | Conditional | `className: `px-3 py-1 rounded ${settings.fontSize === size ? 'bg-green-950 text-white' : 'bg-gray-100'}`` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: `relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${ document.body.classList.contains('dark-mode') ? 'bg-green-950' : 'bg-gray-300' }`` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: `inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${ document.body.classList.contains('dark-mode') ? 'translate-x-5' : 'translate-x-0.5' }`` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: 'fixed top-20 right-4 w-80 bg-white rounded-lg shadow-xl z-50 p-4'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: 'flex justify-between items-center mb-4'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: 'font-bold text-lg'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: 'text-gray-500 hover:text-gray-700'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: 'mb-4 pb-4 border-b border-gray-200'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: 'flex items-center justify-between cursor-pointer'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: 'text-sm font-medium flex items-center gap-2'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: 'text-base'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: 'mb-4'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: 'block text-sm font-medium mb-2'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: 'flex gap-2'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: 'space-y-3'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: 'text-sm'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: 'toggle-checkbox'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AccessibilityPanel.js` | Conditional | `className: 'w-full mt-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `contexts/AuthModalContext.js` | Not specified | No explicit conditional `className` matched; default class inventory in §6–§7 | Use source state model; do not invent visual delta |
+| `components/AuthModal.js` | Conditional | `className: `${modalWidth} bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 transform scale-100`` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'bg-white p-8 rounded-xl shadow-2xl'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'space-y-3 animate-pulse'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'h-6 bg-gray-200 rounded w-32 mx-auto'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'h-10 bg-gray-200 rounded'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'h-6 bg-gray-200 rounded w-40 mx-auto'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'h-20 bg-gray-200 rounded'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'text-center pt-6 px-6 pb-2'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'w-16 h-16 rounded-full mx-auto mb-2'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'px-6 pb-6'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'px-6 pb-6 text-center text-sm text-gray-600 border-t border-gray-100 pt-4'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'text-green-950 font-semibold hover:underline focus:outline-none'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'flex justify-end p-2 absolute top-0 right-0 z-[10001]'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100 transition'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'w-5 h-5'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'absolute inset-0 bg-white/80 flex items-center justify-center z-[10002]'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'text-center'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'w-8 h-8 border-4 border-green-950 border-t-transparent rounded-full animate-spin mx-auto mb-2'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/AuthModal.js` | Conditional | `className: 'text-sm text-gray-600'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: `w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-950 ${ emailError ? 'border-red-500' : 'border-gray-300' }`` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'text-center pt-6 px-6 pb-2'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'w-16 h-16 rounded-full mx-auto mb-2'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'px-6 pb-6'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'text-center'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'bg-green-50 text-green-700 p-4 rounded-lg mb-4'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'text-green-950 hover:underline text-sm'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'text-gray-600 mb-6 text-sm text-center'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'mb-6'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'block text-gray-700 text-sm font-medium mb-2'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'text-red-500 text-xs mt-1'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'flex gap-3'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition font-medium'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'flex-1 bg-green-950 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition disabled:opacity-50'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'px-6 pb-6 text-center text-xs text-gray-500 border-t border-gray-100 pt-4'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/ForgotPasswordModal.js` | Conditional | `className: 'text-green-950 hover:underline'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/SignupForm.js` | Conditional | `className: `w-full bg-white border border-gray-300 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-50 flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all ${googleLoading ? 'animate-pulse' : ''}`` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/SignupForm.js` | Conditional | `className: `h-1 w-6 rounded-full transition-colors ${ step === currentStep ? 'bg-green-950' : 'bg-gray-200' }`` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/SignupForm.js` | Conditional | `className: `w-full bg-green-950 text-white py-3 rounded-lg font-bold hover:bg-green-800 transition disabled:opacity-50 disabled:cursor-not-allowed mt-1 ${ emailExists ? 'opacity-50 cursor-not-allowed' : '' }`` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/SignupForm.js` | Conditional | `className: 'w-full'` | `AnimatedContainer` / `ButtonStyle` / stateful `DecoratedBox` as appropriate; preserve branch semantics |
+| `components/SignupForm.js` | Co

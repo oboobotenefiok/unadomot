@@ -1,0 +1,272 @@
+ect(function() {
+    if (!chatId || !currentUserId) return;
+    
+    const validateAccess = async function() {
+      try {
+        const result = await ChatHelpers.validateChatAccess(chatId, currentUserId);
+        if (!result.valid) {
+          // Error handled by hook
+        } else {
+          setChatValidated(true);
+          setChatData(result.chatData);
+          
+          if (result.chatData.listingId) {
+            const listing = await ChatHelpers.getChatListingInfo(chatId);
+            setListingInfo(listing);
+          }
+        }
+      } catch (error) {
+        console.error('Validation error:', error);
+      }
+    };
+    
+    validateAccess();
+  }, [chatId, currentUserId]);
+  
+  // ===== FETCH OTHER USER (INCLUDING USERNAME) =====
+  React.useEffect(function() {
+    if (!otherUserId) return;
+    
+    if (otherUserName) {
+      setOtherUserData({
+        name: otherUserName,
+        photoURL: otherUserPhoto || null,
+        username: null
+      });
+      return;
+    }
+    
+    const fetchOtherUser = async function() {
+      try {
+        const userDoc = await db.collection('users').doc(otherUserId).get();
+        if (userDoc.exists) {
+          const data = userDoc.data();
+          setOtherUserData({
+            name: data.displayName || data.name || 'User',
+            photoURL: data.photoURL || null,
+            username: data.username || null  // ===== GET USERNAME =====
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching other user:', error);
+      }
+    };
+    
+    fetchOtherUser();
+  }, [otherUserId, otherUserName, otherUserPhoto]);
+  
+  // ===== TYPING INDICATOR =====
+  React.useEffect(function() {
+    if (!chatId || !chatValidated || !currentUserId) return;
+    
+    const typingRef = db.collection('chats').doc(chatId)
+      .collection('typing').doc('status');
+    
+    typingListenerRef.current = typingRef.onSnapshot(function(doc) {
+      if (doc.exists) {
+        const data = doc.data();
+        if (data.userId && data.userId !== currentUserId && data.isTyping) {
+          const isRecent = Date.now() - (data.timestamp?.toMillis?.() || 0) < 3000;
+          setOtherUserTyping(isRecent);
+        } else {
+          setOtherUserTyping(false);
+        }
+      } else {
+        setOtherUserTyping(false);
+      }
+    });
+    
+```
+
+**Box model, color & typography — literal class inventory.**
+- `fixed inset-0 bg-white z-50 flex items-center justify-center p-4`
+- `text-center max-w-sm`
+- `text-red-600 font-medium`
+- `fixed inset-0 bg-white z-50 flex items-center justify-center`
+- `fixed inset-0 bg-white z-50 flex flex-col h-screen w-screen overflow-hidden`
+- `bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm flex-shrink-0`
+- `flex items-center gap-3 flex-1 min-w-0`
+- `flex items-center justify-center w-10 h-10 text-gray-600 hover:text-green-950 rounded-full hover:bg-gray-100 transition flex-shrink-0`
+- `w-5 h-5`
+- `relative flex-shrink-0 cursor-pointer`
+- `w-10 h-10 rounded-lg overflow-hidden bg-gray-200`
+- `w-full h-full object-cover`
+- `w-full h-full flex items-center justify-center text-gray-500 text-xs`
+- `min-w-0 flex-1 cursor-pointer`
+- `flex items-center gap-1`
+- `font-bold text-gray-900 truncate hover:underline text-sm`
+- `text-xs text-gray-500 truncate`
+- `text-xs text-gray-500`
+- `w-3 h-3 rounded-full ${otherUserOnline ? 'bg-green-500' : 'bg-gray-400'} flex-shrink-0`
+- `hidden md:flex items-center justify-center w-10 h-10 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition flex-shrink-0`
+- `mx-4 mt-2 p-3 rounded-lg text-sm bg-red-50 text-red-700 border border-red-200`
+- `mx-4 mt-2 p-3 rounded-lg text-sm bg-yellow-50 text-yellow-800 border border-yellow-200 flex items-center justify-between`
+- `flex items-center gap-2`
+- `text-base`
+- `text-xs bg-yellow-100 px-2 py-1 rounded hover:bg-yellow-200 transition`
+- `flex-1 overflow-y-auto p-4 bg-gray-50 min-h-0`
+- `text-center py-2 text-xs text-gray-400`
+- `text-center py-2`
+- `w-8 h-8 rounded-full bg-gray-200 animate-pulse mx-auto`
+- `text-center text-gray-400 mt-12`
+- `space-y-3`
+- `border-t border-gray-200 bg-white p-3 flex-shrink-0`
+- `flex gap-2 items-end`
+- `flex-1 relative`
+- `w-full p-3 pr-12 border rounded-2xl resize-none max-h-32 focus:outline-none focus:ring-2 focus:ring-green-950 focus:border-transparent text-sm ${
+              sending || showVerificationWarning ? 'bg-gray-100' : 'bg-white'
+            }`
+- `absolute right-3 bottom-3 text-xs text-gray-400`
+- `p-3 rounded-full transition flex-shrink-0 flex items-center justify-center ${
+            !newMessage.trim() || sending || !chatValidated || showVerificationWarning
+              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              : 'bg-green-950 text-white hover:bg-green-800'
+          }`
+- `w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin`
+
+**Resolved values.** Utility classes resolve through the legend in §2 and theme overrides in HANDOFF §2. Where no corresponding CSS override exists, standard Tailwind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- Icon 1: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `components/ChatInterface.js`.
+- Icon 2: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `components/ChatInterface.js`.
+- Icon 3: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `components/ChatInterface.js`.
+
+**States (G4).**
+- Literal conditional class expression: `className: `w-3 h-3 rounded-full ${otherUserOnline ? 'bg-green-500' : 'bg-gray-400'} flex-shrink-0``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: `w-full p-3 pr-12 border rounded-2xl resize-none max-h-32 focus:outline-none focus:ring-2 focus:ring-green-950 focus:border-transparent text-sm ${ sending || showVerificationWarning ? 'bg-gray-100' : 'bg-white' }``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: `p-3 rounded-full transition flex-shrink-0 flex items-center justify-center ${ !newMessage.trim() || sending || !chatValidated || showVerificationWarning ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-green-950 text-white hover:bg-green-800' }``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'fixed inset-0 bg-white z-50 flex items-center justify-center p-4'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-center max-w-sm'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-red-600 font-medium'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'fixed inset-0 bg-white z-50 flex items-center justify-center'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'fixed inset-0 bg-white z-50 flex flex-col h-screen w-screen overflow-hidden'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm flex-shrink-0'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex items-center gap-3 flex-1 min-w-0'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex items-center justify-center w-10 h-10 text-gray-600 hover:text-green-950 rounded-full hover:bg-gray-100 transition flex-shrink-0'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-5 h-5'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'relative flex-shrink-0 cursor-pointer'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-10 h-10 rounded-lg overflow-hidden bg-gray-200'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-full h-full object-cover'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'w-full h-full flex items-center justify-center text-gray-500 text-xs'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'min-w-0 flex-1 cursor-pointer'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex items-center gap-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'font-bold text-gray-900 truncate hover:underline text-sm'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-xs text-gray-500 truncate'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-xs text-gray-500'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'hidden md:flex items-center justify-center w-10 h-10 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition flex-shrink-0'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'mx-4 mt-2 p-3 rounded-lg text-sm bg-red-50 text-red-700 border border-red-200'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'mx-4 mt-2 p-3 rounded-lg text-sm bg-yellow-50 text-yellow-800 border border-yellow-200 flex items-center justify-between'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex items-center gap-2'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-base'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-xs bg-yellow-100 px-2 py-1 rounded hover:bg-yellow-200 transition'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'flex-1 overflow-y-auto p-4 bg-gray-50 min-h-0'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-center py-2 text-xs text-gray-400'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'text-center py-2'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Default: source's unconditional class string(s) above.
+- hover: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- focus: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- active: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- disabled: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- loading: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- error: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- success: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- selected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- unselected: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- dark-mode: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- high-contrast: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+- reduce-motion: [NOT SPECIFIED] unless an exact conditional expression or stylesheet selector is listed above / in HANDOFF §2 and §9.
+
+**Copy (G3) — exact candidate strings in this file.**
+- `Validation error:`
+- `Error fetching other user:`
+- `Error broadcasting typing:`
+- `send messages`
+- `Send error:`
+- `Verification email sent! Please check your inbox.`
+- `Failed to send verification email. Please try again.`
+- `fixed inset-0 bg-white z-50 flex items-center justify-center p-4`
+- `text-center max-w-sm`
+- `text-red-600 font-medium`
+- `fixed inset-0 bg-white z-50 flex items-center justify-center`
+- `Online now`
+- `fixed inset-0 bg-white z-50 flex flex-col h-screen w-screen overflow-hidden`
+- `bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm flex-shrink-0`
+- `flex items-center gap-3 flex-1 min-w-0`
+- `flex items-center justify-center w-10 h-10 text-gray-600 hover:text-green-950 rounded-full hover:bg-gray-100 transition flex-shrink-0`
+- `Back to chats`
+- `w-5 h-5`
+- `M10 19l-7-7m0 0l7-7m-7 7h18`
+- `relative flex-shrink-0 cursor-pointer`
+- `w-10 h-10 rounded-lg overflow-hidden bg-gray-200`
+- `w-full h-full object-cover`
+- `w-full h-full flex items-center justify-center text-gray-500 text-xs`
+- `min-w-0 flex-1 cursor-pointer`
+- `flex items-center gap-1`
+- `font-bold text-gray-900 truncate hover:underline text-sm`
+- `text-xs text-gray-500 truncate`
+- `text-xs text-gray-500`
+- `hidden md:flex items-center justify-center w-10 h-10 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition flex-shrink-0`
+- `Close chat`
+- `M6 18L18 6M6 6l12 12`
+- `mx-4 mt-2 p-3 rounded-lg text-sm bg-red-50 text-red-700 border border-red-200`
+- `mx-4 mt-2 p-3 rounded-lg text-sm bg-yellow-50 text-yellow-800 border border-yellow-200 flex items-center justify-between`
+- `flex items-center gap-2`
+- `Please verify your email to send messages.`
+- `text-xs bg-yellow-100 px-2 py-1 rounded hover:bg-yellow-200 transition`
+- `flex-1 overflow-y-auto p-4 bg-gray-50 min-h-0`
+- `text-center py-2 text-xs text-gray-400`
+- `↑ Scroll up for older messages`
+- `text-center py-2`
+- `w-8 h-8 rounded-full bg-gray-200 animate-pulse mx-auto`
+- `text-center text-gray-400 mt-12`
+- `No messages yet. Say hello! 👋`
+- `border-t border-gray-200 bg-white p-3 flex-shrink-0`
+- `flex gap-2 items-end`
+- `flex-1 relative`
+- `Type a message...`
+- `absolute right-3 bottom-3 text-xs text-gray-400`
+- `w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin`
+- `M12 19l9 2-9-18-9 18 9-2zm0 0v-8`
+
+**Responsive.**
+- Component-local responsive utility tokens, if any, are included in the class inventory above (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`). Global stylesheet switching and breakpoint behavior: HANDOFF §2.9 and §3.2–§3.4.
+
+**Animation.** See §4 for source keyframes and transition declarations. Component-local `animate-*`, `transition-*`, `duration-*`, and `ease-*` tokens are recorded in §4.
+
+**Accessibility.**
+- [NOT SPECIFIED] No literal aria/role/title attribute matched in this file; inspect semantic element type and parent usage.
+
+**Flutter notes.** Map source DOM positioning and utility behavior to `Stack`/`Positioned`, `SafeArea`, `Padding`, `DecoratedBox`, `ClipRRect`, `BoxShadow`, `TextStyle`, `InkWell`/`GestureDetector`, `Focus`, and `Semantics` as applicable. Use HANDOFF §12.2 for the baseline mapping; this source-specific subsection adds only the exact visual evidence above.
+
+**Evidence flags.** [SOURCE] class/copy/attributes above are extracted from the named file. [INFERRED] Flutter widget mapping. [NOT SPECIFIED] Any state not represented by a source conditional or stylesheet.
+
+### 6.23 NotificationBell
+
+**Purpose & usage sites.** Literal source: `components/ChatMessage.js` (69 lines). See the relevant usage and routing context in HANDOFF §5 and §6. The implementation is React `createElement`; this subsection extracts the actual class, copy, and inline-SVG evidence from that module.
+
+**Element tree / literal structure.** The source's returned tree is represented by the following concrete structural evidence; where the source constructs children conditionally or via helper functions, the branch is preserved as a source condition rather than flattened into a fabricated single tree.
+- [NOT SPECIFIED] No direct `return (` block found; component may return via expression/helper.
+
+**Box model, color & typography — literal class inventory.**
+- `flex ${isCurrentUser ? 'justify-end' : 'justify-start'} group`
+- `text-sm break-words whitespace-pre-wrap ${isTemp ? 'italic' : ''}`
+- `flex items-center justify-end gap-1 text-xs mt-1 ${
+            isCurrentUser 
+              ? isTemp ? 'text-gray-600' : 'text-green-200'
+              : 'text-gray-400'
+          }`
+- `ml-1`
+- `w-3.5 h-3.5`
+- `ml-1 text-xs`
+
+**Resolved values.** Utility classes resolve through the legend in §2 and theme overrides in HANDOFF §2. Where no corresponding CSS override exists, standard Tailwind CDN defaults apply. Exact arbitrary values are retained verbatim in the class string above.
+
+**Icons.**
+- Icon 1: viewBox `0 0 24 24`; fill `none`; stroke `currentColor`; strokeWidth `2`; linecap `round`; linejoin `round`; paths: 1. Full path data appears in §3 under `components/ChatMessage.js`.
+
+**States (G4).**
+- Literal conditional class expression: `className: `flex ${isCurrentUser ? 'justify-end' : 'justify-start'} group``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: `text-sm break-words whitespace-pre-wrap ${isTemp ? 'italic' : ''}``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: `flex items-center justify-end gap-1 text-xs mt-1 ${ isCurrentUser ? isTemp ? 'text-gray-600' : 'text-green-200' : 'text-gray-400' }``. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- Literal conditional class expression: `className: 'ml-1'`. The source expression is retained; the exact branch delta is the difference between its literal alternatives.
+- L
