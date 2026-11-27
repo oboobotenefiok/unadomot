@@ -237,16 +237,9 @@ class _MapScreenState extends State<MapScreen> {
       markers.add(
         Marker(
           point: _myLocation!,
-          width: 26,
-          height: 26,
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF2563EB),
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 3),
-              boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8)],
-            ),
-          ),
+          width: 44,
+          height: 44,
+          child: const _PulsingDot(),
         ),
       );
     }
@@ -376,6 +369,61 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
   }
+}
+
+class _PulsingDot extends StatefulWidget {
+  const _PulsingDot();
+
+  @override
+  State<_PulsingDot> createState() => _PulsingDotState();
+}
+
+class _PulsingDotState extends State<_PulsingDot>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 2),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          final progress = _controller.value;
+          final size = 26 + (18 * progress);
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: size,
+                height: size,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFF2563EB)
+                      .withValues(alpha: 0.28 * (1 - progress)),
+                ),
+              ),
+              child!,
+            ],
+          );
+        },
+        child: Container(
+          width: 26,
+          height: 26,
+          decoration: BoxDecoration(
+            color: const Color(0xFF2563EB),
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 3),
+            boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8)],
+          ),
+        ),
+      );
 }
 
 class _LocationFailure implements Exception {
