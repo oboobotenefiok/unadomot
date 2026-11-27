@@ -1,51 +1,231 @@
-# CI run 2026-11-27T16:50:28Z
+# CI run 2026-11-27T17:05:32Z
 Branch: rewrite/flutter-rust-postgres
 
 ## Trigger
-https://github.com/oboobotenefiok/unadomot/actions/runs/46036976785
+https://github.com/oboobotenefiok/unadomot/actions/runs/46039032192
 
 ## Recent runs
-pending		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46036976785	6s	2026-11-27T16:50:31Z
-in_progress		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46036523460	3m22s	2026-11-27T16:47:15Z
+in_progress		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46039032192	6s	2026-11-27T17:05:35Z
+completed	success	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46036976785	5m32s	2026-11-27T16:50:31Z
+completed	cancelled	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46036523460	3m34s	2026-11-27T16:47:15Z
 completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46034387042	4m48s	2026-11-27T16:31:50Z
 completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46033185974	5m1s	2026-11-27T16:23:22Z
-completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46032147966	4m24s	2026-11-27T16:16:06Z
 
-Run ID: 46036976785
-URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46036976785
+Run ID: 46039032192
+URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46039032192
 
 ## Watch
 
-✓ rewrite/flutter-rust-postgres Rewrite CI · 46036976785
+X rewrite/flutter-rust-postgres Rewrite CI · 46039032192
 Triggered via workflow_dispatch about 5 minutes ago
 
 JOBS
-✓ android in 5m11s (ID 140634867821)
-✓ docker in 2m10s (ID 140634868187)
-✓ audit in 2m37s (ID 140634868386)
-✓ rust in 1m22s (ID 140634868467)
+X android in 5m13s (ID 140641724545)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-java@v4
+  ✓ Run subosito/flutter-action@v2
+  ✓ Cache Gradle
+  ✓ Ensure Android platform files
+  ✓ Configure release signing
+  ✓ Apply Android permissions and deep links
+  ✓ Install dependencies
+  ✓ Analyze
+  ✓ Flutter tests with coverage
+  X Build release APK
+  - Verify required Android permissions
+  - Run actions/***-artifact@v4
+  - Post Cache Gradle
+  ✓ Post Run subosito/flutter-action@v2
+  ✓ Post Run actions/setup-java@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ rust in 1m38s (ID 140641724815)
+✓ audit in 3m20s (ID 140641724821)
+✓ docker in 2m30s (ID 140641724933)
 
 ANNOTATIONS
-! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, actions/setup-java@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, actions/setup-java@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 android: .github#4
+
+X Process completed with exit code 1.
+android: .github#161
 
 ! setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
 android: .github#18
 
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-docker: .github#2
+rust: .github#2
 
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 audit: .github#2
 
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-rust: .github#2
+docker: .github#2
 
 
-ARTIFACTS
-unadomot-debug-apk
-
-For more information about a job, try: gh run view --job=<job-id>
-View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46036976785
+To see what failed, try: gh run view 46039032192 --log-failed
+View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46039032192
 
 ## Failed logs
+android	Build release APK	﻿2026-11-27T17:07:05.5565423Z ##[group]Run flutter build apk --release --dart-define=API_BASE_URL=https://unadomot.fly.dev --dart-define=GOOGLE_CLIENT_ID=***
+android	Build release APK	2026-11-27T17:07:05.5566397Z ^[[36;1mflutter build apk --release --dart-define=API_BASE_URL=https://unadomot.fly.dev --dart-define=GOOGLE_CLIENT_ID=***^[[0m
+android	Build release APK	2026-11-27T17:07:05.5596377Z shell: /usr/bin/bash -e {0}
+android	Build release APK	2026-11-27T17:07:05.5596614Z env:
+android	Build release APK	2026-11-27T17:07:05.5596801Z   CARGO_TERM_COLOR: never
+android	Build release APK	2026-11-27T17:07:05.5597023Z   NO_COLOR: 1
+android	Build release APK	2026-11-27T17:07:05.5597215Z   RUST_BACKTRACE: 1
+android	Build release APK	2026-11-27T17:07:05.5597497Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+android	Build release APK	2026-11-27T17:07:05.5597921Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.21-9/x64
+android	Build release APK	2026-11-27T17:07:05.5598328Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.50.1-x64/flutter
+android	Build release APK	2026-11-27T17:07:05.5598646Z   PUB_CACHE: /home/runner/.pub-cache
+android	Build release APK	2026-11-27T17:07:05.5598887Z ##[endgroup]
+android	Build release APK	2026-11-27T17:07:20.7298847Z Running Gradle task 'assembleRelease'...                        
+android	Build release APK	2026-11-27T17:07:20.7300138Z Loading package information...                                                  
+android	Build release APK	2026-11-27T17:07:20.7314208Z Loading local repository...                                                     
+android	Build release APK	2026-11-27T17:07:20.7315064Z [                                       ] 3% Loading local repository...        
+android	Build release APK	2026-11-27T17:07:21.1362145Z [                                       ] 3% Fetch remote repository...         
+android	Build release APK	2026-11-27T17:07:21.4259186Z [=                                      ] 3% Fetch remote repository...         
+android	Build release APK	2026-11-27T17:07:21.5272764Z [=                                      ] 4% Fetch remote repository...         
+android	Build release APK	2026-11-27T17:07:21.5295519Z [=                                      ] 5% Fetch remote repository...         
+android	Build release APK	2026-11-27T17:07:21.6259214Z [==                                     ] 5% Fetch remote repository...         
+android	Build release APK	2026-11-27T17:07:21.7271985Z [==                                     ] 6% Fetch remote repository...         
+android	Build release APK	2026-11-27T17:07:21.7273259Z [==                                     ] 7% Fetch remote repository...         
+android	Build release APK	2026-11-27T17:07:21.7274223Z [==                                     ] 7% Computing updates...               
+android	Build release APK	2026-11-27T17:07:21.8257214Z [===                                    ] 8% Computing updates...               
+android	Build release APK	2026-11-27T17:07:21.8272375Z [===                                    ] 10% Computing updates...              
+android	Build release APK	2026-11-27T17:07:21.8273052Z [===                                    ] 10% Installing NDK (Side by side) 28.2
+android	Build release APK	2026-11-27T17:07:21.9255359Z [===                                    ] 10% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:22.0254431Z [====                                   ] 10% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:22.2262790Z [====                                   ] 11% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:22.3253473Z [====                                   ] 12% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:22.3253995Z [=====                                  ] 13% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:22.4255108Z [=====                                  ] 14% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:22.4255771Z [=====                                  ] 15% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:22.5257182Z [======                                 ] 15% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:22.6253567Z [======                                 ] 16% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:22.7252112Z [======                                 ] 17% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:22.7252786Z [=======                                ] 18% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:22.8255220Z [=======                                ] 19% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:22.9253542Z [=======                                ] 20% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:22.9254311Z [========                               ] 20% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:23.0252731Z [========                               ] 21% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:23.1254689Z [========                               ] 22% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:23.2252357Z [=========                              ] 23% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:23.3252556Z [=========                              ] 24% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:23.3253461Z [=========                              ] 25% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:23.3254285Z [==========                             ] 25% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:23.4261196Z [==========                             ] 26% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:23.5252161Z [==========                             ] 27% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:23.6254025Z [===========                            ] 28% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:23.7253942Z [===========                            ] 29% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:23.7254935Z [===========                            ] 30% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:23.7255404Z [============                           ] 30% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:23.8254758Z [============                           ] 31% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:23.9256927Z [============                           ] 32% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:23.9257905Z [============                           ] 33% Downloading android-ndk-r28c-linux
+android	Build release APK	2026-11-27T17:07:24.2258978Z [============                           ] 33% Unzipping...                      
+android	Build release APK	2026-11-27T17:07:24.2281787Z [============                           ] 33% Unzipping... android-ndk-r28c/    
+android	Build release APK	2026-11-27T17:07:24.2291715Z [============                           ] 33% Unzipping... android-ndk-r28c/READ
+android	Build release APK	2026-11-27T17:07:24.2292421Z [=============                          ] 33% Unzipping... android-ndk-r28c/READ
+android	Build release APK	2026-11-27T17:07:24.2293199Z [=============                          ] 33% Unzipping... android-ndk-r28c/meta
+android	Build release APK	2026-11-27T17:07:24.3252575Z [=============                          ] 33% Unzipping... android-ndk-r28c/shad
+android	Build release APK	2026-11-27T17:07:24.3256260Z [=============                          ] 33% Unzipping... android-ndk-r28c/ndk-
+android	Build release APK	2026-11-27T17:07:24.3257145Z [=============                          ] 33% Unzipping... android-ndk-r28c/wrap
+android	Build release APK	2026-11-27T17:07:24.3257850Z [=============                          ] 33% Unzipping... android-ndk-r28c/ndk-
+android	Build release APK	2026-11-27T17:07:24.7252938Z [=============                          ] 33% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:25.5252956Z [=============                          ] 34% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:26.3253409Z [=============                          ] 35% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:26.5253220Z [==============                         ] 35% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:26.9252948Z [==============                         ] 36% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:28.2253676Z [==============                         ] 37% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:29.4252986Z [===============                        ] 38% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:30.2253159Z [===============                        ] 39% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:30.5252908Z [===============                        ] 40% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:30.9253300Z [================                       ] 40% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:31.6252864Z [================                       ] 41% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:32.3253951Z [================                       ] 42% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:33.3252150Z [=================                      ] 43% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:34.3253201Z [=================                      ] 44% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:34.8253441Z [=================                      ] 45% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:35.8254395Z [==================                     ] 45% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:36.4253367Z [==================                     ] 46% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:37.1252880Z [==================                     ] 47% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:37.8252833Z [===================                    ] 48% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:38.6252803Z [===================                    ] 49% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:38.8251843Z [===================                    ] 50% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:39.1252997Z [====================                   ] 50% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:39.9252281Z [====================                   ] 51% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:40.3253262Z [====================                   ] 52% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:41.3253022Z [=====================                  ] 53% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:41.6252264Z [=====================                  ] 54% Unzipping... android-ndk-r28c/tool
+android	Build release APK	2026-11-27T17:07:41.8255606Z [=====================                  ] 54% Unzipping... android-ndk-r28c/buil
+android	Build release APK	2026-11-27T17:07:42.0252907Z [=====================                  ] 54% Unzipping... android-ndk-r28c/sour
+android	Build release APK	2026-11-27T17:07:42.0253584Z [=====================                  ] 54% Unzipping... android-ndk-r28c/NOTI
+android	Build release APK	2026-11-27T17:07:42.0254132Z [=====================                  ] 54% Unzipping... android-ndk-r28c/ndk-
+android	Build release APK	2026-11-27T17:07:42.0254649Z [=====================                  ] 54% Unzipping... android-ndk-r28c/NOTI
+android	Build release APK	2026-11-27T17:07:42.0255181Z [=====================                  ] 54% Unzipping... android-ndk-r28c/pyth
+android	Build release APK	2026-11-27T17:07:42.0255734Z [=====================                  ] 54% Unzipping... android-ndk-r28c/preb
+android	Build release APK	2026-11-27T17:07:42.0256251Z [=====================                  ] 54% Unzipping... android-ndk-r28c/ndk-
+android	Build release APK	2026-11-27T17:07:42.0256749Z [=====================                  ] 54% Unzipping... android-ndk-r28c/sour
+android	Build release APK	2026-11-27T17:07:42.1252622Z [=====================                  ] 54% Unzipping... android-ndk-r28c/simp
+android	Build release APK	2026-11-27T17:07:42.2252339Z [=====================                  ] 55% Unzipping... android-ndk-r28c/simp
+android	Build release APK	2026-11-27T17:07:42.4257133Z [=====================                  ] 55% Unzipping... android-ndk-r28c/CHAN
+android	Build release APK	2026-11-27T17:07:42.4258130Z [=======================================] 100% Unzipping... android-ndk-r28c/CHA
+android	Build release APK	2026-11-27T17:07:42.5251757Z 
+android	Build release APK	2026-11-27T17:08:44.8270759Z WARNING: Your app uses the following plugins that apply Kotlin Gradle Plugin (KGP): file_picker, flutter_webrtc, record_android, share_plus
+android	Build release APK	2026-11-27T17:08:44.8272454Z Future versions of Flutter will fail to build if your app uses plugins that apply KGP.
+android	Build release APK	2026-11-27T17:08:44.8273878Z 
+android	Build release APK	2026-11-27T17:08:44.8274453Z Please check the changelogs of these plugins and upgrade to a version that supports Built-in Kotlin.
+android	Build release APK	2026-11-27T17:08:44.8275532Z If no such version exists, report the issue to the plugin. If necessary, here is a guide on filing
+android	Build release APK	2026-11-27T17:08:44.8277213Z an issue against a plugin: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers#report-incompatible-kotlin-gradle-plugin-usage-to-plugin-authors
+android	Build release APK	2026-11-27T17:08:44.8278483Z 
+android	Build release APK	2026-11-27T17:08:44.8279514Z If you are a plugin author, please migrate your plugin to Built-in Kotlin using this guide: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors
+android	Build release APK	2026-11-27T17:09:05.0280283Z Note: Some input files use or override a deprecated API.
+android	Build release APK	2026-11-27T17:09:05.0281597Z Note: Recompile with -Xlint:deprecation for details.
+android	Build release APK	2026-11-27T17:09:05.0282875Z Note: Some input files use unchecked or unsafe operations.
+android	Build release APK	2026-11-27T17:09:05.0283581Z Note: Recompile with -Xlint:unchecked for details.
+android	Build release APK	2026-11-27T17:09:38.1264081Z Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 11640 bytes (99.3% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+android	Build release APK	2026-11-27T17:09:54.3253514Z Caught exception: Already watching path: /opt/hostedtoolcache/flutter/stable-3.50.1-x64/flutter/packages/flutter_tools/gradle
+android	Build release APK	2026-11-27T17:10:51.6263468Z 
+android	Build release APK	2026-11-27T17:10:51.6301910Z FAILURE: Build failed with an exception.
+android	Build release APK	2026-11-27T17:10:51.6302565Z 
+android	Build release APK	2026-11-27T17:10:51.6343210Z * What went wrong:
+android	Build release APK	2026-11-27T17:10:51.6371997Z Execution failed for task ':google_sign_in_android:lintVitalAnalyzeRelease' (registered by plugin 'com.android.internal.library').
+android	Build release APK	2026-11-27T17:10:51.6373456Z > A failure occurred while executing com.android.build.gradle.internal.lint.AndroidLintWorkAction
+android	Build release APK	2026-11-27T17:10:51.6401861Z    > Unexpected failure during lint analysis (this is a bug in lint or one of the libraries it depends on)
+android	Build release APK	2026-11-27T17:10:51.6431935Z 
+android	Build release APK	2026-11-27T17:10:51.6461817Z      Message: Unexpected failure during lint analysis (this is a bug in lint or one of the libraries it depends on)
+android	Build release APK	2026-11-27T17:10:51.6462618Z 
+android	Build release APK	2026-11-27T17:10:51.6491885Z      Message: Unexpected failure during lint analysis of GoogleSignInPlugin.java (this is a bug in lint or one of the libraries it depends on)
+android	Build release APK	2026-11-27T17:10:51.6521203Z 
+android	Build release APK	2026-11-27T17:10:51.6551623Z      Message: 'java.lang.Object java.util.List.removeLast()'
+android	Build release APK	2026-11-27T17:10:51.6552183Z 
+android	Build release APK	2026-11-27T17:10:51.6581649Z      The crash seems to involve the detector \\\`com.android.tools.lint.checks.CommentDetector\\\`.
+android	Build release APK	2026-11-27T17:10:51.6591545Z      You can try disabling it with something like this:
+android	Build release APK	2026-11-27T17:10:51.6592454Z          android {
+android	Build release APK	2026-11-27T17:10:51.6592931Z              lint {
+android	Build release APK	2026-11-27T17:10:51.6612580Z                  disable "EasterEgg", "StopShip"
+android	Build release APK	2026-11-27T17:10:51.6613249Z              }
+android	Build release APK	2026-11-27T17:10:51.6613574Z          }
+android	Build release APK	2026-11-27T17:10:51.6613742Z 
+android	Build release APK	2026-11-27T17:10:51.6651104Z      Stack: \\\`NoSuchMethodError:JavaDocParser.parseDataItem(JavaDocParser.kt:117)←JavaDocParser.parseDocCommentText(JavaDocParser.kt:66)←JavaDocElementType$DocCommentElementType.lambda$new$0(JavaDocElementType.java:167)←JavaParserUtil.lambda$parseFragment$9(JavaParserUtil.java:409)←ParsingUtil.parseFragment(ParsingUtil.kt:18)←JavaParserUtil.parseFragment(JavaParserUtil.java:408)←JavaParserUtil.parseFragmentWithHighestLanguageLevel(JavaParserUtil.java:379)←JavaDocElementType$DocCommentElementType.parseContents(JavaDocElementType.java:172)←LazyParseableElement.lambda$ensureParsed$2(LazyParseableElement.java:183)←DebugUtil.performPsiModification(DebugUtil.java:589)←LazyParseableElement.ensureParsed(LazyParseableElement.java:182)←LazyParseableElement.getFirstChildNode(LazyParseableElement.java:234)←LazyParseablePsiElement.getFirstChild(LazyParseablePsiElement.java:88)←PsiWalkingState$PsiTreeGuide.getFirstChild(PsiWalkingState.java:37)←PsiWalkingState$PsiTreeGuide.getFirstChild(PsiWalkingState.java:19)←WalkingState.next(WalkingState.java:70)←WalkingState.walkChildren(WalkingState.java:49)←WalkingState.elementStarted(WalkingState.java:40)←PsiWalkingState.elementStarted(PsiWalkingState.java:67)←PsiRecursiveElementWalkingVisitor.visitElement(PsiRecursiveElementWalkingVisitor.java:34)←PsiElementVisitor.visitFile(PsiElementVisitor.java:51)←PsiRecursiveElementWalkingVisitor.visitFile(PsiRecursiveElementWalkingVisitor.java:56)←PsiJavaFileBaseImpl.accept(PsiJavaFileBaseImpl.java:608)←JavaUFile.getAllCommentsInFile(JavaUFile.kt:49)←CommentDetector$CommentChecker.visitFile(CommentDetector.java:436)←UElementVisitor$DispatchUastVisitor.visitFile(UElementVisitor.kt:478)←UFile.accept(UFile.kt:86)←UastLintUtilsKt.acceptSourceFile(UastLintUtils.kt:956)←UElementVisitor$visitFile$3.run(UElementVisitor.kt:205)←LintClient.runReadAction(LintClient.kt:1655)←LintCliClient.runReadAction(LintCliClient.kt:231)←LintDriver$LintClientWrapper.runReadAction(LintDriver.kt:2694)←UElementVisitor.visitFile(UElementVisitor.kt:202)←LintDriver$visitUastDetectors$1.run(LintDriver.kt:2032)←LintClient.runReadAction(LintClient.kt:1655)←LintCliClient.runReadAction(LintCliClient.kt:231)←LintDriver$LintClientWrapper.runReadAction(LintDriver.kt:2694)←LintDriver.visitUastDetectors(LintDriver.kt:2030)←LintDriver.visitUast(LintDriver.kt:1977)←LintDriver.runFileDetectors(LintDriver.kt:1234)←LintDriver.checkProject(LintDriver.kt:1041)←LintDriver.checkProjectRoot(LintDriver.kt:607)←LintDriver.access$checkProjectRoot(LintDriver.kt:179)←LintDriver$analyzeOnly$1.invoke(LintDriver.kt:434)←LintDriver$analyzeOnly$1.invoke(LintDriver.kt:431)←LintDriver.doAnalyze(LintDriver.kt:490)←LintDriver.analyzeOnly(LintDriver.kt:431)←LintCliClient$analyzeOnly$1.invoke(LintCliClient.kt:265)←LintCliClient$analyzeOnly$1.invoke(LintCliClient.kt:262)←LintCliClient.run(LintCliClient.kt:311)←LintCliClient.analyzeOnly(LintCliClient.kt:262)←Main.run(Main.java:1786)←Main.run(Main.java:287)←NativeMethodAccessorImpl.invoke0(NativeMethodAccessorImpl.java:-2)←NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)←DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)←Method.invoke(Method.java:569)←AndroidLintWorkAction.invokeLintMainRunMethod(AndroidLintWorkAction.kt:103)←AndroidLintWorkAction.runLint(AndroidLintWorkAction.kt:90)←AndroidLintWorkAction.execute(AndroidLintWorkAction.kt:64)←DefaultWorkerServer.execute(DefaultWorkerServer.java:68)←NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)←NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:61)←ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:102)←NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:61)←AbstractWorker$1.call(AbstractWorker.java:44)←AbstractWorker$1.call(AbstractWorker.java:41)←DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)←DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)←DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)←DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)←DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)←DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)←DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)←AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)←NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:58)←DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:174)←FutureTask.run(FutureTask.java:264)←DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:191)←DefaultConditionalExecutionQueue$ExecutionRunner.access$500(DefaultConditionalExecutionQueue.java:112)←DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:168)←Factories$1.create(Factories.java:30)←DefaultWorkerLeaseService.lambda$withLocksAcquired$0(DefaultWorkerLeaseService.java:280)←ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)←DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:278)←DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:270)←DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:129)←DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:134)←DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:163)←DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:125)←Executors$RunnableAdapter.call(Executors.java:539)←FutureTask.run(FutureTask.java:264)←ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)←AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)←ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)←ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)←Thread.run(Thread.java:840)\\\`
+android	Build release APK	2026-11-27T17:10:51.6685188Z 
+android	Build release APK	2026-11-27T17:10:51.6685730Z      You can run with --stacktrace or set environment variable \\\`LINT_PRINT_STACKTRACE=true\\\` to dump a full stacktrace to stdout.
+android	Build release APK	2026-11-27T17:10:51.6712938Z      Stack: \`RuntimeException:LintDriver$Companion.handleDetectorError(LintDriver.kt:3603)←LintDriver$Companion.handleDetectorError$default(LintDriver.kt:3468)←LintDriver$Companion.handleDetectorError(LintDriver.kt:3464)←UElementVisitor.visitFile(UElementVisitor.kt:233)←LintDriver$visitUastDetectors$1.run(LintDriver.kt:2032)←LintClient.runReadAction(LintClient.kt:1655)←LintCliClient.runReadAction(LintCliClient.kt:231)←LintDriver$LintClientWrapper.runReadAction(LintDriver.kt:2694)←LintDriver.visitUastDetectors(LintDriver.kt:2030)←LintDriver.visitUast(LintDriver.kt:1977)←LintDriver.runFileDetectors(LintDriver.kt:1234)←LintDriver.checkProject(LintDriver.kt:1041)←LintDriver.checkProjectRoot(LintDriver.kt:607)←LintDriver.access$checkProjectRoot(LintDriver.kt:179)←LintDriver$analyzeOnly$1.invoke(LintDriver.kt:434)←LintDriver$analyzeOnly$1.invoke(LintDriver.kt:431)←LintDriver.doAnalyze(LintDriver.kt:490)←LintDriver.analyzeOnly(LintDriver.kt:431)←LintCliClient$analyzeOnly$1.invoke(LintCliClient.kt:265)←LintCliClient$analyzeOnly$1.invoke(LintCliClient.kt:262)←LintCliClient.run(LintCliClient.kt:311)←LintCliClient.analyzeOnly(LintCliClient.kt:262)←Main.run(Main.java:1786)←Main.run(Main.java:287)←NativeMethodAccessorImpl.invoke0(NativeMethodAccessorImpl.java:-2)←NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)←DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)←Method.invoke(Method.java:569)←AndroidLintWorkAction.invokeLintMainRunMethod(AndroidLintWorkAction.kt:103)←AndroidLintWorkAction.runLint(AndroidLintWorkAction.kt:90)←AndroidLintWorkAction.execute(AndroidLintWorkAction.kt:64)←DefaultWorkerServer.execute(DefaultWorkerServer.java:68)←NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)←NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:61)←ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:102)←NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:61)←AbstractWorker$1.call(AbstractWorker.java:44)←AbstractWorker$1.call(AbstractWorker.java:41)←DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)←DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)←DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)←DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)←DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)←DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)←DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)←AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)←NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:58)←DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:174)←FutureTask.run(FutureTask.java:264)←DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:191)←DefaultConditionalExecutionQueue$ExecutionRunner.access$500(DefaultConditionalExecutionQueue.java:112)←DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:168)←Factories$1.create(Factories.java:30)←DefaultWorkerLeaseService.lambda$withLocksAcquired$0(DefaultWorkerLeaseService.java:280)←ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)←DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:278)←DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:270)←DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:129)←DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:134)←DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:163)←DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:125)←Executors$RunnableAdapter.call(Executors.java:539)←FutureTask.run(FutureTask.java:264)←ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)←AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)←ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)←ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)←Thread.run(Thread.java:840)\`
+android	Build release APK	2026-11-27T17:10:51.6736420Z 
+android	Build release APK	2026-11-27T17:10:51.6736977Z      You can run with --stacktrace or set environment variable \`LINT_PRINT_STACKTRACE=true\` to dump a full stacktrace to stdout.
+android	Build release APK	2026-11-27T17:10:51.6760245Z      Stack: `RuntimeException:LintDriver$Companion.handleDetectorError(LintDriver.kt:3603)←LintDriver$Companion.handleDetectorError$default(LintDriver.kt:3468)←LintDriver$Companion.handleDetectorError(LintDriver.kt:3464)←LintDriver$analyzeOnly$1.invoke(LintDriver.kt:436)←LintDriver$analyzeOnly$1.invoke(LintDriver.kt:431)←LintDriver.doAnalyze(LintDriver.kt:490)←LintDriver.analyzeOnly(LintDriver.kt:431)←LintCliClient$analyzeOnly$1.invoke(LintCliClient.kt:265)←LintCliClient$analyzeOnly$1.invoke(LintCliClient.kt:262)←LintCliClient.run(LintCliClient.kt:311)←LintCliClient.analyzeOnly(LintCliClient.kt:262)←Main.run(Main.java:1786)←Main.run(Main.java:287)←NativeMethodAccessorImpl.invoke0(NativeMethodAccessorImpl.java:-2)←NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)←DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)←Method.invoke(Method.java:569)←AndroidLintWorkAction.invokeLintMainRunMethod(AndroidLintWorkAction.kt:103)←AndroidLintWorkAction.runLint(AndroidLintWorkAction.kt:90)←AndroidLintWorkAction.execute(AndroidLintWorkAction.kt:64)←DefaultWorkerServer.execute(DefaultWorkerServer.java:68)←NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)←NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:61)←ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:102)←NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:61)←AbstractWorker$1.call(AbstractWorker.java:44)←AbstractWorker$1.call(AbstractWorker.java:41)←DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)←DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)←DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)←DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)←DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)←DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)←DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)←AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)←NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:58)←DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:174)←FutureTask.run(FutureTask.java:264)←DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:191)←DefaultConditionalExecutionQueue$ExecutionRunner.access$500(DefaultConditionalExecutionQueue.java:112)←DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:168)←Factories$1.create(Factories.java:30)←DefaultWorkerLeaseService.lambda$withLocksAcquired$0(DefaultWorkerLeaseService.java:280)←ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)←DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:278)←DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:270)←DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:129)←DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:134)←DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:163)←DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:125)←Executors$RunnableAdapter.call(Executors.java:539)←FutureTask.run(FutureTask.java:264)←ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)←AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)←ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)←ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)←Thread.run(Thread.java:840)`
+android	Build release APK	2026-11-27T17:10:51.6781381Z 
+android	Build release APK	2026-11-27T17:10:51.6781925Z      You can run with --stacktrace or set environment variable `LINT_PRINT_STACKTRACE=true` to dump a full stacktrace to stdout.
+android	Build release APK	2026-11-27T17:10:51.6782567Z 
+android	Build release APK	2026-11-27T17:10:51.6782691Z * Try:
+android	Build release APK	2026-11-27T17:10:51.6783036Z > Run with --stacktrace option to get the stack trace.
+android	Build release APK	2026-11-27T17:10:51.6783572Z > Run with --info or --debug option to get more log output.
+android	Build release APK	2026-11-27T17:10:51.6784197Z > Run with --scan to get full insights from a Build Scan (powered by Develocity).
+android	Build release APK	2026-11-27T17:10:51.6784815Z > Get more help at https://help.gradle.org.
+android	Build release APK	2026-11-27T17:10:51.6785106Z 
+android	Build release APK	2026-11-27T17:10:51.6785246Z BUILD FAILED in 3m 45s
+android	Build release APK	2026-11-27T17:10:52.0569417Z Running Gradle task 'assembleRelease'...                          225.8s
+android	Build release APK	2026-11-27T17:10:52.1179464Z Gradle task assembleRelease failed with exit code 1
+android	Build release APK	2026-11-27T17:10:52.1267344Z ##[error]Process completed with exit code 1.
