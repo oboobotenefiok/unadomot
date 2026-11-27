@@ -257,6 +257,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         audit: verification_repo.clone(),
         media,
         email,
+        pool: profile_pool.clone(),
         jwt_secret: jwt_secret.clone(),
         limiter: Arc::new(RateLimiter::new()),
         allowed_origins,
@@ -286,10 +287,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 pool: pool.clone(),
                 jwt_secret: jwt_secret.clone(),
             }))
-            .merge(comment_handlers::router(comment_handlers::CommentState {
-                pool,
-                jwt_secret: jwt_secret.clone(),
-            }));
+            .merge(comment_handlers::router(state.clone()));
     }
 
     let app = app

@@ -1,24 +1,17 @@
 use axum::{
     extract::{Path, Query, State},
-    http::{HeaderMap, StatusCode},
+    http::StatusCode,
     response::IntoResponse,
     routing::{delete, get, post},
     Json, Router,
 };
 use serde::Deserialize;
 use serde_json::{json, Value};
-use sqlx::PgPool;
-use std::sync::Arc;
-use unadomot_api::application::auth::{bearer_token, require_active_pool, verify_session};
+use unadomot_api::extract::AuthUser;
+use unadomot_api::http::AppState;
 use uuid::Uuid;
 
-#[derive(Clone)]
-pub struct CommentState {
-    pub pool: PgPool,
-    pub jwt_secret: Arc<String>,
-}
-
-pub fn router(state: CommentState) -> Router {
+pub fn router(state: AppState) -> Router {
     Router::new()
         .route(
             "/api/listings/{id}/comments",
@@ -32,20 +25,6 @@ pub fn router(state: CommentState) -> Router {
 
 fn error(status: StatusCode, message: &str) -> axum::response::Response {
     (status, Json(json!({ "error": { "message": message } }))).into_response()
-}
-
-async fn authorize(state: &CommentState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
-    let token = bearer_token(headers)
-        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Please sign in"))?;
-
-    let user = verify_session(token, &state.jwt_secret)
-        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Session expired"))?;
-
-    require_active_pool(&state.pool, user.id)
-        .await
-        .map_err(|_| error(StatusCode::FORBIDDEN, "This account is suspended"))?;
-
-    Ok(user.id)
 }
 
 #[derive(Deserialize)]
@@ -65,9 +44,14 @@ struct CommentQuery {
 }
 
 async fn find_by_code(
-    State(state): State<CommentState>,
+    State(state): State<AppState>,
     Path(code): Path<String>,
 ) -> axum::response::Response {
+    let pool = match state.pool.as_ref() {
+        Some(pool) => pool,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Listing lookup unavailable"),
+    };
+
     let code = code.trim().to_uppercase();
     if code.len() < 4 || code.len() > 32 {
         return error(StatusCode::BAD_REQUEST, "Enter a valid listing code");
@@ -77,7 +61,7 @@ async fn find_by_code(
         "SELECT id FROM listings WHERE upper(code) = $1 AND deleted_at IS NULL",
     )
     .bind(&code)
-    .fetch_optional(&state.pool)
+    .fetch_optional(pool)
     .await;
 
     match id {
@@ -88,20 +72,20 @@ async fn find_by_code(
 }
 
 async fn delete_comment(
-    State(state): State<CommentState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    user: AuthUser,
     Path(comment_id): Path<Uuid>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
+    let pool = match state.pool.as_ref() {
+        Some(pool) => pool,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Comment unavailable"),
     };
 
     let row = sqlx::query_as::<_, (Uuid, Uuid)>(
         "SELECT user_id, listing_id FROM listing_comments WHERE id = $1",
     )
     .bind(comment_id)
-    .fetch_optional(&state.pool)
+    .fetch_optional(pool)
     .await;
 
     let (owner, listing_id) = match row {
@@ -113,8 +97,8 @@ async fn delete_comment(
     let is_admin: bool = sqlx::query_scalar(
         "SELECT EXISTS(SELECT 1 FROM admin_roles WHERE user_id = $1)",
     )
-    .bind(user_id)
-    .fetch_one(&state.pool)
+    .bind(user.id)
+    .fetch_one(pool)
     .await
     .unwrap_or(false);
 
@@ -122,18 +106,18 @@ async fn delete_comment(
         "SELECT EXISTS(SELECT 1 FROM listings WHERE id = $1 AND landlord_id = $2 AND deleted_at IS NULL)",
     )
     .bind(listing_id)
-    .bind(user_id)
-    .fetch_one(&state.pool)
+    .bind(user.id)
+    .fetch_one(pool)
     .await
     .unwrap_or(false);
 
-    if owner != user_id && !is_admin && !is_listing_owner {
+    if owner != user.id && !is_admin && !is_listing_owner {
         return error(StatusCode::FORBIDDEN, "You cannot delete this comment");
     }
 
     match sqlx::query("DELETE FROM listing_comments WHERE id = $1")
         .bind(comment_id)
-        .execute(&state.pool)
+        .execute(pool)
         .await
     {
         Ok(_) => Json(json!({ "ok": true })).into_response(),
@@ -142,15 +126,20 @@ async fn delete_comment(
 }
 
 async fn list_comments(
-    State(state): State<CommentState>,
+    State(state): State<AppState>,
     Path(listing_id): Path<Uuid>,
     Query(query): Query<CommentQuery>,
 ) -> axum::response::Response {
+    let pool = match state.pool.as_ref() {
+        Some(pool) => pool,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Comments unavailable"),
+    };
+
     let visible: bool = sqlx::query_scalar(
         "SELECT EXISTS(SELECT 1 FROM listings WHERE id = $1 AND deleted_at IS NULL)",
     )
     .bind(listing_id)
-    .fetch_one(&state.pool)
+    .fetch_one(pool)
     .await
     .unwrap_or(false);
 
@@ -183,7 +172,7 @@ async fn list_comments(
     .bind(listing_id)
     .bind(limit)
     .bind(offset)
-    .fetch_all(&state.pool)
+    .fetch_all(pool)
     .await;
 
     match rows {
@@ -208,14 +197,14 @@ async fn list_comments(
 }
 
 async fn create_comment(
-    State(state): State<CommentState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    user: AuthUser,
     Path(listing_id): Path<Uuid>,
     Json(request): Json<CreateCommentRequest>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
+    let pool = match state.pool.as_ref() {
+        Some(pool) => pool,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Comments unavailable"),
     };
 
     let body = request.body.trim();
@@ -227,7 +216,7 @@ async fn create_comment(
         "SELECT EXISTS(SELECT 1 FROM listings WHERE id = $1 AND deleted_at IS NULL)",
     )
     .bind(listing_id)
-    .fetch_one(&state.pool)
+    .fetch_one(pool)
     .await
     .unwrap_or(false);
     if !exists {
@@ -239,9 +228,9 @@ async fn create_comment(
          RETURNING id, user_id, body, (SELECT photo_url FROM user_profiles WHERE user_id = $2), created_at",
     )
     .bind(listing_id)
-    .bind(user_id)
+    .bind(user.id)
     .bind(body)
-    .fetch_one(&state.pool)
+    .fetch_one(pool)
     .await;
 
     match row {
@@ -250,7 +239,7 @@ async fn create_comment(
                 "SELECT COALESCE(name, 'User') FROM user_profiles WHERE user_id = $1",
             )
             .bind(user_id)
-            .fetch_optional(&state.pool)
+            .fetch_optional(pool)
             .await
             .ok()
             .flatten()
@@ -272,14 +261,14 @@ async fn create_comment(
 }
 
 async fn toggle_reaction(
-    State(state): State<CommentState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    user: AuthUser,
     Path(comment_id): Path<Uuid>,
     Json(request): Json<ReactionRequest>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
+    let pool = match state.pool.as_ref() {
+        Some(pool) => pool,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Comments unavailable"),
     };
 
     let emoji = request.emoji.trim();
@@ -295,7 +284,7 @@ async fn toggle_reaction(
         )",
     )
     .bind(comment_id)
-    .fetch_one(&state.pool)
+    .fetch_one(pool)
     .await
     .unwrap_or(false);
 
@@ -307,9 +296,9 @@ async fn toggle_reaction(
         "DELETE FROM listing_comment_reactions WHERE comment_id = $1 AND user_id = $2 AND emoji = $3",
     )
     .bind(comment_id)
-    .bind(user_id)
+    .bind(user.id)
     .bind(emoji)
-    .execute(&state.pool)
+    .execute(pool)
     .await
     .map(|result| result.rows_affected() > 0)
     .unwrap_or(false);
@@ -320,9 +309,9 @@ async fn toggle_reaction(
              ON CONFLICT DO NOTHING",
         )
         .bind(comment_id)
-        .bind(user_id)
+        .bind(user.id)
         .bind(emoji)
-        .execute(&state.pool)
+        .execute(pool)
         .await;
     }
 
@@ -330,7 +319,7 @@ async fn toggle_reaction(
         "SELECT emoji, COUNT(*)::int FROM listing_comment_reactions WHERE comment_id = $1 GROUP BY emoji",
     )
     .bind(comment_id)
-    .fetch_all(&state.pool)
+    .fetch_all(pool)
     .await
     .unwrap_or_default();
 
