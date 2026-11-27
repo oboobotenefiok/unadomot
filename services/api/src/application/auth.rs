@@ -234,12 +234,10 @@ pub fn issue_session(user_id: Uuid, email: String, jwt_secret: &str) -> Result<S
         aud: "unadomot-api".into(),
     };
 
-    let token = encode(
-        &Header::default(),
-        &claims,
-        &EncodingKey::from_secret(jwt_secret.as_bytes()),
-    )
-    .map_err(|e| AuthError::Repository(e.to_string()))?;
+    let key = EncodingKey::from_secret(jwt_secret.as_bytes())
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
+    let token = encode(&Header::default(), &claims, &key)
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
 
     Ok(Session { token, expires_at })
 }
@@ -249,12 +247,10 @@ pub fn verify_session(token: &str, jwt_secret: &str) -> Result<AuthenticatedUser
     validation.set_issuer(&["unadomot"]);
     validation.set_audience(&["unadomot-api"]);
 
-    let data = decode::<Claims>(
-        token,
-        &DecodingKey::from_secret(jwt_secret.as_bytes()),
-        &validation,
-    )
-    .map_err(|_| AuthError::InvalidCredentials)?;
+    let key = DecodingKey::from_secret(jwt_secret.as_bytes())
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
+    let data = decode::<Claims>(token, &key, &validation)
+        .map_err(|_| AuthError::InvalidCredentials)?;
 
     Ok(AuthenticatedUser {
         id: data.claims.sub,
