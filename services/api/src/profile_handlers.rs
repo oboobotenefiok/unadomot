@@ -290,7 +290,7 @@ async fn public_profile(
     .await
     .unwrap_or_default();
 
-    let mut value = profile.into_json();
+    let mut value = profile.into_public_json();
     value["listings"] = json!(listings.into_iter().map(ListingRow::into_json).collect::<Vec<_>>());
     Json(value).into_response()
 }
@@ -556,6 +556,22 @@ impl ProfileRow {
             "created_at": self.created_at,
         })
     }
+
+    fn into_public_json(self) -> Value {
+        json!({
+            "id": self.id,
+            "name": self.name,
+            "username": self.username,
+            "bio": self.bio,
+            "photo_url": self.photo_url,
+            "user_type": self.user_type,
+            "verified": self.verified,
+            "reply_rate": self.reply_rate,
+            "response_time": self.response_time,
+            "last_active": self.last_active,
+            "created_at": self.created_at,
+        })
+    }
 }
 
 #[derive(sqlx::FromRow)]
@@ -590,5 +606,36 @@ impl ListingRow {
             "code": self.code,
             "image_url": self.image_url,
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn profile_row() -> ProfileRow {
+        ProfileRow {
+            id: Uuid::new_v4(),
+            email: "private@example.com".into(),
+            name: "Test User".into(),
+            username: Some("testuser".into()),
+            phone: Some("+2348000000000".into()),
+            bio: Some("Hello".into()),
+            photo_url: None,
+            user_type: "renter".into(),
+            verified: false,
+            reply_rate: None,
+            response_time: None,
+            last_active: None,
+            created_at: Utc::now(),
+        }
+    }
+
+    #[test]
+    fn public_profile_omits_email_and_phone() {
+        let value = profile_row().into_public_json();
+        assert!(value.get("email").is_none());
+        assert!(value.get("phone").is_none());
+        assert_eq!(value["username"], "testuser");
     }
 }
