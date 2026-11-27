@@ -101,21 +101,21 @@ jobs:
       - name: Flutter tests with coverage
         working-directory: apps/flutter_app
         run: flutter test --coverage
-      - name: Build debug APK
+      - name: Build release APK
         working-directory: apps/flutter_app
-        run: flutter build apk --debug --dart-define=API_BASE_URL=https://unadomot.fly.dev
+        run: flutter build apk --release --dart-define=API_BASE_URL=https://unadomot.fly.dev
       - name: Verify required Android permissions
         working-directory: apps/flutter_app
         run: |
           AAPT=$(find "$ANDROID_HOME/build-tools" -name aapt | sort -r | head -n 1)
-          APK=build/app/outputs/flutter-apk/app-debug.apk
+          APK=build/app/outputs/flutter-apk/app-release.apk
           for permission in INTERNET CAMERA RECORD_AUDIO ACCESS_FINE_LOCATION ACCESS_COARSE_LOCATION; do
             "$AAPT" dump permissions "$APK" | grep -q "android.permission.$permission"
           done
       - uses: actions/upload-artifact@v4
         if: success()
         with:
-          name: unadomot-debug-apk
-          path: apps/flutter_app/build/app/outputs/flutter-apk/app-debug.apk
+          name: unadomot-release-apk
+          path: apps/flutter_app/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
           retention-days: 14
