@@ -86,7 +86,7 @@ fn username_base(name: &str) -> String {
         .chars()
         .find(|c| c.is_ascii_alphabetic())
         .unwrap_or('a');
-    let suffix = (1000..9999).find(|_| true).unwrap_or(1000);
+    let suffix = 1000 + (Uuid::new_v4().as_u128() % 9000) as u32;
     format!("{first_part}{last_initial}{suffix}")
 }
 
