@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../api/api_client.dart';
 import '../data/local_cache.dart';
+import '../data/nigeria_locations.dart';
 
 class CreateListingScreen extends StatefulWidget {
   final ApiClient api;
@@ -39,10 +40,10 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   final _description = TextEditingController();
   final _price = TextEditingController();
   final _address = TextEditingController();
-  final _state = TextEditingController(text: 'Rivers');
-  final _lga = TextEditingController();
   final _bedrooms = TextEditingController();
   final _bathrooms = TextEditingController();
+  String? _stateValue = 'Rivers';
+  String? _lgaValue = 'Port Harcourt';
   String? _propertyType;
   bool _isAgent = false;
   final List<_MediaItem> _media = [];
@@ -67,8 +68,6 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       _description,
       _price,
       _address,
-      _state,
-      _lga,
       _bedrooms,
       _bathrooms,
     ]) {
@@ -84,8 +83,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       _description.text = draft['description'] as String? ?? '';
       _price.text = draft['price'] as String? ?? '';
       _address.text = draft['address'] as String? ?? '';
-      _state.text = draft['state'] as String? ?? 'Rivers';
-      _lga.text = draft['lga'] as String? ?? '';
+      _stateValue = draft['state'] as String? ?? 'Rivers';
+      _lgaValue = draft['lga'] as String? ?? NigeriaLocations.capitalFor(_stateValue!);
       _bedrooms.text = draft['bedrooms'] as String? ?? '';
       _bathrooms.text = draft['bathrooms'] as String? ?? '';
       _propertyType = draft['property_type'] as String?;
@@ -99,8 +98,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       'description': _description.text,
       'price': _price.text,
       'address': _address.text,
-      'state': _state.text,
-      'lga': _lga.text,
+      'state': _stateValue,
+      'lga': _lgaValue,
       'bedrooms': _bedrooms.text,
       'bathrooms': _bathrooms.text,
       'property_type': _propertyType,
@@ -176,8 +175,6 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       _description,
       _price,
       _address,
-      _state,
-      _lga,
       _bedrooms,
       _bathrooms,
     ]) {
@@ -188,25 +185,29 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   }
 
   Future<void> _submit() async {
+    if (_media.isEmpty) {
+      setState(() => _error = 'Add at least one photo before posting.');
+      return;
+    }
     setState(() {
       _busy = true;
       _error = null;
     });
 
     try {
+      await widget.api.mediaSignature();
+
       final listing = await widget.api.createListing({
         'title': _title.text.trim(),
         'description': _description.text.trim(),
         'price': _price.text.trim(),
         'address': _address.text.trim(),
-        'state': _state.text.trim(),
-        'lga': _lga.text.trim(),
+        'state': _stateValue,
+        'lga': _lgaValue,
         'is_agent_listing': _isAgent,
-        if (_bedrooms.text.trim().isNotEmpty)
-          'bedrooms': int.tryParse(_bedrooms.text.trim()),
-        if (_bathrooms.text.trim().isNotEmpty)
-          'bathrooms': int.tryParse(_bathrooms.text.trim()),
-        if (_propertyType != null) 'property_type': _propertyType,
+        'bedrooms': int.tryParse(_bedrooms.text.trim()),
+        'bathrooms': int.tryParse(_bathrooms.text.trim()),
+        'property_type': _propertyType,
       });
 
       final listingId = listing['id'] as String;
@@ -370,6 +371,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
               items: _propertyTypes
                   .map((type) => DropdownMenuItem(value: type, child: Text(type)))
                   .toList(),
+              validator: (value) => value == null ? 'Select a property type' : null,
               onChanged: (value) {
                 setState(() => _propertyType = value);
                 _saveDraft();
@@ -383,6 +385,10 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                     controller: _bedrooms,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(labelText: 'Bedrooms'),
+                    validator: (value) {
+                      final count = int.tryParse(value ?? '');
+                      return count == null || count < 1 ? 'Required' : null;
+                    },
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -391,6 +397,10 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                     controller: _bathrooms,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(labelText: 'Bathrooms'),
+                    validator: (value) {
+                      final count = int.tryParse(value ?? '');
+                      return count == null || count < 1 ? 'Required' : null;
+                    },
                   ),
                 ),
               ],
@@ -423,20 +433,34 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                   : null,
             ),
             const SizedBox(height: 12),
-            TextFormField(
-              controller: _state,
+            DropdownButtonFormField<String>(
+              initialValue: _stateValue,
               decoration: const InputDecoration(labelText: 'State'),
-              validator: (value) => value == null || value.trim().isEmpty
-                  ? 'Enter a state'
-                  : null,
+              items: NigeriaLocations.states
+                  .map((state) => DropdownMenuItem(value: state, child: Text(state)))
+                  .toList(),
+              validator: (value) => value == null ? 'Select a state' : null,
+              onChanged: (value) {
+                setState(() {
+                  _stateValue = value;
+                  _lgaValue = NigeriaLocations.capitalFor(value ?? '');
+                });
+                _saveDraft();
+              },
             ),
             const SizedBox(height: 12),
-            TextFormField(
-              controller: _lga,
-              decoration: const InputDecoration(labelText: 'LGA or area'),
-              validator: (value) => value == null || value.trim().isEmpty
-                  ? 'Enter an area'
-                  : null,
+            DropdownButtonFormField<String>(
+              initialValue: _lgaValue,
+              decoration: const InputDecoration(labelText: 'Capital / LGA'),
+              items: [
+                if (_stateValue != null)
+                  DropdownMenuItem(
+                    value: NigeriaLocations.capitalFor(_stateValue!),
+                    child: Text(NigeriaLocations.capitalFor(_stateValue!)),
+                  ),
+              ],
+              validator: (value) => value == null ? 'Select an area' : null,
+              onChanged: (value) => setState(() => _lgaValue = value),
             ),
           ],
         ),
@@ -451,7 +475,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            'The first photo becomes the cover image.',
+            'At least one photo is required. The first photo becomes the cover image.',
             style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: 16),
