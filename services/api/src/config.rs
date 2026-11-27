@@ -24,6 +24,7 @@ pub struct Config {
     pub cloudinary: Option<CloudinaryConfig>,
     pub resend: Option<ResendConfig>,
     pub password_reset_debug: bool,
+    pub app_base_url: String,
 }
 
 impl Config {
@@ -117,6 +118,12 @@ impl Config {
             return Err("PASSWORD_RESET_DEBUG must not be enabled in production".into());
         }
 
+        let app_base_url = std::env::var("APP_BASE_URL")
+            .or_else(|_| std::env::var("PUBLIC_APP_URL"))
+            .unwrap_or_else(|_| "https://unadomot.com".into())
+            .trim_end_matches('/')
+            .to_string();
+
         Ok(Self {
             is_production,
             database_url,
@@ -127,6 +134,7 @@ impl Config {
             cloudinary,
             resend,
             password_reset_debug,
+            app_base_url,
         })
     }
 }

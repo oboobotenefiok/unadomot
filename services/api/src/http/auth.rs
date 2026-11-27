@@ -209,7 +209,7 @@ async fn password_reset_request_handler(
     if user_id.is_some() {
         let reset_link = format!(
             "{}/reset-password?token={}",
-            public_base_url(),
+            state.app_base_url,
             token
         );
         if let Err(error) = state
@@ -244,14 +244,6 @@ async fn password_reset_confirm_handler(
     }
 
     Ok(StatusCode::NO_CONTENT)
-}
-
-fn public_base_url() -> String {
-    std::env::var("APP_BASE_URL")
-        .or_else(|_| std::env::var("PUBLIC_APP_URL"))
-        .unwrap_or_else(|_| "https://unadomot.com".into())
-        .trim_end_matches('/')
-        .to_string()
 }
 
 fn auth_error(error: AuthError) -> ApiError {

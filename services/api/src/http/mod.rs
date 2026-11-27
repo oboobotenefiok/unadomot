@@ -110,6 +110,7 @@ pub struct AppState {
     pub jwt_secret: Arc<String>,
     pub limiter: Arc<RateLimiter>,
     pub allowed_origins: Arc<Vec<String>>,
+    pub app_base_url: Arc<String>,
 }
 
 pub struct ApiError {
@@ -181,7 +182,13 @@ async fn admin_suspend_user_handler(
     AdminUser { id: user_id }: AdminUser,
     Path(id): Path<Uuid>,
 ) -> Result<StatusCode, ApiError> {
-    let suspended = state.users.suspend_user(id).await.map_err(auth_error)?;
+    let suspended = state.users.suspend_user(id).await.map_err(|_| {
+        ApiError::new(
+            StatusCode::SERVICE_UNAVAILABLE,
+            "service_unavailable",
+            "The service is temporarily unavailable",
+        )
+    })?;
     if !suspended {
         return Err(ApiError::new(
             StatusCode::NOT_FOUND,
@@ -203,27 +210,4 @@ async fn admin_suspend_user_handler(
         })?;
 
     Ok(StatusCode::NO_CONTENT)
-}
-
-fn auth_error(error: crate::application::auth::AuthError) -> ApiError {
-    match error {
-        crate::application::auth::AuthError::InvalidCredentials => ApiError::new(
-            StatusCode::UNAUTHORIZED,
-            "invalid_credentials",
-            "Invalid email or password",
-        ),
-        crate::application::auth::AuthError::EmailTaken => ApiError::new(
-            StatusCode::CONFLICT,
-            "email_taken",
-            "Email already registered",
-        ),
-        crate::application::auth::AuthError::Validation(message) => {
-            ApiError::new(StatusCode::BAD_REQUEST, "validation_error", message)
-        }
-        crate::application::auth::AuthError::Repository(_) => ApiError::new(
-            StatusCode::SERVICE_UNAVAILABLE,
-            "service_unavailable",
-            "The service is temporarily unavailable",
-        ),
-    }
 }
