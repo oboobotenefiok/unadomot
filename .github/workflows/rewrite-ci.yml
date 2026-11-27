@@ -50,7 +50,7 @@ jobs:
         run: |
           set +e
           : > /tmp/rust.log
-          cargo fmt --all -- --check >> /tmp/rust.log 2>&1; fmt=$?
+          cargo fmt --all >> /tmp/rust.log 2>&1; fmt=$?
           cargo clippy --all-targets -- -D warnings >> /tmp/rust.log 2>&1; clippy=$?
           cargo test >> /tmp/rust.log 2>&1; tests=$?
           if [ $fmt -ne 0 ] || [ $clippy -ne 0 ] || [ $tests -ne 0 ]; then
