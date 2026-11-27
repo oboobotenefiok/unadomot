@@ -300,29 +300,12 @@ impl UserRepository for PostgresUserRepository {
         Ok(result.rows_affected() > 0)
     }
 
-    async fn link_google_user(&self, user_id: Uuid, had_password: bool) -> Result<(), AuthError> {
-        if had_password {
-            sqlx::query(
-                "UPDATE users SET password_hash = NULL, auth_provider = 'google' WHERE id = $1",
-            )
+    async fn link_google_user(&self, user_id: Uuid, _had_password: bool) -> Result<(), AuthError> {
+        sqlx::query("UPDATE users SET auth_provider = 'google' WHERE id = $1")
             .bind(user_id)
             .execute(&self.pool)
             .await
             .map_err(|e| AuthError::Repository(e.to_string()))?;
-            sqlx::query(
-                "UPDATE refresh_tokens SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL",
-            )
-            .bind(user_id)
-            .execute(&self.pool)
-            .await
-            .map_err(|e| AuthError::Repository(e.to_string()))?;
-        } else {
-            sqlx::query("UPDATE users SET auth_provider = 'google' WHERE id = $1")
-                .bind(user_id)
-                .execute(&self.pool)
-                .await
-                .map_err(|e| AuthError::Repository(e.to_string()))?;
-        }
         Ok(())
     }
 
