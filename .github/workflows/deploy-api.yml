@@ -1,13 +1,6 @@
 name: Deploy API
 on:
   workflow_dispatch:
-  push:
-    branches: [rewrite/flutter-rust-postgres]
-    paths:
-      - 'services/api/**'
-      - 'Dockerfile'
-      - 'fly.toml'
-      - '.github/workflows/deploy-api.yml'
 permissions:
   contents: write
 jobs:
@@ -19,7 +12,7 @@ jobs:
       - name: Deploy
         run: |
           set +e
-          flyctl deploy --remote-only --config fly.toml > /tmp/deploy.log 2>&1
+          flyctl deploy --remote-only --config services/api/fly.toml > /tmp/deploy.log 2>&1
           status=$?
           cat /tmp/deploy.log
           exit $status
