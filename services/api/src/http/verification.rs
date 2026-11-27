@@ -1,55 +1,19 @@
-use crate::application::auth::{
-    bearer_token, require_active, verify_session, UserRepository,
-};
 use crate::application::verification::{
     my_request, pending_requests, review_request, submit_request, VerificationError,
-    VerificationRepository,
 };
 use crate::domain::verification::VerificationRequest;
+use crate::extract::{AdminUser, AuthUser};
+use crate::http::{ApiError, AppState};
 use axum::{
     extract::{Path, State},
-    http::{HeaderMap, StatusCode},
-    response::{IntoResponse, Response},
+    http::StatusCode,
+    response::IntoResponse,
     routing::{get, post},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::sync::Arc;
 use uuid::Uuid;
-
-#[derive(Clone)]
-pub struct VerificationState {
-    pub repository: Arc<dyn VerificationRepository>,
-    pub users: Arc<dyn UserRepository>,
-    pub jwt_secret: Arc<String>,
-}
-
-pub struct VerificationApiError {
-    status: StatusCode,
-    code: &'static str,
-    message: String,
-}
-
-impl VerificationApiError {
-    fn new(status: StatusCode, code: &'static str, message: impl Into<String>) -> Self {
-        Self {
-            status,
-            code,
-            message: message.into(),
-        }
-    }
-}
-
-impl IntoResponse for VerificationApiError {
-    fn into_response(self) -> Response {
-        (
-            self.status,
-            Json(json!({"error": {"code": self.code, "message": self.message}})),
-        )
-            .into_response()
-    }
-}
 
 #[derive(Deserialize)]
 pub struct SubmitRequest {
@@ -90,7 +54,7 @@ impl From<VerificationRequest> for VerificationResponse {
     }
 }
 
-pub fn router(state: VerificationState) -> Router {
+pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/api/verification", post(submit_handler))
         .route("/api/verification/me", get(my_handler))
@@ -99,64 +63,13 @@ pub fn router(state: VerificationState) -> Router {
         .with_state(state)
 }
 
-async fn authorize(
-    state: &VerificationState,
-    headers: &HeaderMap,
-) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
-    let token = bearer_token(headers).map_err(|_| {
-        VerificationApiError::new(
-            StatusCode::UNAUTHORIZED,
-            "unauthorized",
-            "Missing bearer token",
-        )
-    })?;
-
-    let user = verify_session(token, &state.jwt_secret).map_err(|_| {
-        VerificationApiError::new(
-            StatusCode::UNAUTHORIZED,
-            "unauthorized",
-            "Invalid or expired token",
-        )
-    })?;
-
-    require_active(state.users.as_ref(), user.id)
-        .await
-        .map_err(|_| {
-            VerificationApiError::new(
-                StatusCode::FORBIDDEN,
-                "forbidden",
-                "This account is suspended",
-            )
-        })?;
-
-    Ok(user)
-}
-
-async fn authorize_admin(
-    state: &VerificationState,
-    headers: &HeaderMap,
-) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
-    let user = authorize(state, headers).await?;
-    let is_db_admin = state.users.is_admin(user.id).await.unwrap_or(false);
-
-    if !is_db_admin {
-        return Err(VerificationApiError::new(
-            StatusCode::FORBIDDEN,
-            "forbidden",
-            "Administrator access required",
-        ));
-    }
-    Ok(user)
-}
-
 async fn submit_handler(
-    State(state): State<VerificationState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    user: AuthUser,
     Json(request): Json<SubmitRequest>,
-) -> Result<Json<VerificationResponse>, VerificationApiError> {
-    let user = authorize(&state, &headers).await?;
+) -> Result<Json<VerificationResponse>, ApiError> {
     submit_request(
-        state.repository.as_ref(),
+        state.audit.as_ref(),
         user.id,
         &request.document_url,
         request.notes.as_deref(),
@@ -167,36 +80,33 @@ async fn submit_handler(
 }
 
 async fn my_handler(
-    State(state): State<VerificationState>,
-    headers: HeaderMap,
-) -> Result<Json<Option<VerificationResponse>>, VerificationApiError> {
-    let user = authorize(&state, &headers).await?;
-    my_request(state.repository.as_ref(), user.id)
+    State(state): State<AppState>,
+    user: AuthUser,
+) -> Result<Json<Option<VerificationResponse>>, ApiError> {
+    my_request(state.audit.as_ref(), user.id)
         .await
         .map(|request| Json(request.map(VerificationResponse::from)))
         .map_err(verification_error)
 }
 
 async fn admin_list_handler(
-    State(state): State<VerificationState>,
-    headers: HeaderMap,
-) -> Result<Json<Vec<VerificationResponse>>, VerificationApiError> {
-    authorize_admin(&state, &headers).await?;
-    pending_requests(state.repository.as_ref())
+    State(state): State<AppState>,
+    _admin: AdminUser,
+) -> Result<Json<Vec<VerificationResponse>>, ApiError> {
+    pending_requests(state.audit.as_ref())
         .await
         .map(|requests| Json(requests.into_iter().map(VerificationResponse::from).collect()))
         .map_err(verification_error)
 }
 
 async fn admin_review_handler(
-    State(state): State<VerificationState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    AdminUser { id: admin_id }: AdminUser,
     Path(id): Path<Uuid>,
     Json(request): Json<ReviewRequest>,
-) -> Result<Json<VerificationResponse>, VerificationApiError> {
-    let admin = authorize_admin(&state, &headers).await?;
+) -> Result<Json<VerificationResponse>, ApiError> {
     let reviewed = review_request(
-        state.repository.as_ref(),
+        state.audit.as_ref(),
         id,
         request.approve,
         request.review_notes.as_deref(),
@@ -205,9 +115,9 @@ async fn admin_review_handler(
     .map_err(verification_error)?;
 
     state
-        .repository
+        .audit
         .record_audit(
-            admin.id,
+            admin_id,
             "verification.review",
             id,
             json!({"approve": request.approve, "status": reviewed.status}),
@@ -218,20 +128,20 @@ async fn admin_review_handler(
     Ok(Json(VerificationResponse::from(reviewed)))
 }
 
-fn verification_error(error: VerificationError) -> VerificationApiError {
+fn verification_error(error: VerificationError) -> ApiError {
     match error {
-        VerificationError::NotFound => VerificationApiError::new(
+        VerificationError::NotFound => ApiError::new(
             StatusCode::NOT_FOUND,
             "not_found",
             "Verification request not found",
         ),
         VerificationError::Conflict(message) => {
-            VerificationApiError::new(StatusCode::CONFLICT, "conflict", message)
+            ApiError::new(StatusCode::CONFLICT, "conflict", message)
         }
         VerificationError::InvalidInput(message) => {
-            VerificationApiError::new(StatusCode::BAD_REQUEST, "validation_error", message)
+            ApiError::new(StatusCode::BAD_REQUEST, "validation_error", message)
         }
-        VerificationError::Repository(_) => VerificationApiError::new(
+        VerificationError::Repository(_) => ApiError::new(
             StatusCode::SERVICE_UNAVAILABLE,
             "service_unavailable",
             "The service is temporarily unavailable",

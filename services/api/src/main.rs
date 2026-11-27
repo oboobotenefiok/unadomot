@@ -254,7 +254,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         listings,
         messaging,
         reports,
-        audit: verification_repo.clone(),
+        audit: verification_repo,
         media,
         email,
         pool: profile_pool.clone(),
@@ -264,15 +264,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         allowed_origins,
     };
 
-    let verification_state = verification::VerificationState {
-        repository: verification_repo,
-        users: users.clone(),
-        jwt_secret: jwt_secret.clone(),
-    };
-
     let mut app = router(state.clone())
         .merge(public_pages::router(state.clone()))
-        .merge(verification::router(verification_state))
+        .merge(verification::router(state.clone()))
         .merge(messaging_handlers::router(state.clone()))
         .merge(call_handlers::router(state.clone()));
 
