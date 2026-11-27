@@ -97,15 +97,15 @@ async fn delete_comment(
         Err(response) => return response,
     };
 
-    let owner = sqlx::query_scalar::<_, Uuid>(
-        "SELECT user_id FROM listing_comments WHERE id = $1",
+    let row = sqlx::query_as::<_, (Uuid, Uuid)>(
+        "SELECT user_id, listing_id FROM listing_comments WHERE id = $1",
     )
     .bind(comment_id)
     .fetch_optional(&state.pool)
     .await;
 
-    let owner = match owner {
-        Ok(Some(owner)) => owner,
+    let (owner, listing_id) = match row {
+        Ok(Some(row)) => row,
         Ok(None) => return error(StatusCode::NOT_FOUND, "Comment not found"),
         Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Comment unavailable"),
     };
@@ -118,7 +118,16 @@ async fn delete_comment(
     .await
     .unwrap_or(false);
 
-    if owner != user_id && !is_admin {
+    let is_listing_owner: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM listings WHERE id = $1 AND landlord_id = $2 AND deleted_at IS NULL)",
+    )
+    .bind(listing_id)
+    .bind(user_id)
+    .fetch_one(&state.pool)
+    .await
+    .unwrap_or(false);
+
+    if owner != user_id && !is_admin && !is_listing_owner {
         return error(StatusCode::FORBIDDEN, "You cannot delete this comment");
     }
 
