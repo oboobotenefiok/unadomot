@@ -5,6 +5,7 @@ import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/listing_card.dart';
+import '../widgets/responsive_grid.dart';
 import '../widgets/share_listing_sheet.dart';
 import 'listing_detail_screen.dart';
 
@@ -76,10 +77,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 : GridView.builder(
                     padding: const EdgeInsets.all(16),
                     itemCount: _favorites.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
+                    gridDelegate: responsiveGridDelegate(
+                      context,
                       childAspectRatio: 0.66,
                     ),
                     itemBuilder: (context, index) {
