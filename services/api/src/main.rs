@@ -281,12 +281,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .merge(messaging_handlers::router(state.clone()))
         .merge(call_handlers::router(call_state));
 
-    if let Some(pool) = profile_pool {
+    if profile_pool.is_some() {
         app = app
-            .merge(profile_handlers::router(profile_handlers::ProfileState {
-                pool: pool.clone(),
-                jwt_secret: jwt_secret.clone(),
-            }))
+            .merge(profile_handlers::router(state.clone()))
             .merge(comment_handlers::router(state.clone()));
     }
 

@@ -1,6 +1,6 @@
 use axum::{
     extract::{Path, Query, State},
-    http::{HeaderMap, StatusCode},
+    http::StatusCode,
     response::IntoResponse,
     routing::{get, post},
     Json, Router,
@@ -9,21 +9,14 @@ use chrono::{Duration, Utc};
 use rust_decimal::Decimal;
 use serde::Deserialize;
 use serde_json::{json, Value};
-use sqlx::PgPool;
-use std::sync::Arc;
 use unadomot_api::application::auth::{
-    bearer_token, hash_refresh_token, issue_session, new_refresh_token, require_active_pool,
-    verify_session,
+    hash_refresh_token, issue_session, new_refresh_token,
 };
+use unadomot_api::extract::{AdminUser, AuthUser};
+use unadomot_api::http::AppState;
 use uuid::Uuid;
 
-#[derive(Clone)]
-pub struct ProfileState {
-    pub pool: PgPool,
-    pub jwt_secret: Arc<String>,
-}
-
-pub fn router(state: ProfileState) -> Router {
+pub fn router(state: AppState) -> Router {
     Router::new()
         .route("/api/profile/me", get(me).patch(update_me))
         .route("/api/profile/me/listings", get(my_listings))
@@ -45,39 +38,6 @@ fn valid_media_url(url: &str) -> bool {
             && !url.contains(' ')
             && !url.contains('\n')
             && !url.contains('\r'))
-}
-
-async fn authorize(state: &ProfileState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
-    let token = bearer_token(headers)
-        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Please sign in"))?;
-
-    let user = verify_session(token, &state.jwt_secret)
-        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Session expired"))?;
-
-    require_active_pool(&state.pool, user.id)
-        .await
-        .map_err(|_| error(StatusCode::FORBIDDEN, "This account is suspended"))?;
-
-    Ok(user.id)
-}
-
-async fn authorize_admin(
-    state: &ProfileState,
-    headers: &HeaderMap,
-) -> Result<Uuid, axum::response::Response> {
-    let user_id = authorize(state, headers).await?;
-    let is_admin: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM admin_roles WHERE user_id = $1)",
-    )
-    .bind(user_id)
-    .fetch_one(&state.pool)
-    .await
-    .unwrap_or(false);
-
-    if !is_admin {
-        return Err(error(StatusCode::FORBIDDEN, "Admin access is required"));
-    }
-    Ok(user_id)
 }
 
 fn username_base(name: &str) -> String {
@@ -102,7 +62,7 @@ fn username_base(name: &str) -> String {
     format!("{first_part}{last_initial}{suffix}")
 }
 
-async fn ensure_profile(pool: &PgPool, user_id: Uuid, email: &str) -> Result<(), sqlx::Error> {
+async fn ensure_profile(pool: &sqlx::PgPool, user_id: Uuid, email: &str) -> Result<(), sqlx::Error> {
     let fallback = email.split('@').next().unwrap_or("User").to_string();
     sqlx::query(
         "INSERT INTO user_profiles (user_id, name) VALUES ($1, $2)
@@ -143,17 +103,17 @@ async fn ensure_profile(pool: &PgPool, user_id: Uuid, email: &str) -> Result<(),
 }
 
 async fn me(
-    State(state): State<ProfileState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    user: AuthUser,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
+    let pool = match state.pool.as_ref() {
+        Some(pool) => pool,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Profile unavailable"),
     };
 
     let email: String = match sqlx::query_scalar("SELECT email FROM users WHERE id = $1")
-        .bind(user_id)
-        .fetch_optional(&state.pool)
+        .bind(user.id)
+        .fetch_optional(pool)
         .await
     {
         Ok(Some(email)) => email,
@@ -161,7 +121,7 @@ async fn me(
         Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Profile unavailable"),
     };
 
-    if ensure_profile(&state.pool, user_id, &email).await.is_err() {
+    if ensure_profile(pool, user.id, &email).await.is_err() {
         return error(StatusCode::SERVICE_UNAVAILABLE, "Profile unavailable");
     }
 
@@ -171,15 +131,15 @@ async fn me(
          FROM users u JOIN user_profiles p ON p.user_id = u.id
          WHERE u.id = $1",
     )
-    .bind(user_id)
-    .fetch_one(&state.pool)
+    .bind(user.id)
+    .fetch_one(pool)
     .await;
 
     let is_admin: bool = sqlx::query_scalar(
         "SELECT EXISTS(SELECT 1 FROM admin_roles WHERE user_id = $1)",
     )
-    .bind(user_id)
-    .fetch_one(&state.pool)
+    .bind(user.id)
+    .fetch_one(pool)
     .await
     .unwrap_or(false);
 
@@ -202,13 +162,13 @@ struct UpdateProfileRequest {
 }
 
 async fn update_me(
-    State(state): State<ProfileState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    user: AuthUser,
     Json(request): Json<UpdateProfileRequest>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
+    let pool = match state.pool.as_ref() {
+        Some(pool) => pool,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Profile unavailable"),
     };
 
     let name = request.name.unwrap_or_default().trim().to_string();
@@ -230,12 +190,12 @@ async fn update_me(
                 photo_url = COALESCE(NULLIF($5, ''), photo_url)
          WHERE user_id = $1",
     )
-    .bind(user_id)
+    .bind(user.id)
     .bind(&name)
     .bind(&phone)
     .bind(&bio)
     .bind(&photo_url)
-    .execute(&state.pool)
+    .execute(pool)
     .await;
 
     match result {
@@ -246,12 +206,12 @@ async fn update_me(
 }
 
 async fn my_listings(
-    State(state): State<ProfileState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    user: AuthUser,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers).await {
-        Ok(id) => id,
-        Err(response) => return response,
+    let pool = match state.pool.as_ref() {
+        Some(pool) => pool,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Listings unavailable"),
     };
 
     let rows = sqlx::query_as::<_, ListingRow>(
@@ -261,8 +221,8 @@ async fn my_listings(
          WHERE landlord_id = $1 AND deleted_at IS NULL
          ORDER BY created_at DESC",
     )
-    .bind(user_id)
-    .fetch_all(&state.pool)
+    .bind(user.id)
+    .fetch_all(pool)
     .await;
 
     match rows {
@@ -272,9 +232,14 @@ async fn my_listings(
 }
 
 async fn public_profile(
-    State(state): State<ProfileState>,
+    State(state): State<AppState>,
     Path(username): Path<String>,
 ) -> axum::response::Response {
+    let pool = match state.pool.as_ref() {
+        Some(pool) => pool,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Profile unavailable"),
+    };
+
     let row = sqlx::query_as::<_, ProfileRow>(
         "SELECT u.id, u.email, p.name, p.username, p.phone, p.bio, p.photo_url,
                 p.user_type, p.verified, p.reply_rate, p.response_time, p.last_active, u.created_at
@@ -282,7 +247,7 @@ async fn public_profile(
          WHERE lower(p.username) = lower($1)",
     )
     .bind(&username)
-    .fetch_optional(&state.pool)
+    .fetch_optional(pool)
     .await;
 
     let profile = match row {
@@ -299,7 +264,7 @@ async fn public_profile(
          ORDER BY created_at DESC LIMIT 50",
     )
     .bind(profile.id)
-    .fetch_all(&state.pool)
+    .fetch_all(pool)
     .await
     .unwrap_or_default();
 
@@ -314,13 +279,14 @@ struct UserSearchQuery {
 }
 
 async fn admin_user_search(
-    State(state): State<ProfileState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    _admin: AdminUser,
     Query(query): Query<UserSearchQuery>,
 ) -> axum::response::Response {
-    if let Err(response) = authorize_admin(&state, &headers).await {
-        return response;
-    }
+    let pool = match state.pool.as_ref() {
+        Some(pool) => pool,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "User search unavailable"),
+    };
 
     let term = query.q.unwrap_or_default().trim().to_lowercase();
     if term.len() < 2 {
@@ -335,7 +301,7 @@ async fn admin_user_search(
          ORDER BY u.created_at DESC LIMIT 25",
     )
     .bind(&pattern)
-    .fetch_all(&state.pool)
+    .fetch_all(pool)
     .await;
 
     match rows {
@@ -360,18 +326,19 @@ async fn admin_user_search(
 }
 
 async fn admin_audit(
-    State(state): State<ProfileState>,
-    headers: HeaderMap,
+    State(state): State<AppState>,
+    _admin: AdminUser,
 ) -> axum::response::Response {
-    if let Err(response) = authorize_admin(&state, &headers).await {
-        return response;
-    }
+    let pool = match state.pool.as_ref() {
+        Some(pool) => pool,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Audit log unavailable"),
+    };
 
     let rows = sqlx::query_as::<_, (Uuid, Uuid, String, Uuid, Value, chrono::DateTime<chrono::Utc>)>(
         "SELECT id, admin_user_id, action, target_id, metadata, created_at
          FROM admin_audit_log ORDER BY created_at DESC LIMIT 100",
     )
-    .fetch_all(&state.pool)
+    .fetch_all(pool)
     .await;
 
     match rows {
@@ -408,9 +375,14 @@ struct GoogleTokenInfo {
 }
 
 async fn google_auth(
-    State(state): State<ProfileState>,
+    State(state): State<AppState>,
     Json(request): Json<GoogleAuthRequest>,
 ) -> axum::response::Response {
+    let pool = match state.pool.as_ref() {
+        Some(pool) => pool,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Google sign-in unavailable"),
+    };
+
     let client_id = match std::env::var("GOOGLE_CLIENT_ID") {
         Ok(value) if !value.trim().is_empty() => value,
         _ => return error(StatusCode::SERVICE_UNAVAILABLE, "Google sign-in is not configured"),
@@ -453,7 +425,7 @@ async fn google_auth(
         "SELECT id, password_hash, status FROM users WHERE lower(email) = lower($1)",
     )
     .bind(&email)
-    .fetch_optional(&state.pool)
+    .fetch_optional(pool)
     .await;
 
     let user_id = match existing {
@@ -467,18 +439,18 @@ async fn google_auth(
                     "UPDATE users SET password_hash = NULL, auth_provider = 'google' WHERE id = $1",
                 )
                 .bind(id)
-                .execute(&state.pool)
+                .execute(pool)
                 .await;
                 let _ = sqlx::query(
                     "UPDATE refresh_tokens SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL",
                 )
                 .bind(id)
-                .execute(&state.pool)
+                .execute(pool)
                 .await;
             } else {
                 let _ = sqlx::query("UPDATE users SET auth_provider = 'google' WHERE id = $1")
                     .bind(id)
-                    .execute(&state.pool)
+                    .execute(pool)
                     .await;
             }
             id
@@ -488,7 +460,7 @@ async fn google_auth(
                 "INSERT INTO users (email, auth_provider) VALUES ($1, 'google') RETURNING id",
             )
             .bind(&email)
-            .fetch_one(&state.pool)
+            .fetch_one(pool)
             .await
             {
                 Ok(id) => id,
@@ -498,14 +470,14 @@ async fn google_auth(
         Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Could not verify account"),
     };
 
-    if ensure_profile(&state.pool, user_id, &email).await.is_err() {
+    if ensure_profile(pool, user_id, &email).await.is_err() {
         return error(StatusCode::SERVICE_UNAVAILABLE, "Could not create profile");
     }
 
     let _ = sqlx::query("UPDATE user_profiles SET name = $2 WHERE user_id = $1 AND (name IS NULL OR name = '')")
         .bind(user_id)
         .bind(&name)
-        .execute(&state.pool)
+        .execute(pool)
         .await;
 
     let refresh_token = new_refresh_token();
@@ -516,7 +488,7 @@ async fn google_auth(
     .bind(user_id)
     .bind(&refresh_hash)
     .bind(Utc::now() + Duration::days(30))
-    .execute(&state.pool)
+    .execute(pool)
     .await
     .is_err()
     {
