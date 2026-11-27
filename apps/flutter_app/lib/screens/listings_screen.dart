@@ -27,6 +27,8 @@ class ListingsScreen extends StatefulWidget {
   final LocalCache cache;
   final AppState appState;
   final ValueNotifier<String>? searchNotifier;
+  final VoidCallback? onNotifications;
+  final int unreadCount;
 
   const ListingsScreen({
     super.key,
@@ -34,6 +36,8 @@ class ListingsScreen extends StatefulWidget {
     required this.cache,
     required this.appState,
     this.searchNotifier,
+    this.onNotifications,
+    this.unreadCount = 0,
   });
 
   @override
@@ -518,6 +522,16 @@ class _ListingsScreenState extends State<ListingsScreen> {
             icon: const Icon(Icons.map_outlined),
             onPressed: _openMap,
           ),
+          if (widget.onNotifications != null)
+            IconButton(
+              tooltip: 'Notifications',
+              onPressed: widget.onNotifications,
+              icon: Badge(
+                isLabelVisible: widget.unreadCount > 0,
+                label: Text(widget.unreadCount > 99 ? '99+' : '${widget.unreadCount}'),
+                child: const Icon(Icons.notifications_none),
+              ),
+            ),
           IconButton(
             tooltip: 'Accessibility',
             icon: const Icon(Icons.accessibility_new),
@@ -860,7 +874,7 @@ class _SectionHeading extends StatelessWidget {
             text,
             style: const TextStyle(
               color: UnaColors.text900,
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
           ),
