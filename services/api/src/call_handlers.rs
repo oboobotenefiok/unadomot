@@ -8,13 +8,14 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 use std::sync::Arc;
-use unadomot_api::application::auth::verify_session;
+use unadomot_api::application::auth::{verify_session, UserRepository};
 use unadomot_api::application::calls::{CallError, CallRepository};
 use uuid::Uuid;
 
 #[derive(Clone)]
 pub struct CallState {
     pub calls: Arc<dyn CallRepository>,
+    pub users: Arc<dyn UserRepository>,
     pub jwt_secret: Arc<String>,
 }
 
@@ -45,16 +46,26 @@ fn error(status: StatusCode, message: &str) -> axum::response::Response {
     (status, Json(json!({ "error": { "message": message } }))).into_response()
 }
 
-fn authorize(state: &CallState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
+async fn authorize(state: &CallState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
     let header = headers
         .get(header::AUTHORIZATION)
         .and_then(|value| value.to_str().ok())
         .and_then(|value| value.strip_prefix("Bearer "))
         .ok_or_else(|| error(StatusCode::UNAUTHORIZED, "Please sign in"))?;
 
-    verify_session(header, &state.jwt_secret)
-        .map(|user| user.id)
-        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Session expired"))
+    let user = verify_session(header, &state.jwt_secret)
+        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Session expired"))?;
+
+    if !state
+        .users
+        .is_active(user.id)
+        .await
+        .map_err(|_| error(StatusCode::SERVICE_UNAVAILABLE, "Account status unavailable"))?
+    {
+        return Err(error(StatusCode::FORBIDDEN, "This account is suspended"));
+    }
+
+    Ok(user.id)
 }
 
 fn call_error(error_value: CallError) -> axum::response::Response {
@@ -100,7 +111,7 @@ async fn start_call_handler(
     Path(conversation_id): Path<Uuid>,
     Json(request): Json<StartCallRequest>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
@@ -129,7 +140,7 @@ async fn call_history_handler(
     headers: HeaderMap,
     Path(conversation_id): Path<Uuid>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
@@ -144,7 +155,7 @@ async fn incoming_calls_handler(
     State(state): State<CallState>,
     headers: HeaderMap,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
@@ -160,7 +171,7 @@ async fn get_call_handler(
     headers: HeaderMap,
     Path(id): Path<Uuid>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
@@ -178,7 +189,7 @@ async fn answer_call_handler(
     Path(id): Path<Uuid>,
     Json(request): Json<AnswerCallRequest>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
@@ -202,7 +213,7 @@ async fn end_call_handler(
     headers: HeaderMap,
     Path(id): Path<Uuid>,
 ) -> axum::response::Response {
-    let user_id = match authorize(&state, &headers) {
+    let user_id = match authorize(&state, &headers).await {
         Ok(id) => id,
         Err(response) => return response,
     };
