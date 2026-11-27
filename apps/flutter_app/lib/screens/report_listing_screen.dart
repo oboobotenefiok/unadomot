@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../api/api_client.dart';
+import '../theme.dart';
 
 class ReportListingScreen extends StatefulWidget {
   final ApiClient api;
@@ -16,21 +17,29 @@ class ReportListingScreen extends StatefulWidget {
 }
 
 class _ReportListingScreenState extends State<ReportListingScreen> {
-  final _reason = TextEditingController();
+  static const _reasons = [
+    'Scam or fraud',
+    'Wrong price',
+    'Duplicate listing',
+    'Already unavailable',
+    'Offensive content',
+    'Other',
+  ];
+
   final _details = TextEditingController();
+  String? _reason;
   bool _busy = false;
   String? _error;
 
   @override
   void dispose() {
-    _reason.dispose();
     _details.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
-    if (_reason.text.trim().isEmpty) {
-      setState(() => _error = 'Enter a reason for the report');
+    if (_reason == null) {
+      setState(() => _error = 'Choose a reason for the report');
       return;
     }
     setState(() {
@@ -40,7 +49,7 @@ class _ReportListingScreenState extends State<ReportListingScreen> {
     try {
       await widget.api.createReport(
         widget.listingId,
-        reason: _reason.text.trim(),
+        reason: _reason!,
         details: _details.text,
       );
       if (mounted) Navigator.pop(context, true);
@@ -59,36 +68,71 @@ class _ReportListingScreenState extends State<ReportListingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
+              const Text(
                 'Tell us what is wrong with this listing. Reports are reviewed by the moderation team.',
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: TextStyle(color: UnaColors.text500, fontSize: 14, height: 1.4),
               ),
               const SizedBox(height: 20),
-              TextField(
-                controller: _reason,
-                decoration: const InputDecoration(
-                  labelText: 'Reason',
-                  hintText: 'Scam, wrong price, duplicate, unavailable',
-                ),
+              const Text(
+                'Why are you reporting this listing?',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _reasons
+                    .map(
+                      (reason) => ChoiceChip(
+                        label: Text(reason),
+                        selected: _reason == reason,
+                        onSelected: _busy
+                            ? null
+                            : (_) => setState(() {
+                                  _reason = reason;
+                                  _error = null;
+                                }),
+                        selectedColor: UnaColors.green100,
+                        labelStyle: TextStyle(
+                          color: _reason == reason ? UnaColors.green900 : UnaColors.text700,
+                          fontSize: 13,
+                          fontWeight: _reason == reason ? FontWeight.w600 : FontWeight.w400,
+                        ),
+                        side: BorderSide(
+                          color: _reason == reason ? UnaColors.green700 : UnaColors.border,
+                        ),
+                        showCheckmark: false,
+                      ),
+                    )
+                    .toList(),
+              ),
+              const SizedBox(height: 20),
               TextField(
                 controller: _details,
                 maxLines: 5,
                 decoration: const InputDecoration(
                   labelText: 'Details (optional)',
+                  hintText: 'Add anything that helps us review this report.',
                 ),
               ),
               if (_error != null) ...[
                 const SizedBox(height: 16),
-                Text(
-                  _error!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF2F2),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFFFECACA)),
+                  ),
+                  child: Text(
+                    _error!,
+                    style: const TextStyle(color: UnaColors.error, fontSize: 13),
+                  ),
                 ),
               ],
               const SizedBox(height: 24),
               FilledButton(
-                onPressed: _busy ? null : _submit,
+                onPressed: _busy || _reason == null ? null : _submit,
                 child: Text(_busy ? 'Submitting' : 'Submit report'),
               ),
             ],
