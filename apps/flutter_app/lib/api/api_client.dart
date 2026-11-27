@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
@@ -567,6 +569,16 @@ class ApiClient {
       }
 
       return response.body.isEmpty ? null : jsonDecode(response.body);
+    } on TimeoutException {
+      throw const ApiException(
+        0,
+        'The request timed out. Check your connection and try again.',
+      );
+    } on SocketException {
+      throw const ApiException(
+        0,
+        'You appear to be offline. Check your connection and try again.',
+      );
     } on http.ClientException {
       throw const ApiException(
         0,
