@@ -11,6 +11,7 @@ import '../utils/feed_ranker.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/home_carousel.dart';
 import '../widgets/listing_card.dart';
+import '../widgets/responsive_grid.dart';
 import '../widgets/share_listing_sheet.dart';
 import '../widgets/skeletons.dart';
 import 'auth_sheet.dart';
@@ -571,10 +572,8 @@ class _ListingsScreenState extends State<ListingsScreen> {
                         SliverPadding(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                           sliver: SliverGrid(
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 12,
-                              mainAxisSpacing: 12,
+                            gridDelegate: responsiveGridDelegate(
+                              context,
                               childAspectRatio: 0.66,
                             ),
                             delegate: SliverChildBuilderDelegate(
