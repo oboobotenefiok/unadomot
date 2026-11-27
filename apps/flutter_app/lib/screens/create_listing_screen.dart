@@ -617,7 +617,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
               itemBuilder: (context, index) {
                 final item = _media[index];
                 return Container(
-                  key: ValueKey('${item.name}-$index'),
+                  key: ObjectKey(item),
                   margin: const EdgeInsets.only(bottom: 8),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
