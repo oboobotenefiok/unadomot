@@ -13,7 +13,7 @@ use axum::{
 };
 use sqlx::postgres::PgPoolOptions;
 use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 use tower_http::{
     cors::{AllowOrigin, CorsLayer},
     set_header::SetResponseHeaderLayer,
@@ -123,7 +123,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let migrate_only = std::env::args().any(|arg| arg == "migrate");
     let config = Config::from_env()?;
-    let is_production = config.is_production;
     let jwt_secret = config.jwt_secret.clone();
     let database_url = config.database_url.clone();
 

@@ -69,7 +69,7 @@ fn call_error(error_value: CallError) -> axum::response::Response {
 }
 
 async fn ice_servers_handler(
-    State(state): State<AppState>,
+    State(_state): State<AppState>,
     user: AuthUser,
 ) -> axum::response::Response {
     let mut servers = vec![json!({
