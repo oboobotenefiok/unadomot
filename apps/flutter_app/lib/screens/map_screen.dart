@@ -39,6 +39,36 @@ class _MapScreenState extends State<MapScreen> {
   LatLng? _pinnedLocation;
   bool _locating = false;
   String? _locationError;
+  late int _lastSessionEpoch;
+
+  @override
+  void initState() {
+    super.initState();
+    _lastSessionEpoch = widget.appState.sessionEpoch;
+    widget.appState.addListener(_handleSessionChange);
+  }
+
+  @override
+  void dispose() {
+    widget.appState.removeListener(_handleSessionChange);
+    super.dispose();
+  }
+
+  void _handleSessionChange() {
+    final epoch = widget.appState.sessionEpoch;
+    if (epoch == _lastSessionEpoch) return;
+    _lastSessionEpoch = epoch;
+    if (!mounted) return;
+    setState(() {
+      _myLocation = null;
+      _pinnedLocation = null;
+      _selectedState = null;
+      _selectedListings = const [];
+      _locationError = null;
+      _locating = false;
+    });
+    _mapController.move(const LatLng(9.0820, 8.6753), 6);
+  }
 
   void _selectState(String state, List<Listing> listings) {
     setState(() {
@@ -56,6 +86,7 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _locateMe() async {
     if (_locating) return;
+    final sessionEpoch = widget.appState.sessionEpoch;
     setState(() {
       _locating = true;
       _locationError = null;
@@ -82,8 +113,8 @@ class _MapScreenState extends State<MapScreen> {
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       ).timeout(const Duration(seconds: 12));
+      if (!mounted || sessionEpoch != widget.appState.sessionEpoch) return;
       final point = LatLng(position.latitude, position.longitude);
-      if (!mounted) return;
       setState(() {
         _myLocation = point;
         _pinnedLocation = point;
@@ -92,17 +123,21 @@ class _MapScreenState extends State<MapScreen> {
       });
       _mapController.move(point, 15);
     } on TimeoutException {
-      if (mounted) {
+      if (mounted && sessionEpoch == widget.appState.sessionEpoch) {
         setState(() => _locationError = 'Location timed out. Try again.');
       }
     } on _LocationFailure catch (error) {
-      if (mounted) setState(() => _locationError = error.message);
+      if (mounted && sessionEpoch == widget.appState.sessionEpoch) {
+        setState(() => _locationError = error.message);
+      }
     } catch (_) {
-      if (mounted) {
+      if (mounted && sessionEpoch == widget.appState.sessionEpoch) {
         setState(() => _locationError = 'Could not get your location.');
       }
     } finally {
-      if (mounted) setState(() => _locating = false);
+      if (mounted && sessionEpoch == widget.appState.sessionEpoch) {
+        setState(() => _locating = false);
+      }
     }
   }
 
