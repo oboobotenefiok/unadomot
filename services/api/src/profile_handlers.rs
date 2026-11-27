@@ -6,6 +6,7 @@ use axum::{
     Json, Router,
 };
 use chrono::{Duration, Utc};
+use rust_decimal::Decimal;
 use serde::Deserialize;
 use serde_json::{json, Value};
 use sqlx::PgPool;
@@ -578,7 +579,7 @@ impl ProfileRow {
 struct ListingRow {
     id: Uuid,
     title: String,
-    price: f64,
+    price: Decimal,
     address: String,
     state: String,
     lga: String,
@@ -595,7 +596,7 @@ impl ListingRow {
         json!({
             "id": self.id,
             "title": self.title,
-            "price": self.price,
+            "price": self.price.to_string(),
             "address": self.address,
             "state": self.state,
             "lga": self.lga,
