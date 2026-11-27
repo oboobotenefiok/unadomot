@@ -300,7 +300,15 @@ async fn google_auth(
         return error(StatusCode::BAD_REQUEST, "Google token is required");
     }
 
-    let response = match reqwest::Client::new()
+    let client = match reqwest::Client::builder()
+        .timeout(Duration::from_secs(10))
+        .build()
+    {
+        Ok(client) => client,
+        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Google verification unavailable"),
+    };
+
+    let response = match client
         .get("https://oauth2.googleapis.com/tokeninfo")
         .query(&[("id_token", request.id_token.trim())])
         .send()
