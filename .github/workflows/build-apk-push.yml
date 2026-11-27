@@ -32,6 +32,8 @@ jobs:
           exec > >(tee -a /tmp/apk.log) 2>&1
           set -e
           flutter create --platforms=android --org com.unadomot --project-name unadomot .
+          bash ../../scripts/apply_android_permissions.sh
+          bash ../../scripts/apply_android_deep_links.sh
           mkdir -p assets
           cp ../../vault/img/unadomot.jpg assets/unadomot.jpg
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/upload-keystore.jks
