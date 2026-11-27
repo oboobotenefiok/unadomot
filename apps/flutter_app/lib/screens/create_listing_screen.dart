@@ -151,6 +151,14 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     setState(() => _media.removeAt(index));
   }
 
+  void _reorderMedia(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) newIndex -= 1;
+      final item = _media.removeAt(oldIndex);
+      _media.insert(newIndex, item);
+    });
+  }
+
   void _next() {
     if (_step == 0 && !_detailsKey.currentState!.validate()) return;
     if (_step == 1 && !_locationKey.currentState!.validate()) return;
@@ -495,7 +503,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            'At least one photo is required. The first photo becomes the cover image.',
+            'At least one photo is required. Drag to reorder; the first item becomes the cover.',
             style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: 16),
@@ -537,76 +545,75 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
               child: const Center(child: Text('No media added yet')),
             )
           else
-            GridView.builder(
+            ReorderableListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-                childAspectRatio: 1.1,
-              ),
+              buildDefaultDragHandles: false,
               itemCount: _media.length,
+              onReorder: _reorderMedia,
               itemBuilder: (context, index) {
                 final item = _media[index];
-                return Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: item.type == 'image'
-                          ? Image.memory(item.bytes, fit: BoxFit.cover)
-                          : Container(
-                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
+                return Container(
+                  key: ValueKey('${item.name}-$index'),
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: SizedBox(
+                          width: 64,
+                          height: 64,
+                          child: item.type == 'image'
+                              ? Image.memory(item.bytes, fit: BoxFit.cover)
+                              : Container(
+                                  color: Theme.of(context).colorScheme.surface,
+                                  child: Icon(
                                     item.type == 'video'
                                         ? Icons.play_circle_outline
                                         : Icons.description_outlined,
-                                    size: 40,
+                                    size: 28,
                                   ),
-                                  const SizedBox(height: 8),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                                    child: Text(
-                                      item.name,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
                             ),
-                    ),
-                    Positioned(
-                      top: 4,
-                      right: 4,
-                      child: IconButton.filledTonal(
+                            if (index == 0)
+                              const Text(
+                                'Cover image',
+                                style: TextStyle(fontSize: 10, color: Colors.green),
+                              ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
                         visualDensity: VisualDensity.compact,
                         onPressed: _busy ? null : () => _removeMedia(index),
                         icon: const Icon(Icons.close, size: 18),
                       ),
-                    ),
-                    if (index == 0)
-                      Positioned(
-                        left: 4,
-                        bottom: 4,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.black54,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: const Text(
-                            'Cover',
-                            style: TextStyle(color: Colors.white, fontSize: 10),
-                          ),
+                      ReorderableDragStartListener(
+                        index: index,
+                        child: const Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Icon(Icons.drag_handle),
                         ),
                       ),
-                  ],
+                    ],
+                  ),
                 );
               },
             ),
