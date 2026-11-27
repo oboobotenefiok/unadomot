@@ -8,6 +8,7 @@ import '../data/local_cache.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import '../widgets/empty_state.dart';
 import '../widgets/listing_card.dart';
 import '../widgets/share_listing_sheet.dart';
 import 'admin_screen.dart';
@@ -273,26 +274,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (!widget.appState.signedIn) {
       return Scaffold(
         appBar: widget.showAppBar ? AppBar(title: const Text('Profile')) : null,
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.person_outline, size: 64, color: UnaColors.green700),
-                const SizedBox(height: 16),
-                const Text(
-                  'Sign in to manage your listings, favorites and verification.',
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: () => requireAuth(context, widget.appState),
-                  child: const Text('Sign in'),
-                ),
-              ],
-            ),
-          ),
+        body: EmptyState(
+          icon: Icons.person_outline,
+          title: 'Sign in to manage your profile',
+          message: 'Manage your listings, favorites and verification.',
+          actionLabel: 'Sign in',
+          onAction: () => requireAuth(context, widget.appState),
         ),
       );
     }
@@ -502,16 +489,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final removed = _listings.where((item) => item['status'] == 'deleted').toList();
 
     if (_listings.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.symmetric(vertical: 48),
-        alignment: Alignment.center,
-        child: Column(
-          children: [
-            const Icon(Icons.home_work_outlined, size: 48, color: Colors.grey),
-            const SizedBox(height: 10),
-            Text('No listings yet', style: TextStyle(color: dark ? Colors.white60 : Colors.black54)),
-          ],
-        ),
+      return const EmptyState(
+        icon: Icons.home_work_outlined,
+        title: 'No listings yet',
+        message: 'Post your first property to start receiving enquiries.',
       );
     }
 
