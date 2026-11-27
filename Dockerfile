@@ -1,4 +1,4 @@
-FROM rust:1.100-slim AS builder
+FROM rust:1.100-bookworm AS builder
 WORKDIR /app
 RUN apt-get update && apt-get install -y pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
 COPY services/api/Cargo.toml services/api/Cargo.lock ./
