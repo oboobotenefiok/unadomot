@@ -6,8 +6,10 @@ import 'package:image_picker/image_picker.dart';
 import '../api/api_client.dart';
 import '../app_settings.dart';
 import '../data/local_cache.dart';
+import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import '../widgets/share_listing_sheet.dart';
 import 'admin_screen.dart';
 import 'auth_sheet.dart';
 import 'favorites_screen.dart';
@@ -202,6 +204,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
       }
     }
+  }
+
+  Future<void> _deleteListing(Map<String, dynamic> listing) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete listing?'),
+        content: Text('Remove “${listing['title']}” from public view?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      final response = await http.delete(
+        widget.api.baseUrl.resolve('/api/listings/${listing['id']}'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${widget.api.token}',
+        },
+      ).timeout(const Duration(seconds: 20));
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw ApiException(response.statusCode, 'Could not delete listing.');
+      }
+      await _load();
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
+      }
+    }
+  }
+
+  Future<void> _shareListing(Map<String, dynamic> listing) async {
+    final model = Listing.fromJson(listing);
+    await showShareListingSheet(context, model);
   }
 
   @override
@@ -437,6 +480,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
 
   Widget _listingsTab(bool dark) {
+    final active = _listings.where((item) => item['status'] != 'deleted').toList();
+    final removed = _listings.where((item) => item['status'] == 'deleted').toList();
+
     if (_listings.isEmpty) {
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 48),
@@ -451,127 +497,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     }
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: _listings.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 0.72,
-      ),
-      itemBuilder: (context, index) {
-        final listing = _listings[index];
-        final deleted = listing['status'] == 'deleted';
-        final code = listing['code'] as String?;
-        return InkWell(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ListingDetailScreen(
-                api: widget.api,
-                cache: widget.cache,
-                appState: widget.appState,
-                listingId: listing['id'] as String,
-              ),
-            ),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: dark ? const Color(0xFF122019) : Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6)],
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      if (listing['image_url'] != null)
-                        Image.network(listing['image_url'] as String, fit: BoxFit.cover)
-                      else
-                        Container(color: dark ? Colors.white10 : Colors.black12, child: const Icon(Icons.home, size: 40)),
-                      Positioned(
-                        left: 6,
-                        bottom: 6,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          color: const Color(0xFF052E16),
-                          child: Text(
-                            'N${(listing['price'] as num?)?.toStringAsFixed(0) ?? '0'}',
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12),
-                          ),
-                        ),
-                      ),
-                      if (deleted)
-                        Container(
-                          color: Colors.black54,
-                          alignment: Alignment.center,
-                          child: const Text('Deleted', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-                        ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        listing['title'] as String? ?? '',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        listing['address'] as String? ?? '',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 11, color: dark ? Colors.white60 : Colors.black54),
-                      ),
-                      if (code != null && code.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        InkWell(
-                          onTap: () async {
-                            await Clipboard.setData(ClipboardData(text: code));
-                            if (!context.mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Code $code copied')),
-                            );
-                          },
-                          child: Row(
-                            children: [
-                              Icon(Icons.qr_code_2, size: 12, color: dark ? Colors.white54 : Colors.black54),
-                              const SizedBox(width: 4),
-                              Text(
-                                code,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: dark ? Colors.white70 : const Color(0xFF15803D),
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              Icon(Icons.copy, size: 11, color: dark ? Colors.white38 : Colors.black38),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (active.isNotEmpty) ...[
+          const Text('Active Listings', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 10),
+          _listingGrid(active, dark),
+        ],
+        if (removed.isNotEmpty) ...[
+          const SizedBox(height: 20),
+          const Text('Removed Listings', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.grey)),
+          const SizedBox(height: 10),
+          _listingGrid(removed, dark),
+        ],
+      ],
     );
   }
+
+  Widget _listingGrid(List<Map<String, dynamic>> listings, bool dark) => GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: listings.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 0.62,
+        ),
+        itemBuilder: (context, index) {
+          final listing = listings[index];
+          final deleted = listing['status'] == 'deleted';
+          return _ProfileListingCard(
+            listing: listing,
+            dark: dark,
+            deleted: deleted,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ListingDetailScreen(
+                  api: widget.api,
+                  cache: widget.cache,
+                  appState: widget.appState,
+                  listingId: listing['id'] as String,
+                ),
+              ),
+            ),
+            onShare: () => _shareListing(listing),
+            onDelete: deleted ? null : () => _deleteListing(listing),
+          );
+        },
+      );
 
   Widget _settingsTab(bool dark) {
     final isAdmin = _profile?['is_admin'] == true;
@@ -658,4 +634,142 @@ class _ProfileScreenState extends State<ProfileScreen> {
         trailing: const Icon(Icons.chevron_right, size: 18),
         onTap: onTap,
       );
+}
+
+class _ProfileListingCard extends StatelessWidget {
+  final Map<String, dynamic> listing;
+  final bool dark;
+  final bool deleted;
+  final VoidCallback onTap;
+  final VoidCallback onShare;
+  final VoidCallback? onDelete;
+
+  const _ProfileListingCard({
+    required this.listing,
+    required this.dark,
+    required this.deleted,
+    required this.onTap,
+    required this.onShare,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final imageUrl = listing['image_url'] as String?;
+    final code = listing['code'] as String?;
+    return Material(
+      color: dark ? const Color(0xFF122019) : Colors.white,
+      borderRadius: BorderRadius.circular(10),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  if (imageUrl == null)
+                    Container(
+                      color: UnaColors.green100,
+                      child: const Icon(Icons.home_work_outlined, size: 40, color: UnaColors.green700),
+                    )
+                  else
+                    Image.network(imageUrl, fit: BoxFit.cover),
+                  Positioned(
+                    left: 6,
+                    bottom: 6,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: UnaColors.green900,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        '₦${(listing['price'] as num?)?.toStringAsFixed(0) ?? '0'}',
+                        style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ),
+                  if (deleted)
+                    Container(
+                      color: Colors.black54,
+                      alignment: Alignment.center,
+                      child: const Text('Deleted', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                    ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    listing['title'] as String? ?? '',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    listing['address'] as String? ?? '',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 10, color: dark ? Colors.white60 : Colors.black54),
+                  ),
+                  if (code != null && code.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    InkWell(
+                      onTap: () async {
+                        await Clipboard.setData(ClipboardData(text: code));
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Code $code copied')),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          Icon(Icons.qr_code_2, size: 12, color: dark ? Colors.white54 : Colors.black54),
+                          const SizedBox(width: 4),
+                          Text(code, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: dark ? Colors.white70 : const Color(0xFF15803D))),
+                          const SizedBox(width: 4),
+                          Icon(Icons.copy, size: 10, color: dark ? Colors.white38 : Colors.black38),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: onShare,
+                        borderRadius: BorderRadius.circular(20),
+                        child: const Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Icon(Icons.share_outlined, size: 16, color: UnaColors.green700),
+                        ),
+                      ),
+                      if (onDelete != null) ...[
+                        const SizedBox(width: 4),
+                        InkWell(
+                          onTap: onDelete,
+                          borderRadius: BorderRadius.circular(20),
+                          child: const Padding(
+                            padding: EdgeInsets.all(4),
+                            child: Icon(Icons.delete_outline, size: 16, color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
