@@ -430,14 +430,18 @@ class _ListingsScreenState extends State<ListingsScreen> {
   }
 
   Future<void> _openDetail(Listing listing) async {
-    await widget.cache.addAffinity(FeedRanker.affinityFor(listing));
-    if (mounted) {
-      setState(() {
-        _affinity = {
-          ..._affinity,
-          ...FeedRanker.affinityFor(listing),
-        };
-      });
+    try {
+      await widget.cache.addAffinity(FeedRanker.affinityFor(listing));
+      if (mounted) {
+        setState(() {
+          _affinity = {
+            ..._affinity,
+            ...FeedRanker.affinityFor(listing),
+          };
+        });
+      }
+    } catch (_) {
+      // A cache failure must never block opening the listing.
     }
     if (!mounted) return;
     Navigator.push(
