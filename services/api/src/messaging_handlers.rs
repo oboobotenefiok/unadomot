@@ -77,10 +77,13 @@ fn messaging_error(error_value: MessagingError) -> axum::response::Response {
         MessagingError::NotFound => error(StatusCode::NOT_FOUND, "Conversation not found"),
         MessagingError::Forbidden => error(StatusCode::FORBIDDEN, "Not allowed"),
         MessagingError::InvalidInput(message) => error(StatusCode::BAD_REQUEST, &message),
-        MessagingError::Repository(_) => error(
-            StatusCode::SERVICE_UNAVAILABLE,
-            "The service is temporarily unavailable",
-        ),
+        MessagingError::Repository(source) => {
+            tracing::error!(error = %source, "messaging repository failure");
+            error(
+                StatusCode::SERVICE_UNAVAILABLE,
+                "The service is temporarily unavailable",
+            )
+        }
     }
 }
 
