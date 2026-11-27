@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class UnaColors {
   static const page = Color(0xFFF0FDF4);
   static const surface = Color(0xFFFFFFFF);
-  static const primary = Color(0xFF052E16);
+  static const primary = Color(0xFF14532D);
   static const primaryHover = Color(0xFF166534);
   static const green900 = Color(0xFF14532D);
   static const green700 = Color(0xFF15803D);
@@ -80,7 +80,7 @@ ThemeData unaTheme() {
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        backgroundColor: UnaColors.primary,
+        backgroundColor: UnaColors.green700,
         foregroundColor: Colors.white,
         minimumSize: const Size(44, 48),
         shape: RoundedRectangleBorder(
