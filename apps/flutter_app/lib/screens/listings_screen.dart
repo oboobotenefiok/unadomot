@@ -26,12 +26,14 @@ class ListingsScreen extends StatefulWidget {
   final ApiClient api;
   final LocalCache cache;
   final AppState appState;
+  final ValueNotifier<String>? searchNotifier;
 
   const ListingsScreen({
     super.key,
     required this.api,
     required this.cache,
     required this.appState,
+    this.searchNotifier,
   });
 
   @override
@@ -57,6 +59,8 @@ class _ListingsScreenState extends State<ListingsScreen> {
   @override
   void initState() {
     super.initState();
+    _query = widget.searchNotifier?.value ?? '';
+    widget.searchNotifier?.addListener(_onExternalSearch);
     _scrollController.addListener(_onScroll);
     _load();
     _loadFavorites();
@@ -66,8 +70,15 @@ class _ListingsScreenState extends State<ListingsScreen> {
 
   @override
   void dispose() {
+    widget.searchNotifier?.removeListener(_onExternalSearch);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onExternalSearch() {
+    final value = widget.searchNotifier?.value ?? '';
+    if (!mounted || value == _query) return;
+    setState(() => _query = value);
   }
 
   Future<void> _loadFavorites() async {
@@ -484,7 +495,12 @@ class _ListingsScreenState extends State<ListingsScreen> {
         ),
         titleSpacing: 0,
         title: TextField(
-          onChanged: (value) => setState(() => _query = value),
+          controller: TextEditingController(text: _query)
+            ..selection = TextSelection.collapsed(offset: _query.length),
+          onChanged: (value) {
+            setState(() => _query = value);
+            widget.searchNotifier?.value = value;
+          },
           decoration: const InputDecoration(
             hintText: 'Search homes, states, LGAs',
             prefixIcon: Icon(Icons.search),
