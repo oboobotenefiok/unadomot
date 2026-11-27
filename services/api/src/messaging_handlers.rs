@@ -97,6 +97,19 @@ fn messaging_error(error_value: MessagingError) -> axum::response::Response {
     }
 }
 
+async fn require_participant(
+    state: &AppState,
+    conversation_id: Uuid,
+    user_id: Uuid,
+) -> Result<(), axum::response::Response> {
+    state
+        .messaging
+        .list_rich_messages(conversation_id, user_id, None, 1)
+        .await
+        .map(|_| ())
+        .map_err(messaging_error)
+}
+
 async fn conversations_presence_handler(
     State(state): State<AppState>,
     headers: HeaderMap,
@@ -143,6 +156,10 @@ async fn typing_ping_handler(
         Err(response) => return response,
     };
 
+    if let Err(response) = require_participant(&state, conversation_id, user_id).await {
+        return response;
+    }
+
     if let Ok(mut store) = typing_store().lock() {
         store.insert((conversation_id, user_id), Instant::now());
         store.retain(|_, at| at.elapsed() < Duration::from_secs(30));
@@ -159,6 +176,10 @@ async fn typing_status_handler(
         Ok(id) => id,
         Err(response) => return response,
     };
+
+    if let Err(response) = require_participant(&state, conversation_id, user_id).await {
+        return response;
+    }
 
     let typing = typing_store()
         .lock()
