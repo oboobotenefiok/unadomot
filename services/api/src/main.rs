@@ -95,6 +95,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .init();
 
     let migrate_only = std::env::args().any(|arg| arg == "migrate");
+    let is_production = std::env::var("FLY_APP_NAME").is_ok()
+        || std::env::var("APP_ENV").ok().as_deref() == Some("production");
 
     let jwt_secret = std::env::var("JWT_SECRET")
         .map_err(|_| "JWT_SECRET is required and must be at least 32 bytes")?;
@@ -111,16 +113,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Err("REFRESH_TOKEN_SECRET must differ from JWT_SECRET".into());
     }
 
-    if std::env::var("PASSWORD_RESET_DEBUG").ok().as_deref() == Some("1")
-        && std::env::var("APP_ENV").ok().as_deref() == Some("production")
-    {
+    if std::env::var("PASSWORD_RESET_DEBUG").ok().as_deref() == Some("1") && is_production {
         return Err("PASSWORD_RESET_DEBUG must not be enabled in production".into());
     }
 
     let jwt_secret = Arc::new(jwt_secret);
     let database_url = std::env::var("DATABASE_URL").ok();
 
-    if database_url.is_none() && std::env::var("FLY_APP_NAME").is_ok() {
+    if database_url.is_none() && is_production {
         return Err("DATABASE_URL is required in production".into());
     }
 
@@ -172,6 +172,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         std::env::var("CLOUDINARY_API_SECRET"),
     ) {
         (Ok(cloud), Ok(key), Ok(secret)) => Arc::new(CloudinarySigner::new(cloud, key, secret)),
+        _ if is_production => {
+            return Err("CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET are required in production".into())
+        }
         _ => Arc::new(UnconfiguredMediaSigner),
     };
 
