@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import '../api/api_client.dart';
 import '../data/local_cache.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import '../utils/share_helper.dart';
 import 'listing_detail_screen.dart';
 
 class FavoritesScreen extends StatefulWidget {
@@ -56,6 +58,11 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     }
   }
 
+  Future<void> _share(Listing listing) async {
+    final link = 'https://unadomot.fly.dev/listings/${listing.id}';
+    await Share.share('${naijaShareText(listing)}\n$link', subject: listing.title);
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: widget.showAppBar ? AppBar(title: const Text('Favorites')) : null,
@@ -79,6 +86,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                       return _FavoriteCard(
                         listing: listing,
                         onRemove: () => _removeFavorite(listing),
+                        onShare: () => _share(listing),
                         onTap: () async {
                           await Navigator.push(
                             context,
@@ -102,11 +110,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 class _FavoriteCard extends StatelessWidget {
   final Listing listing;
   final VoidCallback onRemove;
+  final VoidCallback onShare;
   final VoidCallback onTap;
 
   const _FavoriteCard({
     required this.listing,
     required this.onRemove,
+    required this.onShare,
     required this.onTap,
   });
 
@@ -136,14 +146,28 @@ class _FavoriteCard extends StatelessWidget {
                   Positioned(
                     top: 6,
                     right: 6,
-                    child: InkWell(
-                      onTap: onRemove,
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: const BoxDecoration(color: Colors.black45, shape: BoxShape.circle),
-                        child: const Icon(Icons.favorite, size: 16, color: Colors.red),
-                      ),
+                    child: Row(
+                      children: [
+                        InkWell(
+                          onTap: onShare,
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(color: Colors.black45, shape: BoxShape.circle),
+                            child: const Icon(Icons.share_outlined, size: 15, color: Colors.white),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        InkWell(
+                          onTap: onRemove,
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(color: Colors.black45, shape: BoxShape.circle),
+                            child: const Icon(Icons.favorite, size: 16, color: Colors.red),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
