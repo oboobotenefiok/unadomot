@@ -1,0 +1,4 @@
+[advisories]
+# libsqlite3-sys is an optional dependency of sqlx-sqlite. This API only
+# enables the postgres driver, so the SQLite C library is not linked or used.
+ignore = ["RUSTSEC-2026-0459"]
