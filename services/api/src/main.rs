@@ -365,3 +365,19 @@ async fn shutdown_signal() {
 
     tracing::info!("Shutdown signal received");
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rejects_common_placeholder_secrets() {
+        assert!(is_placeholder_secret("changeme"));
+        assert!(is_placeholder_secret("test-secret-that-is-long-enough"));
+        assert!(is_placeholder_secret("your-secret-value"));
+        assert!(is_placeholder_secret("example-secret"));
+        assert!(is_placeholder_secret("secret"));
+        assert!(is_placeholder_secret("password"));
+        assert!(!is_placeholder_secret("a-real-random-production-secret"));
+    }
+}
