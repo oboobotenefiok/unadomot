@@ -5,6 +5,7 @@ import '../data/local_cache.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import '../utils/currency.dart';
 import '../widgets/share_listing_sheet.dart';
 import 'auth_sheet.dart';
 import 'listing_code_screen.dart';
@@ -383,7 +384,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        'N${_listing!.price.toStringAsFixed(0)}',
+                                        formatNaira(_listing!.price),
                                         style: const TextStyle(
                                           color: UnaColors.primary,
                                           fontSize: 24,
@@ -726,7 +727,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(item.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
-                              Text('N${item.price.toStringAsFixed(0)}', style: const TextStyle(color: UnaColors.primary, fontSize: 12, fontWeight: FontWeight.w700)),
+                              Text(formatNaira(item.price), style: const TextStyle(color: UnaColors.primary, fontSize: 12, fontWeight: FontWeight.w700)),
                               Text('${item.lga}, ${item.state}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: UnaColors.text500, fontSize: 10)),
                             ],
                           ),
