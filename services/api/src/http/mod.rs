@@ -1,6 +1,6 @@
 use crate::application::auth::{
-    hash_password, hash_refresh_token, issue_session, login, new_refresh_token, register,
-    verify_session, AuthError, UserRepository,
+    hash_password, hash_refresh_token, issue_session, login, new_refresh_token, register, AuthError,
+    UserRepository,
 };
 use crate::application::email::EmailSender;
 use crate::application::listings::{
@@ -22,10 +22,10 @@ use crate::domain::listing::{
 };
 use crate::domain::messaging::{Conversation, ConversationSummary, Message};
 use crate::domain::report::Report;
-use crate::extract::AuthUser;
+use crate::extract::{AdminUser, AuthUser};
 use axum::{
     extract::{DefaultBodyLimit, Path, Query, Request, State},
-    http::{header, HeaderMap, HeaderValue, Method, StatusCode},
+    http::{header, HeaderValue, Method, StatusCode},
     middleware::{self, Next},
     response::{IntoResponse, Response},
     routing::{get, post},
@@ -874,11 +874,10 @@ async fn get_listing_handler(
 
 async fn update_listing_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
     Path(id): Path<Uuid>,
     Json(request): Json<UpdateListingRequest>,
 ) -> Result<Json<ListingResponse>, ApiError> {
-    let user = authorize(&state, &headers).await?;
     let update = ListingUpdate {
         title: request.title,
         description: request.description,
@@ -902,10 +901,9 @@ async fn update_listing_handler(
 
 async fn delete_listing_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
     Path(id): Path<Uuid>,
 ) -> Result<StatusCode, ApiError> {
-    let user = authorize(&state, &headers).await?;
     delete_listing(state.listings.as_ref(), id, user.id)
         .await
         .map(|_| StatusCode::NO_CONTENT)
@@ -914,26 +912,17 @@ async fn delete_listing_handler(
 
 async fn admin_remove_listing_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    AdminUser { id: user_id }: AdminUser,
     Path(id): Path<Uuid>,
     Json(request): Json<AdminRemoveRequest>,
 ) -> Result<Json<ListingResponse>, ApiError> {
-    let user = authorize(&state, &headers).await?;
-    if !state.users.is_admin(user.id).await.map_err(auth_error)? {
-        return Err(ApiError::new(
-            StatusCode::FORBIDDEN,
-            "forbidden",
-            "Admin access is required",
-        ));
-    }
-
-    let listing = admin_remove_listing(state.listings.as_ref(), id, user.id, &request.reason)
+    let listing = admin_remove_listing(state.listings.as_ref(), id, user_id, &request.reason)
         .await
         .map_err(listing_error)?;
     state
         .audit
         .record_audit(
-            user.id,
+            user_id,
             "listing.remove",
             id,
             json!({"reason": request.reason}),
@@ -952,24 +941,15 @@ async fn admin_remove_listing_handler(
 
 async fn admin_restore_listing_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    AdminUser { id: user_id }: AdminUser,
     Path(id): Path<Uuid>,
 ) -> Result<Json<ListingResponse>, ApiError> {
-    let user = authorize(&state, &headers).await?;
-    if !state.users.is_admin(user.id).await.map_err(auth_error)? {
-        return Err(ApiError::new(
-            StatusCode::FORBIDDEN,
-            "forbidden",
-            "Admin access is required",
-        ));
-    }
-
-    let listing = admin_restore_listing(state.listings.as_ref(), id, user.id)
+    let listing = admin_restore_listing(state.listings.as_ref(), id, user_id)
         .await
         .map_err(listing_error)?;
     state
         .audit
-        .record_audit(user.id, "listing.restore", id, json!({}))
+        .record_audit(user_id, "listing.restore", id, json!({}))
         .await
         .map_err(|_| {
             ApiError::new(
@@ -984,18 +964,9 @@ async fn admin_restore_listing_handler(
 
 async fn admin_suspend_user_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    AdminUser { id: user_id }: AdminUser,
     Path(id): Path<Uuid>,
 ) -> Result<StatusCode, ApiError> {
-    let user = authorize(&state, &headers).await?;
-    if !state.users.is_admin(user.id).await.map_err(auth_error)? {
-        return Err(ApiError::new(
-            StatusCode::FORBIDDEN,
-            "forbidden",
-            "Admin access is required",
-        ));
-    }
-
     let suspended = state.users.suspend_user(id).await.map_err(auth_error)?;
     if !suspended {
         return Err(ApiError::new(
@@ -1007,7 +978,7 @@ async fn admin_suspend_user_handler(
 
     state
         .audit
-        .record_audit(user.id, "user.suspend", id, json!({}))
+        .record_audit(user_id, "user.suspend", id, json!({}))
         .await
         .map_err(|_| {
             ApiError::new(
@@ -1022,11 +993,10 @@ async fn admin_suspend_user_handler(
 
 async fn create_report_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
     Path(id): Path<Uuid>,
     Json(request): Json<CreateReportRequest>,
 ) -> Result<Json<ReportResponse>, ApiError> {
-    let user = authorize(&state, &headers).await?;
     create_report(
         state.reports.as_ref(),
         id,
@@ -1041,18 +1011,9 @@ async fn create_report_handler(
 
 async fn admin_list_reports_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    _admin: AdminUser,
     Query(query): Query<ReportQuery>,
 ) -> Result<Json<Vec<ReportResponse>>, ApiError> {
-    let user = authorize(&state, &headers).await?;
-    if !state.users.is_admin(user.id).await.map_err(auth_error)? {
-        return Err(ApiError::new(
-            StatusCode::FORBIDDEN,
-            "forbidden",
-            "Admin access is required",
-        ));
-    }
-
     list_reports(
         state.reports.as_ref(),
         query.status.as_deref().unwrap_or("pending"),
@@ -1064,23 +1025,14 @@ async fn admin_list_reports_handler(
 
 async fn admin_resolve_report_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    AdminUser { id: user_id }: AdminUser,
     Path(id): Path<Uuid>,
     Json(request): Json<ResolveReportRequest>,
 ) -> Result<Json<ReportResponse>, ApiError> {
-    let user = authorize(&state, &headers).await?;
-    if !state.users.is_admin(user.id).await.map_err(auth_error)? {
-        return Err(ApiError::new(
-            StatusCode::FORBIDDEN,
-            "forbidden",
-            "Admin access is required",
-        ));
-    }
-
     let report = resolve_report(
         state.reports.as_ref(),
         id,
-        user.id,
+        user_id,
         &request.status,
         request.notes.as_deref(),
     )
@@ -1089,7 +1041,7 @@ async fn admin_resolve_report_handler(
     state
         .audit
         .record_audit(
-            user.id,
+            user_id,
             "report.resolve",
             id,
             json!({"status": request.status, "notes": request.notes}),
@@ -1108,12 +1060,10 @@ async fn admin_resolve_report_handler(
 
 async fn add_media_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
     Path(id): Path<Uuid>,
     Json(request): Json<AddMediaRequest>,
 ) -> Result<Json<MediaResponse>, ApiError> {
-    let user = authorize(&state, &headers).await?;
-
     if !valid_cloudinary_public_id(&request.cloudinary_public_id) {
         return Err(ApiError::new(
             StatusCode::BAD_REQUEST,
@@ -1144,10 +1094,9 @@ async fn add_media_handler(
 
 async fn signature_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    _user: AuthUser,
     Json(request): Json<SignatureRequest>,
 ) -> Result<Json<crate::application::media::UploadSignature>, ApiError> {
-    authorize(&state, &headers).await?;
     let folder = request
         .folder
         .filter(|value| !value.trim().is_empty())
@@ -1162,9 +1111,8 @@ async fn signature_handler(
 
 async fn conversations_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
 ) -> Result<Json<Vec<ConversationSummaryResponse>>, ApiError> {
-    let user = authorize(&state, &headers).await?;
     list_conversations(state.messaging.as_ref(), user.id)
         .await
         .map(|items| Json(items.into_iter().map(ConversationSummaryResponse::from).collect()))
@@ -1173,10 +1121,9 @@ async fn conversations_handler(
 
 async fn start_conversation_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
     Path(id): Path<Uuid>,
 ) -> Result<Json<ConversationResponse>, ApiError> {
-    let user = authorize(&state, &headers).await?;
     start_conversation(state.messaging.as_ref(), id, user.id)
         .await
         .map(|conversation| Json(ConversationResponse::from(conversation)))
@@ -1185,11 +1132,10 @@ async fn start_conversation_handler(
 
 async fn messages_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
     Path(id): Path<Uuid>,
     Query(query): Query<MessageQuery>,
 ) -> Result<Json<Vec<MessageResponse>>, ApiError> {
-    let user = authorize(&state, &headers).await?;
     let before = query
         .before
         .as_deref()
@@ -1220,11 +1166,10 @@ async fn messages_handler(
 
 async fn send_message_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
     Path(id): Path<Uuid>,
     Json(request): Json<SendMessageRequest>,
 ) -> Result<Json<MessageResponse>, ApiError> {
-    let user = authorize(&state, &headers).await?;
     send_message(state.messaging.as_ref(), user.id, id, &request.body)
         .await
         .map(|message| Json(MessageResponse::from(message)))
@@ -1233,47 +1178,13 @@ async fn send_message_handler(
 
 async fn mark_read_handler(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    user: AuthUser,
     Path(id): Path<Uuid>,
 ) -> Result<StatusCode, ApiError> {
-    let user = authorize(&state, &headers).await?;
     mark_read(state.messaging.as_ref(), user.id, id)
         .await
         .map(|_| StatusCode::NO_CONTENT)
         .map_err(messaging_error)
-}
-
-async fn authorize(
-    state: &AppState,
-    headers: &HeaderMap,
-) -> Result<crate::application::auth::AuthenticatedUser, ApiError> {
-    let token = headers
-        .get("authorization")
-        .and_then(|value| value.to_str().ok())
-        .and_then(|value| value.strip_prefix("Bearer "))
-        .ok_or_else(|| {
-            tracing::warn!("authentication failed: missing bearer token");
-            ApiError::new(
-                StatusCode::UNAUTHORIZED,
-                "unauthorized",
-                "Missing bearer token",
-            )
-        })?;
-
-    let user = verify_session(token, &state.jwt_secret).map_err(|error| {
-        tracing::warn!("authentication failed: invalid or expired token");
-        auth_error(error)
-    })?;
-
-    if !state.users.is_active(user.id).await.map_err(auth_error)? {
-        tracing::warn!(user_id = %user.id, "authentication failed: inactive account");
-        return Err(ApiError::new(
-            StatusCode::UNAUTHORIZED,
-            "unauthorized",
-            "Account is not active",
-        ));
-    }
-    Ok(user)
 }
 
 fn parse_decimal(value: &str) -> Result<Decimal, ApiError> {
@@ -1343,7 +1254,7 @@ fn messaging_error(error: MessagingError) -> ApiError {
             StatusCode::FORBIDDEN,
             "forbidden",
             "You are not a participant in this conversation",
-        );
+        ),
         MessagingError::InvalidInput(message) => {
             ApiError::new(StatusCode::BAD_REQUEST, "validation_error", message)
         }
