@@ -38,6 +38,6 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: false
-  image_path: ../../vault/img/unadomot.jpg
+  image_path: assets/unadomot.jpg
   adaptive_icon_background: "#0F5132"
-  adaptive_icon_foreground: ../../vault/img/unadomot.jpg
+  adaptive_icon_foreground: assets/unadomot.jpg
