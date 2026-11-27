@@ -35,4 +35,10 @@ OUT="thisrun.txt"
 
 git add "$OUT"
 git commit -m "ci: record run ${RUN_ID:-unknown}" || true
+
+git pull --rebase origin "$BRANCH"
 git push origin "$BRANCH"
+
+echo
+ echo "Captured output: $OUT"
+cat "$OUT"
