@@ -37,6 +37,7 @@ use unadomot_api::infrastructure::postgres::{
     verification_repository::PostgresVerificationRepository,
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use uuid::Uuid;
 
 type Repositories = (
     Arc<dyn UserRepository>,
@@ -83,6 +84,40 @@ async fn global_rate_limit(request: Request, next: Next) -> Result<Response, Sta
     }
 
     Ok(next.run(request).await)
+}
+
+async fn request_log(request: Request, next: Next) -> Response {
+    let method = request.method().clone();
+    let path = request.uri().path().to_string();
+    let request_id = Uuid::new_v4().to_string();
+    let started = Instant::now();
+    let mut response = next.run(request).await;
+    let latency_ms = started.elapsed().as_millis();
+
+    if response.status().is_server_error() {
+        tracing::error!(
+            %method,
+            %path,
+            status = %response.status(),
+            latency_ms,
+            request_id = %request_id,
+            "request failed"
+        );
+    } else {
+        tracing::info!(
+            %method,
+            %path,
+            status = %response.status(),
+            latency_ms,
+            request_id = %request_id,
+            "request"
+        );
+    }
+
+    if let Ok(value) = HeaderValue::from_str(&request_id) {
+        response.headers_mut().insert("x-request-id", value);
+    }
+    response
 }
 
 #[tokio::main]
@@ -232,6 +267,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let app = app
         .layer(DefaultBodyLimit::max(2 * 1024 * 1024))
         .layer(middleware::from_fn(global_rate_limit))
+        .layer(middleware::from_fn(request_log))
         .layer(SetResponseHeaderLayer::overriding(
             header::STRICT_TRANSPORT_SECURITY,
             HeaderValue::from_static("max-age=31536000; includeSubDomains; preload"),
