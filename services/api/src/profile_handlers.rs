@@ -405,4 +405,31 @@ mod tests {
         assert!(valid_media_url("https://res.cloudinary.com/demo/image/upload/sample.jpg"));
         assert!(valid_media_url(""));
     }
+
+    #[test]
+    fn public_profile_never_serialises_email_or_phone() {
+        let profile = Profile {
+            id: Uuid::new_v4(),
+            email: "private@example.test".into(),
+            name: "Private User".into(),
+            username: Some("privateuser".into()),
+            phone: Some("08000000000".into()),
+            bio: None,
+            photo_url: None,
+            user_type: "renter".into(),
+            verified: false,
+            reply_rate: None,
+            response_time: None,
+            last_active: None,
+            created_at: Utc::now(),
+        };
+
+        let public = profile_json(&profile, true);
+        assert!(public.get("email").is_none());
+        assert!(public.get("phone").is_none());
+
+        let private = profile_json(&profile, false);
+        assert_eq!(private["email"], "private@example.test");
+        assert_eq!(private["phone"], "08000000000");
+    }
 }
