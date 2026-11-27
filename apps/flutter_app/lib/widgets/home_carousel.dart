@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/listing.dart';
 import '../theme.dart';
@@ -18,10 +19,41 @@ class HomeCarousel extends StatefulWidget {
 
 class _HomeCarouselState extends State<HomeCarousel> {
   final _controller = PageController(viewportFraction: 0.9);
+  Timer? _timer;
   int _index = 0;
 
   @override
+  void initState() {
+    super.initState();
+    _startAutoscroll();
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeCarousel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.listings.length != widget.listings.length) {
+      _index = 0;
+      _startAutoscroll();
+    }
+  }
+
+  void _startAutoscroll() {
+    _timer?.cancel();
+    if (widget.listings.length < 2) return;
+    _timer = Timer.periodic(const Duration(seconds: 4), (_) {
+      if (!mounted || !_controller.hasClients) return;
+      final next = (_index + 1) % widget.listings.length;
+      _controller.animateToPage(
+        next,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  @override
   void dispose() {
+    _timer?.cancel();
     _controller.dispose();
     super.dispose();
   }
