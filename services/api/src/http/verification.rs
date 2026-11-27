@@ -1,4 +1,6 @@
-use crate::application::auth::{verify_session, UserRepository};
+use crate::application::auth::{
+    bearer_token, require_active, verify_session, UserRepository,
+};
 use crate::application::verification::{
     my_request, pending_requests, review_request, submit_request, VerificationError,
     VerificationRepository,
@@ -101,17 +103,13 @@ async fn authorize(
     state: &VerificationState,
     headers: &HeaderMap,
 ) -> Result<crate::application::auth::AuthenticatedUser, VerificationApiError> {
-    let token = headers
-        .get("authorization")
-        .and_then(|value| value.to_str().ok())
-        .and_then(|value| value.strip_prefix("Bearer "))
-        .ok_or_else(|| {
-            VerificationApiError::new(
-                StatusCode::UNAUTHORIZED,
-                "unauthorized",
-                "Missing bearer token",
-            )
-        })?;
+    let token = bearer_token(headers).map_err(|_| {
+        VerificationApiError::new(
+            StatusCode::UNAUTHORIZED,
+            "unauthorized",
+            "Missing bearer token",
+        )
+    })?;
 
     let user = verify_session(token, &state.jwt_secret).map_err(|_| {
         VerificationApiError::new(
@@ -121,13 +119,15 @@ async fn authorize(
         )
     })?;
 
-    if !state.users.is_active(user.id).await.unwrap_or(false) {
-        return Err(VerificationApiError::new(
-            StatusCode::FORBIDDEN,
-            "forbidden",
-            "This account is suspended",
-        ));
-    }
+    require_active(state.users.as_ref(), user.id)
+        .await
+        .map_err(|_| {
+            VerificationApiError::new(
+                StatusCode::FORBIDDEN,
+                "forbidden",
+                "This account is suspended",
+            )
+        })?;
 
     Ok(user)
 }
