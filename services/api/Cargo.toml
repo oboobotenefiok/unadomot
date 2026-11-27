@@ -23,6 +23,6 @@ hex = "0.4"
 async-trait = "0.1"
 tower-http = { version = "0.6", features = ["cors", "limit", "set-header", "trace"] }
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 redis = { version = "0.27", features = ["tokio-comp", "connection-manager"] }
 reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
