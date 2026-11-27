@@ -158,19 +158,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let verification_state = verification::VerificationState {
         repository: verification_repo,
-        users,
+        users: users.clone(),
         jwt_secret: jwt_secret.clone(),
     };
 
     let call_state = call_handlers::CallState {
         calls,
+        users: users.clone(),
         jwt_secret: jwt_secret.clone(),
     };
 
     let mut app = router(state.clone())
         .merge(public_pages::router(state.clone()))
         .merge(verification::router(verification_state))
-        .merge(messaging_handlers::router(state))
+        .merge(messaging_handlers::router(state.clone()))
         .merge(call_handlers::router(call_state));
 
     if let Some(pool) = profile_pool {
