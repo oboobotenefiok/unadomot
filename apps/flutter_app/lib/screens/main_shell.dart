@@ -229,7 +229,6 @@ class _MainShellState extends State<MainShell> {
                           unreadCount: _unreadCount,
                         ),
                         Expanded(child: content),
-                        const _DesktopFooter(),
                       ],
                     ),
                   ),
@@ -294,36 +293,6 @@ class _MainShellState extends State<MainShell> {
                   ],
                 ),
               ),
-      ),
-    );
-  }
-}
-
-class _DesktopFooter extends StatelessWidget {
-  const _DesktopFooter();
-
-  @override
-  Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      height: 48,
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      decoration: BoxDecoration(
-        color: dark ? const Color(0xFF122019) : Colors.white,
-        border: Border(top: BorderSide(color: dark ? Colors.white12 : Colors.black12)),
-      ),
-      child: Row(
-        children: [
-          Text(
-            '© 2026 UnaDomot',
-            style: TextStyle(fontSize: 12, color: dark ? Colors.white54 : Colors.black54),
-          ),
-          const Spacer(),
-          Text(
-            'Privacy Policy  ·  Terms of Service  ·  Checkout Notice',
-            style: TextStyle(fontSize: 12, color: dark ? Colors.white54 : Colors.black54),
-          ),
-        ],
       ),
     );
   }
