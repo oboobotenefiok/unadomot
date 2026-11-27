@@ -659,4 +659,12 @@ mod tests {
         assert!(valid_media_url("https://res.cloudinary.com/demo/image/upload/sample.jpg"));
         assert!(valid_media_url(""));
     }
+
+    #[test]
+    fn username_has_expected_shape() {
+        let username = username_base("John Doe");
+        assert_eq!(username.len(), 9);
+        assert!(username.chars().take(4).all(|c| c.is_ascii_alphabetic()));
+        assert!(username.chars().skip(5).all(|c| c.is_ascii_digit()));
+    }
 }
