@@ -392,17 +392,31 @@ class _ListingsScreenState extends State<ListingsScreen> {
                 },
               ),
             ),
-            const ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.text_fields),
-              title: Text('Larger text'),
-              subtitle: Text('Use your device text size setting'),
+            ValueListenableBuilder<bool>(
+              valueListenable: appLargeText,
+              builder: (context, enabled, _) => SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Larger text'),
+                subtitle: const Text('Increase text size across the app'),
+                value: enabled,
+                onChanged: (value) async {
+                  appLargeText.value = value;
+                  await widget.cache.setSetting('large_text', value.toString());
+                },
+              ),
             ),
-            const ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.contrast),
-              title: Text('High contrast'),
-              subtitle: Text('Coming soon'),
+            ValueListenableBuilder<bool>(
+              valueListenable: appHighContrast,
+              builder: (context, enabled, _) => SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('High contrast'),
+                subtitle: const Text('Stronger borders and bolder text'),
+                value: enabled,
+                onChanged: (value) async {
+                  appHighContrast.value = value;
+                  await widget.cache.setSetting('high_contrast', value.toString());
+                },
+              ),
             ),
           ],
         ),
