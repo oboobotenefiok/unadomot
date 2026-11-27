@@ -287,14 +287,19 @@ async fn toggle_reaction(
         return error(StatusCode::BAD_REQUEST, "Unsupported reaction");
     }
 
-    let exists: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM listing_comments WHERE id = $1)",
+    let visible: bool = sqlx::query_scalar(
+        "SELECT EXISTS(
+            SELECT 1 FROM listing_comments c
+            JOIN listings l ON l.id = c.listing_id
+            WHERE c.id = $1 AND l.deleted_at IS NULL
+        )",
     )
     .bind(comment_id)
     .fetch_one(&state.pool)
     .await
     .unwrap_or(false);
-    if !exists {
+
+    if !visible {
         return error(StatusCode::NOT_FOUND, "Comment not found");
     }
 
