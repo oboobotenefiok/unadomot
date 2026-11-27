@@ -9,6 +9,7 @@ import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/listing_card.dart';
+import '../widgets/responsive_grid.dart';
 import '../widgets/share_listing_sheet.dart';
 import 'admin_screen.dart';
 import 'auth_sheet.dart';
@@ -513,10 +514,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: listings.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
+        gridDelegate: responsiveGridDelegate(
+          context,
           childAspectRatio: 0.62,
         ),
         itemBuilder: (context, index) {
