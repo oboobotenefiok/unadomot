@@ -1,6 +1,6 @@
 use axum::{
     extract::{Path, Query, State},
-    http::{header, HeaderMap, StatusCode},
+    http::{HeaderMap, StatusCode},
     response::IntoResponse,
     routing::{get, post},
     Json, Router,
@@ -12,7 +12,8 @@ use serde_json::{json, Value};
 use sqlx::PgPool;
 use std::sync::Arc;
 use unadomot_api::application::auth::{
-    hash_refresh_token, issue_session, new_refresh_token, verify_session,
+    bearer_token, hash_refresh_token, issue_session, new_refresh_token, require_active_pool,
+    verify_session,
 };
 use uuid::Uuid;
 
@@ -47,24 +48,15 @@ fn valid_media_url(url: &str) -> bool {
 }
 
 async fn authorize(state: &ProfileState, headers: &HeaderMap) -> Result<Uuid, axum::response::Response> {
-    let header = headers
-        .get(header::AUTHORIZATION)
-        .and_then(|value| value.to_str().ok())
-        .and_then(|value| value.strip_prefix("Bearer "))
-        .ok_or_else(|| error(StatusCode::UNAUTHORIZED, "Please sign in"))?;
+    let token = bearer_token(headers)
+        .map_err(|_| error(StatusCode::UNAUTHORIZED, "Please sign in"))?;
 
-    let user = verify_session(header, &state.jwt_secret)
+    let user = verify_session(token, &state.jwt_secret)
         .map_err(|_| error(StatusCode::UNAUTHORIZED, "Session expired"))?;
 
-    let status: Option<String> = sqlx::query_scalar("SELECT status FROM users WHERE id = $1")
-        .bind(user.id)
-        .fetch_optional(&state.pool)
+    require_active_pool(&state.pool, user.id)
         .await
-        .map_err(|_| error(StatusCode::SERVICE_UNAVAILABLE, "Account status unavailable"))?;
-
-    if status.as_deref() != Some("active") {
-        return Err(error(StatusCode::FORBIDDEN, "This account is suspended"));
-    }
+        .map_err(|_| error(StatusCode::FORBIDDEN, "This account is suspended"))?;
 
     Ok(user.id)
 }
