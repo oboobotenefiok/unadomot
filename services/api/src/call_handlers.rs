@@ -14,6 +14,8 @@ use unadomot_api::application::auth::{
 use unadomot_api::application::calls::{CallError, CallRepository};
 use uuid::Uuid;
 
+const MAX_SDP_BYTES: usize = 64 * 1024;
+
 #[derive(Clone)]
 pub struct CallState {
     pub calls: Arc<dyn CallRepository>,
@@ -110,8 +112,16 @@ async fn start_call_handler(
         Err(response) => return response,
     };
 
+    let kind = request.kind.trim();
+    if !matches!(kind, "audio" | "video") {
+        return error(StatusCode::BAD_REQUEST, "Call kind must be audio or video");
+    }
+
     if request.offer_sdp.trim().is_empty() {
         return error(StatusCode::BAD_REQUEST, "Call offer is required");
+    }
+    if request.offer_sdp.len() > MAX_SDP_BYTES {
+        return error(StatusCode::BAD_REQUEST, "Call offer is too large");
     }
 
     match state
@@ -119,7 +129,7 @@ async fn start_call_handler(
         .create(
             conversation_id,
             user_id,
-            request.kind.trim(),
+            kind,
             request.offer_sdp.trim(),
         )
         .await
@@ -190,6 +200,9 @@ async fn answer_call_handler(
 
     if request.answer_sdp.trim().is_empty() {
         return error(StatusCode::BAD_REQUEST, "Call answer is required");
+    }
+    if request.answer_sdp.len() > MAX_SDP_BYTES {
+        return error(StatusCode::BAD_REQUEST, "Call answer is too large");
     }
 
     match state
