@@ -42,11 +42,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _loading = true;
   String? _error;
   int _tab = 0;
+  late int _lastSessionEpoch;
 
   @override
   void initState() {
     super.initState();
+    _lastSessionEpoch = widget.appState.sessionEpoch;
+    widget.appState.addListener(_handleSessionChange);
     _load();
+  }
+
+  @override
+  void dispose() {
+    widget.appState.removeListener(_handleSessionChange);
+    super.dispose();
+  }
+
+  void _handleSessionChange() {
+    final epoch = widget.appState.sessionEpoch;
+    if (epoch == _lastSessionEpoch) return;
+    _lastSessionEpoch = epoch;
+    if (!mounted) return;
+    setState(() {
+      _profile = null;
+      _listings = [];
+      _error = null;
+      _tab = 0;
+      _loading = widget.appState.signedIn;
+    });
+    if (widget.appState.signedIn) _load();
   }
 
   Future<void> _load() async {
