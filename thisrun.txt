@@ -1,48 +1,27 @@
-# CI run 2026-11-28T10:28:45Z
+# CI run 2026-11-28T10:53:39Z
 Branch: rewrite/flutter-rust-postgres
 
 ## Trigger
-https://github.com/oboobotenefiok/unadomot/actions/runs/46135364757
+https://github.com/oboobotenefiok/unadomot/actions/runs/46137302524
 
 ## Recent runs
-pending		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46135364757	6s	2026-11-28T10:28:48Z
-in_progress		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46135206946	2m17s	2026-11-28T10:26:37Z
+in_progress		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46137302524	5s	2026-11-28T10:53:42Z
+completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46136397536	2m36s	2026-11-28T10:41:57Z
+completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46135364757	2m56s	2026-11-28T10:28:48Z
+completed	cancelled	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46135206946	2m28s	2026-11-28T10:26:37Z
 completed	cancelled	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46135146498	1m4s	2026-11-28T10:25:50Z
-completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46134540100	3m47s	2026-11-28T10:18:23Z
-completed	cancelled	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46134499302	51s	2026-11-28T10:17:51Z
 
-Run ID: 46135364757
-URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46135364757
+Run ID: 46137302524
+URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46137302524
 
 ## Watch
 
-X rewrite/flutter-rust-postgres Rewrite CI · 46135364757
+X rewrite/flutter-rust-postgres Rewrite CI · 46137302524
 Triggered via workflow_dispatch about 3 minutes ago
 
 JOBS
-✓ docker in 2m37s (ID 140949417811)
-X android in 1m14s (ID 140949417973)
-  ✓ Set up job
-  ✓ Run actions/checkout@v4
-  ✓ Run actions/setup-java@v4
-  ✓ Run subosito/flutter-action@v2
-  ✓ Cache Gradle
-  ✓ Ensure Android platform files
-  ✓ Configure release signing
-  ✓ Apply Android permissions and deep links
-  ✓ Install dependencies
-  X Analyze
-  - Flutter tests with coverage
-  - Build release APK
-  - Verify required Android permissions
-  - Run actions/***-artifact@v4
-  ✓ Publish release failure
-  - Post Cache Gradle
-  ✓ Post Run subosito/flutter-action@v2
-  ✓ Post Run actions/setup-java@v4
-  ✓ Post Run actions/checkout@v4
-  ✓ Complete job
-X rust in 1m7s (ID 140949418027)
+✓ audit in 2m48s (ID 140955358934)
+X rust in 1m2s (ID 140955359072)
   ✓ Set up job
   ✓ Initialize containers
   ✓ Run actions/checkout@v4
@@ -55,9 +34,39 @@ X rust in 1m7s (ID 140949418027)
   ✓ Post Run actions/checkout@v4
   ✓ Stop containers
   ✓ Complete job
-✓ audit in 2m11s (ID 140949418071)
+✓ docker in 2m17s (ID 140955359091)
+X android in 1m32s (ID 140955359107)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-java@v4
+  ✓ Run subosito/flutter-action@v2
+  ✓ Cache Gradle
+  ✓ Ensure Android platform files
+  ✓ Configure release signing
+  ✓ Apply Android permissions and deep links
+  ✓ Install dependencies
+  ✓ Analyze
+  X Flutter tests with coverage
+  - Build release APK
+  - Verify required Android permissions
+  - Run actions/***-artifact@v4
+  ✓ Publish release failure
+  - Post Cache Gradle
+  ✓ Post Run subosito/flutter-action@v2
+  ✓ Post Run actions/setup-java@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
 
 ANNOTATIONS
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+audit: .github#2
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+rust: .github#2
+
+X Process completed with exit code 101.
+rust: .github#123
+
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 docker: .github#2
 
@@ -65,198 +74,403 @@ docker: .github#2
 android: .github#2
 
 X Process completed with exit code 1.
-android: .github#77
+android: .github#264
+
+X 11 tests passed, 1 failed.
+android: .github#263
 
 ! setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
 android: .github#18
 
-! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-rust: .github#2
 
-X Process completed with exit code 101.
-rust: .github#99
-
-! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-audit: .github#2
-
-
-To see what failed, try: gh run view 46135364757 --log-failed
-View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46135364757
+To see what failed, try: gh run view 46137302524 --log-failed
+View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46137302524
 
 ## Failed logs
-android	Analyze	﻿2026-11-28T10:30:07.2928660Z ##[group]Run flutter analyze --no-fatal-infos --no-fatal-warnings
-android	Analyze	2026-11-28T10:30:07.2929224Z ^[[36;1mflutter analyze --no-fatal-infos --no-fatal-warnings^[[0m
-android	Analyze	2026-11-28T10:30:07.2963404Z shell: /usr/bin/bash -e {0}
-android	Analyze	2026-11-28T10:30:07.2963694Z env:
-android	Analyze	2026-11-28T10:30:07.2963928Z   CARGO_TERM_COLOR: never
-android	Analyze	2026-11-28T10:30:07.2964190Z   NO_COLOR: 1
-android	Analyze	2026-11-28T10:30:07.2964417Z   RUST_BACKTRACE: 1
-android	Analyze	2026-11-28T10:30:07.2964769Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-2/x64
-android	Analyze	2026-11-28T10:30:07.2965324Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-2/x64
-android	Analyze	2026-11-28T10:30:07.2965840Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.50.1-x64/flutter
-android	Analyze	2026-11-28T10:30:07.2966258Z   PUB_CACHE: /home/runner/.pub-cache
-android	Analyze	2026-11-28T10:30:07.2966563Z ##[endgroup]
-android	Analyze	2026-11-28T10:30:16.7493869Z Analyzing flutter_app...                                        
-android	Analyze	2026-11-28T10:30:16.7503463Z 
-android	Analyze	2026-11-28T10:30:16.7531748Z warning • Unused import: 'dart:convert'. Try removing the import directive • lib/api/api_client_profile.dart:1:8 • unused_import
-android	Analyze	2026-11-28T10:30:16.7535720Z warning • The declaration '_authHeaders' isn't referenced. Try removing the declaration of '_authHeaders' • lib/api/api_client_profile.dart:6:27 • unused_element
-android	Analyze	2026-11-28T10:30:16.7538840Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/app_settings.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7542085Z   error • Undefined name 'NigeriaLocations'. Try correcting the name to one that is defined, or defining the name • lib/data/lga_coordinates.dart:199:21 • undefined_identifier
-android	Analyze	2026-11-28T10:30:16.7544645Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/main.dart:3:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7546824Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/admin_audit_screen.dart:2:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7548381Z warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_audit_screen.dart:5:8 • unused_import
-android	Analyze	2026-11-28T10:30:16.7558345Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/admin_screen.dart:2:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7571780Z warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_screen.dart:5:8 • unused_import
-android	Analyze	2026-11-28T10:30:16.7583441Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/admin_users_screen.dart:2:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7589668Z warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_users_screen.dart:5:8 • unused_import
-android	Analyze	2026-11-28T10:30:16.7593079Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/admin_verification_screen.dart:2:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7596595Z warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_verification_screen.dart:5:8 • unused_import
-android	Analyze	2026-11-28T10:30:16.7600791Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/auth_screen.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7604940Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/auth_sheet.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7609063Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/call_screen.dart:3:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7613481Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/chat_screen.dart:7:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7616590Z    info • Unnecessary use of 'toList' in a spread. Try removing the invocation of 'toList' • lib/screens/chat_screen.dart:321:40 • unnecessary_to_list_in_spreads
-android	Analyze	2026-11-28T10:30:16.7619922Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/create_listing_screen.dart:2:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7625312Z    info • 'onReorder' is deprecated and shouldn't be used. Use the onReorderItem callback instead. The onReorderItem callback adjusts the newIndex parameter for a removed item at the oldIndex. This feature was deprecated after v3.41.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/create_listing_screen.dart:563:15 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7629977Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/edit_listing_screen.dart:2:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7634441Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/favorites_screen.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7638695Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/listing_code_screen.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7645346Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/listing_detail_screen.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7649154Z    info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/listing_detail_screen.dart:158:16 • use_build_context_synchronously
-android	Analyze	2026-11-28T10:30:16.7653600Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/listings_screen.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7657157Z warning • The declaration '_openMessages' isn't referenced. Try removing the declaration of '_openMessages' • lib/screens/listings_screen.dart:251:16 • unused_element
-android	Analyze	2026-11-28T10:30:16.7659542Z warning • The declaration '_openFavorites' isn't referenced. Try removing the declaration of '_openFavorites' • lib/screens/listings_screen.dart:266:16 • unused_element
-android	Analyze	2026-11-28T10:30:16.7662145Z warning • The declaration '_openProfile' isn't referenced. Try removing the declaration of '_openProfile' • lib/screens/listings_screen.dart:281:16 • unused_element
-android	Analyze	2026-11-28T10:30:16.7664492Z warning • The declaration '_openPost' isn't referenced. Try removing the declaration of '_openPost' • lib/screens/listings_screen.dart:295:16 • unused_element
-android	Analyze	2026-11-28T10:30:16.7667774Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/main_shell.dart:2:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7671258Z   error • Undefined class 'EventStream'. Try changing the name to the name of an existing class, or creating a class with the name 'EventStream' • lib/screens/main_shell.dart:50:3 • undefined_class
-android	Analyze	2026-11-28T10:30:16.7674170Z   error • The method 'EventStream' isn't defined for the type '_MainShellState'. Try correcting the name to the name of an existing method, or defining a method named 'EventStream' • lib/screens/main_shell.dart:77:15 • undefined_method
-android	Analyze	2026-11-28T10:30:16.7677985Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/map_screen.dart:3:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7682322Z    info • 'desiredAccuracy' is deprecated and shouldn't be used. use settings parameter with AndroidSettings, AppleSettings, WebSettings, or LocationSettings. Try replacing the use of the deprecated member with the replacement • lib/screens/map_screen.dart:136:9 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7686480Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/messages_screen.dart:3:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7690456Z   error • The method 'ChatScreen' isn't defined for the type '_MessagesScreenState'. Try correcting the name to the name of an existing method, or defining a method named 'ChatScreen' • lib/screens/messages_screen.dart:123:53 • undefined_method
-android	Analyze	2026-11-28T10:30:16.7693193Z   error • The argument type 'String?' can't be assigned to the parameter type 'String'.  • lib/screens/messages_screen.dart:347:35 • argument_type_not_assignable
-android	Analyze	2026-11-28T10:30:16.7696495Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/notifications_screen.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7701093Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/onboarding_screen.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7705651Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/profile_screen.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7710612Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/public_profile_screen.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7714910Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/report_listing_screen.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7719068Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/reset_password_screen.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7723361Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/splash_screen.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7725945Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/static_page_screen.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7728246Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/verification_screen.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7730995Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/state/app_state.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7732468Z 60 issues found. (ran in 8.6s)
-android	Analyze	2026-11-28T10:30:16.7733796Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/theme.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7735916Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/empty_state.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7738094Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/home_carousel.dart:2:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7740533Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/infinite_listing_gallery.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7743067Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/listing_card.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7744871Z warning • A value for optional parameter 'color' isn't ever given. Try removing the unused parameter • lib/widgets/listing_card.dart:266:10 • unused_element_parameter
-android	Analyze	2026-11-28T10:30:16.7746621Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/responsive_grid.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7748818Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/share_listing_sheet.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7751216Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/skeletons.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7752711Z warning • Unused import: '../theme.dart'. Try removing the import directive • lib/widgets/skeletons.dart:3:8 • unused_import
-android	Analyze	2026-11-28T10:30:16.7754368Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • test/infinite_listing_gallery_test.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7756577Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • test/public_home_test.dart:1:1 • deprecated_member_use
-android	Analyze	2026-11-28T10:30:16.7757665Z 
-android	Analyze	2026-11-28T10:30:16.7820890Z ##[error]Process completed with exit code 1.
-rust	Clippy	﻿2026-11-28T10:30:00.9445977Z ##[group]Run cargo clippy --all-targets -- -D warnings
-rust	Clippy	2026-11-28T10:30:00.9446355Z ^[[36;1mcargo clippy --all-targets -- -D warnings^[[0m
-rust	Clippy	2026-11-28T10:30:00.9477273Z shell: /usr/bin/bash -e {0}
-rust	Clippy	2026-11-28T10:30:00.9477430Z env:
-rust	Clippy	2026-11-28T10:30:00.9477544Z   CARGO_TERM_COLOR: never
-rust	Clippy	2026-11-28T10:30:00.9477673Z   NO_COLOR: 1
-rust	Clippy	2026-11-28T10:30:00.9477783Z   RUST_BACKTRACE: 1
-rust	Clippy	2026-11-28T10:30:00.9478246Z   DATABASE_URL: ***localhost:5432/unadomot_test
-rust	Clippy	2026-11-28T10:30:00.9478447Z   JWT_SECRET: test-secret-that-is-at-least-32-bytes-long
-rust	Clippy	2026-11-28T10:30:00.9478689Z   REFRESH_TOKEN_SECRET: test-refresh-secret-that-is-at-least-32-bytes
-rust	Clippy	2026-11-28T10:30:00.9479086Z   CARGO_HOME: /home/runner/.cargo
-rust	Clippy	2026-11-28T10:30:00.9479232Z   CARGO_INCREMENTAL: 0
-rust	Clippy	2026-11-28T10:30:00.9479357Z   CACHE_ON_FAILURE: false
-rust	Clippy	2026-11-28T10:30:00.9479484Z ##[endgroup]
-rust	Clippy	2026-11-28T10:30:01.0376550Z     Updating crates.io index
-rust	Clippy	2026-11-28T10:30:02.0255156Z      Locking 67 packages to highest compatible versions
-rust	Clippy	2026-11-28T10:30:02.0255604Z       Adding base16ct v1.0.0
-rust	Clippy	2026-11-28T10:30:02.0258610Z       Adding base64 v0.23.1
-rust	Clippy	2026-11-28T10:30:02.0261328Z       Adding block-buffer v0.12.1
-rust	Clippy	2026-11-28T10:30:02.0268697Z       Adding chacha20 v0.10.2
-rust	Clippy	2026-11-28T10:30:02.0269756Z       Adding cmov v0.5.4
-rust	Clippy	2026-11-28T10:30:02.0271131Z       Adding const-oid v0.10.3
-rust	Clippy	2026-11-28T10:30:02.0271425Z       Adding cpubits v0.1.1
-rust	Clippy	2026-11-28T10:30:02.0273044Z       Adding cpufeatures v0.3.1
-rust	Clippy	2026-11-28T10:30:02.0298709Z       Adding crypto-bigint v0.7.11
-rust	Clippy	2026-11-28T10:30:02.0302624Z       Adding crypto-common v0.2.2
-rust	Clippy	2026-11-28T10:30:02.0307748Z       Adding crypto-primes v0.7.2
-rust	Clippy	2026-11-28T10:30:02.0309002Z       Adding ctutils v0.4.8
-rust	Clippy	2026-11-28T10:30:02.0325435Z       Adding curve25519-dalek v5.0.0
-rust	Clippy	2026-11-28T10:30:02.0326671Z       Adding curve25519-dalek-derive v0.1.1
-rust	Clippy	2026-11-28T10:30:02.0330916Z       Adding der v0.8.3
-rust	Clippy	2026-11-28T10:30:02.0334359Z       Adding digest v0.11.3
-rust	Clippy	2026-11-28T10:30:02.0350336Z       Adding ecdsa v0.17.0
-rust	Clippy	2026-11-28T10:30:02.0354103Z       Adding ed25519 v3.0.0
-rust	Clippy	2026-11-28T10:30:02.0361439Z       Adding ed25519-dalek v3.0.0
-rust	Clippy	2026-11-28T10:30:02.0389000Z       Adding elliptic-curve v0.14.3
-rust	Clippy	2026-11-28T10:30:02.0391393Z       Adding ff v0.14.0
-rust	Clippy	2026-11-28T10:30:02.0391896Z       Adding fiat-crypto v0.3.0
-rust	Clippy	2026-11-28T10:30:02.0392676Z       Adding group v0.14.0
-rust	Clippy	2026-11-28T10:30:02.0394359Z       Adding hmac v0.13.0
-rust	Clippy	2026-11-28T10:30:02.0395783Z       Adding hybrid-array v0.4.15
-rust	Clippy	2026-11-28T10:30:02.0399673Z       Adding hyper-rustls v0.27.10
-rust	Clippy	2026-11-28T10:30:02.0401153Z       Adding ipnet v2.12.2
-rust	Clippy	2026-11-28T10:30:02.0406435Z     Updating jsonwebtoken v9.3.1 -> v12.0.0
-rust	Clippy	2026-11-28T10:30:02.0406844Z       Adding lru-slab v0.1.3
-rust	Clippy	2026-11-28T10:30:02.0416888Z       Adding p256 v0.14.0
-rust	Clippy	2026-11-28T10:30:02.0424668Z       Adding p384 v0.14.0
-rust	Clippy	2026-11-28T10:30:02.0425477Z       Adding pem-rfc7468 v1.0.0
-rust	Clippy	2026-11-28T10:30:02.0427221Z       Adding pkcs1 v0.8.0
-rust	Clippy	2026-11-28T10:30:02.0431356Z       Adding pkcs8 v0.11.0
-rust	Clippy	2026-11-28T10:30:02.0432713Z       Adding primefield v0.14.0
-rust	Clippy	2026-11-28T10:30:02.0434416Z       Adding primeorder v0.14.0
-rust	Clippy	2026-11-28T10:30:02.0440702Z       Adding quinn v0.11.12
-rust	Clippy	2026-11-28T10:30:02.0448708Z       Adding quinn-proto v0.11.19
-rust	Clippy	2026-11-28T10:30:02.0450643Z       Adding quinn-udp v0.5.16
-rust	Clippy	2026-11-28T10:30:02.0457809Z       Adding rand v0.10.4
-rust	Clippy	2026-11-28T10:30:02.0459338Z       Adding rand_core v0.10.1
-rust	Clippy	2026-11-28T10:30:02.0460021Z       Adding rand_pcg v0.10.3
-rust	Clippy	2026-11-28T10:30:02.0499662Z       Adding reqwest v0.12.28 (available: v0.13.5)
-rust	Clippy	2026-11-28T10:30:02.0506093Z       Adding rfc6979 v0.6.0
-rust	Clippy	2026-11-28T10:30:02.0516651Z       Adding rsa v0.10.0
-rust	Clippy	2026-11-28T10:30:02.0517827Z       Adding rustc-hash v2.1.3
-rust	Clippy	2026-11-28T10:30:02.0518099Z       Adding rustc_version v0.4.1
-rust	Clippy	2026-11-28T10:30:02.0526283Z       Adding rustls v0.23.46
-rust	Clippy	2026-11-28T10:30:02.0528250Z       Adding rustls-pki-types v1.16.0
-rust	Clippy	2026-11-28T10:30:02.0533696Z       Adding rustls-webpki v0.103.17
-rust	Clippy	2026-11-28T10:30:02.0537039Z       Adding sec1 v0.8.1
-rust	Clippy	2026-11-28T10:30:02.0538297Z       Adding semver v1.0.28
-rust	Clippy	2026-11-28T10:30:02.0539084Z       Adding serdect v0.4.3
-rust	Clippy	2026-11-28T10:30:02.0542985Z       Adding sha2 v0.11.2
-rust	Clippy	2026-11-28T10:30:02.0545827Z       Adding signature v3.0.0
-rust	Clippy	2026-11-28T10:30:02.0547058Z       Adding spki v0.8.1
-rust	Clippy	2026-11-28T10:30:02.0552233Z       Adding tokio-rustls v0.26.6
-rust	Clippy	2026-11-28T10:30:02.0552515Z       Adding tracing-serde v0.2.0
-rust	Clippy	2026-11-28T10:30:02.0552821Z       Adding try-lock v0.2.5
-rust	Clippy	2026-11-28T10:30:02.0553063Z       Adding want v0.3.2
-rust	Clippy	2026-11-28T10:30:02.0572312Z       Adding wasm-bindgen-futures v0.4.80
-rust	Clippy	2026-11-28T10:30:02.0628399Z       Adding web-sys v0.3.107
-rust	Clippy	2026-11-28T10:30:02.0629799Z       Adding web-time v1.1.0
-rust	Clippy	2026-11-28T10:30:02.0631926Z       Adding webpki-roots v0.26.11
-rust	Clippy	2026-11-28T10:30:02.0632495Z       Adding webpki-roots v1.0.12
-rust	Clippy	2026-11-28T10:30:02.0632957Z       Adding wnaf v0.14.1
-rust	Clippy	2026-11-28T10:30:02.0633721Z       Adding zeroize_derive v1.5.0
-rust	Clippy	2026-11-28T10:30:03.1269908Z     Checking unadomot-api v0.1.0 (/home/runner/work/unadomot/unadomot/services/api)
-rust	Clippy	2026-11-28T10:30:04.8587145Z error: the `Err`-variant returned from this function is very large
-rust	Clippy	2026-11-28T10:30:04.8587633Z   --> src/http/chat.rs:95:6
-rust	Clippy	2026-11-28T10:30:04.8587855Z    |
-rust	Clippy	2026-11-28T10:30:04.8593925Z 95 | ) -> Result<(), axum::response::Response> {
-rust	Clippy	2026-11-28T10:30:04.8594346Z    |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the `Err`-variant is at least 128 bytes
-rust	Clippy	2026-11-28T10:30:04.8594663Z    |
-rust	Clippy	2026-11-28T10:30:04.8595260Z    = help: try reducing the size of `axum::http::Response<axum::body::Body>`, for example by boxing large elements or replacing it with `Box<axum::http::Response<axum::body::Body>>`
-rust	Clippy	2026-11-28T10:30:04.8596211Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.100.0/index.html#result_large_err
-rust	Clippy	2026-11-28T10:30:04.8596778Z    = note: `-D clippy::result-large-err` implied by `-D warnings`
-rust	Clippy	2026-11-28T10:30:04.8597189Z    = help: to override `-D warnings` add `#[allow(clippy::result_large_err)]`
-rust	Clippy	2026-11-28T10:30:04.8597462Z 
-rust	Clippy	2026-11-28T10:30:04.9331101Z error: could not compile `unadomot-api` (lib) due to 1 previous error
-rust	Clippy	2026-11-28T10:30:04.9331667Z warning: build failed, waiting for other jobs to finish...
-rust	Clippy	2026-11-28T10:30:05.0439073Z error: could not compile `unadomot-api` (lib test) due to 1 previous error
-rust	Clippy	2026-11-28T10:30:05.1221369Z ##[error]Process completed with exit code 101.
+rust	Clippy	﻿2026-11-28T10:54:38.8434632Z ##[group]Run cargo clippy --all-targets -- -D warnings
+rust	Clippy	2026-11-28T10:54:38.8435154Z ^[[36;1mcargo clippy --all-targets -- -D warnings^[[0m
+rust	Clippy	2026-11-28T10:54:38.8470790Z shell: /usr/bin/bash -e {0}
+rust	Clippy	2026-11-28T10:54:38.8471225Z env:
+rust	Clippy	2026-11-28T10:54:38.8471569Z   CARGO_TERM_COLOR: never
+rust	Clippy	2026-11-28T10:54:38.8471980Z   NO_COLOR: 1
+rust	Clippy	2026-11-28T10:54:38.8472420Z   RUST_BACKTRACE: 1
+rust	Clippy	2026-11-28T10:54:38.8473147Z   DATABASE_URL: ***localhost:5432/unadomot_test
+rust	Clippy	2026-11-28T10:54:38.8473798Z   JWT_SECRET: test-secret-that-is-at-least-32-bytes-long
+rust	Clippy	2026-11-28T10:54:38.8474586Z   REFRESH_TOKEN_SECRET: test-refresh-secret-that-is-at-least-32-bytes
+rust	Clippy	2026-11-28T10:54:38.8475516Z   CARGO_HOME: /home/runner/.cargo
+rust	Clippy	2026-11-28T10:54:38.8475891Z   CARGO_INCREMENTAL: 0
+rust	Clippy	2026-11-28T10:54:38.8476208Z   CACHE_ON_FAILURE: false
+rust	Clippy	2026-11-28T10:54:38.8476467Z ##[endgroup]
+rust	Clippy	2026-11-28T10:54:38.9269665Z     Updating crates.io index
+rust	Clippy	2026-11-28T10:54:39.4099721Z      Locking 67 packages to highest compatible versions
+rust	Clippy	2026-11-28T10:54:39.4100167Z       Adding base16ct v1.0.0
+rust	Clippy	2026-11-28T10:54:39.4103179Z       Adding base64 v0.23.1
+rust	Clippy	2026-11-28T10:54:39.4105820Z       Adding block-buffer v0.12.1
+rust	Clippy	2026-11-28T10:54:39.4112630Z       Adding chacha20 v0.10.2
+rust	Clippy	2026-11-28T10:54:39.4113815Z       Adding cmov v0.5.4
+rust	Clippy	2026-11-28T10:54:39.4115830Z       Adding const-oid v0.10.3
+rust	Clippy	2026-11-28T10:54:39.4116338Z       Adding cpubits v0.1.1
+rust	Clippy	2026-11-28T10:54:39.4117344Z       Adding cpufeatures v0.3.1
+rust	Clippy	2026-11-28T10:54:39.4140415Z       Adding crypto-bigint v0.7.11
+rust	Clippy	2026-11-28T10:54:39.4144576Z       Adding crypto-common v0.2.2
+rust	Clippy	2026-11-28T10:54:39.4150174Z       Adding crypto-primes v0.7.2
+rust	Clippy	2026-11-28T10:54:39.4152032Z       Adding ctutils v0.4.8
+rust	Clippy	2026-11-28T10:54:39.4171028Z       Adding curve25519-dalek v5.0.0
+rust	Clippy	2026-11-28T10:54:39.4172710Z       Adding curve25519-dalek-derive v0.1.1
+rust	Clippy	2026-11-28T10:54:39.4179350Z       Adding der v0.8.3
+rust	Clippy	2026-11-28T10:54:39.4184304Z       Adding digest v0.11.3
+rust	Clippy	2026-11-28T10:54:39.4204683Z       Adding ecdsa v0.17.0
+rust	Clippy	2026-11-28T10:54:39.4210515Z       Adding ed25519 v3.0.0
+rust	Clippy	2026-11-28T10:54:39.4220493Z       Adding ed25519-dalek v3.0.0
+rust	Clippy	2026-11-28T10:54:39.4253862Z       Adding elliptic-curve v0.14.3
+rust	Clippy	2026-11-28T10:54:39.4257559Z       Adding ff v0.14.0
+rust	Clippy	2026-11-28T10:54:39.4258507Z       Adding fiat-crypto v0.3.0
+rust	Clippy	2026-11-28T10:54:39.4260353Z       Adding group v0.14.0
+rust	Clippy	2026-11-28T10:54:39.4263175Z       Adding hmac v0.13.0
+rust	Clippy	2026-11-28T10:54:39.4265577Z       Adding hybrid-array v0.4.15
+rust	Clippy	2026-11-28T10:54:39.4271720Z       Adding hyper-rustls v0.27.10
+rust	Clippy	2026-11-28T10:54:39.4274314Z       Adding ipnet v2.12.2
+rust	Clippy	2026-11-28T10:54:39.4282024Z     Updating jsonwebtoken v9.3.1 -> v12.0.0
+rust	Clippy	2026-11-28T10:54:39.4282693Z       Adding lru-slab v0.1.3
+rust	Clippy	2026-11-28T10:54:39.4297172Z       Adding p256 v0.14.0
+rust	Clippy	2026-11-28T10:54:39.4309321Z       Adding p384 v0.14.0
+rust	Clippy	2026-11-28T10:54:39.4311121Z       Adding pem-rfc7468 v1.0.0
+rust	Clippy	2026-11-28T10:54:39.4313986Z       Adding pkcs1 v0.8.0
+rust	Clippy	2026-11-28T10:54:39.4320272Z       Adding pkcs8 v0.11.0
+rust	Clippy	2026-11-28T10:54:39.4322551Z       Adding primefield v0.14.0
+rust	Clippy	2026-11-28T10:54:39.4325542Z       Adding primeorder v0.14.0
+rust	Clippy	2026-11-28T10:54:39.4334595Z       Adding quinn v0.11.12
+rust	Clippy	2026-11-28T10:54:39.4346328Z       Adding quinn-proto v0.11.19
+rust	Clippy	2026-11-28T10:54:39.4349947Z       Adding quinn-udp v0.5.16
+rust	Clippy	2026-11-28T10:54:39.4362862Z       Adding rand v0.10.4
+rust	Clippy	2026-11-28T10:54:39.4365476Z       Adding rand_core v0.10.1
+rust	Clippy	2026-11-28T10:54:39.4366813Z       Adding rand_pcg v0.10.3
+rust	Clippy	2026-11-28T10:54:39.4423095Z       Adding reqwest v0.12.28 (available: v0.13.5)
+rust	Clippy	2026-11-28T10:54:39.4432169Z       Adding rfc6979 v0.6.0
+rust	Clippy	2026-11-28T10:54:39.4454701Z       Adding rsa v0.10.0
+rust	Clippy	2026-11-28T10:54:39.4455531Z       Adding rustc-hash v2.1.3
+rust	Clippy	2026-11-28T10:54:39.4456543Z       Adding rustc_version v0.4.1
+rust	Clippy	2026-11-28T10:54:39.4472408Z       Adding rustls v0.23.46
+rust	Clippy	2026-11-28T10:54:39.4475416Z       Adding rustls-pki-types v1.16.0
+rust	Clippy	2026-11-28T10:54:39.4484940Z       Adding rustls-webpki v0.103.17
+rust	Clippy	2026-11-28T10:54:39.4490242Z       Adding sec1 v0.8.1
+rust	Clippy	2026-11-28T10:54:39.4492331Z       Adding semver v1.0.28
+rust	Clippy	2026-11-28T10:54:39.4493279Z       Adding serdect v0.4.3
+rust	Clippy	2026-11-28T10:54:39.4497907Z       Adding sha2 v0.11.2
+rust	Clippy	2026-11-28T10:54:39.4502291Z       Adding signature v3.0.0
+rust	Clippy	2026-11-28T10:54:39.4504848Z       Adding spki v0.8.1
+rust	Clippy	2026-11-28T10:54:39.4512163Z       Adding tokio-rustls v0.26.6
+rust	Clippy	2026-11-28T10:54:39.4512806Z       Adding tracing-serde v0.2.0
+rust	Clippy	2026-11-28T10:54:39.4513304Z       Adding try-lock v0.2.5
+rust	Clippy	2026-11-28T10:54:39.4513767Z       Adding want v0.3.2
+rust	Clippy	2026-11-28T10:54:39.4519276Z       Adding wasm-bindgen-futures v0.4.80
+rust	Clippy	2026-11-28T10:54:39.4657471Z       Adding web-sys v0.3.107
+rust	Clippy	2026-11-28T10:54:39.4660586Z       Adding web-time v1.1.0
+rust	Clippy	2026-11-28T10:54:39.4663802Z       Adding webpki-roots v0.26.11
+rust	Clippy	2026-11-28T10:54:39.4664956Z       Adding webpki-roots v1.0.12
+rust	Clippy	2026-11-28T10:54:39.4665794Z       Adding wnaf v0.14.1
+rust	Clippy	2026-11-28T10:54:39.4667185Z       Adding zeroize_derive v1.5.0
+rust	Clippy	2026-11-28T10:54:40.9526082Z     Checking unadomot-api v0.1.0 (/home/runner/work/unadomot/unadomot/services/api)
+rust	Clippy	2026-11-28T10:54:43.6645270Z error[E0063]: missing field `amenities` in initializer of `unadomot_api::domain::listing::NewListing`
+rust	Clippy	2026-11-28T10:54:43.6646376Z   --> tests/api_flow.rs:46:10
+rust	Clippy	2026-11-28T10:54:43.6678505Z    |
+rust	Clippy	2026-11-28T10:54:43.6698559Z 46 |         &NewListing {
+rust	Clippy	2026-11-28T10:54:43.6699087Z    |          ^^^^^^^^^^ missing `amenities`
+rust	Clippy	2026-11-28T10:54:43.6699471Z 
+rust	Clippy	2026-11-28T10:54:43.6700031Z error[E0063]: missing field `amenities` in initializer of `unadomot_api::domain::listing::NewListing`
+rust	Clippy	2026-11-28T10:54:43.6729090Z   --> tests/hardening.rs:32:5
+rust	Clippy	2026-11-28T10:54:43.6768504Z    |
+rust	Clippy	2026-11-28T10:54:43.6798522Z 32 |     NewListing {
+rust	Clippy	2026-11-28T10:54:43.6818545Z    |     ^^^^^^^^^^ missing `amenities`
+rust	Clippy	2026-11-28T10:54:43.6818941Z 
+rust	Clippy	2026-11-28T10:54:43.6819561Z error[E0063]: missing field `amenities` in initializer of `unadomot_api::domain::listing::NewListing`
+rust	Clippy	2026-11-28T10:54:43.6848570Z    --> tests/api_flow.rs:124:10
+rust	Clippy	2026-11-28T10:54:43.6849061Z     |
+rust	Clippy	2026-11-28T10:54:43.6849418Z 124 |         &NewListing {
+rust	Clippy	2026-11-28T10:54:43.6849914Z     |          ^^^^^^^^^^ missing `amenities`
+rust	Clippy	2026-11-28T10:54:43.6850290Z 
+rust	Clippy	2026-11-28T10:54:43.6888755Z For more information about this error, try `rustc --explain E0063`.
+rust	Clippy	2026-11-28T10:54:43.6908936Z error: could not compile `unadomot-api` (test "api_flow") due to 2 previous errors
+rust	Clippy	2026-11-28T10:54:43.6948946Z warning: build failed, waiting for other jobs to finish...
+rust	Clippy	2026-11-28T10:54:43.7118999Z error: could not compile `unadomot-api` (test "hardening") due to 1 previous error
+rust	Clippy	2026-11-28T10:54:43.8058248Z error: called `Iterator::last` on a `DoubleEndedIterator`; this will needlessly iterate the entire iterator
+rust	Clippy	2026-11-28T10:54:43.8059361Z   --> src/main.rs:71:35
+rust	Clippy	2026-11-28T10:54:43.8059678Z    |
+rust	Clippy	2026-11-28T10:54:43.8060013Z 71 |                 .and_then(|value| value.split(',').last())
+rust	Clippy	2026-11-28T10:54:43.8060505Z    |                                   ^^^^^^^^^^^^^^^^^^^^^^^
+rust	Clippy	2026-11-28T10:54:43.8060883Z    |
+rust	Clippy	2026-11-28T10:54:43.8061601Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.100.0/index.html#double_ended_iterator_last
+rust	Clippy	2026-11-28T10:54:43.8062605Z    = note: `-D clippy::double-ended-iterator-last` implied by `-D warnings`
+rust	Clippy	2026-11-28T10:54:43.8063315Z    = help: to override `-D warnings` add `#[allow(clippy::double_ended_iterator_last)]`
+rust	Clippy	2026-11-28T10:54:43.8063871Z help: try
+rust	Clippy	2026-11-28T10:54:43.8064119Z    |
+rust	Clippy	2026-11-28T10:54:43.8064431Z 71 -                 .and_then(|value| value.split(',').last())
+rust	Clippy	2026-11-28T10:54:43.8064924Z 71 +                 .and_then(|value| value.split(',').next_back())
+rust	Clippy	2026-11-28T10:54:43.8065351Z    |
+rust	Clippy	2026-11-28T10:54:43.8065482Z 
+rust	Clippy	2026-11-28T10:54:43.8234383Z error: could not compile `unadomot-api` (bin "unadomot-api") due to 1 previous error
+rust	Clippy	2026-11-28T10:54:43.8847045Z ##[error]Process completed with exit code 101.
+android	Flutter tests with coverage	﻿2026-11-28T10:54:56.7075556Z ##[group]Run flutter test --coverage
+android	Flutter tests with coverage	2026-11-28T10:54:56.7076207Z ^[[36;1mflutter test --coverage^[[0m
+android	Flutter tests with coverage	2026-11-28T10:54:56.7105687Z shell: /usr/bin/bash -e {0}
+android	Flutter tests with coverage	2026-11-28T10:54:56.7106307Z env:
+android	Flutter tests with coverage	2026-11-28T10:54:56.7106790Z   CARGO_TERM_COLOR: never
+android	Flutter tests with coverage	2026-11-28T10:54:56.7107325Z   NO_COLOR: 1
+android	Flutter tests with coverage	2026-11-28T10:54:56.7107736Z   RUST_BACKTRACE: 1
+android	Flutter tests with coverage	2026-11-28T10:54:56.7108479Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-2/x64
+android	Flutter tests with coverage	2026-11-28T10:54:56.7109561Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-2/x64
+android	Flutter tests with coverage	2026-11-28T10:54:56.7110446Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.50.1-x64/flutter
+android	Flutter tests with coverage	2026-11-28T10:54:56.7111143Z   PUB_CACHE: /home/runner/.pub-cache
+android	Flutter tests with coverage	2026-11-28T10:54:56.7111758Z ##[endgroup]
+android	Flutter tests with coverage	2026-11-28T10:54:59.6783873Z 
+android	Flutter tests with coverage	2026-11-28T10:55:05.9179532Z ##[group]✅ Passing tests
+android	Flutter tests with coverage	2026-11-28T10:55:05.9181054Z ✅ /home/runner/work/unadomot/unadomot/apps/flutter_app/test/widget_test.dart: parses decimal price strings from the API
+android	Flutter tests with coverage	2026-11-28T10:55:06.7616275Z ✅ /home/runner/work/unadomot/unadomot/apps/flutter_app/test/infinite_listing_gallery_test.dart: shows the placeholder when a listing has no media
+android	Flutter tests with coverage	2026-11-28T10:55:11.6123668Z ✅ /home/runner/work/unadomot/unadomot/apps/flutter_app/test/local_cache_test.dart: caches and restores listing summaries
+android	Flutter tests with coverage	2026-11-28T10:55:11.6296003Z ✅ /home/runner/work/unadomot/unadomot/apps/flutter_app/test/local_cache_test.dart: stores favorites and drafts
+android	Flutter tests with coverage	2026-11-28T10:55:11.6494217Z ✅ /home/runner/work/unadomot/unadomot/apps/flutter_app/test/local_cache_test.dart: clearUserData removes user data but keeps settings
+android	Flutter tests with coverage	2026-11-28T10:55:12.8050955Z ##[endgroup]
+android	Flutter tests with coverage	2026-11-28T10:55:12.8053389Z ##[group]❌ /home/runner/work/unadomot/unadomot/apps/flutter_app/test/public_home_test.dart: Home opens signed out and Post prompts for signup (failed)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8054965Z Pending timers:
+android	Flutter tests with coverage	2026-11-28T10:55:12.8055996Z Timer (duration: 0:00:05.000000, periodic: false), created:
+android	Flutter tests with coverage	2026-11-28T10:55:12.8057023Z #0      new FakeTimer._ (package:fake_async/fake_async.dart:342:62)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8058489Z #1      FakeAsync._createTimer (package:fake_async/fake_async.dart:260:29)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8059688Z #2      FakeAsync.run.<anonymous closure> (package:fake_async/fake_async.dart:185:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8060794Z #6      EventStream._loop (package:unadomot/api/event_stream.dart:31:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8061863Z #7      EventStream.start (package:unadomot/api/event_stream.dart:24:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8063190Z #8      _MainShellState._listenForChanges (package:unadomot/screens/main_shell.dart:77:40)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8064286Z #9      _MainShellState.initState (package:unadomot/screens/main_shell.dart:63:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8065392Z #10     StatefulElement._firstBuild (package:flutter/src/widgets/framework.dart:5968:55)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8066483Z #11     ComponentElement.mount (package:flutter/src/widgets/framework.dart:5811:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8067479Z ...     Normal element mounting (260 frames)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8068600Z #271    Element.inflateWidget (package:flutter/src/widgets/framework.dart:4605:20)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8070334Z #272    MultiChildRenderObjectElement.inflateWidget (package:flutter/src/widgets/framework.dart:7288:36)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8071639Z #273    MultiChildRenderObjectElement.mount (package:flutter/src/widgets/framework.dart:7303:32)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8072659Z ...     Normal element mounting (509 frames)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8073569Z #782    Element.inflateWidget (package:flutter/src/widgets/framework.dart:4605:20)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8074704Z #783    Element.updateChild (package:flutter/src/widgets/framework.dart:4071:20)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8076228Z #784    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8077437Z #785    Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8078535Z #786    ProxyElement.update (package:flutter/src/widgets/framework.dart:6167:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8079927Z #787    _InheritedNotifierElement.update (package:flutter/src/widgets/inherited_notifier.dart:108:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8081524Z #788    Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8082656Z #789    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8083845Z #790    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:6000:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8084881Z #791    Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8085885Z #792    StatefulElement.update (package:flutter/src/widgets/framework.dart:6025:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8086957Z #793    Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8088073Z #794    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8089255Z #795    Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8090141Z #796    ProxyElement.update (package:flutter/src/widgets/framework.dart:6167:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8091218Z #797    _InheritedNotifierElement.update (package:flutter/src/widgets/inherited_notifier.dart:108:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8092224Z #798    Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8093248Z #799    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8094298Z #800    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:6000:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8095392Z #801    Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8096419Z #802    StatefulElement.update (package:flutter/src/widgets/framework.dart:6025:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8097531Z #803    Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8098560Z #804    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8099967Z #805    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:6000:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8101046Z #806    Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8102081Z #807    StatefulElement.update (package:flutter/src/widgets/framework.dart:6025:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8102956Z #808    Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8104012Z #809    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8105030Z #810    Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8106043Z #811    ProxyElement.update (package:flutter/src/widgets/framework.dart:6167:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8107101Z #812    Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8108180Z #813    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8109567Z #814    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:6000:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8110676Z #815    Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8111702Z #816    StatefulElement.update (package:flutter/src/widgets/framework.dart:6025:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8112862Z #817    Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8114016Z #818    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8115142Z #819    Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8116486Z #820    ProxyElement.update (package:flutter/src/widgets/framework.dart:6167:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8117593Z #821    Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8118740Z #822    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8120051Z #823    Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8121278Z #824    ProxyElement.update (package:flutter/src/widgets/framework.dart:6167:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8122324Z #825    Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8123470Z #826    _RawViewElement._updateChild (package:flutter/src/widgets/view.dart:488:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8124636Z #827    _RawViewElement.update (package:flutter/src/widgets/view.dart:575:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8125678Z #828    Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8126728Z #829    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8128076Z #830    Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8129315Z #831    StatelessElement.update (package:flutter/src/widgets/framework.dart:5913:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8130634Z #832    Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8132021Z #833    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8133282Z #834    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:6000:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8134363Z #835    Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8135423Z #836    StatefulElement.update (package:flutter/src/widgets/framework.dart:6025:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8136471Z #837    Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8137511Z #838    RootElement._rebuild (package:flutter/src/widgets/binding.dart:2105:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8138529Z #839    RootElement.update (package:flutter/src/widgets/binding.dart:2083:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8139729Z #840    RootElement.performRebuild (package:flutter/src/widgets/binding.dart:2097:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8140701Z #841    Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8141771Z #842    BuildScope._tryRebuild (package:flutter/src/widgets/framework.dart:2768:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8142848Z #843    BuildScope._flushDirtyElements (package:flutter/src/widgets/framework.dart:2825:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8144029Z #844    BuildOwner.buildScope (package:flutter/src/widgets/framework.dart:3129:18)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8145188Z #845    AutomatedTestWidgetsFlutterBinding.drawFrame (package:flutter_test/src/binding.dart:2540:19)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8146526Z #846    RendererBinding._handlePersistentFrameCallback (package:flutter/src/rendering/binding.dart:558:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8147777Z #847    SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1433:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8149277Z #848    SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1348:9)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8152732Z #849    AutomatedTestWidgetsFlutterBinding.pump.<anonymous closure> (package:flutter_test/src/binding.dart:2369:9)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8159819Z #851    TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8161086Z #852    AutomatedTestWidgetsFlutterBinding.pump (package:flutter_test/src/binding.dart:2358:27)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8162474Z #853    WidgetTester.pumpWidget.<anonymous closure> (package:flutter_test/src/widget_tester.dart:598:22)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8163591Z #855    TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8164680Z #856    WidgetTester.pumpWidget (package:flutter_test/src/widget_tester.dart:595:27)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8166242Z #857    main.<anonymous closure> (file:///home/runner/work/unadomot/unadomot/apps/flutter_app/test/public_home_test.dart:36:18)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8167629Z #858    testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8168643Z <asynchronous suspension>
+android	Flutter tests with coverage	2026-11-28T10:55:12.8169861Z #859    TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1968:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8171190Z <asynchronous suspension>
+android	Flutter tests with coverage	2026-11-28T10:55:12.8172009Z <asynchronous suspension>
+android	Flutter tests with coverage	2026-11-28T10:55:12.8172807Z (elided 6 frames from dart:async and package:stack_trace)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8173444Z 
+android	Flutter tests with coverage	2026-11-28T10:55:12.8173860Z Timer (duration: 0:00:05.000000, periodic: false), created:
+android	Flutter tests with coverage	2026-11-28T10:55:12.8174743Z #0      new FakeTimer._ (package:fake_async/fake_async.dart:342:62)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8175889Z #1      FakeAsync._createTimer (package:fake_async/fake_async.dart:260:29)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8178060Z #2      FakeAsync.run.<anonymous closure> (package:fake_async/fake_async.dart:185:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8179616Z #6      EventStream._loop (package:unadomot/api/event_stream.dart:31:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8180673Z #7      EventStream.start (package:unadomot/api/event_stream.dart:24:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8181835Z #8      _MessagesScreenState.initState (package:unadomot/screens/messages_screen.dart:46:40)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8182948Z #9      StatefulElement._firstBuild (package:flutter/src/widgets/framework.dart:5968:55)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8184447Z #10     ComponentElement.mount (package:flutter/src/widgets/framework.dart:5811:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8186178Z ...     Normal element mounting (33 frames)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8187186Z #43     Element.inflateWidget (package:flutter/src/widgets/framework.dart:4605:20)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8188369Z #44     MultiChildRenderObjectElement.inflateWidget (package:flutter/src/widgets/framework.dart:7288:36)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8190053Z #45     MultiChildRenderObjectElement.mount (package:flutter/src/widgets/framework.dart:7303:32)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8191082Z ...     Normal element mounting (13 frames)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8192731Z #58     Element.inflateWidget (package:flutter/src/widgets/framework.dart:4605:20)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8194493Z #59     MultiChildRenderObjectElement.inflateWidget (package:flutter/src/widgets/framework.dart:7288:36)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8195851Z #60     MultiChildRenderObjectElement.mount (package:flutter/src/widgets/framework.dart:7303:32)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8196912Z ...     Normal element mounting (40 frames)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8197838Z #100    Element.inflateWidget (package:flutter/src/widgets/framework.dart:4605:20)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8199197Z #101    MultiChildRenderObjectElement.inflateWidget (package:flutter/src/widgets/framework.dart:7288:36)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8201674Z #102    MultiChildRenderObjectElement.mount (package:flutter/src/widgets/framework.dart:7303:32)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8202704Z ...     Normal element mounting (378 frames)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8204096Z #480    Element.inflateWidget (package:flutter/src/widgets/framework.dart:4605:20)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8205244Z #481    MultiChildRenderObjectElement.inflateWidget (package:flutter/src/widgets/framework.dart:7288:36)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8206661Z #482    MultiChildRenderObjectElement.mount (package:flutter/src/widgets/framework.dart:7303:32)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8208616Z ...     Normal element mounting (509 frames)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8210005Z #991    Element.inflateWidget (package:flutter/src/widgets/framework.dart:4605:20)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8211093Z #992    Element.updateChild (package:flutter/src/widgets/framework.dart:4071:20)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8212391Z #993    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8213468Z #994    Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8214993Z #995    ProxyElement.update (package:flutter/src/widgets/framework.dart:6167:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8217170Z #996    _InheritedNotifierElement.update (package:flutter/src/widgets/inherited_notifier.dart:108:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8218576Z #997    Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8219665Z #998    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8220797Z #999    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:6000:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8222128Z #1000   Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8223464Z #1001   StatefulElement.update (package:flutter/src/widgets/framework.dart:6025:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8229725Z #1002   Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8231115Z #1003   ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8232212Z #1004   Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8233915Z #1005   ProxyElement.update (package:flutter/src/widgets/framework.dart:6167:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8235610Z #1006   _InheritedNotifierElement.update (package:flutter/src/widgets/inherited_notifier.dart:108:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8236817Z #1007   Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8237954Z #1008   ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8239302Z #1009   StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:6000:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8240288Z #1010   Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8241267Z #1011   StatefulElement.update (package:flutter/src/widgets/framework.dart:6025:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8242279Z #1012   Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8244022Z #1013   ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8245915Z #1014   StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:6000:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8247050Z #1015   Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8248261Z #1016   StatefulElement.update (package:flutter/src/widgets/framework.dart:6025:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8249476Z #1017   Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8250554Z #1018   ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8252486Z #1019   Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8253993Z #1020   ProxyElement.update (package:flutter/src/widgets/framework.dart:6167:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8255120Z #1021   Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8256236Z #1022   ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8257391Z #1023   StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:6000:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8258539Z #1024   Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8259869Z #1025   StatefulElement.update (package:flutter/src/widgets/framework.dart:6025:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8261784Z #1026   Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8263072Z #1027   ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8264234Z #1028   Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8265282Z #1029   ProxyElement.update (package:flutter/src/widgets/framework.dart:6167:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8266269Z #1030   Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8268006Z #1031   ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8277241Z #1032   Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8283855Z #1033   ProxyElement.update (package:flutter/src/widgets/framework.dart:6167:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8287118Z #1034   Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8305810Z #1035   _RawViewElement._updateChild (package:flutter/src/widgets/view.dart:488:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8307391Z #1036   _RawViewElement.update (package:flutter/src/widgets/view.dart:575:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8308444Z #1037   Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8310156Z #1038   ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8311545Z #1039   Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8312641Z #1040   StatelessElement.update (package:flutter/src/widgets/framework.dart:5913:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8314153Z #1041   Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8315294Z #1042   ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5859:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8316602Z #1043   StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:6000:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8317650Z #1044   Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8318616Z #1045   StatefulElement.update (package:flutter/src/widgets/framework.dart:6025:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8319672Z #1046   Element.updateChild (package:flutter/src/widgets/framework.dart:4055:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8320703Z #1047   RootElement._rebuild (package:flutter/src/widgets/binding.dart:2105:16)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8321561Z #1048   RootElement.update (package:flutter/src/widgets/binding.dart:2083:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8322550Z #1049   RootElement.performRebuild (package:flutter/src/widgets/binding.dart:2097:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8323508Z #1050   Element.rebuild (package:flutter/src/widgets/framework.dart:5547:7)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8324832Z #1051   BuildScope._tryRebuild (package:flutter/src/widgets/framework.dart:2768:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8325630Z #1052   BuildScope._flushDirtyElements (package:flutter/src/widgets/framework.dart:2825:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8326337Z #1053   BuildOwner.buildScope (package:flutter/src/widgets/framework.dart:3129:18)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8327121Z #1054   AutomatedTestWidgetsFlutterBinding.drawFrame (package:flutter_test/src/binding.dart:2540:19)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8327921Z #1055   RendererBinding._handlePersistentFrameCallback (package:flutter/src/rendering/binding.dart:558:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8328707Z #1056   SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1433:15)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8329909Z #1057   SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1348:9)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8331121Z #1058   AutomatedTestWidgetsFlutterBinding.pump.<anonymous closure> (package:flutter_test/src/binding.dart:2369:9)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8332298Z #1060   TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8333321Z #1061   AutomatedTestWidgetsFlutterBinding.pump (package:flutter_test/src/binding.dart:2358:27)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8334654Z #1062   WidgetTester.pumpWidget.<anonymous closure> (package:flutter_test/src/widget_tester.dart:598:22)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8335711Z #1064   TestAsyncUtils.guard (package:flutter_test/src/test_async_utils.dart:74:41)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8336643Z #1065   WidgetTester.pumpWidget (package:flutter_test/src/widget_tester.dart:595:27)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8337791Z #1066   main.<anonymous closure> (file:///home/runner/work/unadomot/unadomot/apps/flutter_app/test/public_home_test.dart:36:18)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8339064Z #1067   testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:29)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8339997Z <asynchronous suspension>
+android	Flutter tests with coverage	2026-11-28T10:55:12.8341046Z #1068   TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1968:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8341889Z <asynchronous suspension>
+android	Flutter tests with coverage	2026-11-28T10:55:12.8342376Z <asynchronous suspension>
+android	Flutter tests with coverage	2026-11-28T10:55:12.8342987Z (elided 6 frames from dart:async and package:stack_trace)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8343425Z 
+android	Flutter tests with coverage	2026-11-28T10:55:12.8344195Z ══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+android	Flutter tests with coverage	2026-11-28T10:55:12.8345635Z The following assertion was thrown running invariant verifications after a test:
+android	Flutter tests with coverage	2026-11-28T10:55:12.8346516Z A Timer is still pending even after the widget tree was disposed.
+android	Flutter tests with coverage	2026-11-28T10:55:12.8347253Z 'package:flutter_test/src/binding.dart':
+android	Flutter tests with coverage	2026-11-28T10:55:12.8347923Z Failed assertion: line 2657 pos 12: '!timersPending'
+android	Flutter tests with coverage	2026-11-28T10:55:12.8348314Z 
+android	Flutter tests with coverage	2026-11-28T10:55:12.8348599Z When the exception was thrown, this was the stack:
+android	Flutter tests with coverage	2026-11-28T10:55:12.8349668Z #2      AutomatedTestWidgetsFlutterBinding._verifyInvariants (package:flutter_test/src/binding.dart:2657:12)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8350840Z #3      TestWidgetsFlutterBinding.postTest (package:flutter_test/src/binding.dart:2207:9)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8351949Z #4      AutomatedTestWidgetsFlutterBinding.postTest (package:flutter_test/src/binding.dart:2662:11)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8353184Z #6      Invoker.runTearDowns.<anonymous closure>.<anonymous closure> (package:test_api/src/backend/invoker.dart:296:18)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8354481Z #7      Invoker._waitForOutstandingCallbacks.<anonymous closure> (package:test_api/src/backend/invoker.dart:318:17)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8355694Z #10     Invoker._waitForOutstandingCallbacks (package:test_api/src/backend/invoker.dart:314:5)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8357081Z #11     Invoker.runTearDowns.<anonymous closure> (package:test_api/src/backend/invoker.dart:295:9)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8357941Z <asynchronous suspension>
+android	Flutter tests with coverage	2026-11-28T10:55:12.8358809Z #12     Invoker._waitForOutstandingCallbacks.<anonymous closure> (package:test_api/src/backend/invoker.dart:318:9)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8359852Z <asynchronous suspension>
+android	Flutter tests with coverage	2026-11-28T10:55:12.8360556Z (elided 5 frames from class _AssertionError and dart:async)
+android	Flutter tests with coverage	2026-11-28T10:55:12.8361618Z ════════════════════════════════════════════════════════════════════════════════════════════════════
+android	Flutter tests with coverage	2026-11-28T10:55:12.8362519Z Warning: At least one test in this suite creates an HttpClient. When running a test suite that uses
+android	Flutter tests with coverage	2026-11-28T10:55:12.8363529Z TestWidgetsFlutterBinding, all HTTP requests will return status code 400, and no network request
+android	Flutter tests with coverage	2026-11-28T10:55:12.8364615Z will actually be made. Any test expecting a real network connection and status code will fail.
+android	Flutter tests with coverage	2026-11-28T10:55:12.8365625Z To test code that needs an HttpClient, provide your own HttpClient implementation to the code under
+android	Flutter tests with coverage	2026-11-28T10:55:12.8366967Z test, so that your test can consistently provide a testable response to the code under test.
+android	Flutter tests with coverage	2026-11-28T10:55:12.8367837Z Test failed. See exception logs above.
+android	Flutter tests with coverage	2026-11-28T10:55:12.8368643Z The test description was: Home opens signed out and Post prompts for signup
+android	Flutter tests with coverage	2026-11-28T10:55:12.8369300Z 
+android	Flutter tests with coverage	2026-11-28T10:55:12.8369961Z ##[endgroup]
+android	Flutter tests with coverage	2026-11-28T10:55:13.5822911Z ##[group]✅ Passing tests
+android	Flutter tests with coverage	2026-11-28T10:55:13.5824121Z ✅ /home/runner/work/unadomot/unadomot/apps/flutter_app/test/api_client_test.dart: public browse sends filters without authentication
+android	Flutter tests with coverage	2026-11-28T10:55:13.5903929Z ✅ /home/runner/work/unadomot/unadomot/apps/flutter_app/test/api_client_test.dart: creation requires a session
+android	Flutter tests with coverage	2026-11-28T10:55:13.5987352Z ✅ /home/runner/work/unadomot/unadomot/apps/flutter_app/test/api_client_test.dart: login supplies bearer token and sign out clears it
+android	Flutter tests with coverage	2026-11-28T10:55:13.6021507Z ✅ /home/runner/work/unadomot/unadomot/apps/flutter_app/test/api_client_test.dart: in-flight authenticated request is discarded after sign out
+android	Flutter tests with coverage	2026-11-28T10:55:13.6056754Z ✅ /home/runner/work/unadomot/unadomot/apps/flutter_app/test/api_client_test.dart: refresh response after sign out is ignored
+android	Flutter tests with coverage	2026-11-28T10:55:13.6084439Z ✅ /home/runner/work/unadomot/unadomot/apps/flutter_app/test/api_client_test.dart: server failures do not expose internal response details
+android	Flutter tests with coverage	2026-11-28T10:55:14.2507304Z ##[endgroup]
+android	Flutter tests with coverage	2026-11-28T10:55:14.2507665Z 
+android	Flutter tests with coverage	2026-11-28T10:55:14.2513120Z ##[error]11 tests passed, 1 failed.
+android	Flutter tests with coverage	2026-11-28T10:55:14.3127869Z ##[error]Process completed with exit code 1.
