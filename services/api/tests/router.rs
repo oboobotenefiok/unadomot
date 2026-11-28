@@ -46,6 +46,24 @@ async fn status_for(uri: &str) -> StatusCode {
         .status()
 }
 
+/// Some routes only accept POST. Sending a GET to them returns 405 before the
+/// auth layer runs, which would make an authentication assertion pass for the
+/// wrong reason.
+async fn post_status_for(uri: &str) -> StatusCode {
+    let request = Request::builder()
+        .method("POST")
+        .uri(uri)
+        .header("content-type", "application/json")
+        .body(Body::empty())
+        .expect("valid request");
+
+    app(test_state())
+        .oneshot(request)
+        .await
+        .expect("router response")
+        .status()
+}
+
 #[tokio::test]
 async fn health_endpoint_is_public() {
     assert_eq!(status_for("/health").await, StatusCode::OK);
@@ -91,7 +109,7 @@ async fn messaging_and_call_routes_require_authentication() {
 #[tokio::test]
 async fn media_signature_requires_authentication() {
     assert_eq!(
-        status_for("/api/media/signature").await,
+        post_status_for("/api/media/signature").await,
         StatusCode::UNAUTHORIZED
     );
 }
