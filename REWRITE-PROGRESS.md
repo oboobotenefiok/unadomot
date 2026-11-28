@@ -24,6 +24,8 @@ Last updated: 28 November 2026
 - [x] Router-level integration tests for auth requirements and route wiring
 - [x] Per-user event bus and `/api/events` long-poll endpoint
 - [x] Message events published to both participants on send
+- [x] `tokio` features include `sync` and `time`, as the event bus needs
+- [x] Listing amenities stored, validated, and returned by the detail endpoint
 
 ## Flutter
 
@@ -44,6 +46,11 @@ Last updated: 28 November 2026
 - [x] Cross-device live updates for chat, inbox and unread badge
 - [x] Profile tab reloads its listings when opened
 - [x] Calls minimise to a floating card and restore without reconnecting
+- [x] Voice and video call buttons in the chat header
+- [x] Incoming calls pushed on a transparent route
+- [x] Listing detail: Similar and Comments as tabs with counts
+- [x] Listing detail: comments scroll inside a fixed-height card
+- [x] Listing detail: dark-aware surfaces and text
 - [x] Dark theme covers inputs, dialogs, sheets, snack bars and dividers
 
 ## CI and release
@@ -63,19 +70,17 @@ Last updated: 28 November 2026
 
 ### Blocking the next build
 
-- [ ] Run `cargo check` for the event bus (needs `tokio` features `sync` and `time`)
-- [ ] Run `flutter analyze` for `EventStream`, the rewritten chat screen and the call screen
+- [ ] Run `cargo check` and fix anything it reports
+- [ ] Run `flutter analyze` for `EventStream`, the chat screen and the call screen
 - [ ] Commit the `android/` platform folder
 - [ ] Set production secrets on Fly
 - [ ] Re-run CI and record a green run
 
 ### Feature gaps
 
-- [ ] Amenities missing from the listing detail payload
-- [ ] Listing detail tabs: Similar Listings left, Comments right, counts in labels
-- [ ] Comments section can request unbounded height and grows the page
+- [ ] Amenities input on the create and edit listing forms
 - [ ] Carousel overlay actions and lightbox, matching legacy
-- [ ] Dark-mode sweep: profile, listing detail and favourites still hardcode light surfaces
+- [ ] Dark-mode sweep: profile and favourites still hardcode light surfaces
 - [ ] Email verification at registration
 - [ ] Account deletion and data export
 - [ ] Server-side favorites and cross-device sync
