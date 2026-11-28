@@ -24,15 +24,13 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
 
   void _onDetect(BarcodeCapture capture) {
     if (_handled) return;
-    final value = capture.barcodes
-        .map((barcode) => barcode.rawValue)
-        .whereType<String>()
-        .map((value) => value.trim())
-        .where((value) => value.isNotEmpty)
-        .firstOrNull;
-    if (value == null) return;
-    _handled = true;
-    Navigator.pop(context, value);
+    for (final barcode in capture.barcodes) {
+      final value = barcode.rawValue?.trim();
+      if (value == null || value.isEmpty) continue;
+      _handled = true;
+      Navigator.pop(context, value);
+      return;
+    }
   }
 
   @override
