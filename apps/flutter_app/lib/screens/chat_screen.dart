@@ -246,8 +246,10 @@ class _ChatScreenState extends State<ChatScreen> {
         if (!mounted) return;
         await Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => IncomingCallScreen(
+          PageRouteBuilder<void>(
+            opaque: false,
+            barrierColor: null,
+            pageBuilder: (_, __, ___) => IncomingCallScreen(
               api: widget.api,
               callId: call['id'] as String,
               kind: call['kind'] as String,
@@ -340,6 +342,18 @@ class _ChatScreenState extends State<ChatScreen> {
         curve: Curves.easeOut,
       );
     });
+  }
+
+  Future<void> _startCall(String kind) async {
+    if (!widget.api.signedIn) return;
+    await Navigator.push(
+      context,
+      CallScreen.route(
+        api: widget.api,
+        conversationId: widget.conversationId,
+        kind: kind,
+      ),
+    );
   }
 
   Future<void> _send() async {
@@ -1282,6 +1296,16 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
       actions: [
+        IconButton(
+          tooltip: 'Voice call',
+          onPressed: () => _startCall('voice'),
+          icon: const Icon(Icons.call_outlined),
+        ),
+        IconButton(
+          tooltip: 'Video call',
+          onPressed: () => _startCall('video'),
+          icon: const Icon(Icons.videocam_outlined),
+        ),
         IconButton(
           tooltip: 'Refresh',
           onPressed: _load,
