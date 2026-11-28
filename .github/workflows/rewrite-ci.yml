@@ -1,5 +1,9 @@
 name: Rewrite CI
 "on":
+  push:
+    branches:
+      - rewrite/flutter-rust-postgres
+  pull_request:
   workflow_dispatch:
 permissions:
   contents: write
