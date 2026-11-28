@@ -43,12 +43,43 @@ impl UploadPurpose {
     pub fn is_authenticated(self) -> bool {
         matches!(self, Self::Verification)
     }
+
+    /// Formats Cloudinary will accept for this purpose. Listings, avatars and
+    /// identity documents are images only; chat carries photos, video, voice
+    /// notes and documents.
+    pub fn allowed_formats(self) -> &'static str {
+        match self {
+            Self::Listing | Self::Avatar | Self::Verification => "jpg,jpeg,png,webp,heic",
+            Self::Chat => "jpg,jpeg,png,webp,heic,mp4,mov,m4a,mp3,pdf,doc,docx",
+        }
+    }
+
+    /// Cloudinary resource type for the upload endpoint. `auto` routes audio
+    /// and video to the correct endpoint instead of having `/image/upload/`
+    /// reject them.
+    pub fn resource_type(self) -> &'static str {
+        match self {
+            Self::Chat => "auto",
+            Self::Listing | Self::Avatar | Self::Verification => "image",
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
 pub struct UploadRequest {
     pub folder: String,
     pub authenticated: bool,
+    pub purpose: UploadPurpose,
+}
+
+impl UploadRequest {
+    pub fn new(purpose: UploadPurpose, user_id: Uuid) -> Self {
+        Self {
+            folder: purpose.folder(user_id),
+            authenticated: purpose.is_authenticated(),
+            purpose,
+        }
+    }
 }
 
 #[derive(Debug, Serialize)]
@@ -75,7 +106,7 @@ pub trait MediaSigner: Send + Sync {
 
     /// Builds a short-lived signed delivery URL for an `authenticated` asset.
     /// Used only for admin review of identity documents.
-    fn signed_delivery_url(&self, _public_id: &str) -> Result<String, MediaError> {
+    fn signed_delivery_url(&self, _public_id: &str) -> Result<MediaError, MediaError> {
         Err(MediaError::NotConfigured)
     }
 }
@@ -124,5 +155,28 @@ mod tests {
         assert!(!UploadPurpose::Listing.is_authenticated());
         assert!(!UploadPurpose::Avatar.is_authenticated());
         assert!(!UploadPurpose::Chat.is_authenticated());
+    }
+
+    #[test]
+    fn chat_accepts_audio_and_video_while_listings_stay_images() {
+        assert_eq!(UploadPurpose::Listing.resource_type(), "image");
+        assert_eq!(UploadPurpose::Avatar.resource_type(), "image");
+        assert_eq!(UploadPurpose::Verification.resource_type(), "image");
+        assert_eq!(UploadPurpose::Chat.resource_type(), "auto");
+
+        assert!(!UploadPurpose::Listing.allowed_formats().contains("m4a"));
+        assert!(UploadPurpose::Chat.allowed_formats().contains("m4a"));
+        assert!(UploadPurpose::Chat.allowed_formats().contains("pdf"));
+    }
+
+    #[test]
+    fn request_derives_folder_and_type_from_purpose() {
+        let user = Uuid::nil();
+        let chat = UploadRequest::new(UploadPurpose::Chat, user);
+        assert_eq!(chat.folder, format!("unadomot/chat/{user}"));
+        assert!(!chat.authenticated);
+
+        let verification = UploadRequest::new(UploadPurpose::Verification, user);
+        assert!(verification.authenticated);
     }
 }

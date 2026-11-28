@@ -3,8 +3,6 @@ use base64::Engine;
 use chrono::Utc;
 use sha1::{Digest, Sha1};
 
-const ALLOWED_FORMATS: &str = "jpg,jpeg,png,webp,heic";
-
 pub struct CloudinarySigner {
     cloud_name: String,
     api_key: String,
@@ -39,8 +37,9 @@ impl CloudinarySigner {
 impl MediaSigner for CloudinarySigner {
     fn sign_upload(&self, request: &UploadRequest) -> Result<UploadSignature, MediaError> {
         let timestamp = Utc::now().timestamp();
+        let allowed_formats = request.purpose.allowed_formats().to_string();
         let mut params = vec![
-            ("allowed_formats".to_string(), ALLOWED_FORMATS.to_string()),
+            ("allowed_formats".to_string(), allowed_formats.clone()),
             ("folder".to_string(), request.folder.clone()),
             ("timestamp".to_string(), timestamp.to_string()),
         ];
@@ -56,9 +55,9 @@ impl MediaSigner for CloudinarySigner {
             api_key: self.api_key.clone(),
             cloud_name: self.cloud_name.clone(),
             folder: request.folder.clone(),
-            allowed_formats: ALLOWED_FORMATS.to_string(),
+            allowed_formats,
             upload_type: request.authenticated.then(|| "authenticated".to_string()),
-            resource_type: "image".to_string(),
+            resource_type: request.purpose.resource_type().to_string(),
         })
     }
 
@@ -66,7 +65,7 @@ impl MediaSigner for CloudinarySigner {
         Some(&self.cloud_name)
     }
 
-    fn signed_delivery_url(&self, public_id: &str) -> Result<String, MediaError> {
+    fn signed_delivery_url(&self, public_id: &str) -> Result<MediaError, MediaError> {
         let to_sign = format!("image/authenticated/{public_id}");
         let mut hasher = Sha1::new();
         hasher.update(format!("{to_sign}{}", self.api_secret).as_bytes());
@@ -84,6 +83,8 @@ impl MediaSigner for CloudinarySigner {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::application::media::UploadPurpose;
+    use uuid::Uuid;
 
     fn signer() -> CloudinarySigner {
         CloudinarySigner::new("demo".into(), "key".into(), "secret".into())
@@ -91,17 +92,14 @@ mod tests {
 
     #[test]
     fn signs_sorted_params_and_restricts_formats() {
-        let request = UploadRequest {
-            folder: "unadomot/listings/abc".into(),
-            authenticated: false,
-        };
+        let request = UploadRequest::new(UploadPurpose::Listing, Uuid::nil());
         let signature = signer().sign_upload(&request).unwrap();
-        assert_eq!(signature.allowed_formats, ALLOWED_FORMATS);
+        assert_eq!(signature.allowed_formats, "jpg,jpeg,png,webp,heic");
         assert_eq!(signature.resource_type, "image");
         assert!(signature.upload_type.is_none());
 
         let expected_params = [
-            ("allowed_formats".to_string(), ALLOWED_FORMATS.to_string()),
+            ("allowed_formats".to_string(), signature.allowed_formats.clone()),
             ("folder".to_string(), request.folder.clone()),
             ("timestamp".to_string(), signature.timestamp.to_string()),
         ];
@@ -110,13 +108,21 @@ mod tests {
     }
 
     #[test]
+    fn chat_uploads_are_signed_for_audio_and_video() {
+        let request = UploadRequest::new(UploadPurpose::Chat, Uuid::nil());
+        let signature = signer().sign_upload(&request).unwrap();
+        assert_eq!(signature.resource_type, "auto");
+        assert!(signature.allowed_formats.contains("m4a"));
+        assert!(signature.allowed_formats.contains("mp4"));
+        assert!(signature.upload_type.is_none());
+    }
+
+    #[test]
     fn verification_uploads_are_authenticated() {
-        let request = UploadRequest {
-            folder: "unadomot/verification/abc".into(),
-            authenticated: true,
-        };
+        let request = UploadRequest::new(UploadPurpose::Verification, Uuid::nil());
         let signature = signer().sign_upload(&request).unwrap();
         assert_eq!(signature.upload_type.as_deref(), Some("authenticated"));
+        assert_eq!(signature.resource_type, "image");
     }
 
     #[test]
