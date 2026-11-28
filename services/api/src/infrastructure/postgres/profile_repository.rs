@@ -172,11 +172,30 @@ impl ProfileRepository for PostgresProfileRepository {
     }
 
     async fn find_public_profile(&self, username: &str) -> Result<Option<Profile>, sqlx::Error> {
-        sqlx::query_as::<_, ProfileRow>(
+        let by_username = sqlx::query_as::<_, ProfileRow>(
             "SELECT u.id, u.email, p.name, p.username, p.phone, p.bio, p.photo_url,
                     p.user_type, p.verified, p.reply_rate, p.response_time, p.last_active, u.created_at
              FROM users u JOIN user_profiles p ON p.user_id = u.id
              WHERE lower(p.username) = lower($1)",
+        )
+        .bind(username)
+        .fetch_optional(&self.pool)
+        .await?;
+
+        if let Some(row) = by_username {
+            return Ok(Some(Profile::from(row)));
+        }
+
+        // Older clients link to an owner by slugging their display name, which
+        // never matches the generated username. Accept that form as a fallback
+        // so those links resolve instead of returning 404.
+        sqlx::query_as::<_, ProfileRow>(
+            "SELECT u.id, u.email, p.name, p.username, p.phone, p.bio, p.photo_url,
+                    p.user_type, p.verified, p.reply_rate, p.response_time, p.last_active, u.created_at
+             FROM users u JOIN user_profiles p ON p.user_id = u.id
+             WHERE lower(replace(p.name, ' ', '')) = lower($1)
+             ORDER BY u.created_at ASC
+             LIMIT 1",
         )
         .bind(username)
         .fetch_optional(&self.pool)
