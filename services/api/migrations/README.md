@@ -1,15 +1,19 @@
-# Migration numbering
+# Migration baseline
 
-Use one sequential scheme from now on:
+The migration history is consolidated into a single baseline file:
 
 ```
-0013_description.sql
-0014_description.sql
+0001_initial_schema.sql
 ```
 
-Do not rename or edit migrations that have already been applied. sqlx records a checksum for each applied migration, so changing an old file breaks deploys.
+This file represents the cumulative schema as of 2026-11-28. New migrations should use the next sequential number:
 
-The existing `202611260001` and `202611260002` files are already applied. Leave them in place. New migrations must use the next sequential number after the highest `00xx` file, so they sort correctly under sqlx's numeric ordering.
+```
+0002_description.sql
+0003_description.sql
+```
+
+Do not edit the baseline after it has been applied to a shared database. sqlx records a checksum for each applied migration, so changing an applied file breaks deploys.
 
 Before merging a migration:
 
