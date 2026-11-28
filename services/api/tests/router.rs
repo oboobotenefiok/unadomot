@@ -2,7 +2,8 @@
 //! database or network listener, using the unconfigured repository adapters.
 
 use axum::body::Body;
-use axum::http::{Request, StatusCode};
+use axum::http::{Method, Request, StatusCode};
+use serde_json::Value;
 use std::sync::Arc;
 use tower::ServiceExt;
 use unadomot_api::adapters::{
@@ -33,93 +34,83 @@ fn test_state() -> AppState {
     }
 }
 
-async fn status_for(uri: &str) -> StatusCode {
+async fn response_for(method: Method, uri: &str) -> (StatusCode, Value) {
+    let label = format!("{} {}", method.as_str(), uri);
     let request = Request::builder()
-        .uri(uri)
-        .body(Body::empty())
-        .expect("valid request");
-
-    app(test_state())
-        .oneshot(request)
-        .await
-        .expect("router response")
-        .status()
-}
-
-/// Some routes only accept POST. Sending a GET to them returns 405 before the
-/// auth layer runs, which would make an authentication assertion pass for the
-/// wrong reason.
-async fn post_status_for(uri: &str) -> StatusCode {
-    let request = Request::builder()
-        .method("POST")
+        .method(method)
         .uri(uri)
         .header("content-type", "application/json")
         .body(Body::empty())
         .expect("valid request");
 
-    app(test_state())
+    let response = app(test_state())
         .oneshot(request)
         .await
-        .expect("router response")
-        .status()
+        .expect("router response");
+    let status = response.status();
+    let bytes = axum::body::to_bytes(response.into_body(), usize::MAX)
+        .await
+        .expect("response body");
+    let body = serde_json::from_slice(&bytes).unwrap_or(Value::Null);
+
+    assert!(
+        status != StatusCode::METHOD_NOT_ALLOWED,
+        "{label} returned 405; the test is using the wrong HTTP method"
+    );
+
+    (status, body)
+}
+
+async fn assert_unauthorized(method: Method, uri: &str) {
+    let (status, body) = response_for(method, uri).await;
+    assert_eq!(status, StatusCode::UNAUTHORIZED, "{} {}", method.as_str(), uri);
+    assert_eq!(
+        body["error"]["code"],
+        "unauthorized",
+        "{} {} returned the wrong error code: {body}",
+        method.as_str(),
+        uri
+    );
 }
 
 #[tokio::test]
 async fn health_endpoint_is_public() {
-    assert_eq!(status_for("/health").await, StatusCode::OK);
+    let (status, _) = response_for(Method::GET, "/health").await;
+    assert_eq!(status, StatusCode::OK);
 }
 
 #[tokio::test]
 async fn unknown_routes_are_not_found() {
-    assert_eq!(status_for("/api/does-not-exist").await, StatusCode::NOT_FOUND);
+    let (status, _) = response_for(Method::GET, "/api/does-not-exist").await;
+    assert_eq!(status, StatusCode::NOT_FOUND);
 }
 
 #[tokio::test]
 async fn profile_requires_authentication() {
-    assert_eq!(
-        status_for("/api/profile/me").await,
-        StatusCode::UNAUTHORIZED
-    );
+    assert_unauthorized(Method::GET, "/api/profile/me").await;
 }
 
 #[tokio::test]
 async fn admin_routes_require_authentication() {
-    assert_eq!(
-        status_for("/api/admin/audit").await,
-        StatusCode::UNAUTHORIZED
-    );
-    assert_eq!(
-        status_for("/api/admin/verification").await,
-        StatusCode::UNAUTHORIZED
-    );
+    assert_unauthorized(Method::GET, "/api/admin/audit").await;
+    assert_unauthorized(Method::GET, "/api/admin/verification").await;
 }
 
 #[tokio::test]
 async fn messaging_and_call_routes_require_authentication() {
-    assert_eq!(
-        status_for("/api/conversations").await,
-        StatusCode::UNAUTHORIZED
-    );
-    assert_eq!(
-        status_for("/api/calls/incoming").await,
-        StatusCode::UNAUTHORIZED
-    );
+    assert_unauthorized(Method::GET, "/api/conversations").await;
+    assert_unauthorized(Method::GET, "/api/calls/incoming").await;
 }
 
 #[tokio::test]
 async fn media_signature_requires_authentication() {
-    assert_eq!(
-        post_status_for("/api/media/signature").await,
-        StatusCode::UNAUTHORIZED
-    );
+    assert_unauthorized(Method::POST, "/api/media/signature").await;
 }
 
 #[tokio::test]
 async fn public_listing_browse_is_wired() {
     // The unconfigured repository returns a 503, which proves the route is
     // mounted and reached the handler rather than 404ing.
-    assert_eq!(
-        status_for("/api/listings").await,
-        StatusCode::SERVICE_UNAVAILABLE
-    );
+    let (status, _) = response_for(Method::GET, "/api/listings").await;
+    assert_eq!(status, StatusCode::SERVICE_UNAVAILABLE);
 }
