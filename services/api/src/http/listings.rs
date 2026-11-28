@@ -405,10 +405,7 @@ async fn signature_handler(
         })?,
     };
 
-    let upload = UploadRequest {
-        folder: purpose.folder(user.id),
-        authenticated: purpose.is_authenticated(),
-    };
+    let upload = UploadRequest::new(purpose, user.id);
 
     state
         .media
