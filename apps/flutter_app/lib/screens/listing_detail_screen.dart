@@ -12,6 +12,7 @@ import 'auth_sheet.dart';
 import 'chat_screen.dart';
 import 'listing_code_screen.dart';
 import 'map_screen.dart';
+import 'profile_screen.dart';
 import 'public_profile_screen.dart';
 import 'report_listing_screen.dart';
 
@@ -323,19 +324,34 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
 
   void _openLandlord() {
     final listing = _listing;
-    final username = listing?.landlordUsername;
-    if (listing == null || username == null || username.isEmpty) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => PublicProfileScreen(
-          api: widget.api,
-          cache: widget.cache,
-          appState: widget.appState,
-          username: username,
+    if (listing == null) return;
+    final username = listing.landlordUsername;
+    if (username != null && username.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PublicProfileScreen(
+            api: widget.api,
+            cache: widget.cache,
+            appState: widget.appState,
+            username: username,
+          ),
         ),
-      ),
-    );
+      );
+      return;
+    }
+    if (_isOwner || (_myId != null && listing.landlordId == _myId)) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ProfileScreen(
+            api: widget.api,
+            cache: widget.cache,
+            appState: widget.appState,
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -627,7 +643,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: listing.landlordUsername == null ? null : _openLandlord,
+        onTap: _openLandlord,
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
@@ -681,8 +697,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                   ],
                 ),
               ),
-              if (listing.landlordUsername != null)
-                const Icon(Icons.chevron_right, color: UnaColors.green700),
+              const Icon(Icons.chevron_right, color: UnaColors.green700),
             ],
           ),
         ),
