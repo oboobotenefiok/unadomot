@@ -3,7 +3,7 @@ use crate::application::listings::{
     create_listing, delete_listing, get_public_listing, list_my_listings, update_listing,
     ListingError,
 };
-use crate::application::media::MediaError;
+use crate::application::media::{MediaError, UploadPurpose, UploadRequest};
 use crate::domain::listing::{
     Listing, ListingFilter, ListingStatus, ListingUpdate, NewListing, NewListingMedia,
 };
@@ -84,7 +84,8 @@ pub struct AddMediaRequest {
 
 #[derive(Deserialize, Default)]
 pub struct SignatureRequest {
-    pub folder: Option<String>,
+    /// One of `listing`, `avatar`, `chat`, `verification`. Defaults to listing.
+    pub purpose: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -386,17 +387,28 @@ async fn add_media_handler(
 
 async fn signature_handler(
     State(state): State<AppState>,
-    _user: AuthUser,
+    user: AuthUser,
     Json(request): Json<SignatureRequest>,
 ) -> Result<Json<crate::application::media::UploadSignature>, ApiError> {
-    let folder = request
-        .folder
-        .filter(|value| !value.trim().is_empty())
-        .unwrap_or_else(|| "unadomot/listings".into());
+    let purpose = match request.purpose.as_deref() {
+        None | Some("") => UploadPurpose::Listing,
+        Some(value) => UploadPurpose::parse(value).ok_or_else(|| {
+            ApiError::new(
+                StatusCode::BAD_REQUEST,
+                "validation_error",
+                "purpose must be one of: listing, avatar, chat, verification",
+            )
+        })?,
+    };
+
+    let upload = UploadRequest {
+        folder: purpose.folder(user.id),
+        authenticated: purpose.is_authenticated(),
+    };
 
     state
         .media
-        .sign_upload(&folder)
+        .sign_upload(&upload)
         .map(Json)
         .map_err(media_error)
 }

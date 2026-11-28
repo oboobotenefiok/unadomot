@@ -1,7 +1,7 @@
 use crate::application::auth::{AuthenticatedUser, AuthError, StoredUser, UserRepository};
 use crate::application::calls::{CallError, CallRepository};
 use crate::application::listings::{ListingError, ListingPage, ListingRepository};
-use crate::application::media::{MediaError, MediaSigner, UploadSignature};
+use crate::application::media::{MediaError, MediaSigner, UploadRequest, UploadSignature};
 use crate::application::messaging::{MessagingError, MessagingRepository};
 use crate::application::reports::{ReportError, ReportRepository};
 use crate::application::verification::{VerificationError, VerificationRepository};
@@ -323,7 +323,7 @@ impl VerificationRepository for UnconfiguredVerificationRepository {
 pub struct UnconfiguredMediaSigner;
 
 impl MediaSigner for UnconfiguredMediaSigner {
-    fn sign_upload(&self, _folder: &str) -> Result<UploadSignature, MediaError> {
+    fn sign_upload(&self, _request: &UploadRequest) -> Result<UploadSignature, MediaError> {
         Err(MediaError::NotConfigured)
     }
 }

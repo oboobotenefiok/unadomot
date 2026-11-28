@@ -456,14 +456,18 @@ class ApiClient {
     return Map<String, dynamic>.from(result as Map);
   }
 
-  Future<Map<String, dynamic>> mediaSignature({String folder = 'unadomot/listings'}) async {
+  /// Requests a signed Cloudinary upload for a specific purpose. The server
+  /// chooses the folder and upload constraints; the client cannot pick a path.
+  Future<Map<String, dynamic>> mediaSignature({
+    String purpose = 'listing',
+  }) async {
     if (!signedIn) {
       throw const ApiException(401, 'Please sign in to upload photos.');
     }
     final result = await _request(
       'POST',
       '/api/media/signature',
-      body: {'folder': folder},
+      body: {'purpose': purpose},
       authenticated: true,
     );
     return Map<String, dynamic>.from(result as Map);
@@ -473,9 +477,9 @@ class ApiClient {
     required Uint8List bytes,
     required String filename,
     required Map<String, dynamic> signature,
-    String resourceType = 'image',
   }) async {
     final cloud = signature['cloud_name'] as String;
+    final resourceType = signature['resource_type'] as String? ?? 'image';
     final request = http.MultipartRequest(
       'POST',
       Uri.parse('https://api.cloudinary.com/v1_1/$cloud/$resourceType/upload'),
@@ -484,7 +488,16 @@ class ApiClient {
       ..fields['timestamp'] = '${signature['timestamp']}'
       ..fields['signature'] = signature['signature'] as String
       ..fields['folder'] = signature['folder'] as String
-      ..files.add(http.MultipartFile.fromBytes('file', bytes, filename: filename));
+      ..fields['allowed_formats'] = signature['allowed_formats'] as String;
+
+    final uploadType = signature['type'] as String?;
+    if (uploadType != null) {
+      request.fields['type'] = uploadType;
+    }
+
+    request.files.add(
+      http.MultipartFile.fromBytes('file', bytes, filename: filename),
+    );
 
     final streamed = await _client.send(request);
     final response = await http.Response.fromStream(streamed);
