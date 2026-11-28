@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import '../models/listing.dart';
 import '../theme.dart';
 
+/// Bounded photo gallery for a single listing.
+///
+/// Shows exactly the photos attached to the listing, with a page counter and
+/// dot indicators. The class keeps its historical name so existing call sites
+/// do not change, but it no longer loops or pads the slide count.
 class InfiniteListingGallery extends StatefulWidget {
   final List<ListingMedia> media;
 
@@ -12,12 +17,8 @@ class InfiniteListingGallery extends StatefulWidget {
 }
 
 class _InfiniteListingGalleryState extends State<InfiniteListingGallery> {
-  static const _slideCount = 100;
-  static const _firstSlide = 1;
-  static const _lastSlide = 100;
-
-  late final PageController _controller = PageController(initialPage: _firstSlide);
-  int _slide = 0;
+  final _controller = PageController();
+  int _index = 0;
 
   @override
   void dispose() {
@@ -25,29 +26,11 @@ class _InfiniteListingGalleryState extends State<InfiniteListingGallery> {
     super.dispose();
   }
 
-  int _mediaIndexFor(int page) {
-    if (page == 0) return _slideCount - 1;
-    if (page == _slideCount + 1) return 0;
-    return page - 1;
-  }
-
-  void _handlePageChanged(int page) {
-    if (page == 0) {
-      _controller.jumpToPage(_lastSlide);
-      setState(() => _slide = _slideCount - 1);
-      return;
-    }
-    if (page == _slideCount + 1) {
-      _controller.jumpToPage(_firstSlide);
-      setState(() => _slide = 0);
-      return;
-    }
-    setState(() => _slide = page - 1);
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (widget.media.isEmpty) {
+    final media = widget.media;
+
+    if (media.isEmpty) {
       return Container(
         height: 240,
         color: UnaColors.green100,
@@ -63,23 +46,48 @@ class _InfiniteListingGalleryState extends State<InfiniteListingGallery> {
           height: 260,
           child: PageView.builder(
             controller: _controller,
-            itemCount: _slideCount + 2,
-            onPageChanged: _handlePageChanged,
-            itemBuilder: (context, page) {
-              final mediaIndex = _mediaIndexFor(page) % widget.media.length;
-              return Image.network(widget.media[mediaIndex].url, fit: BoxFit.cover);
-            },
+            itemCount: media.length,
+            onPageChanged: (index) => setState(() => _index = index),
+            itemBuilder: (context, index) => Image.network(
+              media[index].url,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stack) => Container(
+                color: UnaColors.green100,
+                child: const Center(
+                  child: Icon(Icons.broken_image_outlined, color: UnaColors.green700),
+                ),
+              ),
+            ),
           ),
         ),
         Padding(
           padding: const EdgeInsets.only(top: 8),
-          child: Text(
-            '${_slide + 1} / $_slideCount',
-            style: const TextStyle(
-              color: UnaColors.text600,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ...List.generate(media.length, (index) {
+                final active = index == _index;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  width: active ? 18 : 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: active ? UnaColors.green700 : UnaColors.border,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                );
+              }),
+              const SizedBox(width: 10),
+              Text(
+                '${_index + 1} / ${media.length}',
+                style: const TextStyle(
+                  color: UnaColors.text600,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ),
       ],

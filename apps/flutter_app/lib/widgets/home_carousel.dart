@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import '../models/listing.dart';
 import '../theme.dart';
 
+/// Home page hero carousel.
+///
+/// Loops through a fixed 100 slides, wrapping seamlessly at both ends, and
+/// maps each slide onto the available listings. This is the infinite carousel
+/// that used to sit on the listing detail page.
 class HomeCarousel extends StatefulWidget {
   final List<Listing> listings;
   final ValueChanged<Listing> onTap;
@@ -18,9 +23,14 @@ class HomeCarousel extends StatefulWidget {
 }
 
 class _HomeCarouselState extends State<HomeCarousel> {
-  final _controller = PageController(viewportFraction: 0.9);
+  static const _slideCount = 100;
+  static const _firstSlide = 1;
+  static const _lastSlide = 100;
+
+  late final PageController _controller =
+      PageController(viewportFraction: 0.9, initialPage: _firstSlide);
   Timer? _timer;
-  int _index = 0;
+  int _slide = 0;
 
   @override
   void initState() {
@@ -32,7 +42,8 @@ class _HomeCarouselState extends State<HomeCarousel> {
   void didUpdateWidget(covariant HomeCarousel oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.listings.length != widget.listings.length) {
-      _index = 0;
+      _slide = 0;
+      if (_controller.hasClients) _controller.jumpToPage(_firstSlide);
       _startAutoscroll();
     }
   }
@@ -42,13 +53,25 @@ class _HomeCarouselState extends State<HomeCarousel> {
     if (widget.listings.length < 2) return;
     _timer = Timer.periodic(const Duration(seconds: 4), (_) {
       if (!mounted || !_controller.hasClients) return;
-      final next = (_index + 1) % widget.listings.length;
-      _controller.animateToPage(
-        next,
+      _controller.nextPage(
         duration: const Duration(milliseconds: 450),
         curve: Curves.easeInOut,
       );
     });
+  }
+
+  void _handlePageChanged(int page) {
+    if (page == 0) {
+      _controller.jumpToPage(_lastSlide);
+      setState(() => _slide = _slideCount - 1);
+      return;
+    }
+    if (page == _slideCount + 1) {
+      _controller.jumpToPage(_firstSlide);
+      setState(() => _slide = 0);
+      return;
+    }
+    setState(() => _slide = page - 1);
   }
 
   @override
@@ -70,10 +93,10 @@ class _HomeCarouselState extends State<HomeCarousel> {
             height: 190,
             child: PageView.builder(
               controller: _controller,
-              itemCount: widget.listings.length,
-              onPageChanged: (index) => setState(() => _index = index),
-              itemBuilder: (context, index) {
-                final listing = widget.listings[index];
+              itemCount: _slideCount + 2,
+              onPageChanged: _handlePageChanged,
+              itemBuilder: (context, page) {
+                final listing = widget.listings[page % widget.listings.length];
                 final image = listing.media.isEmpty ? null : listing.media.first.url;
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -87,7 +110,12 @@ class _HomeCarouselState extends State<HomeCarousel> {
                           if (image == null)
                             Container(color: UnaColors.green100)
                           else
-                            Image.network(image, fit: BoxFit.cover),
+                            Image.network(
+                              image,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stack) =>
+                                  Container(color: UnaColors.green100),
+                            ),
                           DecoratedBox(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
@@ -139,21 +167,13 @@ class _HomeCarouselState extends State<HomeCarousel> {
             ),
           ),
           const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(widget.listings.length, (index) {
-              final active = index == _index;
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                margin: const EdgeInsets.symmetric(horizontal: 3),
-                width: active ? 18 : 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: active ? UnaColors.green700 : UnaColors.border,
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              );
-            }),
+          Text(
+            '${_slide + 1} / $_slideCount',
+            style: const TextStyle(
+              color: UnaColors.text600,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
