@@ -67,14 +67,13 @@ async fn response_for(method: Method, uri: &str) -> (StatusCode, Value) {
 }
 
 async fn assert_unauthorized(method: Method, uri: &str) {
+    let label = format!("{} {}", method.as_str(), uri);
     let (status, body) = response_for(method, uri).await;
-    assert_eq!(status, StatusCode::UNAUTHORIZED, "{} {}", method.as_str(), uri);
+    assert_eq!(status, StatusCode::UNAUTHORIZED, "{label}");
     assert_eq!(
         body["error"]["code"],
         "unauthorized",
-        "{} {} returned the wrong error code: {body}",
-        method.as_str(),
-        uri
+        "{label} returned the wrong error code: {body}"
     );
 }
 
