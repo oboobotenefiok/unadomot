@@ -200,23 +200,18 @@ pub fn router(state: AppState) -> Router {
         .with_state(state)
 }
 
-/// Builds the complete application router, including the handlers that used to
-/// live as binary-private modules. Exposed from the library so integration
-/// tests can exercise every route without binding a socket.
+/// Builds the complete application router. Every route is mounted regardless
+/// of whether a database is configured; handlers return 503 when a repository
+/// is absent. Exposed from the library so integration tests can exercise every
+/// route without binding a socket.
 pub fn app(state: AppState) -> Router {
-    let mut app = router(state.clone())
+    router(state.clone())
         .merge(public_pages::router(state.clone()))
         .merge(verification::router(state.clone()))
         .merge(chat::router(state.clone()))
-        .merge(calls::router(state.clone()));
-
-    if state.profiles.is_some() {
-        app = app
-            .merge(profile::router(state.clone()))
-            .merge(comments::router(state.clone()));
-    }
-
-    app
+        .merge(calls::router(state.clone()))
+        .merge(profile::router(state.clone()))
+        .merge(comments::router(state.clone()))
 }
 
 async fn ready_handler(State(state): State<AppState>) -> Result<StatusCode, ApiError> {
