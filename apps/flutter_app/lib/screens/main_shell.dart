@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../api/api_client.dart';
+import '../api/event_stream.dart';
 import '../data/local_cache.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
@@ -41,6 +43,9 @@ class _MainShellState extends State<MainShell> {
   bool _mapLoading = false;
   List<Listing> _mapListings = [];
 
+  EventStream? _events;
+  StreamSubscription<Map<String, dynamic>>? _eventsSub;
+
   @override
   void initState() {
     super.initState();
@@ -51,13 +56,26 @@ class _MainShellState extends State<MainShell> {
       _loadUnread();
     }
     _restoreHomeView();
+    _listenForChanges();
   }
 
   @override
   void dispose() {
     widget.appState.removeListener(_onAuthChanged);
+    _eventsSub?.cancel();
+    _events?.dispose();
     _search.dispose();
     super.dispose();
+  }
+
+  /// Keeps the unread badge honest when a message arrives on another device.
+  void _listenForChanges() {
+    _events = EventStream(widget.api)..start();
+    _eventsSub = _events!.events.listen((event) {
+      if (event['type'] == 'message' && widget.appState.signedIn) {
+        _loadUnread();
+      }
+    });
   }
 
   Future<void> _restoreHomeView() async {
