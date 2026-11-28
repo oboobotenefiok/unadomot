@@ -65,7 +65,7 @@ impl MediaSigner for CloudinarySigner {
         Some(&self.cloud_name)
     }
 
-    fn signed_delivery_url(&self, public_id: &str) -> Result<MediaError, MediaError> {
+    fn signed_delivery_url(&self, public_id: &str) -> Result<String, MediaError> {
         let to_sign = format!("image/authenticated/{public_id}");
         let mut hasher = Sha1::new();
         hasher.update(format!("{to_sign}{}", self.api_secret).as_bytes());

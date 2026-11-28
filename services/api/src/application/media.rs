@@ -106,7 +106,7 @@ pub trait MediaSigner: Send + Sync {
 
     /// Builds a short-lived signed delivery URL for an `authenticated` asset.
     /// Used only for admin review of identity documents.
-    fn signed_delivery_url(&self, _public_id: &str) -> Result<MediaError, MediaError> {
+    fn signed_delivery_url(&self, _public_id: &str) -> Result<String, MediaError> {
         Err(MediaError::NotConfigured)
     }
 }
