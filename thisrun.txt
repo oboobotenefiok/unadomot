@@ -1,51 +1,146 @@
-# CI run 2026-11-28T17:13:08Z
+# CI run 2026-11-28T18:20:46Z
 Branch: rewrite/flutter-rust-postgres
 
 ## Trigger
-https://github.com/oboobotenefiok/unadomot/actions/runs/46169305813
+https://github.com/oboobotenefiok/unadomot/actions/runs/46175354699
 
 ## Recent runs
-pending		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46169305813	6s	2026-11-28T17:13:10Z
-in_progress		fix: remove duplicate listing code route	Rewrite CI	rewrite/flutter-rust-postgres	push	46169239212	51s	2026-11-28T17:12:25Z
-completed	failure	ci: record run unknown	Rewrite CI	rewrite/flutter-rust-postgres	push	46168185892	5m52s	2026-11-28T17:00:53Z
-completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46167622675	6m7s	2026-11-28T16:54:22Z
-completed	cancelled	test: use owner-scoped listing media	Rewrite CI	rewrite/flutter-rust-postgres	push	46167521486	1m30s	2026-11-28T16:53:10Z
+pending		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46175354699	6s	2026-11-28T18:20:49Z
+in_progress		chore: remove temporary split file	Rewrite CI	rewrite/flutter-rust-postgres	push	46175257147	1m6s	2026-11-28T18:19:49Z
+completed	cancelled	chore: remove temporary split file	Rewrite CI	rewrite/flutter-rust-postgres	push	46175245810	9s	2026-11-28T18:19:41Z
+completed	cancelled	chore: remove temporary split file	Rewrite CI	rewrite/flutter-rust-postgres	push	46175234455	9s	2026-11-28T18:19:33Z
+completed	cancelled	refactor(flutter): split chat screen into connected parts	Rewrite CI	rewrite/flutter-rust-postgres	push	46175122254	1m31s	2026-11-28T18:18:19Z
 
-Run ID: 46169305813
-URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46169305813
+Run ID: 46175354699
+URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46175354699
 
 ## Watch
 
-✓ rewrite/flutter-rust-postgres Rewrite CI · 46169305813
-Triggered via workflow_dispatch about 7 minutes ago
+X rewrite/flutter-rust-postgres Rewrite CI · 46175354699
+Triggered via workflow_dispatch about 3 minutes ago
 
 JOBS
-✓ rust in 1m53s (ID 141053918650)
-✓ audit in 2m43s (ID 141053918939)
-✓ docker in 2m12s (ID 141053918942)
-✓ android in 7m21s (ID 141053919037)
+✓ rust in 1m43s (ID 141072756868)
+X android in 56s (ID 141072756980)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-java@v4
+  ✓ Run subosito/flutter-action@v2
+  ✓ Cache Gradle
+  ✓ Ensure Android platform files
+  ✓ Configure release signing
+  ✓ Apply Android permissions and deep links
+  ✓ Install dependencies
+  X Analyze
+  - Flutter tests with coverage
+  - Build release APK
+  - Verify required Android permissions
+  - Run actions/***-artifact@v4
+  ✓ Publish release failure
+  - Post Cache Gradle
+  ✓ Post Run subosito/flutter-action@v2
+  ✓ Post Run actions/setup-java@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+✓ docker in 2m3s (ID 141072757149)
+✓ audit in 2m50s (ID 141072757171)
 
 ANNOTATIONS
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 rust: .github#2
 
-! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-audit: .github#2
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, actions/setup-java@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+android: .github#2
 
-! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-docker: .github#2
-
-! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, actions/setup-java@v4, actions/***-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-android: .github#5
+X Process completed with exit code 1.
+android: .github#75
 
 ! setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
 android: .github#18
 
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+docker: .github#2
 
-ARTIFACTS
-unadomot-release-apk
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+audit: .github#2
 
-For more information about a job, try: gh run view --job=<job-id>
-View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46169305813
+
+To see what failed, try: gh run view 46175354699 --log-failed
+View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46175354699
 
 ## Failed logs
+android	Analyze	﻿2026-11-28T18:21:51.9932950Z ##[group]Run flutter analyze --no-fatal-infos --no-fatal-warnings
+android	Analyze	2026-11-28T18:21:51.9933896Z ^[[36;1mflutter analyze --no-fatal-infos --no-fatal-warnings^[[0m
+android	Analyze	2026-11-28T18:21:51.9982866Z shell: /usr/bin/bash -e {0}
+android	Analyze	2026-11-28T18:21:51.9983373Z env:
+android	Analyze	2026-11-28T18:21:51.9983790Z   CARGO_TERM_COLOR: never
+android	Analyze	2026-11-28T18:21:51.9984264Z   NO_COLOR: 1
+android	Analyze	2026-11-28T18:21:51.9985062Z   RUST_BACKTRACE: 1
+android	Analyze	2026-11-28T18:21:51.9985694Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-2/x64
+android	Analyze	2026-11-28T18:21:51.9986683Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-2/x64
+android	Analyze	2026-11-28T18:21:51.9987633Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.50.1-x64/flutter
+android	Analyze	2026-11-28T18:21:51.9988451Z   PUB_CACHE: /home/runner/.pub-cache
+android	Analyze	2026-11-28T18:21:51.9989319Z ##[endgroup]
+android	Analyze	2026-11-28T18:22:01.7527913Z Analyzing flutter_app...                                        
+android	Analyze	2026-11-28T18:22:01.7537531Z 
+android	Analyze	2026-11-28T18:22:01.7564164Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/app_settings.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7568281Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/main.dart:3:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7574987Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/admin_audit_screen.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7577940Z warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_audit_screen.dart:5:8 • unused_import
+android	Analyze	2026-11-28T18:22:01.7580936Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/admin_screen.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7583853Z warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_screen.dart:5:8 • unused_import
+android	Analyze	2026-11-28T18:22:01.7587447Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/admin_users_screen.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7590277Z warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_users_screen.dart:5:8 • unused_import
+android	Analyze	2026-11-28T18:22:01.7593352Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/admin_verification_screen.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7596452Z warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_verification_screen.dart:5:8 • unused_import
+android	Analyze	2026-11-28T18:22:01.7599462Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/auth_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7603475Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/auth_sheet.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7606755Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/call_screen.dart:3:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7608498Z warning • The member 'setState' can only be used within instance members of subclasses of 'State' • lib/screens/chat_composer.dart:53:30 • invalid_use_of_protected_member
+android	Analyze	2026-11-28T18:22:01.7609750Z warning • The member 'setState' can only be used within instance members of subclasses of 'State' • lib/screens/chat_composer.dart:145:19 • invalid_use_of_protected_member
+android	Analyze	2026-11-28T18:22:01.7612017Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/chat_screen.dart:7:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7613672Z    info • Unnecessary use of 'toList' in a spread. Try removing the invocation of 'toList' • lib/screens/chat_screen.dart:314:40 • unnecessary_to_list_in_spreads
+android	Analyze	2026-11-28T18:22:01.7616466Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/create_listing_screen.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7621351Z    info • 'onReorder' is deprecated and shouldn't be used. Use the onReorderItem callback instead. The onReorderItem callback adjusts the newIndex parameter for a removed item at the oldIndex. This feature was deprecated after v3.41.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/create_listing_screen.dart:563:15 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7626276Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/edit_listing_screen.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7630622Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/favorites_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7635162Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/listing_code_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7639460Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/listing_detail_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7643128Z    info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/listing_detail_screen.dart:157:16 • use_build_context_synchronously
+android	Analyze	2026-11-28T18:22:01.7646907Z   error • The getter 'landlordId' isn't defined for the type 'Listing'. Try importing the library that defines 'landlordId', correcting the name to the name of an existing getter, or defining a getter or field named 'landlordId' • lib/screens/listing_detail_screen.dart:343:47 • undefined_getter
+android	Analyze	2026-11-28T18:22:01.7651258Z   error • The getter 'landlordId' isn't defined for the type 'Listing'. Try importing the library that defines 'landlordId', correcting the name to the name of an existing getter, or defining a getter or field named 'landlordId' • lib/screens/listing_detail_screen.dart:540:43 • undefined_getter
+android	Analyze	2026-11-28T18:22:01.7655552Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/listings_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7658797Z warning • The declaration '_openMessages' isn't referenced. Try removing the declaration of '_openMessages' • lib/screens/listings_screen.dart:275:16 • unused_element
+android	Analyze	2026-11-28T18:22:01.7661483Z warning • The declaration '_openFavorites' isn't referenced. Try removing the declaration of '_openFavorites' • lib/screens/listings_screen.dart:290:16 • unused_element
+android	Analyze	2026-11-28T18:22:01.7663844Z warning • The declaration '_openProfile' isn't referenced. Try removing the declaration of '_openProfile' • lib/screens/listings_screen.dart:305:16 • unused_element
+android	Analyze	2026-11-28T18:22:01.7666325Z warning • The declaration '_openPost' isn't referenced. Try removing the declaration of '_openPost' • lib/screens/listings_screen.dart:319:16 • unused_element
+android	Analyze	2026-11-28T18:22:01.7669608Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/main_shell.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7673880Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/map_screen.dart:3:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7678297Z    info • 'desiredAccuracy' is deprecated and shouldn't be used. use settings parameter with AndroidSettings, AppleSettings, WebSettings, or LocationSettings. Try replacing the use of the deprecated member with the replacement • lib/screens/map_screen.dart:136:9 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7682522Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/messages_screen.dart:3:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7687133Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/notifications_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7691505Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/onboarding_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7696010Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/profile_screen.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7700232Z    info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check. Guard a 'State.context' use with a 'mounted' check on the State, and other BuildContext use with a 'mounted' check on the BuildContext • lib/screens/profile_screen.dart:246:40 • use_build_context_synchronously
+android	Analyze	2026-11-28T18:22:01.7704933Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/public_profile_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7709073Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/qr_scanner_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7713629Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/report_listing_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7718183Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/reset_password_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7722504Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/splash_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7727231Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/static_page_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7731503Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/verification_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7735876Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/state/app_state.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7740040Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/theme.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7744200Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/empty_state.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7748648Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/home_carousel.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7752794Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/infinite_listing_gallery.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7757480Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/listing_card.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7761573Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/responsive_grid.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7764177Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/share_listing_sheet.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7766971Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/skeletons.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7768530Z warning • Unused import: '../theme.dart'. Try removing the import directive • lib/widgets/skeletons.dart:3:8 • unused_import
+android	Analyze	2026-11-28T18:22:01.7770206Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • test/infinite_listing_gallery_test.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7772492Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • test/public_home_test.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T18:22:01.7773687Z 58 issues found. (ran in 8.9s)
+android	Analyze	2026-11-28T18:22:01.7773870Z 
+android	Analyze	2026-11-28T18:22:01.7857102Z ##[error]Process completed with exit code 1.
