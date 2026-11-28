@@ -1,4 +1,5 @@
 import 'package:latlong2/latlong.dart';
+import 'nigeria_locations.dart';
 
 /// Approximate coordinates for each LGA headquarters, in the same order as
 /// [NigeriaLocations.lgas]. Ported from the legacy `data/nigeria-states.js`.
