@@ -98,8 +98,6 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
     _loadComments();
   }
 
-  /// Resolves the reader's own id once, so comments can tell their author
-  /// apart from everyone else without a second lookup per tile.
   Future<void> _loadOwnership() async {
     if (!widget.appState.signedIn) return;
     try {
@@ -372,7 +370,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
               : _listing == null
                   ? const Center(child: Text('Listing not found'))
                   : ListView(
-                      padding: EdgeInsets.zero,
+                      padding: const EdgeInsets.only(bottom: 96),
                       children: [
                         if (_cachedAt != null)
                           Container(
@@ -463,4 +461,321 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                 style: TextStyle(
                                   color: scheme.onSurfaceVariant,
                                   fontSize: 14,
-                  ...[truncated]
+                                  height: 1.45,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Row(
+                                children: [
+                                  TextButton.icon(
+                                    onPressed: _openMap,
+                                    icon: const Icon(Icons.map_outlined, size: 18),
+                                    label: const Text('View on map'),
+                                  ),
+                                  const Spacer(),
+                                  TextButton.icon(
+                                    onPressed: _report,
+                                    icon: const Icon(Icons.flag_outlined, size: 18),
+                                    label: const Text('Report'),
+                                  ),
+                                ],
+                              ),
+                              const Divider(height: 32),
+                              _commentsSection(),
+                              if (_similar.isNotEmpty) ...[
+                                const SizedBox(height: 24),
+                                _sectionTitle('Similar nearby'),
+                                const SizedBox(height: 8),
+                                ..._similar.map(
+                                  (item) => ListTile(
+                                    contentPadding: EdgeInsets.zero,
+                                    leading: CircleAvatar(
+                                      backgroundColor: UnaColors.green100,
+                                      backgroundImage: item.media.isEmpty
+                                          ? null
+                                          : NetworkImage(item.media.first.url),
+                                      child: item.media.isEmpty
+                                          ? const Icon(Icons.home_work_outlined, color: UnaColors.green700)
+                                          : null,
+                                    ),
+                                    title: Text(item.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                                    subtitle: Text('${item.lga}, ${item.state} · ${formatNaira(item.price)}'),
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ListingDetailScreen(
+                                          api: widget.api,
+                                          cache: widget.cache,
+                                          appState: widget.appState,
+                                          listingId: item.id,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+      bottomNavigationBar: _listing == null || _isOwner
+          ? null
+          : SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                child: FilledButton.icon(
+                  onPressed: _startingChat ? null : _openChat,
+                  icon: _startingChat
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.chat_bubble_outline),
+                  label: Text(_startingChat ? 'Opening chat…' : 'Message lister'),
+                ),
+              ),
+            ),
+    );
+  }
+
+  Widget _gallery() => InfiniteListingGallery(media: _listing!.media);
+
+  Widget _propertyGrid() {
+    final items = <Widget>[];
+    if (_listing!.bedrooms != null) {
+      items.add(_fact(Icons.bed_outlined, '${_listing!.bedrooms} bed'));
+    }
+    if (_listing!.bathrooms != null) {
+      items.add(_fact(Icons.bathtub_outlined, '${_listing!.bathrooms} bath'));
+    }
+    if (_listing!.propertyType != null) {
+      items.add(_fact(Icons.home_outlined, _listing!.propertyType!));
+    }
+    if (_listing!.furnishing != null) {
+      items.add(_fact(Icons.chair_outlined, _listing!.furnishing!));
+    }
+    if (items.isEmpty) return const SizedBox.shrink();
+    return Wrap(spacing: 8, runSpacing: 8, children: items);
+  }
+
+  Widget _fact(IconData icon, String label) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        decoration: BoxDecoration(
+          color: UnaColors.green100,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: UnaColors.green900),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: const TextStyle(
+                color: UnaColors.green900,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      );
+
+  Widget _landlordCard() {
+    final listing = _listing!;
+    return Material(
+      color: UnaColors.green100,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: listing.landlordUsername == null ? null : _openLandlord,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: UnaColors.green700,
+                backgroundImage: listing.landlordPhotoUrl == null
+                    ? null
+                    : NetworkImage(listing.landlordPhotoUrl!),
+                child: listing.landlordPhotoUrl == null
+                    ? Text(
+                        _initials(listing.landlordName),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      )
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            listing.landlordName.isEmpty ? 'Lister' : listing.landlordName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: UnaColors.green900,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        if (listing.landlordVerified) ...[
+                          const SizedBox(width: 4),
+                          const Icon(Icons.verified, size: 15, color: UnaColors.green700),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      listing.isAgentListing ? 'Agent' : 'Landlord',
+                      style: const TextStyle(color: UnaColors.green700, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              if (listing.landlordUsername != null)
+                const Icon(Icons.chevron_right, color: UnaColors.green700),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _sectionTitle(String title) => Text(
+        title,
+        style: const TextStyle(
+          color: UnaColors.text900,
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+        ),
+      );
+
+  Widget _chip(String label) => Chip(
+        label: Text(label),
+        backgroundColor: UnaColors.green100,
+        side: BorderSide.none,
+        labelStyle: const TextStyle(color: UnaColors.green900, fontSize: 12),
+      );
+
+  Widget _commentsSection() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionTitle('Comments (${_comments.length})'),
+          const SizedBox(height: 8),
+          if (_loadingComments)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(12),
+                child: CircularProgressIndicator(),
+              ),
+            )
+          else if (_comments.isEmpty)
+            Text(
+              'No comments yet. Ask a question about this listing.',
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            )
+          else
+            ..._comments.map(_commentTile),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _commentController,
+                  minLines: 1,
+                  maxLines: 3,
+                  decoration: const InputDecoration(
+                    hintText: 'Ask about this listing',
+                    isDense: true,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton.filled(
+                onPressed: _postingComment ? null : _postComment,
+                icon: _postingComment
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.send),
+              ),
+            ],
+          ),
+        ],
+      );
+
+  Widget _commentTile(Map<String, dynamic> comment) {
+    final author = comment['author_name'] as String? ?? 'User';
+    final body = comment['body'] as String? ?? '';
+    final userId = comment['user_id'] as String?;
+    final mine = _myId != null && userId == _myId;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            radius: 16,
+            backgroundColor: UnaColors.green100,
+            child: Text(
+              _initials(author),
+              style: const TextStyle(
+                color: UnaColors.green900,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  author,
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                ),
+                const SizedBox(height: 2),
+                Text(body, style: const TextStyle(fontSize: 13, height: 1.35)),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () => _react(comment, '👍'),
+                      child: const Text('👍', style: TextStyle(fontSize: 13)),
+                    ),
+                    if (mine)
+                      TextButton(
+                        onPressed: () => _deleteComment(comment),
+                        child: const Text('Delete', style: TextStyle(fontSize: 12)),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+String _initials(String name) {
+  final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+  if (parts.isEmpty) return '?';
+  if (parts.length == 1) return parts.first.characters.first.toUpperCase();
+  return (parts.first.characters.first + parts.last.characters.first).toUpperCase();
+}

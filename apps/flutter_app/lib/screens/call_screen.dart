@@ -120,7 +120,7 @@ class _CallScreenState extends State<CallScreen> {
       await _peer!.setLocalDescription(offer);
       await _waitForIce(_peer!);
 
-      final sdp = (await _peer!.getLocalDescription())?.sdp.trim();
+      final sdp = (await _peer!.getLocalDescription())?.sdp?.trim();
       if (sdp == null || sdp.isEmpty) {
         throw StateError('Could not prepare the call');
       }
@@ -495,7 +495,7 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
       await _peer!.setLocalDescription(answer);
       await _waitForIce(_peer!);
 
-      final sdp = (await _peer!.getLocalDescription())?.sdp.trim();
+      final sdp = (await _peer!.getLocalDescription())?.sdp?.trim();
       if (sdp == null || sdp.isEmpty) {
         throw StateError('Could not answer the call');
       }
