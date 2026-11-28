@@ -1,6 +1,6 @@
 # Rewrite progress
 
-Last updated: 27 November 2026
+Last updated: 28 November 2026
 
 ## Backend
 
@@ -10,16 +10,18 @@ Last updated: 27 November 2026
 - [x] `AuthUser` and `AdminUser` extractors
 - [x] Auth, listings, messaging, reports, comments, profiles, calls, verification routes
 - [x] Repository layer for users, listings, messaging, comments, profiles, reports, calls
+- [x] All handlers under `src/http/`; `http::app()` exported from the library
 - [x] Decimal prices end to end
 - [x] Atomic refresh-token rotation
 - [x] Random username suffix and unique index
 - [x] Public profiles exclude email and phone
-- [x] Cloudinary-only media URLs
+- [x] No plaintext verification documents; signed admin URLs with audit
 - [x] Google token verification timeout
 - [x] Google linking preserves password login
 - [x] Structured JSON logs and request IDs
-- [x] Rate limiting on the merged router
+- [x] Rate limiting on `Fly-Client-IP` with per-route budgets and bounded memory
 - [x] Suspended-account checks through `AuthUser`
+- [x] Router-level integration tests for auth requirements and route wiring
 
 ## Flutter
 
@@ -31,6 +33,8 @@ Last updated: 27 November 2026
 - [x] 100-slide listing gallery
 - [x] Fatal configuration screen for missing `API_BASE_URL`
 - [x] Post button prompts signup when signed out
+- [x] Media uploads request a purpose and forward signed parameters
+- [x] Verification submission sends a document public id
 
 ## CI and release
 
@@ -49,7 +53,11 @@ Last updated: 27 November 2026
 
 - [ ] Commit the `android/` platform folder
 - [ ] Set production secrets on Fly
+- [ ] Re-run CI for the Phase 0 changes and record a green run
 - [ ] Email verification at registration
-- [ ] Router-level tests for every endpoint
+- [ ] Account deletion and data export
+- [ ] Server-side favorites and cross-device sync
+- [ ] Listing coordinates, bbox query, and clustered map
+- [ ] Push notifications for messages and calls
 - [ ] Legacy migration scripts
-- [ ] Green CI run recorded
+- [ ] Full authz-negative coverage for every endpoint

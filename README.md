@@ -13,14 +13,27 @@ UnaDomot is a Nigerian rental marketplace. Tenants browse verified listings, mes
 
 ## Status
 
-Code consolidation and the requested feature work are about **95% complete**. The project is **not production-ready yet**.
+Phase 0 security hardening is complete on `rewrite/flutter-rust-postgres`. The project is **not production-ready yet**: several core marketplace features are still missing and the Phase 0 changes have not been through CI.
 
 Remaining launch blockers:
 
 - Commit the generated `android/` platform folder, or keep using the CI generation step.
 - Set production secrets on Fly: `CLOUDINARY_*`, `RESEND_API_KEY`, `EMAIL_FROM`, `APP_ENV=production`.
-- Run the full CI matrix and record a green run.
+- Run the full CI matrix against the Phase 0 commits and record a green run.
 - Add email verification at registration.
+- Add account deletion and data export (Google Play and NDPA requirements).
+- Add server-side favorites; favorites are currently device-local only.
+- Add listing coordinates and a bounding-box query; the map is state-level only.
+
+## Recent security hardening
+
+- Media upload signing derives the Cloudinary folder server-side from an explicit purpose (`listing`, `avatar`, `chat`, `verification`) and the authenticated user. Clients can no longer choose a folder.
+- Upload signatures bind `allowed_formats`, `resource_type=image`, and `type=authenticated` for verification documents.
+- Submitted media URLs must point at this application's Cloudinary cloud and contain the stated public id.
+- Verification documents are stored as public ids only; admins receive short-lived signed URLs and every document view is audited.
+- Rate limiting keys on `Fly-Client-IP`, applies per-route budgets, bounds its in-memory map, and expires Redis keys atomically.
+
+Client contract changes: `/api/media/signature` now takes `purpose` instead of `folder`, and `/api/verification` now takes `document_public_id` instead of `document_url`.
 
 ## Local development
 
