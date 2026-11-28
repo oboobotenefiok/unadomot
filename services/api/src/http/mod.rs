@@ -68,6 +68,10 @@ impl RateLimiter {
         self.limit
     }
 
+    pub fn redis_client(&self) -> Option<&redis::Client> {
+        self.redis.as_ref()
+    }
+
     pub async fn allow(&self, key: &str) -> bool {
         self.allow_with(key, self.limit, StdDuration::from_secs(60))
             .await

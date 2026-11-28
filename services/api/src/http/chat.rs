@@ -247,13 +247,15 @@ async fn send_rich_message_handler(
                 .await
             {
                 events::publish(
+                    &state,
                     &[conversation.participant_a, conversation.participant_b],
                     json!({
                         "type": "message",
                         "conversation_id": conversation_id,
                         "message": message.clone(),
                     }),
-                );
+                )
+                .await;
             }
             (StatusCode::CREATED, Json(message)).into_response()
         }
