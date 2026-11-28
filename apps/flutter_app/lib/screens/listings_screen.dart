@@ -618,7 +618,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                           sliver: SliverGrid(
                             gridDelegate: responsiveGridDelegate(
                               context,
-                              childAspectRatio: 0.66,
+                              childAspectRatio: 0.78,
                             ),
                             delegate: SliverChildBuilderDelegate(
                               (context, index) {
