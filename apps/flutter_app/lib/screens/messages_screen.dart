@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../api/api_client.dart';
+import '../api/event_stream.dart';
 import '../data/local_cache.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
@@ -33,17 +34,33 @@ class _MessagesScreenState extends State<MessagesScreen> {
   bool _loading = true;
   String? _error;
 
+  late final EventStream _events;
+  StreamSubscription<Map<String, dynamic>>? _eventsSub;
+
   @override
   void initState() {
     super.initState();
     _load();
+    _events = EventStream(widget.api)..start();
+    _eventsSub = _events.events.listen((event) {
+      if (event['type'] == 'message') _load(silent: true);
+    });
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  @override
+  void dispose() {
+    _eventsSub?.cancel();
+    _events.dispose();
+    super.dispose();
+  }
+
+  Future<void> _load({bool silent = false}) async {
+    if (!silent) {
+      setState(() {
+        _loading = true;
+        _error = null;
+      });
+    }
     try {
       final response = await http.get(
         widget.api.baseUrl.resolve('/api/conversations/presence'),
@@ -60,9 +77,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
           .toList();
       if (mounted) setState(() => _conversations = conversations);
     } catch (error) {
-      if (mounted) setState(() => _error = error.toString());
+      if (mounted && !silent) setState(() => _error = error.toString());
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted && !silent) setState(() => _loading = false);
     }
   }
 
@@ -120,7 +137,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                     ),
                                   ),
                                 );
-                                _load();
+                                _load(silent: true);
                               },
                             );
                           },
