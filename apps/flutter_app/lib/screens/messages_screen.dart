@@ -96,6 +96,15 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                     builder: (_) => ChatScreen(
                                       api: widget.api,
                                       conversationId: conversation['id'] as String,
+                                      listingId: conversation['listing_id'] as String?,
+                                      listingTitle:
+                                          conversation['listing_title'] as String?,
+                                      listingPhotoUrl:
+                                          conversation['listing_photo_url'] as String?,
+                                      counterpartName:
+                                          conversation['counterpart_name'] as String?,
+                                      counterpartPhotoUrl:
+                                          conversation['counterpart_photo_url'] as String?,
                                     ),
                                   ),
                                 );
@@ -125,6 +134,8 @@ class _ConversationTile extends StatelessWidget {
     final preview = conversation['last_message_preview'] as String? ??
         'Start the conversation';
     final photo = conversation['listing_photo_url'] as String?;
+    final counterpartPhoto = conversation['counterpart_photo_url'] as String?;
+    final counterpartName = conversation['counterpart_name'] as String? ?? '';
     final time = _formatRelative(conversation['last_message_at'] as String?);
     final verified = conversation['counterpart_verified'] == true;
     final lastActive =
@@ -148,51 +159,12 @@ class _ConversationTile extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 26,
-                    backgroundColor: UnaColors.green100,
-                    backgroundImage: photo == null ? null : NetworkImage(photo),
-                    child: photo == null
-                        ? const Icon(Icons.home_work_outlined, color: UnaColors.green900)
-                        : null,
-                  ),
-                  if (isOnline)
-                    Positioned(
-                      right: 1,
-                      bottom: 1,
-                      child: Container(
-                        width: 13,
-                        height: 13,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF22C55E),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.surface,
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (unread > 0)
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      child: Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: UnaColors.primary,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.surface,
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
+              _ConversationAvatar(
+                listingPhotoUrl: photo,
+                personPhotoUrl: counterpartPhoto,
+                personName: counterpartName,
+                online: isOnline,
+                unread: unread,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -292,6 +264,107 @@ class _ConversationTile extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The property photo with the other person's avatar tucked into the corner,
+/// the way the legacy list showed both at once.
+class _ConversationAvatar extends StatelessWidget {
+  final String? listingPhotoUrl;
+  final String? personPhotoUrl;
+  final String? personName;
+  final bool online;
+  final int unread;
+
+  const _ConversationAvatar({
+    required this.listingPhotoUrl,
+    required this.personPhotoUrl,
+    required this.personName,
+    required this.online,
+    required this.unread,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final surface = Theme.of(context).colorScheme.surface;
+    return SizedBox(
+      width: 58,
+      height: 58,
+      child: Stack(
+        children: [
+          CircleAvatar(
+            radius: 26,
+            backgroundColor: UnaColors.green100,
+            backgroundImage:
+                listingPhotoUrl == null ? null : NetworkImage(listingPhotoUrl!),
+            child: listingPhotoUrl == null
+                ? const Icon(Icons.home_work_outlined, color: UnaColors.green900)
+                : null,
+          ),
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: surface, width: 2),
+              ),
+              child: CircleAvatar(
+                radius: 11,
+                backgroundColor: UnaColors.green700,
+                backgroundImage:
+                    personPhotoUrl == null ? null : NetworkImage(personPhotoUrl!),
+                child: personPhotoUrl == null
+                    ? Text(
+                        _initials(personName),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      )
+                    : null,
+              ),
+            ),
+          ),
+          if (online)
+            Positioned(
+              right: 2,
+              top: 2,
+              child: Container(
+                width: 11,
+                height: 11,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF22C55E),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: surface, width: 2),
+                ),
+              ),
+            ),
+          if (unread > 0)
+            Positioned(
+              left: 0,
+              top: 0,
+              child: Container(
+                width: 11,
+                height: 11,
+                decoration: BoxDecoration(
+                  color: UnaColors.primary,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: surface, width: 2),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+String _initials(String name) {
+  final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+  if (parts.isEmpty) return '?';
+  if (parts.length == 1) return parts.first.characters.first.toUpperCase();
+  return (parts.first.characters.first + parts.last.characters.first).toUpperCase();
 }
 
 String _formatRelative(String? iso) {
