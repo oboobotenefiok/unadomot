@@ -503,20 +503,44 @@ class ApiClient {
     required String filename,
     required Map<String, dynamic> signature,
   }) async {
-    final cloud = signature['cloud_name'] as String;
-    final resourceType = signature['resource_type'] as String? ?? 'image';
+    final cloud = signature['cloud_name'];
+    final apiKey = signature['api_key'];
+    final signed = signature['signature'];
+    final timestamp = signature['timestamp'];
+    if (cloud is! String ||
+        cloud.isEmpty ||
+        apiKey is! String ||
+        apiKey.isEmpty ||
+        signed is! String ||
+        signed.isEmpty ||
+        timestamp == null) {
+      throw const ApiException(
+        502,
+        'Media upload is not configured correctly. Please try again later.',
+      );
+    }
+
+    final resourceType = signature['resource_type'] is String
+        ? signature['resource_type'] as String
+        : 'image';
     final request = http.MultipartRequest(
       'POST',
       Uri.parse('https://api.cloudinary.com/v1_1/$cloud/$resourceType/upload'),
     )
-      ..fields['api_key'] = signature['api_key'] as String
-      ..fields['timestamp'] = '${signature['timestamp']}'
-      ..fields['signature'] = signature['signature'] as String
-      ..fields['folder'] = signature['folder'] as String
-      ..fields['allowed_formats'] = signature['allowed_formats'] as String;
+      ..fields['api_key'] = apiKey
+      ..fields['timestamp'] = '$timestamp'
+      ..fields['signature'] = signed;
 
-    final uploadType = signature['type'] as String?;
-    if (uploadType != null) {
+    final folder = signature['folder'];
+    if (folder is String && folder.isNotEmpty) {
+      request.fields['folder'] = folder;
+    }
+    final allowedFormats = signature['allowed_formats'];
+    if (allowedFormats is String && allowedFormats.isNotEmpty) {
+      request.fields['allowed_formats'] = allowedFormats;
+    }
+    final uploadType = signature['type'];
+    if (uploadType is String && uploadType.isNotEmpty) {
       request.fields['type'] = uploadType;
     }
 
@@ -529,7 +553,14 @@ class ApiClient {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw ApiException(response.statusCode, 'Media upload failed.');
     }
-    return Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+
+    final uploaded = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+    final secureUrl = uploaded['secure_url'] ?? uploaded['url'];
+    if (secureUrl is! String || secureUrl.isEmpty) {
+      throw const ApiException(502, 'Media upload did not return a URL.');
+    }
+    uploaded['secure_url'] = secureUrl;
+    return uploaded;
   }
 
   Future<void> attachMedia(
