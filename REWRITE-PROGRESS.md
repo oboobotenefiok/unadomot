@@ -22,6 +22,8 @@ Last updated: 28 November 2026
 - [x] Rate limiting on `Fly-Client-IP` with per-route budgets and bounded memory
 - [x] Suspended-account checks through `AuthUser`
 - [x] Router-level integration tests for auth requirements and route wiring
+- [x] Per-user event bus and `/api/events` long-poll endpoint
+- [x] Message events published to both participants on send
 
 ## Flutter
 
@@ -30,11 +32,19 @@ Last updated: 28 November 2026
 - [x] Session restore and single-flight refresh
 - [x] Complete logout cleanup
 - [x] Map location, pinning, pulsing dot
-- [x] 100-slide listing gallery
+- [x] Bounded listing gallery with page counter and dots
 - [x] Fatal configuration screen for missing `API_BASE_URL`
 - [x] Post button prompts signup when signed out
 - [x] Media uploads request a purpose and forward signed parameters
 - [x] Verification submission sends a document public id
+- [x] Chat screen extracted with reactions, replies and voice notes
+- [x] Swipe any message to reply, with attachment thumbnails in the quote
+- [x] Quoted attachment fields returned by both list and send endpoints
+- [x] Conversation opens at the first unread message
+- [x] Cross-device live updates for chat, inbox and unread badge
+- [x] Profile tab reloads its listings when opened
+- [x] Calls minimise to a floating card and restore without reconnecting
+- [x] Dark theme covers inputs, dialogs, sheets, snack bars and dividers
 
 ## CI and release
 
@@ -51,9 +61,21 @@ Last updated: 28 November 2026
 
 ## Open
 
+### Blocking the next build
+
+- [ ] Run `cargo check` for the event bus (needs `tokio` features `sync` and `time`)
+- [ ] Run `flutter analyze` for `EventStream`, the rewritten chat screen and the call screen
 - [ ] Commit the `android/` platform folder
 - [ ] Set production secrets on Fly
-- [ ] Re-run CI for the Phase 0 changes and record a green run
+- [ ] Re-run CI and record a green run
+
+### Feature gaps
+
+- [ ] Amenities missing from the listing detail payload
+- [ ] Listing detail tabs: Similar Listings left, Comments right, counts in labels
+- [ ] Comments section can request unbounded height and grows the page
+- [ ] Carousel overlay actions and lightbox, matching legacy
+- [ ] Dark-mode sweep: profile, listing detail and favourites still hardcode light surfaces
 - [ ] Email verification at registration
 - [ ] Account deletion and data export
 - [ ] Server-side favorites and cross-device sync
