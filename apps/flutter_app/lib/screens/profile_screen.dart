@@ -14,9 +14,7 @@ import '../widgets/share_listing_sheet.dart';
 import 'admin_screen.dart';
 import 'auth_sheet.dart';
 import 'edit_listing_screen.dart';
-import 'favorites_screen.dart';
 import 'listing_detail_screen.dart';
-import 'messages_screen.dart';
 import 'static_page_screen.dart';
 import 'verification_screen.dart';
 
@@ -145,7 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               try {
                                 final bytes = await picked.readAsBytes();
                                 final signature = await widget.api.mediaSignature(
-                                  folder: 'unadomot/avatars',
+                                  purpose: 'avatar',
                                 );
                                 final uploaded = await widget.api.uploadToCloudinary(
                                   bytes: bytes,
@@ -589,14 +587,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               context,
               MaterialPageRoute(builder: (_) => AdminScreen(api: widget.api)),
             )),
-          _settingsRow(Icons.favorite_border, 'Favorites', () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => FavoritesScreen(api: widget.api, cache: widget.cache, appState: widget.appState)),
-          )),
-          _settingsRow(Icons.chat_bubble_outline, 'Messages', () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => MessagesScreen(api: widget.api)),
-          )),
           ValueListenableBuilder<bool>(
             valueListenable: appHighContrast,
             builder: (context, enabled, _) => ListTile(
