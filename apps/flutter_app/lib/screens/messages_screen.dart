@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../api/api_client.dart';
+import '../data/local_cache.dart';
+import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/skeletons.dart';
 
@@ -10,9 +12,17 @@ export 'chat_screen.dart';
 
 class MessagesScreen extends StatefulWidget {
   final ApiClient api;
+  final LocalCache? cache;
+  final AppState? appState;
   final bool showAppBar;
 
-  const MessagesScreen({super.key, required this.api, this.showAppBar = true});
+  const MessagesScreen({
+    super.key,
+    required this.api,
+    this.cache,
+    this.appState,
+    this.showAppBar = true,
+  });
 
   @override
   State<MessagesScreen> createState() => _MessagesScreenState();
@@ -105,6 +115,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                           conversation['counterpart_name'] as String?,
                                       counterpartPhotoUrl:
                                           conversation['counterpart_photo_url'] as String?,
+                                      cache: widget.cache,
+                                      appState: widget.appState,
                                     ),
                                   ),
                                 );
