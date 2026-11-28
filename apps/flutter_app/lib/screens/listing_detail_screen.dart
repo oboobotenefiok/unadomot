@@ -481,45 +481,47 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                                 ],
                               ),
                               const Divider(height: 32),
-                              _commentsSection(),
-                              if (_similar.isNotEmpty) ...[
-                                const SizedBox(height: 24),
-                                _sectionTitle('Similar nearby'),
-                                const SizedBox(height: 8),
-                                ..._similar.map(
-                                  (item) => ListTile(
-                                    contentPadding: EdgeInsets.zero,
-                                    leading: CircleAvatar(
-                                      backgroundColor: UnaColors.green100,
-                                      backgroundImage: item.media.isEmpty
-                                          ? null
-                                          : NetworkImage(item.media.first.url),
-                                      child: item.media.isEmpty
-                                          ? const Icon(Icons.home_work_outlined, color: UnaColors.green700)
-                                          : null,
-                                    ),
-                                    title: Text(item.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                                    subtitle: Text('${item.lga}, ${item.state} · ${formatNaira(item.price)}'),
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => ListingDetailScreen(
-                                          api: widget.api,
-                                          cache: widget.cache,
-                                          appState: widget.appState,
-                                          listingId: item.id,
+                              LayoutBuilder(
+                                builder: (context, constraints) {
+                                  if (constraints.maxWidth >= 700) {
+                                    return Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        if (_similar.isNotEmpty)
+                                          Expanded(flex: 4, child: _similarSection()),
+                                        if (_similar.isNotEmpty) const SizedBox(width: 24),
+                                        Expanded(
+                                          flex: 5,
+                                          child: SizedBox(
+                                            height: 520,
+                                            child: SingleChildScrollView(
+                                              child: _commentsSection(),
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                                      ],
+                                    );
+                                  }
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      _commentsSection(),
+                                      if (_similar.isNotEmpty) ...[
+                                        const SizedBox(height: 24),
+                                        _similarSection(),
+                                      ],
+                                    ],
+                                  );
+                                },
+                              ),
                             ],
                           ),
                         ),
                       ],
                     ),
-      bottomNavigationBar: _listing == null || _isOwner
+      bottomNavigationBar: _listing == null ||
+              _isOwner ||
+              (_myId != null && _listing!.landlordId == _myId)
           ? null
           : SafeArea(
               child: Padding(
@@ -541,6 +543,41 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
   }
 
   Widget _gallery() => InfiniteListingGallery(media: _listing!.media);
+
+  Widget _similarSection() => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionTitle('Similar nearby'),
+          const SizedBox(height: 8),
+          ..._similar.map(
+            (item) => ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: CircleAvatar(
+                backgroundColor: UnaColors.green100,
+                backgroundImage: item.media.isEmpty
+                    ? null
+                    : NetworkImage(item.media.first.url),
+                child: item.media.isEmpty
+                    ? const Icon(Icons.home_work_outlined, color: UnaColors.green700)
+                    : null,
+              ),
+              title: Text(item.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+              subtitle: Text('${item.lga}, ${item.state} · ${formatNaira(item.price)}'),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ListingDetailScreen(
+                    api: widget.api,
+                    cache: widget.cache,
+                    appState: widget.appState,
+                    listingId: item.id,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
 
   Widget _propertyGrid() {
     final items = <Widget>[];
