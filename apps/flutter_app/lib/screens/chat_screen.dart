@@ -64,6 +64,8 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _sending = false;
   bool _showingIncoming = false;
   bool _isTyping = false;
+  bool _hasEarlier = false;
+  bool _loadingEarlier = false;
   String? _error;
 
   bool _recording = false;
@@ -258,12 +260,28 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  /// Opens the conversation at the first message the reader has not seen yet,
+  /// keeping one earlier message for context. Anything older is behind the
+  /// "Earlier messages" control rather than forcing a scroll through history.
   Future<void> _load() async {
     try {
       final messages = await widget.api.messages(widget.conversationId);
       if (mounted) {
+        var loaded = messages.reversed.toList();
+        final firstUnread = loaded.indexWhere((message) {
+          final mine = _myId != null && message['sender_id'] == _myId;
+          return !mine && message['read_at'] == null;
+        });
+
+        if (firstUnread > 0) {
+          loaded = loaded.sublist(firstUnread - 1);
+          _hasEarlier = true;
+        } else {
+          _hasEarlier = false;
+        }
+
         setState(() {
-          _messages = messages.reversed.toList();
+          _messages = loaded;
           _seenIds
             ..clear()
             ..addAll(_messages.map((item) => item['id'] as String? ?? ''));
@@ -275,6 +293,38 @@ class _ChatScreenState extends State<ChatScreen> {
       if (mounted) setState(() => _error = error.toString());
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _loadEarlier() async {
+    if (_loadingEarlier || _messages.isEmpty) return;
+    setState(() => _loadingEarlier = true);
+    try {
+      final older = await widget.api.messages(
+        widget.conversationId,
+        before: _messages.first['created_at'] as String?,
+      );
+      if (!mounted) return;
+      if (older.isEmpty) {
+        setState(() {
+          _hasEarlier = false;
+          _loadingEarlier = false;
+        });
+        return;
+      }
+      setState(() {
+        _messages = [...older.reversed.toList(), ..._messages];
+        _seenIds.addAll(_messages.map((item) => item['id'] as String? ?? ''));
+        _hasEarlier = older.length >= 50;
+        _loadingEarlier = false;
+      });
+    } catch (error) {
+      if (mounted) {
+        setState(() => _loadingEarlier = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())),
+        );
+      }
     }
   }
 
@@ -627,6 +677,7 @@ class _ChatScreenState extends State<ChatScreen> {
         'id': message['id'],
         'body': message['body'],
         'media_type': message['media_type'],
+        'media_url': message['media_url'],
         'sender_name': message['sender_id'] == _myId
             ? 'You'
             : (widget.counterpartName ?? 'them'),
@@ -660,6 +711,52 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  /// A 28px hint of whatever is being quoted: the photo itself, or the icon
+  /// that stands for a video, voice note or document.
+  Widget _replyThumb({
+    required String? url,
+    required String? type,
+    double size = 28,
+    bool onDark = false,
+  }) {
+    final radius = BorderRadius.circular(6);
+    if (url != null && type == 'image') {
+      return ClipRRect(
+        borderRadius: radius,
+        child: Image.network(
+          url,
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => _replyIcon(type, size, onDark),
+        ),
+      );
+    }
+    return _replyIcon(type, size, onDark);
+  }
+
+  Widget _replyIcon(String? type, double size, bool onDark) {
+    final icon = switch (type) {
+      'video' => Icons.videocam,
+      'audio' => Icons.mic,
+      'document' => Icons.description,
+      _ => Icons.image,
+    };
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: onDark ? Colors.white24 : Colors.black.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Icon(
+        icon,
+        size: size * 0.55,
+        color: onDark ? Colors.white70 : UnaColors.green700,
       ),
     );
   }
@@ -725,6 +822,11 @@ class _ChatScreenState extends State<ChatScreen> {
           GestureDetector(
             onLongPress: () => _showMessageActions(message),
             onDoubleTap: () => _react(message, '❤️'),
+            onHorizontalDragEnd: (details) {
+              if ((details.primaryVelocity ?? 0).abs() > 250) {
+                _startReply(message);
+              }
+            },
             child: Container(
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
               decoration: BoxDecoration(
@@ -742,7 +844,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   if (replyBody != null && replyBody.isNotEmpty) ...[
                     Container(
                       margin: const EdgeInsets.only(bottom: 6),
-                      padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
+                      padding: const EdgeInsets.fromLTRB(6, 6, 8, 6),
                       decoration: BoxDecoration(
                         color: mine ? Colors.black26 : Colors.black.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(6),
@@ -753,25 +855,39 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                         ),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            message['reply_to_sender_name'] as String? ?? 'Reply',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                              color: mine ? Colors.white70 : UnaColors.green700,
-                            ),
+                          _replyThumb(
+                            url: message['reply_to_media_url'] as String?,
+                            type: message['reply_to_media_type'] as String?,
+                            size: 26,
+                            onDark: mine,
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            replyBody,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: mine ? Colors.white70 : Theme.of(context).colorScheme.onSurfaceVariant,
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  message['reply_to_sender_name'] as String? ?? 'Reply',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    color: mine ? Colors.white70 : UnaColors.green700,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  replyBody,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: mine ? Colors.white70 : Theme.of(context).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -907,6 +1023,12 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       child: Row(
         children: [
+          _replyThumb(
+            url: reply['media_url'] as String?,
+            type: reply['media_type'] as String?,
+            size: 30,
+          ),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -923,7 +1045,13 @@ class _ChatScreenState extends State<ChatScreen> {
                 Text(
                   (reply['body'] as String?)?.isNotEmpty == true
                       ? reply['body'] as String
-                      : (reply['media_type'] == 'audio' ? 'Voice note' : 'Attachment'),
+                      : switch (reply['media_type']) {
+                          'audio' => 'Voice note',
+                          'video' => 'Video',
+                          'document' => 'Document',
+                          'image' => 'Photo',
+                          _ => 'Attachment',
+                        },
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 12),
@@ -1162,6 +1290,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final showEarlier = _hasEarlier && _messages.isNotEmpty;
     return Scaffold(
       appBar: _appBar(),
       body: Column(
@@ -1186,9 +1315,28 @@ class _ChatScreenState extends State<ChatScreen> {
                     : ListView.builder(
                         controller: _scrollController,
                         padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-                        itemCount: _messages.length,
+                        itemCount: _messages.length + (showEarlier ? 1 : 0),
                         itemBuilder: (context, index) {
-                          final message = _messages[index];
+                          if (showEarlier && index == 0) {
+                            return Center(
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: TextButton.icon(
+                                  onPressed: _loadingEarlier ? null : _loadEarlier,
+                                  icon: _loadingEarlier
+                                      ? const SizedBox(
+                                          width: 14,
+                                          height: 14,
+                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                        )
+                                      : const Icon(Icons.history, size: 16),
+                                  label: const Text('Earlier messages'),
+                                ),
+                              ),
+                            );
+                          }
+
+                          final message = _messages[index - (showEarlier ? 1 : 0)];
                           final mine = _myId != null && message['sender_id'] == _myId;
                           final bubble = _messageBubble(message, mine);
                           if (mine) {
