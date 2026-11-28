@@ -22,6 +22,8 @@ pub struct Listing {
     pub bathrooms: Option<i32>,
     pub property_type: Option<String>,
     pub furnishing: Option<String>,
+    #[serde(default)]
+    pub amenities: Vec<String>,
     pub code: Option<String>,
     pub created_at: DateTime<Utc>,
     #[serde(default)]
@@ -88,6 +90,7 @@ pub struct NewListing {
     pub bathrooms: Option<i32>,
     pub property_type: Option<String>,
     pub furnishing: Option<String>,
+    pub amenities: Vec<String>,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -104,4 +107,5 @@ pub struct ListingUpdate {
     pub bathrooms: Option<Option<i32>>,
     pub property_type: Option<Option<String>>,
     pub furnishing: Option<Option<String>>,
+    pub amenities: Option<Vec<String>>,
 }

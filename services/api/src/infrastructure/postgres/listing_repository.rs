@@ -14,7 +14,7 @@ const LISTING_COLUMNS: &str = "l.id, l.landlord_id,
     COALESCE((SELECT verified FROM user_profiles WHERE user_id = l.landlord_id), false) AS landlord_verified,
     (SELECT photo_url FROM user_profiles WHERE user_id = l.landlord_id) AS landlord_photo_url,
     l.title, l.description, l.price, l.address, l.state, l.lga, l.is_agent_listing, l.status,
-    l.bedrooms, l.bathrooms, l.property_type, l.furnishing, l.code, l.created_at";
+    l.bedrooms, l.bathrooms, l.property_type, l.furnishing, l.amenities, l.code, l.created_at";
 
 pub struct PostgresListingRepository {
     pool: PgPool,
@@ -145,7 +145,7 @@ impl ListingRepository for PostgresListingRepository {
 
     async fn create(&self, input: &NewListing) -> Result<Listing, ListingError> {
         let id = sqlx::query_scalar::<_, Uuid>(
-            "INSERT INTO listings (landlord_id, title, description, price, address, state, lga, is_agent_listing, bedrooms, bathrooms, property_type, furnishing) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id",
+            "INSERT INTO listings (landlord_id, title, description, price, address, state, lga, is_agent_listing, bedrooms, bathrooms, property_type, furnishing, amenities) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id",
         )
         .bind(input.landlord_id)
         .bind(input.title.trim())
@@ -159,6 +159,7 @@ impl ListingRepository for PostgresListingRepository {
         .bind(input.bathrooms)
         .bind(input.property_type.as_deref())
         .bind(input.furnishing.as_deref())
+        .bind(&input.amenities)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| ListingError::Repository(e.to_string()))?;
@@ -173,7 +174,7 @@ impl ListingRepository for PostgresListingRepository {
         update: &ListingUpdate,
     ) -> Result<Listing, ListingError> {
         let updated = sqlx::query_scalar::<_, Uuid>(
-            "UPDATE listings SET title = COALESCE($3, title), description = COALESCE($4, description), price = COALESCE($5, price), address = COALESCE($6, address), state = COALESCE($7, state), lga = COALESCE($8, lga), is_agent_listing = COALESCE($9, is_agent_listing), status = COALESCE($10, status), bedrooms = CASE WHEN $11 THEN $12 ELSE bedrooms END, bathrooms = CASE WHEN $13 THEN $14 ELSE bathrooms END, property_type = CASE WHEN $15 THEN $16 ELSE property_type END, furnishing = CASE WHEN $17 THEN $18 ELSE furnishing END, updated_at = now() WHERE id = $1 AND landlord_id = $2 AND deleted_at IS NULL RETURNING id",
+            "UPDATE listings SET title = COALESCE($3, title), description = COALESCE($4, description), price = COALESCE($5, price), address = COALESCE($6, address), state = COALESCE($7, state), lga = COALESCE($8, lga), is_agent_listing = COALESCE($9, is_agent_listing), status = COALESCE($10, status), bedrooms = CASE WHEN $11 THEN $12 ELSE bedrooms END, bathrooms = CASE WHEN $13 THEN $14 ELSE bathrooms END, property_type = CASE WHEN $15 THEN $16 ELSE property_type END, furnishing = CASE WHEN $17 THEN $18 ELSE furnishing END, amenities = CASE WHEN $19 THEN $20 ELSE amenities END, updated_at = now() WHERE id = $1 AND landlord_id = $2 AND deleted_at IS NULL RETURNING id",
         )
         .bind(id)
         .bind(owner_id)
@@ -193,6 +194,8 @@ impl ListingRepository for PostgresListingRepository {
         .bind(update.property_type.clone().flatten())
         .bind(update.furnishing.is_some())
         .bind(update.furnishing.clone().flatten())
+        .bind(update.amenities.is_some())
+        .bind(update.amenities.clone())
         .fetch_optional(&self.pool)
         .await
         .map_err(|e| ListingError::Repository(e.to_string()))?;
@@ -338,6 +341,7 @@ struct ListingRow {
     bathrooms: Option<i32>,
     property_type: Option<String>,
     furnishing: Option<String>,
+    amenities: Vec<String>,
     code: Option<String>,
     created_at: chrono::DateTime<chrono::Utc>,
 }
@@ -366,6 +370,7 @@ impl From<ListingRow> for Listing {
             bathrooms: row.bathrooms,
             property_type: row.property_type,
             furnishing: row.furnishing,
+            amenities: row.amenities,
             code: row.code,
             created_at: row.created_at,
             media: Vec::new(),
