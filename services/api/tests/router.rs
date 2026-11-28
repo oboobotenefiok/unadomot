@@ -99,17 +99,46 @@ async fn profile_requires_authentication() {
 async fn admin_routes_require_authentication() {
     assert_unauthorized(Method::GET, "/api/admin/audit").await;
     assert_unauthorized(Method::GET, "/api/admin/verification").await;
+    assert_unauthorized(
+        Method::GET,
+        "/api/admin/verification/00000000-0000-0000-0000-000000000000/document",
+    )
+    .await;
+    assert_unauthorized(
+        Method::POST,
+        "/api/admin/users/00000000-0000-0000-0000-000000000000/unsuspend",
+    )
+    .await;
 }
 
 #[tokio::test]
 async fn messaging_and_call_routes_require_authentication() {
     assert_unauthorized(Method::GET, "/api/conversations").await;
     assert_unauthorized(Method::GET, "/api/calls/incoming").await;
+    assert_unauthorized(
+        Method::GET,
+        "/api/conversations/00000000-0000-0000-0000-000000000000/rich-messages",
+    )
+    .await;
 }
 
 #[tokio::test]
 async fn media_signature_requires_authentication() {
     assert_unauthorized(Method::POST, "/api/media/signature").await;
+}
+
+#[tokio::test]
+async fn listing_media_requires_authentication() {
+    assert_unauthorized(
+        Method::POST,
+        "/api/listings/00000000-0000-0000-0000-000000000000/media",
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn events_require_authentication() {
+    assert_unauthorized(Method::GET, "/api/events").await;
 }
 
 #[tokio::test]
