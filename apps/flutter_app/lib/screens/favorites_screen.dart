@@ -136,7 +136,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         itemCount: listings.length,
         gridDelegate: responsiveGridDelegate(
           context,
-          childAspectRatio: 0.66,
+          childAspectRatio: 0.78,
         ),
         itemBuilder: (context, index) {
           final listing = listings[index];
