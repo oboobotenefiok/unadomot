@@ -678,10 +678,10 @@ class _FilterSheetState extends State<_FilterSheet> {
   ];
 
   late String? _state;
+  late String? _lga;
   late String? _type;
   late String? _bedrooms;
   late String? _furnishing;
-  final _lga = TextEditingController();
   final _minPrice = TextEditingController();
   final _maxPrice = TextEditingController();
 
@@ -692,14 +692,16 @@ class _FilterSheetState extends State<_FilterSheet> {
     _type = widget.initial['property_type'];
     _bedrooms = widget.initial['bedrooms'];
     _furnishing = widget.initial['furnishing'];
-    _lga.text = widget.initial['lga'] ?? '';
+    final savedLga = widget.initial['lga'];
+    _lga = savedLga != null && NigeriaLocations.lgasFor(_state).contains(savedLga)
+        ? savedLga
+        : null;
     _minPrice.text = widget.initial['min_price'] ?? '';
     _maxPrice.text = widget.initial['max_price'] ?? '';
   }
 
   @override
   void dispose() {
-    _lga.dispose();
     _minPrice.dispose();
     _maxPrice.dispose();
     super.dispose();
@@ -708,7 +710,7 @@ class _FilterSheetState extends State<_FilterSheet> {
   void _apply() {
     final filters = <String, String>{};
     if (_state != null) filters['state'] = _state!;
-    if (_lga.text.trim().isNotEmpty) filters['lga'] = _lga.text.trim();
+    if (_lga != null) filters['lga'] = _lga!;
     if (_type != null) filters['property_type'] = _type!;
     if (_bedrooms != null) filters['bedrooms'] = _bedrooms!;
     if (_furnishing != null) filters['furnishing'] = _furnishing!;
@@ -720,164 +722,163 @@ class _FilterSheetState extends State<_FilterSheet> {
   void _clear() {
     setState(() {
       _state = null;
+      _lga = null;
       _type = null;
       _bedrooms = null;
       _furnishing = null;
-      _lga.clear();
       _minPrice.clear();
       _maxPrice.clear();
     });
   }
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          24,
-          16,
-          24,
-          24 + MediaQuery.viewInsetsOf(context).bottom,
+  Widget build(BuildContext context) {
+    final lgaOptions = NigeriaLocations.lgasFor(_state);
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        24,
+        16,
+        24,
+        24 + MediaQuery.viewInsetsOf(context).bottom,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: UnaColors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Filter listings',
+              style: TextStyle(
+                color: UnaColors.text900,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              initialValue: _state,
+              decoration: const InputDecoration(labelText: 'State'),
+              items: NigeriaLocations.states
+                  .map((state) => DropdownMenuItem(value: state, child: Text(state)))
+                  .toList(),
+              onChanged: (value) => setState(() {
+                _state = value;
+                _lga = null;
+              }),
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              key: ValueKey('filter-lga-$_state'),
+              initialValue: _lga,
+              decoration: InputDecoration(
+                labelText: 'LGA',
+                helperText: _state == null ? 'Pick a state first' : null,
+              ),
+              items: lgaOptions
+                  .map((lga) => DropdownMenuItem(value: lga, child: Text(lga)))
+                  .toList(),
+              onChanged: lgaOptions.isEmpty
+                  ? null
+                  : (value) => setState(() => _lga = value),
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              initialValue: _type,
+              decoration: const InputDecoration(labelText: 'Property type'),
+              items: _types
+                  .map((type) => DropdownMenuItem(value: type, child: Text(type)))
+                  .toList(),
+              onChanged: (value) => setState(() => _type = value),
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              initialValue: _bedrooms,
+              decoration: const InputDecoration(labelText: 'Bedrooms'),
+              items: const [
+                DropdownMenuItem(value: '1', child: Text('1+')),
+                DropdownMenuItem(value: '2', child: Text('2+')),
+                DropdownMenuItem(value: '3', child: Text('3+')),
+                DropdownMenuItem(value: '4', child: Text('4+')),
+              ],
+              onChanged: (value) => setState(() => _bedrooms = value),
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              initialValue: _furnishing,
+              decoration: const InputDecoration(labelText: 'Furnishing'),
+              items: _furnishingOptions
+                  .map((item) => DropdownMenuItem(value: item, child: Text(item)))
+                  .toList(),
+              onChanged: (value) => setState(() => _furnishing = value),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _minPrice,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(labelText: 'Min price'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: _maxPrice,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(labelText: 'Max price'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _clear,
+                    child: const Text('Clear'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: _apply,
+                    child: const Text('Apply filters'),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: UnaColors.border,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Filter listings',
-                style: TextStyle(
-                  color: UnaColors.text900,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: _state,
-                decoration: const InputDecoration(labelText: 'State'),
-                items: NigeriaLocations.states
-                    .map((state) => DropdownMenuItem(value: state, child: Text(state)))
-                    .toList(),
-                onChanged: (value) => setState(() => _state = value),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _lga,
-                textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'LGA',
-                  hintText: 'e.g. Ikeja, Gwarinpa, Port Harcourt',
-                ),
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: _type,
-                decoration: const InputDecoration(labelText: 'Property type'),
-                items: _types
-                    .map((type) => DropdownMenuItem(value: type, child: Text(type)))
-                    .toList(),
-                onChanged: (value) => setState(() => _type = value),
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: _bedrooms,
-                decoration: const InputDecoration(labelText: 'Bedrooms'),
-                items: const [
-                  DropdownMenuItem(value: '1', child: Text('1+')),
-                  DropdownMenuItem(value: '2', child: Text('2+')),
-                  DropdownMenuItem(value: '3', child: Text('3+')),
-                  DropdownMenuItem(value: '4', child: Text('4+')),
-                ],
-                onChanged: (value) => setState(() => _bedrooms = value),
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                initialValue: _furnishing,
-                decoration: const InputDecoration(labelText: 'Furnishing'),
-                items: _furnishingOptions
-                    .map((item) => DropdownMenuItem(value: item, child: Text(item)))
-                    .toList(),
-                onChanged: (value) => setState(() => _furnishing = value),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _minPrice,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'Min price'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextField(
-                      controller: _maxPrice,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'Max price'),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _clear,
-                      child: const Text('Clear'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: FilledButton(
-                      onPressed: _apply,
-                      child: const Text('Apply filters'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      );
+      ),
+    );
+  }
 }
 
 class _SectionHeading extends StatelessWidget {
-  final String text;
+  final String title;
 
-  const _SectionHeading(this.text);
+  const _SectionHeading(this.title);
 
   @override
-  Widget build(BuildContext context) => Row(
-        children: [
-          Container(
-            width: 4,
-            height: 24,
-            decoration: BoxDecoration(
-              color: UnaColors.primary,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            text,
-            style: const TextStyle(
-              color: UnaColors.text900,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
+  Widget build(BuildContext context) => Text(
+        title,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          color: UnaColors.text900,
+        ),
       );
 }
