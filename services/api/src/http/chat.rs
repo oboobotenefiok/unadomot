@@ -88,17 +88,19 @@ fn messaging_error(error_value: MessagingError) -> axum::response::Response {
     }
 }
 
+/// Boxed because a full `Response` is 128 bytes, which clippy rejects as an
+/// `Err` variant. The box only exists on the failure path.
 async fn require_participant(
     state: &AppState,
     conversation_id: Uuid,
     user_id: Uuid,
-) -> Result<(), axum::response::Response> {
+) -> Result<(), Box<axum::response::Response>> {
     state
         .messaging
         .list_rich_messages(conversation_id, user_id, None, 1)
         .await
         .map(|_| ())
-        .map_err(messaging_error)
+        .map_err(|error_value| Box::new(messaging_error(error_value)))
 }
 
 async fn conversations_presence_handler(
@@ -139,7 +141,7 @@ async fn typing_ping_handler(
     Path(conversation_id): Path<Uuid>,
 ) -> axum::response::Response {
     if let Err(response) = require_participant(&state, conversation_id, user.id).await {
-        return response;
+        return *response;
     }
 
     if let Ok(mut store) = typing_store().lock() {
@@ -155,7 +157,7 @@ async fn typing_status_handler(
     Path(conversation_id): Path<Uuid>,
 ) -> axum::response::Response {
     if let Err(response) = require_participant(&state, conversation_id, user.id).await {
-        return response;
+        return *response;
     }
 
     let typing = typing_store()
