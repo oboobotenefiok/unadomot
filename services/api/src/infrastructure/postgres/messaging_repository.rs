@@ -198,6 +198,8 @@ impl MessagingRepository for PostgresMessagingRepository {
                 'reply_to_id', m.reply_to_id,
                 'reply_to_body', r.body,
                 'reply_to_sender_name', rp.name,
+                'reply_to_media_url', r.media_url,
+                'reply_to_media_type', r.media_type,
                 'reactions', COALESCE((
                   SELECT jsonb_agg(jsonb_build_object('emoji', x.emoji, 'count', x.count, 'reacted_by_me', x.reacted_by_me))
                   FROM (
@@ -267,19 +269,23 @@ impl MessagingRepository for PostgresMessagingRepository {
         // The quoted message is resolved here so the response carries the same
         // fields the list endpoint returns. Without this the sender's own
         // bubble has no quote to draw until the conversation is reloaded.
-        let (reply_to_body, reply_to_sender_name) = match reply_to_id {
-            Some(parent_id) => sqlx::query_as::<_, (Option<String>, Option<String>)>(
-                "SELECT m.body, up.name FROM messages m
-                 LEFT JOIN user_profiles up ON up.user_id = m.sender_id
-                 WHERE m.id = $1",
-            )
-            .bind(parent_id)
-            .fetch_optional(&mut *transaction)
-            .await
-            .map_err(|e| MessagingError::Repository(e.to_string()))?
-            .unwrap_or((None, None)),
-            None => (None, None),
-        };
+        let (reply_to_body, reply_to_sender_name, reply_to_media_url, reply_to_media_type) =
+            match reply_to_id {
+                Some(parent_id) => sqlx::query_as::<
+                    _,
+                    (Option<String>, Option<String>, Option<String>, Option<String>),
+                >(
+                    "SELECT m.body, up.name, m.media_url, m.media_type FROM messages m
+                     LEFT JOIN user_profiles up ON up.user_id = m.sender_id
+                     WHERE m.id = $1",
+                )
+                .bind(parent_id)
+                .fetch_optional(&mut *transaction)
+                .await
+                .map_err(|e| MessagingError::Repository(e.to_string()))?
+                .unwrap_or((None, None, None, None)),
+                None => (None, None, None, None),
+            };
 
         let preview_source = body
             .map(str::to_string)
@@ -314,6 +320,8 @@ impl MessagingRepository for PostgresMessagingRepository {
             "reply_to_id": row.reply_to_id,
             "reply_to_body": reply_to_body,
             "reply_to_sender_name": reply_to_sender_name,
+            "reply_to_media_url": reply_to_media_url,
+            "reply_to_media_type": reply_to_media_type,
             "reactions": [],
             "created_at": row.created_at,
             "read_at": row.read_at,
