@@ -1,34 +1,29 @@
-# CI run 2026-11-28T15:48:38Z
+# CI run 2026-11-28T16:00:17Z
 Branch: rewrite/flutter-rust-postgres
 
 ## Trigger
-https://github.com/oboobotenefiok/unadomot/actions/runs/46161816277
+https://github.com/oboobotenefiok/unadomot/actions/runs/46162801777
 
 ## Recent runs
-pending		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46161816277	6s	2026-11-28T15:48:40Z
-in_progress		fix: restore listing detail screen and nullable sdp	Rewrite CI	rewrite/flutter-rust-postgres	push	46161761996	43s	2026-11-28T15:48:03Z
-completed	failure	ci: record run unknown	Rewrite CI	rewrite/flutter-rust-postgres	push	46160785389	2m45s	2026-11-28T15:36:47Z
-completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46160500644	2m43s	2026-11-28T15:33:35Z
-completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46159862164	3m37s	2026-11-28T15:26:19Z
+pending		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46162801777	6s	2026-11-28T16:00:20Z
+in_progress		fix: clear rust clippy errors	Rewrite CI	rewrite/flutter-rust-postgres	push	46162765162	27s	2026-11-28T15:59:59Z
+completed	cancelled	ci: record run unknown	Rewrite CI	rewrite/flutter-rust-postgres	push	46162469149	3m56s	2026-11-28T15:56:19Z
+completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46161816277	7m15s	2026-11-28T15:48:40Z
+completed	cancelled	fix: restore listing detail screen and nullable sdp	Rewrite CI	rewrite/flutter-rust-postgres	push	46161761996	56s	2026-11-28T15:48:03Z
 
-Run ID: 46161816277
-URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46161816277
+Run ID: 46162801777
+URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46162801777
 
 ## Watch
 
-X rewrite/flutter-rust-postgres Rewrite CI · 46161816277
+X rewrite/flutter-rust-postgres Rewrite CI · 46162801777
 Triggered via workflow_dispatch about 7 minutes ago
 
 JOBS
-X docker in 2m3s (ID 141030659408)
-  ✓ Set up job
-  ✓ Run actions/checkout@v4
-  X Build API image
-  ✓ Post Run actions/checkout@v4
-  ✓ Complete job
-✓ android in 6m55s (ID 141030659605)
-✓ audit in 3m43s (ID 141030659648)
-X rust in 1m2s (ID 141030659679)
+✓ audit in 2m22s (ID 141033724099)
+✓ docker in 2m43s (ID 141033724441)
+✓ android in 7m32s (ID 141033724567)
+X rust in 1m7s (ID 141033724584)
   ✓ Set up job
   ✓ Initialize containers
   ✓ Run actions/checkout@v4
@@ -44,10 +39,10 @@ X rust in 1m2s (ID 141030659679)
 
 ANNOTATIONS
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-docker: .github#2
+audit: .github#2
 
-X Process completed with exit code 1.
-docker: .github#864
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+docker: .github#2
 
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, actions/setup-java@v4, actions/***-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 android: .github#5
@@ -56,1022 +51,118 @@ android: .github#5
 android: .github#18
 
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-audit: .github#2
-
-! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 rust: .github#2
 
 X Process completed with exit code 101.
-rust: .github#139
+rust: .github#102
 
 
 ARTIFACTS
 unadomot-release-apk
 
-To see what failed, try: gh run view 46161816277 --log-failed
-View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46161816277
+To see what failed, try: gh run view 46162801777 --log-failed
+View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46162801777
 
 ## Failed logs
-docker	Build API image	﻿2026-11-28T15:49:01.7472781Z ##[group]Run docker build -t unadomot-api:ci .
-docker	Build API image	2026-11-28T15:49:01.7473481Z ^[[36;1mdocker build -t unadomot-api:ci .^[[0m
-docker	Build API image	2026-11-28T15:49:01.7509258Z shell: /usr/bin/bash -e {0}
-docker	Build API image	2026-11-28T15:49:01.7510080Z env:
-docker	Build API image	2026-11-28T15:49:01.7510449Z   CARGO_TERM_COLOR: never
-docker	Build API image	2026-11-28T15:49:01.7511145Z   NO_COLOR: 1
-docker	Build API image	2026-11-28T15:49:01.7511673Z   RUST_BACKTRACE: 1
-docker	Build API image	2026-11-28T15:49:01.7512275Z ##[endgroup]
-docker	Build API image	2026-11-28T15:49:02.2531731Z #0 building with "default" instance using docker driver
-docker	Build API image	2026-11-28T15:49:02.2532519Z 
-docker	Build API image	2026-11-28T15:49:02.2532848Z #1 [internal] load build definition from Dockerfile
-docker	Build API image	2026-11-28T15:49:02.2533668Z #1 transferring dockerfile: 647B done
-docker	Build API image	2026-11-28T15:49:02.2534323Z #1 DONE 0.0s
-docker	Build API image	2026-11-28T15:49:02.2534618Z 
-docker	Build API image	2026-11-28T15:49:02.2534983Z #2 [auth] library/debian:pull token for registry-1.docker.io
-docker	Build API image	2026-11-28T15:49:02.2535768Z #2 DONE 0.0s
-docker	Build API image	2026-11-28T15:49:02.2536112Z 
-docker	Build API image	2026-11-28T15:49:02.2536503Z #3 [auth] library/rust:pull token for registry-1.docker.io
-docker	Build API image	2026-11-28T15:49:02.2537323Z #3 DONE 0.0s
-docker	Build API image	2026-11-28T15:49:02.2537757Z 
-docker	Build API image	2026-11-28T15:49:02.2538211Z #4 [internal] load metadata for docker.io/library/rust:1.100-bookworm
-docker	Build API image	2026-11-28T15:49:02.4063203Z #4 ...
-docker	Build API image	2026-11-28T15:49:02.4063952Z 
-docker	Build API image	2026-11-28T15:49:02.4064812Z #5 [internal] load metadata for docker.io/library/debian:bookworm-slim
-docker	Build API image	2026-11-28T15:49:02.4066286Z #5 DONE 0.3s
-docker	Build API image	2026-11-28T15:49:02.5109396Z 
-docker	Build API image	2026-11-28T15:49:02.5113590Z #4 [internal] load metadata for docker.io/library/rust:1.100-bookworm
-docker	Build API image	2026-11-28T15:49:02.5115241Z #4 DONE 0.4s
-docker	Build API image	2026-11-28T15:49:02.5116385Z 
-docker	Build API image	2026-11-28T15:49:02.5117437Z #6 [internal] load .dockerignore
-docker	Build API image	2026-11-28T15:49:02.5118817Z #6 transferring context: 2B done
-docker	Build API image	2026-11-28T15:49:02.5120000Z #6 DONE 0.0s
-docker	Build API image	2026-11-28T15:49:02.6921606Z 
-docker	Build API image	2026-11-28T15:49:02.6941704Z #7 [internal] load build context
-docker	Build API image	2026-11-28T15:49:02.6943864Z #7 transferring context: 385.12kB 0.0s done
-docker	Build API image	2026-11-28T15:49:02.6945520Z #7 DONE 0.0s
-docker	Build API image	2026-11-28T15:49:02.6946152Z 
-docker	Build API image	2026-11-28T15:49:02.6948193Z #8 [stage-1 1/5] FROM docker.io/library/debian:bookworm-slim@sha256:e67eeead736ff7bbe258ef088bff683635c561b1fcfefad0806c1df4ab49ce0e
-docker	Build API image	2026-11-28T15:49:02.6952762Z #8 resolve docker.io/library/debian:bookworm-slim@sha256:e67eeead736ff7bbe258ef088bff683635c561b1fcfefad0806c1df4ab49ce0e 0.0s done
-docker	Build API image	2026-11-28T15:49:02.6958691Z #8 sha256:b1dd3d113aab1041fd80cc61d9db7ffbc058f756bf46fc149a0d9aa8b85935f4 27.26MB / 28.25MB 0.2s
-docker	Build API image	2026-11-28T15:49:02.9983248Z #8 sha256:b1dd3d113aab1041fd80cc61d9db7ffbc058f756bf46fc149a0d9aa8b85935f4 28.25MB / 28.25MB 0.3s done
-docker	Build API image	2026-11-28T15:49:02.9984295Z #8 extracting sha256:b1dd3d113aab1041fd80cc61d9db7ffbc058f756bf46fc149a0d9aa8b85935f4
-docker	Build API image	2026-11-28T15:49:04.5116496Z #8 extracting sha256:b1dd3d113aab1041fd80cc61d9db7ffbc058f756bf46fc149a0d9aa8b85935f4 1.5s done
-docker	Build API image	2026-11-28T15:49:04.5117130Z #8 DONE 1.9s
-docker	Build API image	2026-11-28T15:49:04.5117269Z 
-docker	Build API image	2026-11-28T15:49:04.5117604Z #9 [builder 1/7] FROM docker.io/library/rust:1.100-bookworm@sha256:75d26c23c24cc6ea1cdabf0714a6bff8fd7bf3248716043fd7ae86dac7f41b94
-docker	Build API image	2026-11-28T15:49:04.5118472Z #9 resolve docker.io/library/rust:1.100-bookworm@sha256:75d26c23c24cc6ea1cdabf0714a6bff8fd7bf3248716043fd7ae86dac7f41b94 0.0s done
-docker	Build API image	2026-11-28T15:49:04.5119452Z #9 sha256:9a86c1d9ab4d82ed9bf67b98583200372f35b139a62be2cfbdc8ed2696f7294e 224.06MB / 224.06MB 2.0s
-docker	Build API image	2026-11-28T15:49:04.5120074Z #9 sha256:0db1ede1885b185de542c8de726f000ae4285b7f766859ee4e398a0c5ae4f430 211.88MB / 211.88MB 1.8s
-docker	Build API image	2026-11-28T15:49:04.5120700Z #9 sha256:db1d5603818e4025d8c8e4b5578914535e7e3466d860768e69f957f49fc5fac8 64.43MB / 64.43MB 0.8s done
-docker	Build API image	2026-11-28T15:49:04.5121409Z #9 sha256:bdae095a5e1967682906bd4de72089b39695c9f840e0639c2cae2c959288ec67 23.87MB / 23.87MB 0.5s done
-docker	Build API image	2026-11-28T15:49:04.5122049Z #9 sha256:1e6e7ca511b93bafc42241ad75a24d3a61d0ff7191dfcd2337b8c61b142d978b 48.53MB / 48.53MB 0.6s done
-docker	Build API image	2026-11-28T15:49:05.4116473Z #9 extracting sha256:1e6e7ca511b93bafc42241ad75a24d3a61d0ff7191dfcd2337b8c61b142d978b
-docker	Build API image	2026-11-28T15:49:07.9288195Z #9 sha256:9a86c1d9ab4d82ed9bf67b98583200372f35b139a62be2cfbdc8ed2696f7294e 224.06MB / 224.06MB 5.3s done
-docker	Build API image	2026-11-28T15:49:07.9292558Z #9 sha256:0db1ede1885b185de542c8de726f000ae4285b7f766859ee4e398a0c5ae4f430 211.88MB / 211.88MB 5.4s done
-docker	Build API image	2026-11-28T15:49:08.5554397Z #9 extracting sha256:1e6e7ca511b93bafc42241ad75a24d3a61d0ff7191dfcd2337b8c61b142d978b 3.3s done
-docker	Build API image	2026-11-28T15:49:08.5555211Z #9 DONE 6.0s
-docker	Build API image	2026-11-28T15:49:08.5555404Z 
-docker	Build API image	2026-11-28T15:49:08.5555492Z #10 [stage-1 2/5] WORKDIR /app
-docker	Build API image	2026-11-28T15:49:08.9032074Z #10 ...
-docker	Build API image	2026-11-28T15:49:08.9033092Z 
-docker	Build API image	2026-11-28T15:49:08.9034046Z #9 [builder 1/7] FROM docker.io/library/rust:1.100-bookworm@sha256:75d26c23c24cc6ea1cdabf0714a6bff8fd7bf3248716043fd7ae86dac7f41b94
-docker	Build API image	2026-11-28T15:49:08.9035029Z #9 extracting sha256:bdae095a5e1967682906bd4de72089b39695c9f840e0639c2cae2c959288ec67 0.3s done
-docker	Build API image	2026-11-28T15:49:08.9035568Z #9 DONE 6.4s
-docker	Build API image	2026-11-28T15:49:09.0544198Z 
-docker	Build API image	2026-11-28T15:49:09.0546830Z #9 [builder 1/7] FROM docker.io/library/rust:1.100-bookworm@sha256:75d26c23c24cc6ea1cdabf0714a6bff8fd7bf3248716043fd7ae86dac7f41b94
-docker	Build API image	2026-11-28T15:49:09.0547804Z #9 extracting sha256:db1d5603818e4025d8c8e4b5578914535e7e3466d860768e69f957f49fc5fac8
-docker	Build API image	2026-11-28T15:49:09.5728916Z #9 ...
-docker	Build API image	2026-11-28T15:49:09.5729435Z 
-docker	Build API image	2026-11-28T15:49:09.5730556Z #10 [stage-1 2/5] WORKDIR /app
-docker	Build API image	2026-11-28T15:49:09.5731682Z #10 DONE 4.6s
-docker	Build API image	2026-11-28T15:49:09.7237473Z 
-docker	Build API image	2026-11-28T15:49:09.7534389Z #11 [stage-1 3/5] RUN apt-get update && apt-get install -y ca-certificates libssl3 && rm -rf /var/lib/apt/lists/*
-docker	Build API image	2026-11-28T15:49:09.7535312Z #11 0.180 Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
-docker	Build API image	2026-11-28T15:49:09.8659532Z #11 0.190 Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
-docker	Build API image	2026-11-28T15:49:09.8678979Z #11 0.190 Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [34.8 kB]
-docker	Build API image	2026-11-28T15:49:09.8689280Z #11 0.247 Get:4 http://deb.debian.org/debian bookworm/main amd64 Packages [8790 kB]
-docker	Build API image	2026-11-28T15:49:09.8690324Z #11 0.292 Get:5 http://deb.debian.org/debian bookworm-updates/main amd64 Packages [6924 B]
-docker	Build API image	2026-11-28T15:49:10.0678395Z #11 0.344 Get:6 http://deb.debian.org/debian-security bookworm-security/main amd64 Packages [383 kB]
-docker	Build API image	2026-11-28T15:49:10.1288794Z #11 ...
-docker	Build API image	2026-11-28T15:49:10.1289332Z 
-docker	Build API image	2026-11-28T15:49:10.1292984Z #9 [builder 1/7] FROM docker.io/library/rust:1.100-bookworm@sha256:75d26c23c24cc6ea1cdabf0714a6bff8fd7bf3248716043fd7ae86dac7f41b94
-docker	Build API image	2026-11-28T15:49:10.1293901Z #9 extracting sha256:db1d5603818e4025d8c8e4b5578914535e7e3466d860768e69f957f49fc5fac8 1.2s done
-docker	Build API image	2026-11-28T15:49:10.1294452Z #9 DONE 7.6s
-docker	Build API image	2026-11-28T15:49:10.2793076Z 
-docker	Build API image	2026-11-28T15:49:10.2794165Z #9 [builder 1/7] FROM docker.io/library/rust:1.100-bookworm@sha256:75d26c23c24cc6ea1cdabf0714a6bff8fd7bf3248716043fd7ae86dac7f41b94
-docker	Build API image	2026-11-28T15:49:10.2795156Z #9 extracting sha256:0db1ede1885b185de542c8de726f000ae4285b7f766859ee4e398a0c5ae4f430
-docker	Build API image	2026-11-28T15:49:13.2538676Z #9 extracting sha256:0db1ede1885b185de542c8de726f000ae4285b7f766859ee4e398a0c5ae4f430 3.1s done
-docker	Build API image	2026-11-28T15:49:13.2539621Z #9 DONE 10.7s
-docker	Build API image	2026-11-28T15:49:13.2539764Z 
-docker	Build API image	2026-11-28T15:49:13.2540189Z #11 [stage-1 3/5] RUN apt-get update && apt-get install -y ca-certificates libssl3 && rm -rf /var/lib/apt/lists/*
-docker	Build API image	2026-11-28T15:49:13.2540975Z #11 1.065 Fetched 9422 kB in 1s (10.5 MB/s)
-docker	Build API image	2026-11-28T15:49:13.2541335Z #11 1.065 Reading package lists...
-docker	Build API image	2026-11-28T15:49:13.2541654Z #11 1.534 Reading package lists...
-docker	Build API image	2026-11-28T15:49:13.2541968Z #11 2.004 Building dependency tree...
-docker	Build API image	2026-11-28T15:49:13.2542305Z #11 2.127 Reading state information...
-docker	Build API image	2026-11-28T15:49:13.2542724Z #11 2.236 The following additional packages will be installed:
-docker	Build API image	2026-11-28T15:49:13.2543189Z #11 2.237   openssl
-docker	Build API image	2026-11-28T15:49:13.2543496Z #11 2.255 The following NEW packages will be installed:
-docker	Build API image	2026-11-28T15:49:13.2543897Z #11 2.256   ca-certificates libssl3 openssl
-docker	Build API image	2026-11-28T15:49:13.2544345Z #11 2.277 0 upgraded, 3 newly installed, 0 to remove and 5 not upgraded.
-docker	Build API image	2026-11-28T15:49:13.2544797Z #11 2.277 Need to get 3643 kB of archives.
-docker	Build API image	2026-11-28T15:49:13.2545259Z #11 2.277 After this operation, 8955 kB of additional disk space will be used.
-docker	Build API image	2026-11-28T15:49:13.2546508Z #11 2.277 Get:1 http://deb.debian.org/debian-security bookworm-security/main amd64 libssl3 amd64 3.0.22-1~deb12u2 [2040 kB]
-docker	Build API image	2026-11-28T15:49:13.2547521Z #11 2.289 Get:2 http://deb.debian.org/debian-security bookworm-security/main amd64 openssl amd64 3.0.22-1~deb12u2 [1442 kB]
-docker	Build API image	2026-11-28T15:49:13.2548728Z #11 2.292 Get:3 http://deb.debian.org/debian-security bookworm-security/main amd64 ca-certificates all 20250419~deb12u2 [161 kB]
-docker	Build API image	2026-11-28T15:49:13.2549576Z #11 2.404 debconf: delaying package configuration, since apt-utils is not installed
-docker	Build API image	2026-11-28T15:49:13.2550150Z #11 2.425 Fetched 3643 kB in 0s (110 MB/s)
-docker	Build API image	2026-11-28T15:49:13.2550565Z #11 2.439 Selecting previously unselected package libssl3:amd64.
-docker	Build API image	2026-11-28T15:49:13.2551123Z #11 2.439 (Reading database ... 
-docker	Build API image	2026-11-28T15:49:13.2551423Z (Reading database ... 5%
-docker	Build API image	2026-11-28T15:49:13.2551712Z (Reading database ... 10%
-docker	Build API image	2026-11-28T15:49:13.2551989Z (Reading database ... 15%
-docker	Build API image	2026-11-28T15:49:13.2552287Z (Reading database ... 20%
-docker	Build API image	2026-11-28T15:49:13.2552660Z (Reading database ... 25%
-docker	Build API image	2026-11-28T15:49:13.2552924Z (Reading database ... 30%
-docker	Build API image	2026-11-28T15:49:13.2553190Z (Reading database ... 35%
-docker	Build API image	2026-11-28T15:49:13.2553454Z (Reading database ... 40%
-docker	Build API image	2026-11-28T15:49:13.2553731Z (Reading database ... 45%
-docker	Build API image	2026-11-28T15:49:13.2554002Z (Reading database ... 50%
-docker	Build API image	2026-11-28T15:49:13.2554275Z (Reading database ... 55%
-docker	Build API image	2026-11-28T15:49:13.2554542Z (Reading database ... 60%
-docker	Build API image	2026-11-28T15:49:13.2554814Z (Reading database ... 65%
-docker	Build API image	2026-11-28T15:49:13.2555087Z (Reading database ... 70%
-docker	Build API image	2026-11-28T15:49:13.2555366Z (Reading database ... 75%
-docker	Build API image	2026-11-28T15:49:13.2555641Z (Reading database ... 80%
-docker	Build API image	2026-11-28T15:49:13.2555910Z (Reading database ... 85%
-docker	Build API image	2026-11-28T15:49:13.2556163Z (Reading database ... 90%
-docker	Build API image	2026-11-28T15:49:13.2556418Z (Reading database ... 95%
-docker	Build API image	2026-11-28T15:49:13.2556678Z (Reading database ... 100%
-docker	Build API image	2026-11-28T15:49:13.2557069Z (Reading database ... 6096 files and directories currently installed.)
-docker	Build API image	2026-11-28T15:49:13.2557476Z #11 2.446 Preparing to unpack .../libssl3_3.0.22-1~deb12u2_amd64.deb ...
-docker	Build API image	2026-11-28T15:49:13.2557911Z #11 2.448 Unpacking libssl3:amd64 (3.0.22-1~deb12u2) ...
-docker	Build API image	2026-11-28T15:49:13.2558232Z #11 2.569 Selecting previously unselected package openssl.
-docker	Build API image	2026-11-28T15:49:13.2558759Z #11 2.570 Preparing to unpack .../openssl_3.0.22-1~deb12u2_amd64.deb ...
-docker	Build API image	2026-11-28T15:49:13.2559226Z #11 2.571 Unpacking openssl (3.0.22-1~deb12u2) ...
-docker	Build API image	2026-11-28T15:49:13.2559693Z #11 2.661 Selecting previously unselected package ca-certificates.
-docker	Build API image	2026-11-28T15:49:13.2560265Z #11 2.663 Preparing to unpack .../ca-certificates_20250419~deb12u2_all.deb ...
-docker	Build API image	2026-11-28T15:49:13.2560785Z #11 2.664 Unpacking ca-certificates (20250419~deb12u2) ...
-docker	Build API image	2026-11-28T15:49:13.2561463Z #11 2.708 Setting up libssl3:amd64 (3.0.22-1~deb12u2) ...
-docker	Build API image	2026-11-28T15:49:13.2561871Z #11 2.710 Setting up openssl (3.0.22-1~deb12u2) ...
-docker	Build API image	2026-11-28T15:49:13.2562275Z #11 2.714 Setting up ca-certificates (20250419~deb12u2) ...
-docker	Build API image	2026-11-28T15:49:13.2562826Z #11 2.776 debconf: unable to initialize frontend: Dialog
-docker	Build API image	2026-11-28T15:49:13.2563374Z #11 2.776 debconf: (TERM is not set, so the dialog frontend is not usable.)
-docker	Build API image	2026-11-28T15:49:13.2563868Z #11 2.776 debconf: falling back to frontend: Readline
-docker	Build API image	2026-11-28T15:49:13.2564304Z #11 2.776 debconf: unable to initialize frontend: Readline
-docker	Build API image	2026-11-28T15:49:13.2570993Z #11 2.776 debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC contains: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.36.0 /usr/local/share/perl/5.36.0 /usr/lib/x86_64-linux-gnu/perl5/5.36 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl-base /usr/lib/x86_64-linux-gnu/perl/5.36 /usr/share/perl/5.36 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 7.)
-docker	Build API image	2026-11-28T15:49:13.2573020Z #11 2.776 debconf: falling back to frontend: Teletype
-docker	Build API image	2026-11-28T15:49:13.2573372Z #11 3.200 Updating certificates in /etc/ssl/certs...
-docker	Build API image	2026-11-28T15:49:13.3545863Z #11 3.781 148 added, 0 removed; done.
-docker	Build API image	2026-11-28T15:49:13.5378472Z #11 3.801 Processing triggers for libc-bin (2.36-9+deb12u14) ...
-docker	Build API image	2026-11-28T15:49:13.5379609Z #11 3.810 Processing triggers for ca-certificates (20250419~deb12u2) ...
-docker	Build API image	2026-11-28T15:49:13.5380746Z #11 3.814 Updating certificates in /etc/ssl/certs...
-docker	Build API image	2026-11-28T15:49:13.8510212Z #11 4.277 0 added, 0 removed; done.
-docker	Build API image	2026-11-28T15:49:13.8511298Z #11 4.277 Running hooks in /etc/ca-certificates/update.d...
-docker	Build API image	2026-11-28T15:49:14.0023236Z #11 4.278 done.
-docker	Build API image	2026-11-28T15:49:15.6171401Z #11 ...
-docker	Build API image	2026-11-28T15:49:15.6171858Z 
-docker	Build API image	2026-11-28T15:49:15.6172472Z #9 [builder 1/7] FROM docker.io/library/rust:1.100-bookworm@sha256:75d26c23c24cc6ea1cdabf0714a6bff8fd7bf3248716043fd7ae86dac7f41b94
-docker	Build API image	2026-11-28T15:49:15.6173257Z #9 extracting sha256:9a86c1d9ab4d82ed9bf67b98583200372f35b139a62be2cfbdc8ed2696f7294e 2.4s done
-docker	Build API image	2026-11-28T15:49:15.6173673Z #9 DONE 13.1s
-docker	Build API image	2026-11-28T15:49:15.7738878Z 
-docker	Build API image	2026-11-28T15:49:15.7739263Z #12 [builder 2/7] WORKDIR /app
-docker	Build API image	2026-11-28T15:49:30.1512670Z #12 DONE 14.5s
-docker	Build API image	2026-11-28T15:49:30.1512926Z 
-docker	Build API image	2026-11-28T15:49:30.1513396Z #11 [stage-1 3/5] RUN apt-get update && apt-get install -y ca-certificates libssl3 && rm -rf /var/lib/apt/lists/*
-docker	Build API image	2026-11-28T15:49:30.3029837Z #11 DONE 20.6s
-docker	Build API image	2026-11-28T15:49:30.3030099Z 
-docker	Build API image	2026-11-28T15:49:30.3030528Z #13 [builder 3/7] RUN apt-get update && apt-get install -y pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
-docker	Build API image	2026-11-28T15:49:30.5993393Z #13 0.447 Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
-docker	Build API image	2026-11-28T15:49:30.8095111Z #13 0.455 Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
-docker	Build API image	2026-11-28T15:49:30.8095866Z #13 0.456 Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [34.8 kB]
-docker	Build API image	2026-11-28T15:49:30.8096503Z #13 0.507 Get:4 http://deb.debian.org/debian bookworm/main amd64 Packages [8790 kB]
-docker	Build API image	2026-11-28T15:49:31.0513344Z #13 0.899 Get:5 http://deb.debian.org/debian bookworm-updates/main amd64 Packages [6924 B]
-docker	Build API image	2026-11-28T15:49:31.2040374Z #13 0.901 Get:6 http://deb.debian.org/debian-security bookworm-security/main amd64 Packages [383 kB]
-docker	Build API image	2026-11-28T15:49:31.7068465Z #13 1.554 Fetched 9422 kB in 1s (8341 kB/s)
-docker	Build API image	2026-11-28T15:49:32.0423488Z #13 1.554 Reading package lists...
-docker	Build API image	2026-11-28T15:49:32.3987950Z #13 1.905 Reading package lists...
-docker	Build API image	2026-11-28T15:49:32.5853881Z #13 2.256 Building dependency tree...
-docker	Build API image	2026-11-28T15:49:32.5854327Z #13 2.336 Reading state information...
-docker	Build API image	2026-11-28T15:49:32.5854742Z #13 2.433 pkg-config is already the newest version (1.8.1-1).
-docker	Build API image	2026-11-28T15:49:32.5855182Z #13 2.433 pkg-config set to manually installed.
-docker	Build API image	2026-11-28T15:49:32.5855638Z #13 2.433 libssl-dev is already the newest version (3.0.22-1~deb12u2).
-docker	Build API image	2026-11-28T15:49:32.5856181Z #13 2.433 0 upgraded, 0 newly installed, 0 to remove and 12 not upgraded.
-docker	Build API image	2026-11-28T15:49:32.7579522Z #13 DONE 2.6s
-docker	Build API image	2026-11-28T15:49:32.9332268Z 
-docker	Build API image	2026-11-28T15:49:32.9332957Z #14 [builder 4/7] COPY services/api/Cargo.toml services/api/Cargo.lock ./
-docker	Build API image	2026-11-28T15:49:32.9333412Z #14 DONE 0.0s
-docker	Build API image	2026-11-28T15:49:32.9333508Z 
-docker	Build API image	2026-11-28T15:49:32.9333606Z #15 [builder 5/7] COPY services/api/src ./src
-docker	Build API image	2026-11-28T15:49:32.9967091Z #15 DONE 0.2s
-docker	Build API image	2026-11-28T15:49:33.1525155Z 
-docker	Build API image	2026-11-28T15:49:33.1525996Z #16 [builder 6/7] COPY services/api/migrations ./migrations
-docker	Build API image	2026-11-28T15:49:33.1526503Z #16 DONE 0.0s
-docker	Build API image	2026-11-28T15:49:33.1526637Z 
-docker	Build API image	2026-11-28T15:49:33.1526781Z #17 [builder 7/7] RUN cargo build --release
-docker	Build API image	2026-11-28T15:49:33.1527140Z #17 0.144     Updating crates.io index
-docker	Build API image	2026-11-28T15:49:34.1264654Z #17 1.118      Locking 67 packages to highest compatible versions
-docker	Build API image	2026-11-28T15:49:34.1265495Z #17 1.118       Adding base16ct v1.0.0
-docker	Build API image	2026-11-28T15:49:34.2386486Z #17 1.118       Adding base64 v0.23.1
-docker	Build API image	2026-11-28T15:49:34.2387144Z #17 1.118       Adding block-buffer v0.12.1
-docker	Build API image	2026-11-28T15:49:34.2387735Z #17 1.118       Adding chacha20 v0.10.2
-docker	Build API image	2026-11-28T15:49:34.2455974Z #17 1.119       Adding cmov v0.5.4
-docker	Build API image	2026-11-28T15:49:34.2456633Z #17 1.119       Adding const-oid v0.10.3
-docker	Build API image	2026-11-28T15:49:34.2457022Z #17 1.119       Adding cpubits v0.1.1
-docker	Build API image	2026-11-28T15:49:34.2457395Z #17 1.119       Adding cpufeatures v0.3.1
-docker	Build API image	2026-11-28T15:49:34.2458115Z #17 1.119       Adding crypto-bigint v0.7.11
-docker	Build API image	2026-11-28T15:49:34.2458520Z #17 1.120       Adding crypto-common v0.2.2
-docker	Build API image	2026-11-28T15:49:34.2459067Z #17 1.120       Adding crypto-primes v0.7.2
-docker	Build API image	2026-11-28T15:49:34.2459412Z #17 1.120       Adding ctutils v0.4.8
-docker	Build API image	2026-11-28T15:49:34.2459766Z #17 1.121       Adding curve25519-dalek v5.0.0
-docker	Build API image	2026-11-28T15:49:34.2460151Z #17 1.121       Adding curve25519-dalek-derive v0.1.1
-docker	Build API image	2026-11-28T15:49:34.2460512Z #17 1.121       Adding der v0.8.3
-docker	Build API image	2026-11-28T15:49:34.2461024Z #17 1.121       Adding digest v0.11.3
-docker	Build API image	2026-11-28T15:49:34.2461338Z #17 1.122       Adding ecdsa v0.17.0
-docker	Build API image	2026-11-28T15:49:34.2461644Z #17 1.122       Adding ed25519 v3.0.0
-docker	Build API image	2026-11-28T15:49:34.2461958Z #17 1.122       Adding ed25519-dalek v3.0.0
-docker	Build API image	2026-11-28T15:49:34.2462345Z #17 1.123       Adding elliptic-curve v0.14.3
-docker	Build API image	2026-11-28T15:49:34.2462684Z #17 1.123       Adding ff v0.14.0
-docker	Build API image	2026-11-28T15:49:34.2462985Z #17 1.123       Adding fiat-crypto v0.3.0
-docker	Build API image	2026-11-28T15:49:34.2463318Z #17 1.123       Adding group v0.14.0
-docker	Build API image	2026-11-28T15:49:34.2463635Z #17 1.123       Adding hmac v0.13.0
-docker	Build API image	2026-11-28T15:49:34.2463977Z #17 1.123       Adding hybrid-array v0.4.15
-docker	Build API image	2026-11-28T15:49:34.2464352Z #17 1.124       Adding hyper-rustls v0.27.10
-docker	Build API image	2026-11-28T15:49:34.2464701Z #17 1.124       Adding ipnet v2.12.2
-docker	Build API image	2026-11-28T15:49:34.2465070Z #17 1.124     Updating jsonwebtoken v9.3.1 -> v12.0.0
-docker	Build API image	2026-11-28T15:49:34.2465442Z #17 1.124       Adding lru-slab v0.1.3
-docker	Build API image	2026-11-28T15:49:34.2465802Z #17 1.124       Adding p256 v0.14.0
-docker	Build API image	2026-11-28T15:49:34.2466152Z #17 1.125       Adding p384 v0.14.0
-docker	Build API image	2026-11-28T15:49:34.2466481Z #17 1.125       Adding pem-rfc7468 v1.0.0
-docker	Build API image	2026-11-28T15:49:34.2466818Z #17 1.125       Adding pkcs1 v0.8.0
-docker	Build API image	2026-11-28T15:49:34.2467135Z #17 1.125       Adding pkcs8 v0.11.0
-docker	Build API image	2026-11-28T15:49:34.2467453Z #17 1.125       Adding primefield v0.14.0
-docker	Build API image	2026-11-28T15:49:34.2467784Z #17 1.125       Adding primeorder v0.14.0
-docker	Build API image	2026-11-28T15:49:34.2468109Z #17 1.126       Adding quinn v0.11.12
-docker	Build API image	2026-11-28T15:49:34.2468453Z #17 1.126       Adding quinn-proto v0.11.19
-docker	Build API image	2026-11-28T15:49:34.2468795Z #17 1.126       Adding quinn-udp v0.5.16
-docker	Build API image	2026-11-28T15:49:34.2469127Z #17 1.127       Adding rand v0.10.4
-docker	Build API image	2026-11-28T15:49:34.2469438Z #17 1.127       Adding rand_core v0.10.1
-docker	Build API image	2026-11-28T15:49:34.2469758Z #17 1.127       Adding rand_pcg v0.10.3
-docker	Build API image	2026-11-28T15:49:34.2470139Z #17 1.129       Adding reqwest v0.12.28 (available: v0.13.5)
-docker	Build API image	2026-11-28T15:49:34.2470526Z #17 1.130       Adding rfc6979 v0.6.0
-docker	Build API image	2026-11-28T15:49:34.2470992Z #17 1.130       Adding rsa v0.10.0
-docker	Build API image	2026-11-28T15:49:34.2471321Z #17 1.130       Adding rustc-hash v2.1.3
-docker	Build API image	2026-11-28T15:49:34.2471684Z #17 1.130       Adding rustc_version v0.4.1
-docker	Build API image	2026-11-28T15:49:34.2472022Z #17 1.131       Adding rustls v0.23.46
-docker	Build API image	2026-11-28T15:49:34.2472400Z #17 1.131       Adding rustls-pki-types v1.16.0
-docker	Build API image	2026-11-28T15:49:34.2472792Z #17 1.131       Adding rustls-webpki v0.103.17
-docker	Build API image	2026-11-28T15:49:34.2473145Z #17 1.131       Adding sec1 v0.8.1
-docker	Build API image	2026-11-28T15:49:34.2473452Z #17 1.132       Adding semver v1.0.28
-docker	Build API image	2026-11-28T15:49:34.2473782Z #17 1.132       Adding serdect v0.4.3
-docker	Build API image	2026-11-28T15:49:34.2474090Z #17 1.132       Adding sha2 v0.11.2
-docker	Build API image	2026-11-28T15:49:34.2474405Z #17 1.132       Adding signature v3.0.0
-docker	Build API image	2026-11-28T15:49:34.2474731Z #17 1.132       Adding spki v0.8.1
-docker	Build API image	2026-11-28T15:49:34.2475044Z #17 1.132       Adding tokio-rustls v0.26.6
-docker	Build API image	2026-11-28T15:49:34.2475390Z #17 1.132       Adding tracing-serde v0.2.0
-docker	Build API image	2026-11-28T15:49:34.2475729Z #17 1.132       Adding try-lock v0.2.5
-docker	Build API image	2026-11-28T15:49:34.2476043Z #17 1.133       Adding want v0.3.2
-docker	Build API image	2026-11-28T15:49:34.2476391Z #17 1.133       Adding wasm-bindgen-futures v0.4.80
-docker	Build API image	2026-11-28T15:49:34.2476757Z #17 1.133       Adding web-sys v0.3.107
-docker	Build API image	2026-11-28T15:49:34.2477072Z #17 1.133       Adding web-time v1.1.0
-docker	Build API image	2026-11-28T15:49:34.2477410Z #17 1.134       Adding webpki-roots v0.26.11
-docker	Build API image	2026-11-28T15:49:34.2477791Z #17 1.134       Adding webpki-roots v1.0.12
-docker	Build API image	2026-11-28T15:49:34.2478176Z #17 1.134       Adding wnaf v0.14.1
-docker	Build API image	2026-11-28T15:49:34.2478682Z #17 1.134       Adding zeroize_derive v1.5.0
-docker	Build API image	2026-11-28T15:49:34.2479065Z #17 1.144  Downloading crates ...
-docker	Build API image	2026-11-28T15:49:34.2479409Z #17 1.230   Downloaded stable_deref_trait v1.2.1
-docker	Build API image	2026-11-28T15:49:34.3404535Z #17 1.234   Downloaded sqlx-mysql v0.8.6
-docker	Build API image	2026-11-28T15:49:34.3405036Z #17 1.245   Downloaded stringprep v0.1.5
-docker	Build API image	2026-11-28T15:49:34.3405387Z #17 1.247   Downloaded writeable v0.6.4
-docker	Build API image	2026-11-28T15:49:34.3405736Z #17 1.249   Downloaded backon v1.6.0
-docker	Build API image	2026-11-28T15:49:34.3406099Z #17 1.253   Downloaded aho-corasick v1.1.5
-docker	Build API image	2026-11-28T15:49:34.3406465Z #17 1.259   Downloaded combine v4.6.9
-docker	Build API image	2026-11-28T15:49:34.3406788Z #17 1.263   Downloaded syn v3.0.10
-docker	Build API image	2026-11-28T15:49:34.3407127Z #17 1.274   Downloaded sqlx-postgres v0.8.6
-docker	Build API image	2026-11-28T15:49:34.3407500Z #17 1.285   Downloaded sqlx-sqlite v0.8.6
-docker	Build API image	2026-11-28T15:49:34.3407867Z #17 1.292   Downloaded tokio-stream v0.1.19
-docker	Build API image	2026-11-28T15:49:34.3408216Z #17 1.303   Downloaded winnow v1.0.5
-docker	Build API image	2026-11-28T15:49:34.3408569Z #17 1.317   Downloaded tokio-macros v2.7.2
-docker	Build API image	2026-11-28T15:49:34.3408960Z #17 1.319   Downloaded tokio-util v0.7.20
-docker	Build API image	2026-11-28T15:49:34.3409303Z #17 1.332   Downloaded tracing-log v0.2.0
-docker	Build API image	2026-11-28T15:49:34.4419557Z #17 1.335   Downloaded toml_datetime v1.1.3+spec-1.1.0
-docker	Build API image	2026-11-28T15:49:34.4420107Z #17 1.337   Downloaded tower-layer v0.3.3
-docker	Build API image	2026-11-28T15:49:34.4420467Z #17 1.338   Downloaded tracing v0.1.44
-docker	Build API image	2026-11-28T15:49:34.4420791Z #17 1.357   Downloaded subtle v2.6.1
-docker	Build API image	2026-11-28T15:49:34.4421259Z #17 1.358   Downloaded rfc6979 v0.6.0
-docker	Build API image	2026-11-28T15:49:34.4421650Z #17 1.359   Downloaded tinystr v0.8.5
-docker	Build API image	2026-11-28T15:49:34.4421990Z #17 1.362   Downloaded try-lock v0.2.5
-docker	Build API image	2026-11-28T15:49:34.4422312Z #17 1.363   Downloaded want v0.3.2
-docker	Build API image	2026-11-28T15:49:34.4422640Z #17 1.364   Downloaded tokio-rustls v0.26.6
-docker	Build API image	2026-11-28T15:49:34.4423001Z #17 1.365   Downloaded unicode-ident v1.0.27
-docker	Build API image	2026-11-28T15:49:34.4423377Z #17 1.368   Downloaded synstructure v0.14.0
-docker	Build API image	2026-11-28T15:49:34.4423737Z #17 1.370   Downloaded thiserror-impl v2.0.21
-docker	Build API image	2026-11-28T15:49:34.4424096Z #17 1.371   Downloaded untrusted v0.9.0
-docker	Build API image	2026-11-28T15:49:34.4424460Z #17 1.373   Downloaded utf8_iter v1.1.0
-docker	Build API image	2026-11-28T15:49:34.4424789Z #17 1.374   Downloaded thread_local v1.1.10
-docker	Build API image	2026-11-28T15:49:34.4425152Z #17 1.376   Downloaded unicode-bidi v0.3.18
-docker	Build API image	2026-11-28T15:49:34.4425503Z #17 1.378   Downloaded thiserror v2.0.21
-docker	Build API image	2026-11-28T15:49:34.4425842Z #17 1.386   Downloaded tower-service v0.3.3
-docker	Build API image	2026-11-28T15:49:34.4426183Z #17 1.387   Downloaded sync_wrapper v1.0.2
-docker	Build API image	2026-11-28T15:49:34.4426572Z #17 1.388   Downloaded toml_parser v1.1.7+spec-1.1.0
-docker	Build API image	2026-11-28T15:49:34.4426947Z #17 1.390   Downloaded tracing-core v0.1.36
-docker	Build API image	2026-11-28T15:49:34.4427289Z #17 1.393   Downloaded version_check v0.9.5
-docker	Build API image	2026-11-28T15:49:34.4427632Z #17 1.394   Downloaded webpki-roots v0.26.11
-docker	Build API image	2026-11-28T15:49:34.4427979Z #17 1.396   Downloaded pkcs1 v0.8.0
-docker	Build API image	2026-11-28T15:49:34.4428324Z #17 1.398   Downloaded toml_edit v0.25.21+spec-1.1.0
-docker	Build API image	2026-11-28T15:49:34.4428700Z #17 1.403   Downloaded utf_types v1.0.0
-docker	Build API image	2026-11-28T15:49:34.4429038Z #17 1.404   Downloaded tracing-serde v0.2.0
-docker	Build API image	2026-11-28T15:49:34.4429395Z #17 1.405   Downloaded zerofrom v0.1.8
-docker	Build API image	2026-11-28T15:49:34.4429721Z #17 1.406   Downloaded block-buffer v0.12.1
-docker	Build API image	2026-11-28T15:49:34.4430070Z #17 1.407   Downloaded tinyvec v1.13.3
-docker	Build API image	2026-11-28T15:49:34.4430386Z #17 1.411   Downloaded argon2 v0.5.3
-docker	Build API image	2026-11-28T15:49:34.4430718Z #17 1.413   Downloaded cpufeatures v0.2.17
-docker	Build API image	2026-11-28T15:49:34.4431211Z #17 1.414   Downloaded wnaf v0.14.1
-docker	Build API image	2026-11-28T15:49:34.4431529Z #17 1.416   Downloaded borsh-derive v1.8.1
-docker	Build API image	2026-11-28T15:49:34.4431858Z #17 1.419   Downloaded yoke v0.8.4
-docker	Build API image	2026-11-28T15:49:34.4432183Z #17 1.421   Downloaded zerofrom-derive v0.1.8
-docker	Build API image	2026-11-28T15:49:34.4432528Z #17 1.422   Downloaded atoi v2.0.0
-docker	Build API image	2026-11-28T15:49:34.4432829Z #17 1.424   Downloaded cfg-if v1.0.5
-docker	Build API image	2026-11-28T15:49:34.4433152Z #17 1.425   Downloaded cpubits v0.1.1
-docker	Build API image	2026-11-28T15:49:34.4433483Z #17 1.426   Downloaded yoke-derive v0.8.4
-docker	Build API image	2026-11-28T15:49:34.4433830Z #17 1.427   Downloaded cfg_aliases v0.2.2
-docker	Build API image	2026-11-28T15:49:34.4434438Z #17 1.428   Downloaded zeroize_derive v1.5.0
-docker	Build API image	2026-11-28T15:49:34.4434791Z #17 1.430   Downloaded atomic-waker v1.1.2
-docker	Build API image	2026-11-28T15:49:34.4435136Z #17 1.431   Downloaded block-buffer v0.10.4
-docker	Build API image	2026-11-28T15:49:34.4435646Z #17 1.432   Downloaded cpufeatures v0.3.1
-docker	Build API image	2026-11-28T15:49:34.4435992Z #17 1.434   Downloaded crypto-common v0.1.7
-docker	Build API image	2026-11-28T15:49:34.5439725Z #17 1.435   Downloaded errno v0.3.15
-docker	Build API image	2026-11-28T15:49:34.5440200Z #17 1.437   Downloaded futures-core v0.3.34
-docker	Build API image	2026-11-28T15:49:34.5440487Z #17 1.438   Downloaded futures-sink v0.3.34
-docker	Build API image	2026-11-28T15:49:34.5440721Z #17 1.439   Downloaded crypto-common v0.2.2
-docker	Build API image	2026-11-28T15:49:34.5441270Z #17 1.440   Downloaded http-body v1.1.0
-docker	Build API image	2026-11-28T15:49:34.5441541Z #17 1.442   Downloaded allocator-api2 v0.2.21
-docker	Build API image	2026-11-28T15:49:34.5441786Z #17 1.444   Downloaded base16ct v1.0.0
-docker	Build API image	2026-11-28T15:49:34.5442033Z #17 1.446   Downloaded const-oid v0.10.3
-docker	Build API image	2026-11-28T15:49:34.5442256Z #17 1.448   Downloaded pkcs8 v0.10.2
-docker	Build API image	2026-11-28T15:49:34.5442470Z #17 1.452   Downloaded zeroize v1.9.2
-docker	Build API image	2026-11-28T15:49:34.5442729Z #17 1.453   Downloaded zerovec-derive v0.11.7
-docker	Build API image	2026-11-28T15:49:34.5442969Z #17 1.455   Downloaded async-trait v0.1.92
-docker	Build API image	2026-11-28T15:49:34.5443201Z #17 1.459   Downloaded byteorder v1.5.0
-docker	Build API image	2026-11-28T15:49:34.5443421Z #17 1.461   Downloaded cmov v0.5.4
-docker	Build API image	2026-11-28T15:49:34.5443632Z #17 1.463   Downloaded equivalent v1.0.3
-docker	Build API image	2026-11-28T15:49:34.5443846Z #17 1.464   Downloaded home v0.5.12
-docker	Build API image	2026-11-28T15:49:34.5444076Z #17 1.465   Downloaded unicode-properties v0.1.5
-docker	Build API image	2026-11-28T15:49:34.5444319Z #17 1.467   Downloaded whoami v1.6.1
-docker	Build API image	2026-11-28T15:49:34.5444523Z #17 1.469   Downloaded base64ct v1.8.3
-docker	Build API image	2026-11-28T15:49:34.5444735Z #17 1.472   Downloaded pem-rfc7468 v1.0.0
-docker	Build API image	2026-11-28T15:49:34.5444957Z #17 1.474   Downloaded rand_chacha v0.9.0
-docker	Build API image	2026-11-28T15:49:34.5445167Z #17 1.476   Downloaded sec1 v0.8.1
-docker	Build API image	2026-11-28T15:49:34.5445366Z #17 1.477   Downloaded autocfg v1.5.1
-docker	Build API image	2026-11-28T15:49:34.5445571Z #17 1.479   Downloaded hashlink v0.10.0
-docker	Build API image	2026-11-28T15:49:34.5445792Z #17 1.481   Downloaded http-body-util v0.1.5
-docker	Build API image	2026-11-28T15:49:34.5446019Z #17 1.484   Downloaded itoa v1.0.19
-docker	Build API image	2026-11-28T15:49:34.5446235Z #17 1.485   Downloaded password-hash v0.5.0
-docker	Build API image	2026-11-28T15:49:34.5446469Z #17 1.487   Downloaded slab v0.4.12
-docker	Build API image	2026-11-28T15:49:34.5446690Z #17 1.488   Downloaded tracing-attributes v0.1.31
-docker	Build API image	2026-11-28T15:49:34.5446939Z #17 1.491   Downloaded zmij v1.0.23
-docker	Build API image	2026-11-28T15:49:34.5447146Z #17 1.493   Downloaded arrayvec v0.7.8
-docker	Build API image	2026-11-28T15:49:34.5447360Z #17 1.496   Downloaded axum-core v0.5.6
-docker	Build API image	2026-11-28T15:49:34.5447575Z #17 1.498   Downloaded chacha20 v0.10.2
-docker	Build API image	2026-11-28T15:49:34.5447781Z #17 1.501   Downloaded crc v3.4.0
-docker	Build API image	2026-11-28T15:49:34.5447979Z #17 1.503   Downloaded mime v0.3.18
-docker	Build API image	2026-11-28T15:49:34.5448205Z #17 1.504   Downloaded ppv-lite86 v0.2.21
-docker	Build API image	2026-11-28T15:49:34.5448433Z #17 1.506   Downloaded rand_core v0.10.1
-docker	Build API image	2026-11-28T15:49:34.5448654Z #17 1.507   Downloaded rand_pcg v0.10.3
-docker	Build API image	2026-11-28T15:49:34.5448860Z #17 1.509   Downloaded sha1_smol v1.0.1
-docker	Build API image	2026-11-28T15:49:34.5449062Z #17 1.510   Downloaded tower v0.5.3
-docker	Build API image	2026-11-28T15:49:34.5449269Z #17 1.522   Downloaded blake2 v0.10.6
-docker	Build API image	2026-11-28T15:49:34.5449474Z #17 1.524   Downloaded const-oid v0.9.6
-docker	Build API image	2026-11-28T15:49:34.5449687Z #17 1.527   Downloaded httparse v1.10.1
-docker	Build API image	2026-11-28T15:49:34.5449901Z #17 1.529   Downloaded parking_lot v0.12.5
-docker	Build API image	2026-11-28T15:49:34.5450117Z #17 1.532   Downloaded pkcs8 v0.11.0
-docker	Build API image	2026-11-28T15:49:34.5450319Z #17 1.536   Downloaded sha2 v0.11.2
-docker	Build API image	2026-11-28T15:49:34.6458674Z #17 1.540   Downloaded socket2 v0.5.10
-docker	Build API image	2026-11-28T15:49:34.6459142Z #17 1.542   Downloaded socket2 v0.6.5
-docker	Build API image	2026-11-28T15:49:34.6459508Z #17 1.544   Downloaded spin v0.9.9
-docker	Build API image	2026-11-28T15:49:34.6459891Z #17 1.546   Downloaded spki v0.8.1
-docker	Build API image	2026-11-28T15:49:34.6460262Z #17 1.548   Downloaded unicode-normalization v0.1.26
-docker	Build API image	2026-11-28T15:49:34.6460653Z #17 1.552   Downloaded url v2.5.9
-docker	Build API image	2026-11-28T15:49:34.6461136Z #17 1.554   Downloaded uuid v1.29.3
-docker	Build API image	2026-11-28T15:49:34.6461467Z #17 1.558   Downloaded dotenvy v0.15.7
-docker	Build API image	2026-11-28T15:49:34.6461832Z #17 1.561   Downloaded futures-channel v0.3.34
-docker	Build API image	2026-11-28T15:49:34.6462498Z #17 1.563   Downloaded futures-intrusive v0.5.0
-docker	Build API image	2026-11-28T15:49:34.6462869Z #17 1.567   Downloaded matchit v0.8.4
-docker	Build API image	2026-11-28T15:49:34.6463370Z #17 1.570   Downloaded pkcs1 v0.7.5
-docker	Build API image	2026-11-28T15:49:34.6463705Z #17 1.572   Downloaded proc-macro2 v1.0.107
-docker	Build API image	2026-11-28T15:49:34.6464076Z #17 1.575   Downloaded sharded-slab v0.1.7
-docker	Build API image	2026-11-28T15:49:34.6464420Z #17 1.579   Downloaded typenum v1.20.1
-docker	Build API image	2026-11-28T15:49:34.6464750Z #17 1.583   Downloaded zerotrie v0.2.5
-docker	Build API image	2026-11-28T15:49:34.6465078Z #17 1.587   Downloaded arc-swap v1.9.5
-docker	Build API image	2026-11-28T15:49:34.6465398Z #17 1.591   Downloaded base64 v0.22.1
-docker	Build API image	2026-11-28T15:49:34.6465736Z #17 1.595   Downloaded bitflags v2.13.2
-docker	Build API image	2026-11-28T15:49:34.6466067Z #17 1.600   Downloaded borsh v1.8.1
-docker	Build API image	2026-11-28T15:49:34.6466391Z #17 1.609   Downloaded bytes v1.12.2
-docker	Build API image	2026-11-28T15:49:34.6466708Z #17 1.612   Downloaded ecdsa v0.17.0
-docker	Build API image	2026-11-28T15:49:34.6467033Z #17 1.615   Downloaded futures-task v0.3.34
-docker	Build API image	2026-11-28T15:49:34.6467402Z #17 1.616   Downloaded generic-array v0.14.7
-docker	Build API image	2026-11-28T15:49:34.6467748Z #17 1.617   Downloaded heck v0.5.0
-docker	Build API image	2026-11-28T15:49:34.6468068Z #17 1.619   Downloaded jsonwebtoken v12.0.0
-docker	Build API image	2026-11-28T15:49:34.6468402Z #17 1.625   Downloaded p256 v0.14.0
-docker	Build API image	2026-11-28T15:49:34.6468723Z #17 1.629   Downloaded quinn v0.11.12
-docker	Build API image	2026-11-28T15:49:34.6469061Z #17 1.632   Downloaded quinn-udp v0.5.16
-docker	Build API image	2026-11-28T15:49:34.6469403Z #17 1.634   Downloaded serde_derive v1.0.229
-docker	Build API image	2026-11-28T15:49:34.6469772Z #17 1.638   Downloaded tower-http v0.6.11
-docker	Build API image	2026-11-28T15:49:34.7562757Z #17 1.648   Downloaded displaydoc v0.2.7
-docker	Build API image	2026-11-28T15:49:34.7563262Z #17 1.651   Downloaded nu-ansi-term v0.50.3
-docker	Build API image	2026-11-28T15:49:34.7563626Z #17 1.654   Downloaded base64 v0.23.1
-docker	Build API image	2026-11-28T15:49:34.7563966Z #17 1.658   Downloaded either v1.19.0
-docker	Build API image	2026-11-28T15:49:34.7564321Z #17 1.659   Downloaded getrandom v0.4.3
-docker	Build API image	2026-11-28T15:49:34.7564675Z #17 1.663   Downloaded lazy_static v1.5.1
-docker	Build API image	2026-11-28T15:49:34.7565022Z #17 1.665   Downloaded mio v1.2.5
-docker	Build API image	2026-11-28T15:49:34.7565418Z #17 1.672   Downloaded rustls-webpki v0.103.17
-docker	Build API image	2026-11-28T15:49:34.7565810Z #17 1.676   Downloaded serde_core v1.0.229
-docker	Build API image	2026-11-28T15:49:34.7566180Z #17 1.679   Downloaded matchers v0.2.0
-docker	Build API image	2026-11-28T15:49:34.7566515Z #17 1.680   Downloaded rand v0.9.5
-docker	Build API image	2026-11-28T15:49:34.7566831Z #17 1.684   Downloaded rand_core v0.9.5
-docker	Build API image	2026-11-28T15:49:34.7567169Z #17 1.686   Downloaded serde v1.0.229
-docker	Build API image	2026-11-28T15:49:34.7567502Z #17 1.690   Downloaded zerovec v0.11.9
-docker	Build API image	2026-11-28T15:49:34.7567838Z #17 1.696   Downloaded cc v1.11.3
-docker	Build API image	2026-11-28T15:49:34.7568157Z #17 1.700   Downloaded hmac v0.13.0
-docker	Build API image	2026-11-28T15:49:34.7568482Z #17 1.703   Downloaded http v1.5.0
-docker	Build API image	2026-11-28T15:49:34.7568803Z #17 1.707   Downloaded idna_adapter v1.2.2
-docker	Build API image	2026-11-28T15:49:34.7569146Z #17 1.708   Downloaded itertools v0.13.0
-docker	Build API image	2026-11-28T15:49:34.7569491Z #17 1.715   Downloaded parking v2.2.1
-docker	Build API image	2026-11-28T15:49:34.7569826Z #17 1.716   Downloaded quote v1.0.47
-docker	Build API image	2026-11-28T15:49:34.7570154Z #17 1.720   Downloaded rand_core v0.6.4
-docker	Build API image	2026-11-28T15:49:34.7570497Z #17 1.721   Downloaded rustc-hash v2.1.3
-docker	Build API image	2026-11-28T15:49:34.7570986Z #17 1.723   Downloaded serde_json v1.0.154
-docker	Build API image	2026-11-28T15:49:34.7571344Z #17 1.731   Downloaded smallvec v1.16.6
-docker	Build API image	2026-11-28T15:49:34.7571679Z #17 1.732   Downloaded sqlx v0.8.6
-docker	Build API image	2026-11-28T15:49:34.7571987Z #17 1.748   Downloaded axum v0.8.9
-docker	Build API image	2026-11-28T15:49:34.8678065Z #17 1.757   Downloaded group v0.14.0
-docker	Build API image	2026-11-28T15:49:34.8678827Z #17 1.759   Downloaded hashbrown v0.17.2
-docker	Build API image	2026-11-28T15:49:34.8679352Z #17 1.765   Downloaded hmac v0.12.1
-docker	Build API image	2026-11-28T15:49:34.8679681Z #17 1.767   Downloaded hybrid-array v0.4.15
-docker	Build API image	2026-11-28T15:49:34.8679999Z #17 1.770   Downloaded num-integer v0.1.47
-docker	Build API image	2026-11-28T15:49:34.8680255Z #17 1.772   Downloaded primeorder v0.14.0
-docker	Build API image	2026-11-28T15:49:34.8680535Z #17 1.774   Downloaded rand_chacha v0.3.1
-docker	Build API image	2026-11-28T15:49:34.8680801Z #17 1.775   Downloaded syn v2.0.119
-docker	Build API image	2026-11-28T15:49:34.8681247Z #17 1.786   Downloaded tracing-subscriber v0.3.23
-docker	Build API image	2026-11-28T15:49:34.8681513Z #17 1.795   Downloaded vcpkg v0.2.15
-docker	Build API image	2026-11-28T15:49:34.8682107Z #17 1.859   Downloaded webpki-roots v1.0.12
-docker	Build API image	2026-11-28T15:49:34.9721021Z #17 1.862   Downloaded chrono v0.4.45
-docker	Build API image	2026-11-28T15:49:34.9721738Z #17 1.869   Downloaded futures v0.3.34
-docker	Build API image	2026-11-28T15:49:34.9722514Z #17 1.875   Downloaded lock_api v0.4.14
-docker	Build API image	2026-11-28T15:49:34.9722797Z #17 1.876   Downloaded once_cell v1.21.4
-docker	Build API image	2026-11-28T15:49:34.9723049Z #17 1.879   Downloaded pem-rfc7468 v0.7.0
-docker	Build API image	2026-11-28T15:49:34.9723298Z #17 1.881   Downloaded pkg-config v0.3.34
-docker	Build API image	2026-11-28T15:49:34.9723523Z #17 1.883   Downloaded scopeguard v1.2.0
-docker	Build API image	2026-11-28T15:49:34.9723749Z #17 1.884   Downloaded sqlx-core v0.8.6
-docker	Build API image	2026-11-28T15:49:34.9723984Z #17 1.893   Downloaded crypto-bigint v0.7.11
-docker	Build API image	2026-11-28T15:49:34.9724218Z #17 1.911   Downloaded fastrand v2.5.0
-docker	Build API image	2026-11-28T15:49:34.9724438Z #17 1.913   Downloaded futures-io v0.3.34
-docker	Build API image	2026-11-28T15:49:34.9724660Z #17 1.914   Downloaded redis v0.27.6
-docker	Build API image	2026-11-28T15:49:34.9724878Z #17 1.922   Downloaded rustc_version v0.4.1
-docker	Build API image	2026-11-28T15:49:34.9725101Z #17 1.923   Downloaded sha2 v0.10.9
-docker	Build API image	2026-11-28T15:49:34.9725340Z #17 1.926   Downloaded zerocopy v0.8.66
-docker	Build API image	2026-11-28T15:49:34.9725557Z #17 1.957   Downloaded regex-syntax v0.8.12
-docker	Build API image	2026-11-28T15:49:34.9725804Z #17 1.964   Downloaded rustls-pki-types v1.16.0
-docker	Build API image	2026-11-28T15:49:35.1044965Z #17 1.967   Downloaded semver v1.0.28
-docker	Build API image	2026-11-28T15:49:35.1045558Z #17 1.969   Downloaded serde_path_to_error v0.1.20
-docker	Build API image	2026-11-28T15:49:35.1045846Z #17 1.971   Downloaded form_urlencoded v1.2.3
-docker	Build API image	2026-11-28T15:49:35.1046089Z #17 1.972   Downloaded hex v0.4.3
-docker	Build API image	2026-11-28T15:49:35.1046309Z #17 1.974   Downloaded icu_collections v2.4.0
-docker	Build API image	2026-11-28T15:49:35.1046548Z #17 1.981   Downloaded signature v3.0.0
-docker	Build API image	2026-11-28T15:49:35.1046765Z #17 1.982   Downloaded spki v0.7.3
-docker	Build API image	2026-11-28T15:49:35.1046986Z #17 1.984   Downloaded sqlx-macros v0.8.6
-docker	Build API image	2026-11-28T15:49:35.1047211Z #17 1.985   Downloaded crc-catalog v2.5.0
-docker	Build API image	2026-11-28T15:49:35.1047428Z #17 1.987   Downloaded ctutils v0.4.8
-docker	Build API image	2026-11-28T15:49:35.1047635Z #17 1.989   Downloaded ff v0.14.0
-docker	Build API image	2026-11-28T15:49:35.1047891Z #17 1.991   Downloaded futures-executor v0.3.34
-docker	Build API image	2026-11-28T15:49:35.1048135Z #17 1.992   Downloaded reqwest v0.12.28
-docker	Build API image	2026-11-28T15:49:35.1048382Z #17 1.997   Downloaded serde_urlencoded v0.7.1
-docker	Build API image	2026-11-28T15:49:35.1048648Z #17 1.999   Downloaded crossbeam-queue v0.3.14
-docker	Build API image	2026-11-28T15:49:35.1048883Z #17 2.001   Downloaded rustversion v1.0.23
-docker	Build API image	2026-11-28T15:49:35.1049110Z #17 2.004   Downloaded signature v2.2.0
-docker	Build API image	2026-11-28T15:49:35.1049327Z #17 2.006   Downloaded rsa v0.9.10
-docker	Build API image	2026-11-28T15:49:35.1049530Z #17 2.012   Downloaded sha1 v0.10.7
-docker	Build API image	2026-11-28T15:49:35.1049766Z #17 2.013   Downloaded curve25519-dalek-derive v0.1.1
-docker	Build API image	2026-11-28T15:49:35.1050017Z #17 2.014   Downloaded potential_utf v0.1.6
-docker	Build API image	2026-11-28T15:49:35.1050257Z #17 2.016   Downloaded regex-automata v0.4.19
-docker	Build API image	2026-11-28T15:49:35.1050492Z #17 2.030   Downloaded futures-macro v0.3.34
-docker	Build API image	2026-11-28T15:49:35.1050716Z #17 2.031   Downloaded ed25519 v3.0.0
-docker	Build API image	2026-11-28T15:49:35.1051163Z #17 2.033   Downloaded hyper-rustls v0.27.10
-docker	Build API image	2026-11-28T15:49:35.1051382Z #17 2.035   Downloaded digest v0.10.7
-docker	Build API image	2026-11-28T15:49:35.1051627Z #17 2.037   Downloaded signal-hook-registry v1.4.8
-docker	Build API image	2026-11-28T15:49:35.1051871Z #17 2.038   Downloaded serdect v0.4.3
-docker	Build API image	2026-11-28T15:49:35.1052081Z #17 2.040   Downloaded shlex v2.0.1
-docker	Build API image	2026-11-28T15:49:35.1052286Z #17 2.041   Downloaded ryu v1.0.23
-docker	Build API image	2026-11-28T15:49:35.1052492Z #17 2.045   Downloaded tokio v1.54.1
-docker	Build API image	2026-11-28T15:49:35.1052707Z #17 2.096   Downloaded rust_decimal v1.43.0
-docker	Build API image	2026-11-28T15:49:35.2049389Z #17 2.103   Downloaded httpdate v1.0.3
-docker	Build API image	2026-11-28T15:49:35.2049962Z #17 2.105   Downloaded rsa v0.10.0
-docker	Build API image	2026-11-28T15:49:35.2050249Z #17 2.113   Downloaded rustls v0.23.46
-docker	Build API image	2026-11-28T15:49:35.2050577Z #17 2.126   Downloaded percent-encoding v2.3.2
-docker	Build API image	2026-11-28T15:49:35.2051078Z #17 2.126   Downloaded digest v0.11.3
-docker	Build API image	2026-11-28T15:49:35.2051371Z #17 2.129   Downloaded ring v0.17.14
-docker	Build API image	2026-11-28T15:49:35.2051674Z #17 2.173   Downloaded num-iter v0.1.46
-docker	Build API image	2026-11-28T15:49:35.2052003Z #17 2.174   Downloaded proc-macro-crate v3.5.0
-docker	Build API image	2026-11-28T15:49:35.2052638Z #17 2.176   Downloaded md-5 v0.10.6
-docker	Build API image	2026-11-28T15:49:35.2052946Z #17 2.177   Downloaded crossbeam-utils v0.8.23
-docker	Build API image	2026-11-28T15:49:35.2053265Z #17 2.180   Downloaded event-listener v5.4.2
-docker	Build API image	2026-11-28T15:49:35.2053755Z #17 2.182   Downloaded ipnet v2.12.2
-docker	Build API image	2026-11-28T15:49:35.2054044Z #17 2.184   Downloaded foldhash v0.1.5
-docker	Build API image	2026-11-28T15:49:35.2054346Z #17 2.185   Downloaded lru-slab v0.1.3
-docker	Build API image	2026-11-28T15:49:35.2054628Z #17 2.186   Downloaded flume v0.11.1
-docker	Build API image	2026-11-28T15:49:35.2054923Z #17 2.190   Downloaded pin-project-lite v0.2.18
-docker	Build API image	2026-11-28T15:49:35.2055245Z #17 2.197   Downloaded primefield v0.14.0
-docker	Build API image	2026-11-28T15:49:35.3079268Z #17 2.198   Downloaded getrandom v0.3.4
-docker	Build API image	2026-11-28T15:49:35.3079772Z #17 2.203   Downloaded sqlx-macros-core v0.8.6
-docker	Build API image	2026-11-28T15:49:35.3080092Z #17 2.205   Downloaded litemap v0.8.3
-docker	Build API image	2026-11-28T15:49:35.3080418Z #17 2.207   Downloaded elliptic-curve v0.14.3
-docker	Build API image	2026-11-28T15:49:35.3080681Z #17 2.211   Downloaded parking_lot_core v0.9.12
-docker	Build API image	2026-11-28T15:49:35.3081135Z #17 2.213   Downloaded getrandom v0.2.17
-docker	Build API image	2026-11-28T15:49:35.3081405Z #17 2.216   Downloaded iana-time-zone v0.1.65
-docker	Build API image	2026-11-28T15:49:35.3081633Z #17 2.219   Downloaded log v0.4.35
-docker	Build API image	2026-11-28T15:49:35.3081882Z #17 2.222   Downloaded find-msvc-tools v0.1.15
-docker	Build API image	2026-11-28T15:49:35.3082115Z #17 2.224   Downloaded num-bigint v0.4.8
-docker	Build API image	2026-11-28T15:49:35.3082324Z #17 2.230   Downloaded num-traits v0.2.19
-docker	Build API image	2026-11-28T15:49:35.3082579Z #17 2.232   Downloaded icu_normalizer_data v2.4.0
-docker	Build API image	2026-11-28T15:49:35.3082809Z #17 2.235   Downloaded libm v0.2.16
-docker	Build API image	2026-11-28T15:49:35.3083024Z #17 2.247   Downloaded icu_provider v2.4.0
-docker	Build API image	2026-11-28T15:49:35.3083255Z #17 2.250   Downloaded icu_locale_core v2.4.0
-docker	Build API image	2026-11-28T15:49:35.3083474Z #17 2.258   Downloaded der v0.8.3
-docker	Build API image	2026-11-28T15:49:35.3083669Z #17 2.264   Downloaded der v0.7.10
-docker	Build API image	2026-11-28T15:49:35.3083862Z #17 2.270   Downloaded p384 v0.14.0
-docker	Build API image	2026-11-28T15:49:35.3084070Z #17 2.273   Downloaded indexmap v2.14.2
-docker	Build API image	2026-11-28T15:49:35.3084294Z #17 2.278   Downloaded ed25519-dalek v3.0.0
-docker	Build API image	2026-11-28T15:49:35.3084538Z #17 2.281   Downloaded icu_properties_data v2.4.0
-docker	Build API image	2026-11-28T15:49:35.3084768Z #17 2.294   Downloaded memchr v2.8.3
-docker	Build API image	2026-11-28T15:49:35.3084965Z #17 2.300   Downloaded rand v0.8.8
-docker	Build API image	2026-11-28T15:49:35.4489123Z #17 2.303   Downloaded rand v0.10.4
-docker	Build API image	2026-11-28T15:49:35.4490294Z #17 2.307   Downloaded hashbrown v0.15.5
-docker	Build API image	2026-11-28T15:49:35.4490993Z #17 2.312   Downloaded num-bigint-dig v0.8.6
-docker	Build API image	2026-11-28T15:49:35.4491333Z #17 2.317   Downloaded crypto-primes v0.7.2
-docker	Build API image	2026-11-28T15:49:35.4491586Z #17 2.322   Downloaded hyper-util v0.1.21
-docker	Build API image	2026-11-28T15:49:35.4491814Z #17 2.329   Downloaded futures-util v0.3.34
-docker	Build API image	2026-11-28T15:49:35.4492048Z #17 2.344   Downloaded icu_properties v2.4.0
-docker	Build API image	2026-11-28T15:49:35.4492271Z #17 2.347   Downloaded idna v1.1.0
-docker	Build API image	2026-11-28T15:49:35.4492494Z #17 2.351   Downloaded hkdf v0.12.4
-docker	Build API image	2026-11-28T15:49:35.4492708Z #17 2.353   Downloaded hyper v1.13.0
-docker	Build API image	2026-11-28T15:49:35.4492948Z #17 2.361   Downloaded curve25519-dalek v5.0.0
-docker	Build API image	2026-11-28T15:49:35.4493188Z #17 2.370   Downloaded quinn-proto v0.11.19
-docker	Build API image	2026-11-28T15:49:35.4493457Z #17 2.377   Downloaded icu_normalizer v2.4.0
-docker	Build API image	2026-11-28T15:49:35.4493676Z #17 2.387   Downloaded libc v0.2.191
-docker	Build API image	2026-11-28T15:49:35.4493903Z #17 2.441   Downloaded libsqlite3-sys v0.30.1
-docker	Build API image	2026-11-28T15:49:35.6364463Z #17 2.628    Compiling proc-macro2 v1.0.107
-docker	Build API image	2026-11-28T15:49:35.7430060Z #17 2.628    Compiling quote v1.0.47
-docker	Build API image	2026-11-28T15:49:35.7430740Z #17 2.628    Compiling unicode-ident v1.0.27
-docker	Build API image	2026-11-28T15:49:35.7431335Z #17 2.628    Compiling libc v0.2.191
-docker	Build API image	2026-11-28T15:49:35.7431760Z #17 2.695    Compiling cfg-if v1.0.5
-docker	Build API image	2026-11-28T15:49:35.7432184Z #17 2.735    Compiling serde v1.0.229
-docker	Build API image	2026-11-28T15:49:35.8582938Z #17 2.762    Compiling subtle v2.6.1
-docker	Build API image	2026-11-28T15:49:36.0218700Z #17 2.850    Compiling typenum v1.20.1
-docker	Build API image	2026-11-28T15:49:36.0219816Z #17 2.862    Compiling autocfg v1.5.1
-docker	Build API image	2026-11-28T15:49:36.2736970Z #17 3.114    Compiling num-traits v0.2.19
-docker	Build API image	2026-11-28T15:49:36.3085291Z #17 3.300    Compiling serde_core v1.0.229
-docker	Build API image	2026-11-28T15:49:36.4422111Z #17 3.385    Compiling syn v3.0.10
-docker	Build API image	2026-11-28T15:49:36.4423088Z #17 3.434    Compiling syn v2.0.119
-docker	Build API image	2026-11-28T15:49:36.9841373Z #17 3.824    Compiling version_check v0.9.5
-docker	Build API image	2026-11-28T15:49:37.1405702Z #17 4.012    Compiling generic-array v0.14.7
-docker	Build API image	2026-11-28T15:49:37.2421676Z #17 4.132    Compiling rand_core v0.10.1
-docker	Build API image	2026-11-28T15:49:37.3928610Z #17 4.233    Compiling getrandom v0.4.3
-docker	Build API image	2026-11-28T15:49:37.5954589Z #17 4.470    Compiling pin-project-lite v0.2.18
-docker	Build API image	2026-11-28T15:49:37.7382290Z #17 4.587    Compiling find-msvc-tools v0.1.15
-docker	Build API image	2026-11-28T15:49:37.9142822Z #17 4.730    Compiling icu_properties_data v2.4.0
-docker	Build API image	2026-11-28T15:49:37.9143986Z #17 4.819    Compiling icu_normalizer_data v2.4.0
-docker	Build API image	2026-11-28T15:49:38.0195282Z #17 4.906    Compiling shlex v2.0.1
-docker	Build API image	2026-11-28T15:49:38.2528409Z #17 5.011    Compiling futures-core v0.3.34
-docker	Build API image	2026-11-28T15:49:38.2552000Z #17 5.093    Compiling cc v1.11.3
-docker	Build API image	2026-11-28T15:49:39.4072932Z #17 6.398    Compiling synstructure v0.14.0
-docker	Build API image	2026-11-28T15:49:39.5946637Z #17 6.435    Compiling cmov v0.5.4
-docker	Build API image	2026-11-28T15:49:39.7621343Z #17 6.603    Compiling ctutils v0.4.8
-docker	Build API image	2026-11-28T15:49:40.0070521Z #17 6.782    Compiling ring v0.17.14
-docker	Build API image	2026-11-28T15:49:40.0071810Z #17 6.848    Compiling const-oid v0.10.3
-docker	Build API image	2026-11-28T15:49:40.2220170Z #17 7.062    Compiling bytes v1.12.2
-docker	Build API image	2026-11-28T15:49:40.5312844Z #17 7.372    Compiling zeroize_derive v1.5.0
-docker	Build API image	2026-11-28T15:49:40.7182551Z #17 7.601    Compiling serde_derive v1.0.229
-docker	Build API image	2026-11-28T15:49:40.8321682Z #17 7.710    Compiling zeroize v1.9.2
-docker	Build API image	2026-11-28T15:49:40.8322765Z #17 7.779    Compiling zerofrom-derive v0.1.8
-docker	Build API image	2026-11-28T15:49:40.9836546Z #17 7.824    Compiling yoke-derive v0.8.4
-docker	Build API image	2026-11-28T15:49:41.1402125Z #17 7.981    Compiling zerovec-derive v0.11.7
-docker	Build API image	2026-11-28T15:49:41.7450554Z #17 8.560    Compiling displaydoc v0.2.7
-docker	Build API image	2026-11-28T15:49:41.7451337Z #17 8.604    Compiling hybrid-array v0.4.15
-docker	Build API image	2026-11-28T15:49:41.8644400Z #17 8.737    Compiling zerofrom v0.1.8
-docker	Build API image	2026-11-28T15:49:41.8645333Z #17 8.810    Compiling stable_deref_trait v1.2.1
-docker	Build API image	2026-11-28T15:49:42.0106199Z #17 8.856    Compiling itoa v1.0.19
-docker	Build API image	2026-11-28T15:49:42.1377265Z #17 9.002    Compiling yoke v0.8.4
-docker	Build API image	2026-11-28T15:49:42.2429806Z #17 9.129    Compiling crypto-common v0.2.2
-docker	Build API image	2026-11-28T15:49:42.3618514Z #17 9.234    Compiling tracing-attributes v0.1.31
-docker	Build API image	2026-11-28T15:49:42.3619374Z #17 9.264    Compiling errno v0.3.15
-docker	Build API image	2026-11-28T15:49:42.5127907Z #17 9.353    Compiling memchr v2.8.3
-docker	Build API image	2026-11-28T15:49:43.2466392Z #17 10.09    Compiling base64ct v1.8.3
-docker	Build API image	2026-11-28T15:49:43.4762983Z #17 10.26    Compiling once_cell v1.21.4
-docker	Build API image	2026-11-28T15:49:43.4763612Z #17 10.34    Compiling zmij v1.0.23
-docker	Build API image	2026-11-28T15:49:43.4764214Z #17 10.36    Compiling signal-hook-registry v1.4.8
-docker	Build API image	2026-11-28T15:49:43.5825877Z #17 10.47    Compiling zerovec v0.11.9
-docker	Build API image	2026-11-28T15:49:43.7687797Z #17 10.57    Compiling smallvec v1.16.6
-docker	Build API image	2026-11-28T15:49:43.7688785Z #17 10.66    Compiling tokio-macros v2.7.2
-docker	Build API image	2026-11-28T15:49:43.7689398Z #17 10.76    Compiling socket2 v0.6.5
-docker	Build API image	2026-11-28T15:49:44.2401746Z #17 11.02    Compiling mio v1.2.5
-docker	Build API image	2026-11-28T15:49:44.2411448Z #17 11.08    Compiling futures-sink v0.3.34
-docker	Build API image	2026-11-28T15:49:44.7111652Z #17 11.56    Compiling tokio v1.54.1
-docker	Build API image	2026-11-28T15:49:44.7112162Z #17 11.59    Compiling block-buffer v0.12.1
-docker	Build API image	2026-11-28T15:49:44.7112586Z #17 11.62    Compiling serde_json v1.0.154
-docker	Build API image	2026-11-28T15:49:44.7112992Z #17 11.70    Compiling zerocopy v0.8.66
-docker	Build API image	2026-11-28T15:49:44.8482006Z #17 11.72    Compiling parking_lot_core v0.9.12
-docker	Build API image	2026-11-28T15:49:44.8482603Z #17 11.84    Compiling digest v0.11.3
-docker	Build API image	2026-11-28T15:49:44.9858357Z #17 11.90    Compiling tracing-core v0.1.36
-docker	Build API image	2026-11-28T15:49:45.1374988Z #17 11.98    Compiling pem-rfc7468 v1.0.0
-docker	Build API image	2026-11-28T15:49:45.6902487Z #17 12.55    Compiling getrandom v0.2.17
-docker	Build API image	2026-11-28T15:49:45.8519047Z #17 12.68    Compiling rustls v0.23.46
-docker	Build API image	2026-11-28T15:49:45.8520075Z #17 12.77    Compiling der v0.8.3
-docker	Build API image	2026-11-28T15:49:46.0034184Z #17 12.84    Compiling futures-channel v0.3.34
-docker	Build API image	2026-11-28T15:49:46.1850106Z #17 13.04    Compiling tinystr v0.8.5
-docker	Build API image	2026-11-28T15:49:46.4053317Z #17 13.18    Compiling futures-macro v0.3.34
-docker	Build API image	2026-11-28T15:49:46.4054425Z #17 13.25    Compiling litemap v0.8.3
-docker	Build API image	2026-11-28T15:49:46.5575333Z #17 13.40    Compiling utf_types v1.0.0
-docker	Build API image	2026-11-28T15:49:46.8176409Z #17 13.60    Compiling writeable v0.6.4
-docker	Build API image	2026-11-28T15:49:46.8177107Z #17 13.69    Compiling slab v0.4.12
-docker	Build API image	2026-11-28T15:49:46.8177336Z #17 13.81    Compiling log v0.4.35
-docker	Build API image	2026-11-28T15:49:46.9608928Z #17 13.82    Compiling futures-task v0.3.34
-docker	Build API image	2026-11-28T15:49:46.9609526Z #17 13.95    Compiling crossbeam-utils v0.8.23
-docker	Build API image	2026-11-28T15:49:47.2082351Z #17 14.09    Compiling futures-io v0.3.34
-docker	Build API image	2026-11-28T15:49:47.3571998Z #17 14.20    Compiling futures-util v0.3.34
-docker	Build API image	2026-11-28T15:49:48.2645524Z #17 15.10    Compiling icu_locale_core v2.4.0
-docker	Build API image	2026-11-28T15:49:48.5714782Z #17 15.41    Compiling utf8_iter v1.1.0
-docker	Build API image	2026-11-28T15:49:48.9243687Z #17 15.81    Compiling potential_utf v0.1.6
-docker	Build API image	2026-11-28T15:49:49.0758865Z #17 15.92    Compiling zerotrie v0.2.5
-docker	Build API image	2026-11-28T15:49:49.8782932Z #17 16.70    Compiling cpubits v0.1.1
-docker	Build API image	2026-11-28T15:49:49.8783600Z #17 16.75    Compiling percent-encoding v2.3.2
-docker	Build API image	2026-11-28T15:49:50.0302265Z #17 16.87    Compiling crypto-bigint v0.7.11
-docker	Build API image	2026-11-28T15:49:50.8126004Z #17 17.70    Compiling icu_provider v2.4.0
-docker	Build API image	2026-11-28T15:49:50.9643032Z #17 17.80    Compiling icu_collections v2.4.0
-docker	Build API image	2026-11-28T15:49:51.3202202Z #17 18.16    Compiling tracing v0.1.44
-docker	Build API image	2026-11-28T15:49:51.5527281Z #17 18.39    Compiling spki v0.8.1
-docker	Build API image	2026-11-28T15:49:51.5528106Z #17 18.46    Compiling block-buffer v0.10.4
-docker	Build API image	2026-11-28T15:49:51.5528541Z #17 18.54    Compiling crypto-common v0.1.7
-docker	Build API image	2026-11-28T15:49:51.9891995Z #17 18.83    Compiling thiserror v2.0.21
-docker	Build API image	2026-11-28T15:49:52.1196200Z #17 19.11    Compiling digest v0.10.7
-docker	Build API image	2026-11-28T15:49:52.5592361Z #17 19.40    Compiling rustls-pki-types v1.16.0
-docker	Build API image	2026-11-28T15:49:54.0723554Z #17 20.91    Compiling icu_normalizer v2.4.0
-docker	Build API image	2026-11-28T15:49:54.9202108Z #17 21.76    Compiling icu_properties v2.4.0
-docker	Build API image	2026-11-28T15:49:55.0982082Z #17 21.94    Compiling pkcs8 v0.11.0
-docker	Build API image	2026-11-28T15:49:56.0901604Z #17 22.93    Compiling form_urlencoded v1.2.3
-docker	Build API image	2026-11-28T15:49:56.2733203Z #17 23.11    Compiling http v1.5.0
-docker	Build API image	2026-11-28T15:49:56.4340603Z #17 23.27    Compiling thiserror-impl v2.0.21
-docker	Build API image	2026-11-28T15:49:57.8769582Z #17 24.72    Compiling ff v0.14.0
-docker	Build API image	2026-11-28T15:49:58.1105715Z #17 24.88    Compiling untrusted v0.9.0
-docker	Build API image	2026-11-28T15:49:58.1106336Z #17 24.95    Compiling http-body v1.1.0
-docker	Build API image	2026-11-28T15:49:58.4692018Z #17 25.31    Compiling idna_adapter v1.2.2
-docker	Build API image	2026-11-28T15:49:59.0459531Z #17 25.85    Compiling equivalent v1.0.3
-docker	Build API image	2026-11-28T15:49:59.0460552Z #17 25.89    Compiling scopeguard v1.2.0
-docker	Build API image	2026-11-28T15:49:59.0463743Z #17 26.04    Compiling lock_api v0.4.14
-docker	Build API image	2026-11-28T15:50:01.1336718Z #17 28.13    Compiling idna v1.1.0
-docker	Build API image	2026-11-28T15:50:01.9187760Z #17 28.91    Compiling group v0.14.0
-docker	Build API image	2026-11-28T15:50:02.1657133Z #17 29.01    Compiling signature v3.0.0
-docker	Build API image	2026-11-28T15:50:02.6203254Z #17 29.46    Compiling foldhash v0.1.5
-docker	Build API image	2026-11-28T15:50:02.6713142Z #17 29.66    Compiling cpufeatures v0.3.1
-docker	Build API image	2026-11-28T15:50:02.7937264Z #17 29.79    Compiling tower-service v0.3.3
-docker	Build API image	2026-11-28T15:50:02.9983793Z #17 29.84    Compiling httparse v1.10.1
-docker	Build API image	2026-11-28T15:50:03.1646043Z #17 30.01    Compiling base16ct v1.0.0
-docker	Build API image	2026-11-28T15:50:03.3504696Z #17 30.17    Compiling allocator-api2 v0.2.21
-docker	Build API image	2026-11-28T15:50:03.3505778Z #17 30.19    Compiling rust_decimal v1.43.0
-docker	Build API image	2026-11-28T15:50:03.5903283Z #17 30.36    Compiling sec1 v0.8.1
-docker	Build API image	2026-11-28T15:50:03.5904592Z #17 30.43    Compiling rustls-webpki v0.103.17
-docker	Build API image	2026-11-28T15:50:04.0612533Z #17 30.90    Compiling hashbrown v0.15.5
-docker	Build API image	2026-11-28T15:50:05.8852165Z #17 32.73    Compiling ppv-lite86 v0.2.21
-docker	Build API image	2026-11-28T15:50:06.5011269Z #17 33.34    Compiling url v2.5.9
-docker	Build API image	2026-11-28T15:50:07.0234448Z #17 33.86    Compiling parking_lot v0.12.5
-docker	Build API image	2026-11-28T15:50:07.6801081Z #17 34.52    Compiling webpki-roots v1.0.12
-docker	Build API image	2026-11-28T15:50:07.8592549Z #17 34.72    Compiling rand_core v0.6.4
-docker	Build API image	2026-11-28T15:50:07.9824334Z #17 34.85    Compiling hmac v0.13.0
-docker	Build API image	2026-11-28T15:50:08.1338829Z #17 34.97    Compiling tinyvec v1.13.3
-docker	Build API image	2026-11-28T15:50:08.3191292Z #17 35.17    Compiling arrayvec v0.7.8
-docker	Build API image	2026-11-28T15:50:08.4266120Z #17 35.31    Compiling crc-catalog v2.5.0
-docker	Build API image	2026-11-28T15:50:08.4266726Z #17 35.37    Compiling cpufeatures v0.2.17
-docker	Build API image	2026-11-28T15:50:08.4267640Z #17 35.40    Compiling try-lock v0.2.5
-docker	Build API image	2026-11-28T15:50:08.4268041Z #17 35.42    Compiling iana-time-zone v0.1.65
-docker	Build API image	2026-11-28T15:50:08.5392231Z #17 35.46    Compiling hashbrown v0.17.2
-docker	Build API image	2026-11-28T15:50:08.7178365Z #17 35.53    Compiling parking v2.2.1
-docker	Build API image	2026-11-28T15:50:08.7181403Z #17 35.56    Compiling semver v1.0.28
-docker	Build API image	2026-11-28T15:50:08.8713595Z #17 35.71    Compiling rustc_version v0.4.1
-docker	Build API image	2026-11-28T15:50:09.0642755Z #17 35.88    Compiling event-listener v5.4.2
-docker	Build API image	2026-11-28T15:50:09.0643281Z #17 35.91    Compiling indexmap v2.14.2
-docker	Build API image	2026-11-28T15:50:09.2152865Z #17 36.06    Compiling chrono v0.4.45
-docker	Build API image	2026-11-28T15:50:09.6837474Z #17 36.43    Compiling want v0.3.2
-docker	Build API image	2026-11-28T15:50:09.6837998Z #17 36.52    Compiling sha2 v0.10.9
-docker	Build API image	2026-11-28T15:50:09.9297871Z #17 36.77    Compiling crc v3.4.0
-docker	Build API image	2026-11-28T15:50:10.4849436Z #17 37.33    Compiling unicode-normalization v0.1.26
-docker	Build API image	2026-11-28T15:50:11.2471912Z #17 38.09    Compiling rand_chacha v0.3.1
-docker	Build API image	2026-11-28T15:50:11.3752412Z #17 38.37    Compiling webpki-roots v0.26.11
-docker	Build API image	2026-11-28T15:50:11.5683830Z #17 38.41    Compiling futures-intrusive v0.5.0
-docker	Build API image	2026-11-28T15:50:11.9562407Z #17 38.95    Compiling tokio-stream v0.1.19
-docker	Build API image	2026-11-28T15:50:12.4281967Z #17 39.27    Compiling crossbeam-queue v0.3.14
-docker	Build API image	2026-11-28T15:50:12.8906017Z #17 39.73    Compiling hashlink v0.10.0
-docker	Build API image	2026-11-28T15:50:13.1157772Z #17 39.96    Compiling elliptic-curve v0.14.3
-docker	Build API image	2026-11-28T15:50:13.5377389Z #17 40.38    Compiling sha2 v0.11.2
-docker	Build API image	2026-11-28T15:50:14.6752451Z #17 41.52    Compiling primefield v0.14.0
-docker	Build API image	2026-11-28T15:50:14.9106503Z #17 41.67    Compiling hmac v0.12.1
-docker	Build API image	2026-11-28T15:50:14.9107671Z #17 41.75    Compiling either v1.19.0
-docker	Build API image	2026-11-28T15:50:15.1002147Z #17 41.92    Compiling sync_wrapper v1.0.2
-docker	Build API image	2026-11-28T15:50:15.1002890Z #17 41.98    Compiling atomic-waker v1.1.2
-docker	Build API image	2026-11-28T15:50:15.2487523Z #17 42.09    Compiling unicode-properties v0.1.5
-docker	Build API image	2026-11-28T15:50:15.3977991Z #17 42.24    Compiling tower-layer v0.3.3
-docker	Build API image	2026-11-28T15:50:15.5502374Z #17 42.39    Compiling base64 v0.23.1
-docker	Build API image	2026-11-28T15:50:15.5503606Z #17 42.39    Compiling unicode-bidi v0.3.18
-docker	Build API image	2026-11-28T15:50:15.9145039Z #17 42.76    Compiling base64 v0.22.1
-docker	Build API image	2026-11-28T15:50:16.1651922Z #17 42.96    Compiling httpdate v1.0.3
-docker	Build API image	2026-11-28T15:50:16.1652520Z #17 43.01    Compiling uuid v1.29.3
-docker	Build API image	2026-11-28T15:50:16.4122058Z #17 43.23    Compiling sqlx-core v0.8.6
-docker	Build API image	2026-11-28T15:50:16.4122747Z #17 43.25    Compiling hyper v1.13.0
-docker	Build API image	2026-11-28T15:50:16.7702054Z #17 43.61    Compiling stringprep v0.1.5
-docker	Build API image	2026-11-28T15:50:17.6192015Z #17 44.38    Compiling hkdf v0.12.4
-docker	Build API image	2026-11-28T15:50:17.6194949Z #17 44.46    Compiling wnaf v0.14.1
-docker	Build API image	2026-11-28T15:50:18.0152405Z #17 44.86    Compiling rand v0.8.8
-docker	Build API image	2026-11-28T15:50:18.6332297Z #17 45.62    Compiling curve25519-dalek v5.0.0
-docker	Build API image	2026-11-28T15:50:18.8972034Z #17 45.74    Compiling rfc6979 v0.6.0
-docker	Build API image	2026-11-28T15:50:18.9789927Z #17 45.97    Compiling atoi v2.0.0
-docker	Build API image	2026-11-28T15:50:19.1032404Z #17 46.04    Compiling http-body-util v0.1.5
-docker	Build API image	2026-11-28T15:50:19.2284962Z #17 46.09    Compiling md-5 v0.10.6
-docker	Build API image	2026-11-28T15:50:19.4137331Z #17 46.22    Compiling rustversion v1.0.23
-docker	Build API image	2026-11-28T15:50:19.4138184Z #17 46.25    Compiling ryu v1.0.23
-docker	Build API image	2026-11-28T15:50:19.6432156Z #17 46.48    Compiling dotenvy v0.15.7
-docker	Build API image	2026-11-28T15:50:19.9247921Z #17 46.67    Compiling bitflags v2.13.2
-docker	Build API image	2026-11-28T15:50:19.9248379Z #17 46.68    Compiling whoami v1.6.1
-docker	Build API image	2026-11-28T15:50:19.9248709Z #17 46.77    Compiling byteorder v1.5.0
-docker	Build API image	2026-11-28T15:50:19.9283387Z #17 46.92    Compiling ipnet v2.12.2
-docker	Build API image	2026-11-28T15:50:20.3533105Z #17 47.19    Compiling hex v0.4.3
-docker	Build API image	2026-11-28T15:50:20.5421145Z #17 47.38    Compiling home v0.5.12
-docker	Build API image	2026-11-28T15:50:20.9442321Z #17 47.94    Compiling sqlx-postgres v0.8.6
-docker	Build API image	2026-11-28T15:50:21.1563648Z #17 48.00    Compiling hyper-util v0.1.21
-docker	Build API image	2026-11-28T15:50:23.8756732Z #17 50.87    Compiling ecdsa v0.17.0
-docker	Build API image	2026-11-28T15:50:24.5727498Z #17 51.41    Compiling primeorder v0.14.0
-docker	Build API image	2026-11-28T15:50:24.9958825Z #17 51.84    Compiling tower v0.5.3
-docker	Build API image	2026-11-28T15:50:25.3334845Z #17 52.32    Compiling curve25519-dalek-derive v0.1.1
-docker	Build API image	2026-11-28T15:50:25.6902252Z #17 52.68    Compiling heck v0.5.0
-docker	Build API image	2026-11-28T15:50:25.9612592Z #17 52.80    Compiling regex-syntax v0.8.12
-docker	Build API image	2026-11-28T15:50:26.5734579Z #17 53.41    Compiling sqlx-macros-core v0.8.6
-docker	Build API image	2026-11-28T15:50:27.2662135Z #17 54.11    Compiling regex-automata v0.4.19
-docker	Build API image	2026-11-28T15:50:32.1066460Z #17 58.91    Compiling serde_urlencoded v0.7.1
-docker	Build API image	2026-11-28T15:50:32.1069347Z #17 58.95    Compiling tokio-rustls v0.26.6
-docker	Build API image	2026-11-28T15:50:32.3164815Z #17 59.12    Compiling ed25519 v3.0.0
-docker	Build API image	2026-11-28T15:50:32.3165311Z #17 59.18    Compiling crypto-primes v0.7.2
-docker	Build API image	2026-11-28T15:50:32.4673746Z #17 59.31    Compiling pkcs1 v0.8.0
-docker	Build API image	2026-11-28T15:50:32.8152093Z #17 59.66    Compiling futures-executor v0.3.34
-docker	Build API image	2026-11-28T15:50:32.9882039Z #17 59.85    Compiling tokio-util v0.7.20
-docker	Build API image	2026-11-28T15:50:33.1388407Z #17 59.98    Compiling num-integer v0.1.47
-docker	Build API image	2026-11-28T15:50:33.6273798Z #17 60.47    Compiling lazy_static v1.5.1
-docker	Build API image	2026-11-28T15:50:34.0242860Z #17 60.81    Compiling fastrand v2.5.0
-docker	Build API image	2026-11-28T15:50:34.0252889Z #17 60.86    Compiling mime v0.3.18
-docker	Build API image	2026-11-28T15:50:34.4482174Z #17 61.21    Compiling axum-core v0.5.6
-docker	Build API image	2026-11-28T15:50:34.4482736Z #17 61.29    Compiling backon v1.6.0
-docker	Build API image	2026-11-28T15:50:34.6165023Z #17 61.46    Compiling sharded-slab v0.1.7
-docker	Build API image	2026-11-28T15:50:35.0938408Z #17 61.93    Compiling rsa v0.10.0
-docker	Build API image	2026-11-28T15:50:35.3489856Z #17 62.19    Compiling combine v4.6.9
-docker	Build API image	2026-11-28T15:50:36.1822553Z #17 63.02    Compiling num-bigint v0.4.8
-docker	Build API image	2026-11-28T15:50:39.1389804Z #17 65.93    Compiling futures v0.3.34
-docker	Build API image	2026-11-28T15:50:39.1390590Z #17 65.98    Compiling ed25519-dalek v3.0.0
-docker	Build API image	2026-11-28T15:50:39.4191464Z #17 66.24    Compiling hyper-rustls v0.27.10
-docker	Build API image	2026-11-28T15:50:39.4191950Z #17 66.26    Compiling arc-swap v1.9.5
-docker	Build API image	2026-11-28T15:50:39.6382680Z #17 66.47    Compiling matchers v0.2.0
-docker	Build API image	2026-11-28T15:50:39.6383353Z #17 66.55    Compiling sqlx-macros v0.8.6
-docker	Build API image	2026-11-28T15:50:39.8046834Z #17 66.63    Compiling tower-http v0.6.11
-docker	Build API image	2026-11-28T15:50:39.8047588Z #17 66.65    Compiling p256 v0.14.0
-docker	Build API image	2026-11-28T15:50:40.5050347Z #17 67.35    Compiling p384 v0.14.0
-docker	Build API image	2026-11-28T15:50:41.3985899Z #17 68.24    Compiling itertools v0.13.0
-docker	Build API image	2026-11-28T15:50:42.5059404Z #17 69.35    Compiling password-hash v0.5.0
-docker	Build API image	2026-11-28T15:50:42.8391297Z #17 69.68    Compiling blake2 v0.10.6
-docker	Build API image	2026-11-28T15:50:43.2932280Z #17 70.15    Compiling tracing-log v0.2.0
-docker	Build API image	2026-11-28T15:50:43.2932868Z #17 70.18    Compiling tracing-serde v0.2.0
-docker	Build API image	2026-11-28T15:50:43.4022230Z #17 70.28    Compiling serde_path_to_error v0.1.20
-docker	Build API image	2026-11-28T15:50:43.5535953Z #17 70.39    Compiling async-trait v0.1.92
-docker	Build API image	2026-11-28T15:50:43.8157111Z #17 70.66    Compiling socket2 v0.5.10
-docker	Build API image	2026-11-28T15:50:44.1603487Z #17 71.00    Compiling thread_local v1.1.10
-docker	Build API image	2026-11-28T15:50:44.3303778Z #17 71.20    Compiling nu-ansi-term v0.50.3
-docker	Build API image	2026-11-28T15:50:44.3306411Z #17 71.24    Compiling matchit v0.8.4
-docker	Build API image	2026-11-28T15:50:44.4812599Z #17 71.32    Compiling sha1_smol v1.0.1
-docker	Build API image	2026-11-28T15:50:44.5497858Z #17 71.54    Compiling axum v0.8.9
-docker	Build API image	2026-11-28T15:50:44.7082620Z #17 71.59    Compiling redis v0.27.6
-docker	Build API image	2026-11-28T15:50:44.8582613Z #17 71.70    Compiling tracing-subscriber v0.3.23
-docker	Build API image	2026-11-28T15:50:49.8811288Z #17 76.72    Compiling jsonwebtoken v12.0.0
-docker	Build API image	2026-11-28T15:50:50.8812169Z #17 77.72    Compiling argon2 v0.5.3
-docker	Build API image	2026-11-28T15:50:51.7716642Z #17 78.61    Compiling reqwest v0.12.28
-docker	Build API image	2026-11-28T15:50:55.9212244Z #17 82.76    Compiling sqlx v0.8.6
-docker	Build API image	2026-11-28T15:50:56.1981883Z #17 83.04    Compiling sha1 v0.10.7
-docker	Build API image	2026-11-28T15:50:56.5796681Z #17 83.42    Compiling unadomot-api v0.1.0 (/app)
-docker	Build API image	2026-11-28T15:50:56.9825934Z #17 83.85 warning: unused import: `delete`
-docker	Build API image	2026-11-28T15:50:56.9828085Z #17 83.85   --> src/http/listings.rs:14:15
-docker	Build API image	2026-11-28T15:50:56.9828632Z #17 83.85    |
-docker	Build API image	2026-11-28T15:50:56.9829172Z #17 83.85 14 |     routing::{delete, get, post},
-docker	Build API image	2026-11-28T15:50:56.9829673Z #17 83.85    |               ^^^^^^
-docker	Build API image	2026-11-28T15:50:56.9830479Z #17 83.85    |
-docker	Build API image	2026-11-28T15:50:56.9831211Z #17 83.85    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
-docker	Build API image	2026-11-28T15:50:56.9832117Z #17 83.85 
-docker	Build API image	2026-11-28T15:50:57.1345369Z #17 83.97 error[E0046]: not all trait items implemented, missing: `get_by_code`
-docker	Build API image	2026-11-28T15:50:57.1346801Z #17 83.97   --> src/adapters.rs:22:1
-docker	Build API image	2026-11-28T15:50:57.1347297Z #17 83.97    |
-docker	Build API image	2026-11-28T15:50:57.1347811Z #17 83.97 22 | impl ListingRepository for UnconfiguredRepository {
-docker	Build API image	2026-11-28T15:50:57.1348517Z #17 83.97    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ missing `get_by_code` in implementation
-docker	Build API image	2026-11-28T15:50:57.1349131Z #17 83.97    |
-docker	Build API image	2026-11-28T15:50:57.1362223Z #17 83.97   ::: src/application/listings.rs:34:5
-docker	Build API image	2026-11-28T15:50:57.1362688Z #17 83.97    |
-docker	Build API image	2026-11-28T15:50:57.1363175Z #17 83.98 34 |     async fn get_by_code(&self, code: &str) -> Result<Option<Listing>, ListingError>;
-docker	Build API image	2026-11-28T15:50:57.1363959Z #17 83.98    |     --------------------------------------------------------------------------------- `get_by_code` from trait
-docker	Build API image	2026-11-28T15:50:57.1364574Z #17 83.98 
-docker	Build API image	2026-11-28T15:50:57.4226727Z #17 84.41 error[E0618]: expected function, found `EmailError`
-docker	Build API image	2026-11-28T15:50:57.4252879Z #17 84.41    --> src/http/profile.rs:332:16
-docker	Build API image	2026-11-28T15:50:57.4253411Z #17 84.41     |
-docker	Build API image	2026-11-28T15:50:57.4253963Z #17 84.41  39 | fn error(status: StatusCode, message: &str) -> axum::response::Response {
-docker	Build API image	2026-11-28T15:50:57.4254806Z #17 84.41     | ----------------------------------------------------------------------- this function of the same name is available here, but it's shadowed by the local binding
-docker	Build API image	2026-11-28T15:50:57.4255544Z #17 84.41 ...
-docker	Build API image	2026-11-28T15:50:57.4256002Z #17 84.41 330 |     if let Err(error) = state.email.send_email_verification(&email, &verify_link).await {
-docker	Build API image	2026-11-28T15:50:57.4256627Z #17 84.41     |                ----- `error` has type `EmailError`
-docker	Build API image	2026-11-28T15:50:57.4257209Z #17 84.41 331 |         tracing::error!(error = ?error, "email verification delivery failed");
-docker	Build API image	2026-11-28T15:50:57.4257991Z #17 84.41 332 |         return error(StatusCode::SERVICE_UNAVAILABLE, "Could not send the verification email");
-docker	Build API image	2026-11-28T15:50:57.4258730Z #17 84.41     |                ^^^^^--------------------------------------------------------------------------
-docker	Build API image	2026-11-28T15:50:57.4259198Z #17 84.41     |                |
-docker	Build API image	2026-11-28T15:50:57.4259541Z #17 84.41     |                call expression requires function
-docker	Build API image	2026-11-28T15:50:57.4259904Z #17 84.41     |
-docker	Build API image	2026-11-28T15:50:57.4260283Z #17 84.41    ::: src/http/chat.rs:63:1
-docker	Build API image	2026-11-28T15:50:57.4260588Z #17 84.41     |
-docker	Build API image	2026-11-28T15:50:57.5772781Z #17 84.41  63 | fn error(status: StatusCode, message: &str) -> axum::response::Response {
-docker	Build API image	2026-11-28T15:50:57.5774176Z #17 84.41     | ----------------------------------------------------------------------- this function of the same name is available here, but it's shadowed by the local binding
-docker	Build API image	2026-11-28T15:50:57.5775097Z #17 84.41     |
-docker	Build API image	2026-11-28T15:50:57.5775587Z #17 84.41    ::: src/http/comments.rs:26:1
-docker	Build API image	2026-11-28T15:50:57.5776192Z #17 84.41     |
-docker	Build API image	2026-11-28T15:50:57.5799958Z #17 84.41  26 | fn error(status: StatusCode, message: &str) -> axum::response::Response {
-docker	Build API image	2026-11-28T15:50:57.5801316Z #17 84.41     | ----------------------------------------------------------------------- this function of the same name is available here, but it's shadowed by the local binding
-docker	Build API image	2026-11-28T15:50:57.5802277Z #17 84.41     |
-docker	Build API image	2026-11-28T15:50:57.5802735Z #17 84.41    ::: src/http/calls.rs:45:1
-docker	Build API image	2026-11-28T15:50:57.5803080Z #17 84.41     |
-docker	Build API image	2026-11-28T15:50:57.5803544Z #17 84.41  45 | fn error(status: StatusCode, message: &str) -> axum::response::Response {
-docker	Build API image	2026-11-28T15:50:57.5804569Z #17 84.41     | ----------------------------------------------------------------------- this function of the same name is available here, but it's shadowed by the local binding
-docker	Build API image	2026-11-28T15:50:57.5805351Z #17 84.41 
-docker	Build API image	2026-11-28T15:51:00.1572128Z #17 87.15 Some errors have detailed explanations: E0046, E0618.
-docker	Build API image	2026-11-28T15:51:00.1582714Z #17 87.15 For more information about an error, try `rustc --explain E0046`.
-docker	Build API image	2026-11-28T15:51:00.3381255Z #17 87.18 warning: `unadomot-api` (lib) generated 1 warning
-docker	Build API image	2026-11-28T15:51:00.3382660Z #17 87.18 error: could not compile `unadomot-api` (lib) due to 2 previous errors; 1 warning emitted
-docker	Build API image	2026-11-28T15:51:00.3383366Z #17 87.18 warning: build failed, waiting for other jobs to finish...
-docker	Build API image	2026-11-28T15:51:02.2169443Z #17 ERROR: process "/bin/sh -c cargo build --release" did not complete successfully: exit code: 101
-docker	Build API image	2026-11-28T15:51:02.2354753Z ------
-docker	Build API image	2026-11-28T15:51:02.2355156Z  > [builder 7/7] RUN cargo build --release:
-docker	Build API image	2026-11-28T15:51:02.2355469Z 84.41    ::: src/http/calls.rs:45:1
-docker	Build API image	2026-11-28T15:51:02.2355673Z 84.41     |
-docker	Build API image	2026-11-28T15:51:02.2355947Z 84.41  45 | fn error(status: StatusCode, message: &str) -> axum::response::Response {
-docker	Build API image	2026-11-28T15:51:02.2356615Z 84.41     | ----------------------------------------------------------------------- this function of the same name is available here, but it's shadowed by the local binding
-docker	Build API image	2026-11-28T15:51:02.2357337Z 84.41 
-docker	Build API image	2026-11-28T15:51:02.2357619Z 87.15 Some errors have detailed explanations: E0046, E0618.
-docker	Build API image	2026-11-28T15:51:02.2358105Z 87.15 For more information about an error, try `rustc --explain E0046`.
-docker	Build API image	2026-11-28T15:51:02.2358592Z 87.18 warning: `unadomot-api` (lib) generated 1 warning
-docker	Build API image	2026-11-28T15:51:02.2359016Z 87.18 error: could not compile `unadomot-api` (lib) due to 2 previous errors; 1 warning emitted
-docker	Build API image	2026-11-28T15:51:02.2359491Z 87.18 warning: build failed, waiting for other jobs to finish...
-docker	Build API image	2026-11-28T15:51:02.2359835Z ------
-docker	Build API image	2026-11-28T15:51:02.2364108Z Dockerfile:7
-docker	Build API image	2026-11-28T15:51:02.2364357Z --------------------
-docker	Build API image	2026-11-28T15:51:02.2364615Z    5 |     COPY services/api/src ./src
-docker	Build API image	2026-11-28T15:51:02.2364886Z    6 |     COPY services/api/migrations ./migrations
-docker	Build API image	2026-11-28T15:51:02.2365134Z    7 | >>> RUN cargo build --release
-docker	Build API image	2026-11-28T15:51:02.2365342Z    8 |     
-docker	Build API image	2026-11-28T15:51:02.2365506Z    9 |     FROM debian:bookworm-slim
-docker	Build API image	2026-11-28T15:51:02.2365723Z --------------------
-docker	Build API image	2026-11-28T15:51:02.2366107Z ERROR: failed to build: failed to solve: process "/bin/sh -c cargo build --release" did not complete successfully: exit code: 101
-docker	Build API image	2026-11-28T15:51:02.2428818Z ##[error]Process completed with exit code 1.
-rust	Clippy	﻿2026-11-28T15:49:50.6804682Z ##[group]Run cargo clippy --all-targets -- -D warnings
-rust	Clippy	2026-11-28T15:49:50.6805019Z ^[[36;1mcargo clippy --all-targets -- -D warnings^[[0m
-rust	Clippy	2026-11-28T15:49:50.6831894Z shell: /usr/bin/bash -e {0}
-rust	Clippy	2026-11-28T15:49:50.6832043Z env:
-rust	Clippy	2026-11-28T15:49:50.6832158Z   CARGO_TERM_COLOR: never
-rust	Clippy	2026-11-28T15:49:50.6832285Z   NO_COLOR: 1
-rust	Clippy	2026-11-28T15:49:50.6832393Z   RUST_BACKTRACE: 1
-rust	Clippy	2026-11-28T15:49:50.6832788Z   DATABASE_URL: ***localhost:5432/unadomot_test
-rust	Clippy	2026-11-28T15:49:50.6832992Z   JWT_SECRET: test-secret-that-is-at-least-32-bytes-long
-rust	Clippy	2026-11-28T15:49:50.6833239Z   REFRESH_TOKEN_SECRET: test-refresh-secret-that-is-at-least-32-bytes
-rust	Clippy	2026-11-28T15:49:50.6833452Z   CARGO_HOME: /home/runner/.cargo
-rust	Clippy	2026-11-28T15:49:50.6833595Z   CARGO_INCREMENTAL: 0
-rust	Clippy	2026-11-28T15:49:50.6833871Z   CACHE_ON_FAILURE: false
-rust	Clippy	2026-11-28T15:49:50.6834007Z ##[endgroup]
-rust	Clippy	2026-11-28T15:49:50.8525191Z     Updating crates.io index
-rust	Clippy	2026-11-28T15:49:51.8869609Z      Locking 67 packages to highest compatible versions
-rust	Clippy	2026-11-28T15:49:51.8870017Z       Adding base16ct v1.0.0
-rust	Clippy	2026-11-28T15:49:51.8872122Z       Adding base64 v0.23.1
-rust	Clippy	2026-11-28T15:49:51.8874245Z       Adding block-buffer v0.12.1
-rust	Clippy	2026-11-28T15:49:51.8879428Z       Adding chacha20 v0.10.2
-rust	Clippy	2026-11-28T15:49:51.8880453Z       Adding cmov v0.5.4
-rust	Clippy	2026-11-28T15:49:51.8881704Z       Adding const-oid v0.10.3
-rust	Clippy	2026-11-28T15:49:51.8882015Z       Adding cpubits v0.1.1
-rust	Clippy	2026-11-28T15:49:51.8882836Z       Adding cpufeatures v0.3.1
-rust	Clippy	2026-11-28T15:49:51.8900848Z       Adding crypto-bigint v0.7.11
-rust	Clippy	2026-11-28T15:49:51.8903899Z       Adding crypto-common v0.2.2
-rust	Clippy	2026-11-28T15:49:51.8907330Z       Adding crypto-primes v0.7.2
-rust	Clippy	2026-11-28T15:49:51.8908210Z       Adding ctutils v0.4.8
-rust	Clippy	2026-11-28T15:49:51.8920989Z       Adding curve25519-dalek v5.0.0
-rust	Clippy	2026-11-28T15:49:51.8922115Z       Adding curve25519-dalek-derive v0.1.1
-rust	Clippy	2026-11-28T15:49:51.8925960Z       Adding der v0.8.3
-rust	Clippy	2026-11-28T15:49:51.8929009Z       Adding digest v0.11.3
-rust	Clippy	2026-11-28T15:49:51.8943134Z       Adding ecdsa v0.17.0
-rust	Clippy	2026-11-28T15:49:51.8946491Z       Adding ed25519 v3.0.0
-rust	Clippy	2026-11-28T15:49:51.8953440Z       Adding ed25519-dalek v3.0.0
-rust	Clippy	2026-11-28T15:49:51.8976318Z       Adding elliptic-curve v0.14.3
-rust	Clippy	2026-11-28T15:49:51.8978699Z       Adding ff v0.14.0
-rust	Clippy	2026-11-28T15:49:51.8979230Z       Adding fiat-crypto v0.3.0
-rust	Clippy	2026-11-28T15:49:51.8980024Z       Adding group v0.14.0
-rust	Clippy	2026-11-28T15:49:51.8982015Z       Adding hmac v0.13.0
-rust	Clippy	2026-11-28T15:49:51.8983573Z       Adding hybrid-array v0.4.15
-rust	Clippy	2026-11-28T15:49:51.8987855Z       Adding hyper-rustls v0.27.10
-rust	Clippy	2026-11-28T15:49:51.8989402Z       Adding ipnet v2.12.2
-rust	Clippy	2026-11-28T15:49:51.8994612Z     Updating jsonwebtoken v9.3.1 -> v12.0.0
-rust	Clippy	2026-11-28T15:49:51.8995182Z       Adding lru-slab v0.1.3
-rust	Clippy	2026-11-28T15:49:51.9004407Z       Adding p256 v0.14.0
-rust	Clippy	2026-11-28T15:49:51.9012032Z       Adding p384 v0.14.0
-rust	Clippy	2026-11-28T15:49:51.9012830Z       Adding pem-rfc7468 v1.0.0
-rust	Clippy	2026-11-28T15:49:51.9014696Z       Adding pkcs1 v0.8.0
-rust	Clippy	2026-11-28T15:49:51.9018643Z       Adding pkcs8 v0.11.0
-rust	Clippy	2026-11-28T15:49:51.9019949Z       Adding primefield v0.14.0
-rust	Clippy	2026-11-28T15:49:51.9021986Z       Adding primeorder v0.14.0
-rust	Clippy	2026-11-28T15:49:51.9028167Z       Adding quinn v0.11.12
-rust	Clippy	2026-11-28T15:49:51.9035953Z       Adding quinn-proto v0.11.19
-rust	Clippy	2026-11-28T15:49:51.9037952Z       Adding quinn-udp v0.5.16
-rust	Clippy	2026-11-28T15:49:51.9045021Z       Adding rand v0.10.4
-rust	Clippy	2026-11-28T15:49:51.9046601Z       Adding rand_core v0.10.1
-rust	Clippy	2026-11-28T15:49:51.9047401Z       Adding rand_pcg v0.10.3
-rust	Clippy	2026-11-28T15:49:51.9084514Z       Adding reqwest v0.12.28 (available: v0.13.5)
-rust	Clippy	2026-11-28T15:49:51.9089994Z       Adding rfc6979 v0.6.0
-rust	Clippy	2026-11-28T15:49:51.9100086Z       Adding rsa v0.10.0
-rust	Clippy	2026-11-28T15:49:51.9101423Z       Adding rustc-hash v2.1.3
-rust	Clippy	2026-11-28T15:49:51.9101683Z       Adding rustc_version v0.4.1
-rust	Clippy	2026-11-28T15:49:51.9109429Z       Adding rustls v0.23.46
-rust	Clippy	2026-11-28T15:49:51.9111403Z       Adding rustls-pki-types v1.16.0
-rust	Clippy	2026-11-28T15:49:51.9115624Z       Adding rustls-webpki v0.103.17
-rust	Clippy	2026-11-28T15:49:51.9118458Z       Adding sec1 v0.8.1
-rust	Clippy	2026-11-28T15:49:51.9119693Z       Adding semver v1.0.28
-rust	Clippy	2026-11-28T15:49:51.9120609Z       Adding serdect v0.4.3
-rust	Clippy	2026-11-28T15:49:51.9123246Z       Adding sha2 v0.11.2
-rust	Clippy	2026-11-28T15:49:51.9125745Z       Adding signature v3.0.0
-rust	Clippy	2026-11-28T15:49:51.9127244Z       Adding spki v0.8.1
-rust	Clippy	2026-11-28T15:49:51.9131990Z       Adding tokio-rustls v0.26.6
-rust	Clippy	2026-11-28T15:49:51.9132389Z       Adding tracing-serde v0.2.0
-rust	Clippy	2026-11-28T15:49:51.9132601Z       Adding try-lock v0.2.5
-rust	Clippy	2026-11-28T15:49:51.9132873Z       Adding want v0.3.2
-rust	Clippy	2026-11-28T15:49:51.9136299Z       Adding wasm-bindgen-futures v0.4.80
-rust	Clippy	2026-11-28T15:49:51.9203106Z       Adding web-sys v0.3.107
-rust	Clippy	2026-11-28T15:49:51.9204684Z       Adding web-time v1.1.0
-rust	Clippy	2026-11-28T15:49:51.9206791Z       Adding webpki-roots v0.26.11
-rust	Clippy	2026-11-28T15:49:51.9207465Z       Adding webpki-roots v1.0.12
-rust	Clippy	2026-11-28T15:49:51.9208292Z       Adding wnaf v0.14.1
-rust	Clippy	2026-11-28T15:49:51.9211138Z       Adding zeroize_derive v1.5.0
-rust	Clippy	2026-11-28T15:49:52.8247053Z     Checking unadomot-api v0.1.0 (/home/runner/work/unadomot/unadomot/services/api)
-rust	Clippy	2026-11-28T15:49:53.0333012Z error: unused import: `delete`
-rust	Clippy	2026-11-28T15:49:53.0333381Z   --> src/http/listings.rs:14:15
-rust	Clippy	2026-11-28T15:49:53.0333587Z    |
-rust	Clippy	2026-11-28T15:49:53.0338999Z 14 |     routing::{delete, get, post},
-rust	Clippy	2026-11-28T15:49:53.0339250Z    |               ^^^^^^
-rust	Clippy	2026-11-28T15:49:53.0339428Z    |
-rust	Clippy	2026-11-28T15:49:53.0339665Z    = note: `-D unused-imports` implied by `-D warnings`
-rust	Clippy	2026-11-28T15:49:53.0339981Z    = help: to override `-D warnings` add `#[allow(unused_imports)]`
-rust	Clippy	2026-11-28T15:49:53.0340195Z 
-rust	Clippy	2026-11-28T15:49:53.0899590Z error[E0046]: not all trait items implemented, missing: `get_by_code`
-rust	Clippy	2026-11-28T15:49:53.0900249Z   --> src/adapters.rs:22:1
-rust	Clippy	2026-11-28T15:49:53.0900769Z    |
-rust	Clippy	2026-11-28T15:49:53.0901101Z 22 | impl ListingRepository for UnconfiguredRepository {
-rust	Clippy	2026-11-28T15:49:53.0901532Z    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ missing `get_by_code` in implementation
-rust	Clippy	2026-11-28T15:49:53.0901856Z    |
-rust	Clippy	2026-11-28T15:49:53.0902085Z   ::: src/application/listings.rs:34:5
-rust	Clippy	2026-11-28T15:49:53.0902330Z    |
-rust	Clippy	2026-11-28T15:49:53.0902613Z 34 |     async fn get_by_code(&self, code: &str) -> Result<Option<Listing>, ListingError>;
-rust	Clippy	2026-11-28T15:49:53.0903134Z    |     --------------------------------------------------------------------------------- `get_by_code` from trait
-rust	Clippy	2026-11-28T15:49:53.0903442Z 
-rust	Clippy	2026-11-28T15:49:53.3058458Z error[E0618]: expected function, found `application::email::EmailError`
-rust	Clippy	2026-11-28T15:49:53.3059253Z    --> src/http/profile.rs:332:16
-rust	Clippy	2026-11-28T15:49:53.3059659Z     |
-rust	Clippy	2026-11-28T15:49:53.3060016Z  39 | fn error(status: StatusCode, message: &str) -> axum::response::Response {
-rust	Clippy	2026-11-28T15:49:53.3060786Z     | ----------------------------------------------------------------------- this function of the same name is available here, but it's shadowed by the local binding
-rust	Clippy	2026-11-28T15:49:53.3061300Z ...
-rust	Clippy	2026-11-28T15:49:53.3061631Z 330 |     if let Err(error) = state.email.send_email_verification(&email, &verify_link).await {
-rust	Clippy	2026-11-28T15:49:53.3062065Z     |                ----- `error` has type `application::email::EmailError`
-rust	Clippy	2026-11-28T15:49:53.3062551Z 331 |         tracing::error!(error = ?error, "email verification delivery failed");
-rust	Clippy	2026-11-28T15:49:53.3063040Z 332 |         return error(StatusCode::SERVICE_UNAVAILABLE, "Could not send the verification email");
-rust	Clippy	2026-11-28T15:49:53.3063513Z     |                ^^^^^--------------------------------------------------------------------------
-rust	Clippy	2026-11-28T15:49:53.3063829Z     |                |
-rust	Clippy	2026-11-28T15:49:53.3064056Z     |                call expression requires function
-rust	Clippy	2026-11-28T15:49:53.3064299Z     |
-rust	Clippy	2026-11-28T15:49:53.3064473Z    ::: src/http/chat.rs:63:1
-rust	Clippy	2026-11-28T15:49:53.3064670Z     |
-rust	Clippy	2026-11-28T15:49:53.3064949Z  63 | fn error(status: StatusCode, message: &str) -> axum::response::Response {
-rust	Clippy	2026-11-28T15:49:53.3065547Z     | ----------------------------------------------------------------------- this function of the same name is available here, but it's shadowed by the local binding
-rust	Clippy	2026-11-28T15:49:53.3066311Z     |
-rust	Clippy	2026-11-28T15:49:53.3066491Z    ::: src/http/comments.rs:26:1
-rust	Clippy	2026-11-28T15:49:53.3066705Z     |
-rust	Clippy	2026-11-28T15:49:53.3066965Z  26 | fn error(status: StatusCode, message: &str) -> axum::response::Response {
-rust	Clippy	2026-11-28T15:49:53.3067553Z     | ----------------------------------------------------------------------- this function of the same name is available here, but it's shadowed by the local binding
-rust	Clippy	2026-11-28T15:49:53.3068042Z     |
-rust	Clippy	2026-11-28T15:49:53.3068223Z    ::: src/http/calls.rs:45:1
-rust	Clippy	2026-11-28T15:49:53.3068427Z     |
-rust	Clippy	2026-11-28T15:49:53.3068687Z  45 | fn error(status: StatusCode, message: &str) -> axum::response::Response {
-rust	Clippy	2026-11-28T15:49:53.3069271Z     | ----------------------------------------------------------------------- this function of the same name is available here, but it's shadowed by the local binding
-rust	Clippy	2026-11-28T15:49:53.3069910Z 
-rust	Clippy	2026-11-28T15:49:54.5009938Z Some errors have detailed explanations: E0046, E0618.
-rust	Clippy	2026-11-28T15:49:54.5010740Z For more information about an error, try `rustc --explain E0046`.
-rust	Clippy	2026-11-28T15:49:54.5137019Z error: could not compile `unadomot-api` (lib) due to 3 previous errors
-rust	Clippy	2026-11-28T15:49:54.5137336Z warning: build failed, waiting for other jobs to finish...
-rust	Clippy	2026-11-28T15:49:54.5295582Z error: could not compile `unadomot-api` (lib test) due to 3 previous errors
-rust	Clippy	2026-11-28T15:49:54.5835904Z ##[error]Process completed with exit code 101.
+rust	Clippy	﻿2026-11-28T16:01:28.8810888Z ##[group]Run cargo clippy --all-targets -- -D warnings
+rust	Clippy	2026-11-28T16:01:28.8811488Z ^[[36;1mcargo clippy --all-targets -- -D warnings^[[0m
+rust	Clippy	2026-11-28T16:01:28.8844856Z shell: /usr/bin/bash -e {0}
+rust	Clippy	2026-11-28T16:01:28.8845154Z env:
+rust	Clippy	2026-11-28T16:01:28.8845433Z   CARGO_TERM_COLOR: never
+rust	Clippy	2026-11-28T16:01:28.8845723Z   NO_COLOR: 1
+rust	Clippy	2026-11-28T16:01:28.8845940Z   RUST_BACKTRACE: 1
+rust	Clippy	2026-11-28T16:01:28.8846513Z   DATABASE_URL: ***localhost:5432/unadomot_test
+rust	Clippy	2026-11-28T16:01:28.8846927Z   JWT_SECRET: test-secret-that-is-at-least-32-bytes-long
+rust	Clippy	2026-11-28T16:01:28.8847390Z   REFRESH_TOKEN_SECRET: test-refresh-secret-that-is-at-least-32-bytes
+rust	Clippy	2026-11-28T16:01:28.8847755Z   CARGO_HOME: /home/runner/.cargo
+rust	Clippy	2026-11-28T16:01:28.8848047Z   CARGO_INCREMENTAL: 0
+rust	Clippy	2026-11-28T16:01:28.8848421Z   CACHE_ON_FAILURE: false
+rust	Clippy	2026-11-28T16:01:28.8848642Z ##[endgroup]
+rust	Clippy	2026-11-28T16:01:28.9440274Z     Updating crates.io index
+rust	Clippy	2026-11-28T16:01:29.7628330Z      Locking 67 packages to highest compatible versions
+rust	Clippy	2026-11-28T16:01:29.7628882Z       Adding base16ct v1.0.0
+rust	Clippy	2026-11-28T16:01:29.7631738Z       Adding base64 v0.23.1
+rust	Clippy	2026-11-28T16:01:29.7634524Z       Adding block-buffer v0.12.1
+rust	Clippy	2026-11-28T16:01:29.7641900Z       Adding chacha20 v0.10.2
+rust	Clippy	2026-11-28T16:01:29.7643239Z       Adding cmov v0.5.4
+rust	Clippy	2026-11-28T16:01:29.7644967Z       Adding const-oid v0.10.3
+rust	Clippy	2026-11-28T16:01:29.7645292Z       Adding cpubits v0.1.1
+rust	Clippy	2026-11-28T16:01:29.7646478Z       Adding cpufeatures v0.3.1
+rust	Clippy	2026-11-28T16:01:29.7672663Z       Adding crypto-bigint v0.7.11
+rust	Clippy	2026-11-28T16:01:29.7678018Z       Adding crypto-common v0.2.2
+rust	Clippy	2026-11-28T16:01:29.7683545Z       Adding crypto-primes v0.7.2
+rust	Clippy	2026-11-28T16:01:29.7685163Z       Adding ctutils v0.4.8
+rust	Clippy	2026-11-28T16:01:29.7704111Z       Adding curve25519-dalek v5.0.0
+rust	Clippy	2026-11-28T16:01:29.7706450Z       Adding curve25519-dalek-derive v0.1.1
+rust	Clippy	2026-11-28T16:01:29.7711914Z       Adding der v0.8.3
+rust	Clippy	2026-11-28T16:01:29.7716188Z       Adding digest v0.11.3
+rust	Clippy	2026-11-28T16:01:29.7735939Z       Adding ecdsa v0.17.0
+rust	Clippy	2026-11-28T16:01:29.7741076Z       Adding ed25519 v3.0.0
+rust	Clippy	2026-11-28T16:01:29.7750039Z       Adding ed25519-dalek v3.0.0
+rust	Clippy	2026-11-28T16:01:29.7783318Z       Adding elliptic-curve v0.14.3
+rust	Clippy	2026-11-28T16:01:29.7788343Z       Adding ff v0.14.0
+rust	Clippy	2026-11-28T16:01:29.7788703Z       Adding fiat-crypto v0.3.0
+rust	Clippy	2026-11-28T16:01:29.7789184Z       Adding group v0.14.0
+rust	Clippy	2026-11-28T16:01:29.7792853Z       Adding hmac v0.13.0
+rust	Clippy	2026-11-28T16:01:29.7793618Z       Adding hybrid-array v0.4.15
+rust	Clippy	2026-11-28T16:01:29.7797587Z       Adding hyper-rustls v0.27.10
+rust	Clippy	2026-11-28T16:01:29.7799337Z       Adding ipnet v2.12.2
+rust	Clippy	2026-11-28T16:01:29.7805885Z     Updating jsonwebtoken v9.3.1 -> v12.0.0
+rust	Clippy	2026-11-28T16:01:29.7806504Z       Adding lru-slab v0.1.3
+rust	Clippy	2026-11-28T16:01:29.7820253Z       Adding p256 v0.14.0
+rust	Clippy	2026-11-28T16:01:29.7831510Z       Adding p384 v0.14.0
+rust	Clippy	2026-11-28T16:01:29.7832931Z       Adding pem-rfc7468 v1.0.0
+rust	Clippy	2026-11-28T16:01:29.7835016Z       Adding pkcs1 v0.8.0
+rust	Clippy	2026-11-28T16:01:29.7840171Z       Adding pkcs8 v0.11.0
+rust	Clippy	2026-11-28T16:01:29.7841915Z       Adding primefield v0.14.0
+rust	Clippy	2026-11-28T16:01:29.7844395Z       Adding primeorder v0.14.0
+rust	Clippy	2026-11-28T16:01:29.7852329Z       Adding quinn v0.11.12
+rust	Clippy	2026-11-28T16:01:29.7862979Z       Adding quinn-proto v0.11.19
+rust	Clippy	2026-11-28T16:01:29.7865879Z       Adding quinn-udp v0.5.16
+rust	Clippy	2026-11-28T16:01:29.7875501Z       Adding rand v0.10.4
+rust	Clippy	2026-11-28T16:01:29.7877751Z       Adding rand_core v0.10.1
+rust	Clippy	2026-11-28T16:01:29.7878912Z       Adding rand_pcg v0.10.3
+rust	Clippy	2026-11-28T16:01:29.7930881Z       Adding reqwest v0.12.28 (available: v0.13.5)
+rust	Clippy	2026-11-28T16:01:29.7941683Z       Adding rfc6979 v0.6.0
+rust	Clippy	2026-11-28T16:01:29.7957654Z       Adding rsa v0.10.0
+rust	Clippy	2026-11-28T16:01:29.7959527Z       Adding rustc-hash v2.1.3
+rust	Clippy	2026-11-28T16:01:29.7960196Z       Adding rustc_version v0.4.1
+rust	Clippy	2026-11-28T16:01:29.7971004Z       Adding rustls v0.23.46
+rust	Clippy	2026-11-28T16:01:29.7973502Z       Adding rustls-pki-types v1.16.0
+rust	Clippy	2026-11-28T16:01:29.7979422Z       Adding rustls-webpki v0.103.17
+rust	Clippy	2026-11-28T16:01:29.7983231Z       Adding sec1 v0.8.1
+rust	Clippy	2026-11-28T16:01:29.7984716Z       Adding semver v1.0.28
+rust	Clippy	2026-11-28T16:01:29.7985628Z       Adding serdect v0.4.3
+rust	Clippy	2026-11-28T16:01:29.7989186Z       Adding sha2 v0.11.2
+rust	Clippy	2026-11-28T16:01:29.7992082Z       Adding signature v3.0.0
+rust	Clippy	2026-11-28T16:01:29.7994172Z       Adding spki v0.8.1
+rust	Clippy	2026-11-28T16:01:29.8000389Z       Adding tokio-rustls v0.26.6
+rust	Clippy	2026-11-28T16:01:29.8001040Z       Adding tracing-serde v0.2.0
+rust	Clippy	2026-11-28T16:01:29.8001477Z       Adding try-lock v0.2.5
+rust	Clippy	2026-11-28T16:01:29.8001961Z       Adding want v0.3.2
+rust	Clippy	2026-11-28T16:01:29.8006750Z       Adding wasm-bindgen-futures v0.4.80
+rust	Clippy	2026-11-28T16:01:29.8097550Z       Adding web-sys v0.3.107
+rust	Clippy	2026-11-28T16:01:29.8100275Z       Adding web-time v1.1.0
+rust	Clippy	2026-11-28T16:01:29.8103328Z       Adding webpki-roots v0.26.11
+rust	Clippy	2026-11-28T16:01:29.8104101Z       Adding webpki-roots v1.0.12
+rust	Clippy	2026-11-28T16:01:29.8104513Z       Adding wnaf v0.14.1
+rust	Clippy	2026-11-28T16:01:29.8105407Z       Adding zeroize_derive v1.5.0
+rust	Clippy	2026-11-28T16:01:30.5345307Z     Checking unadomot-api v0.1.0 (/home/runner/work/unadomot/unadomot/services/api)
+rust	Clippy	2026-11-28T16:01:32.7569473Z error: fields `iss` and `exp` are never read
+rust	Clippy	2026-11-28T16:01:32.7570075Z    --> src/application/google.rs:141:5
+rust	Clippy	2026-11-28T16:01:32.7570726Z     |
+rust	Clippy	2026-11-28T16:01:32.7571064Z 135 | struct GoogleClaims {
+rust	Clippy	2026-11-28T16:01:32.7571445Z     |        ------------ fields in this struct
+rust	Clippy	2026-11-28T16:01:32.7571873Z ...
+rust	Clippy	2026-11-28T16:01:32.7572150Z 141 |     iss: String,
+rust	Clippy	2026-11-28T16:01:32.7572458Z     |     ^^^
+rust	Clippy	2026-11-28T16:01:32.7573000Z 142 |     exp: i64,
+rust	Clippy	2026-11-28T16:01:32.7573304Z     |     ^^^
+rust	Clippy	2026-11-28T16:01:32.7573631Z     |
+rust	Clippy	2026-11-28T16:01:32.7573973Z     = note: `-D dead-code` implied by `-D warnings`
+rust	Clippy	2026-11-28T16:01:32.7574551Z     = help: to override `-D warnings` add `#[expect(dead_code)]` or `#[allow(dead_code)]`
+rust	Clippy	2026-11-28T16:01:32.7575068Z 
+rust	Clippy	2026-11-28T16:01:32.8597539Z error: could not compile `unadomot-api` (lib) due to 1 previous error
+rust	Clippy	2026-11-28T16:01:32.8598270Z warning: build failed, waiting for other jobs to finish...
+rust	Clippy	2026-11-28T16:01:32.9088378Z error: could not compile `unadomot-api` (lib test) due to 1 previous error
+rust	Clippy	2026-11-28T16:01:32.9615049Z ##[error]Process completed with exit code 101.
