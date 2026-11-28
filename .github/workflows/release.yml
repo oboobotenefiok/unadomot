@@ -19,7 +19,7 @@ jobs:
           channel: stable
           cache: true
       - name: Start log
-        run: : > /tmp/release.log
+        run: truncate -s 0 /tmp/release.log
       - name: Ensure Android platform files
         run: |
           exec > >(tee -a /tmp/release.log) 2>&1
