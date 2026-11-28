@@ -8,6 +8,7 @@ use axum::{
 use chrono::{Duration, Utc};
 use serde::Deserialize;
 use serde_json::{json, Value};
+use uuid::Uuid;
 use crate::application::auth::{hash_refresh_token, issue_session, new_refresh_token};
 use crate::application::google::GoogleAuthError;
 use crate::application::profiles::{Profile, ProfileListing};
@@ -579,7 +580,6 @@ async fn google_auth(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use uuid::Uuid;
 
     #[test]
     fn rejects_non_cloudinary_photo_urls() {
