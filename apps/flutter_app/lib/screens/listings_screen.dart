@@ -228,6 +228,14 @@ class _ListingsScreenState extends State<ListingsScreen> {
             api: widget.api,
             conversationId: conversation['id'] as String,
             initialMessage: 'Is this still available?',
+            listingId: listing.id,
+            listingTitle: listing.title,
+            listingPhotoUrl:
+                listing.media.isEmpty ? null : listing.media.first.url,
+            counterpartName: listing.landlordName,
+            counterpartPhotoUrl: listing.landlordPhotoUrl,
+            cache: widget.cache,
+            appState: widget.appState,
           ),
         ),
       );
@@ -245,7 +253,13 @@ class _ListingsScreenState extends State<ListingsScreen> {
     if (!mounted) return;
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => MessagesScreen(api: widget.api)),
+      MaterialPageRoute(
+        builder: (_) => MessagesScreen(
+          api: widget.api,
+          cache: widget.cache,
+          appState: widget.appState,
+        ),
+      ),
     );
   }
 
