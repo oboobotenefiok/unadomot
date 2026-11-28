@@ -364,11 +364,11 @@ async fn add_media_handler(
     Path(id): Path<Uuid>,
     Json(request): Json<AddMediaRequest>,
 ) -> Result<Json<MediaResponse>, ApiError> {
-    if !valid_cloudinary_public_id(&request.cloudinary_public_id) {
+    if !valid_cloudinary_public_id(&request.cloudinary_public_id, user.id) {
         return Err(ApiError::new(
             StatusCode::BAD_REQUEST,
             "validation_error",
-            "Media must be uploaded to the UnaDomot Cloudinary folder",
+            "Media must be uploaded to your own UnaDomot listing folder",
         ));
     }
     if !valid_media_url(
@@ -380,6 +380,20 @@ async fn add_media_handler(
             StatusCode::BAD_REQUEST,
             "validation_error",
             "Media URL must point at this UnaDomot Cloudinary cloud and match the uploaded public id",
+        ));
+    }
+    if request.alt_text.as_deref().map(str::len).unwrap_or(0) > 200 {
+        return Err(ApiError::new(
+            StatusCode::BAD_REQUEST,
+            "validation_error",
+            "Alt text must be 200 characters or less",
+        ));
+    }
+    if !(0..=100).contains(&request.position) {
+        return Err(ApiError::new(
+            StatusCode::BAD_REQUEST,
+            "validation_error",
+            "Position must be between 0 and 100",
         ));
     }
 
@@ -451,8 +465,9 @@ fn valid_media_url(url: &str, cloud_name: Option<&str>, public_id: &str) -> bool
         && !url.contains(char::is_whitespace)
 }
 
-fn valid_cloudinary_public_id(public_id: &str) -> bool {
-    public_id.starts_with("unadomot/")
+fn valid_cloudinary_public_id(public_id: &str, user_id: Uuid) -> bool {
+    let prefix = format!("unadomot/listings/{user_id}/");
+    public_id.starts_with(&prefix)
         && !public_id.contains("..")
         && public_id.len() <= 255
         && public_id
@@ -514,9 +529,10 @@ fn media_error(error: MediaError) -> ApiError {
 mod tests {
     use super::*;
 
-    const PUBLIC_ID: &str = "unadomot/listings/photo-1";
+    const USER: Uuid = Uuid::nil();
+    const PUBLIC_ID: &str = "unadomot/listings/00000000-0000-0000-0000-000000000000/photo-1";
     const VALID_URL: &str =
-        "https://res.cloudinary.com/demo/image/upload/v1/unadomot/listings/photo-1.jpg";
+        "https://res.cloudinary.com/demo/image/upload/v1/unadomot/listings/00000000-0000-0000-0000-000000000000/photo-1.jpg";
 
     #[test]
     fn accepts_media_from_our_cloud_with_matching_public_id() {
@@ -525,7 +541,7 @@ mod tests {
 
     #[test]
     fn rejects_foreign_clouds() {
-        let url = "https://res.cloudinary.com/other/image/upload/v1/unadomot/listings/photo-1.jpg";
+        let url = "https://res.cloudinary.com/other/image/upload/v1/unadomot/listings/00000000-0000-0000-0000-000000000000/photo-1.jpg";
         assert!(!valid_media_url(url, Some("demo"), PUBLIC_ID));
     }
 
@@ -565,10 +581,17 @@ mod tests {
     }
 
     #[test]
-    fn requires_unadomot_folder_for_public_id() {
-        assert!(valid_cloudinary_public_id("unadomot/listings/photo-1"));
-        assert!(!valid_cloudinary_public_id("other/listings/photo-1"));
-        assert!(!valid_cloudinary_public_id("unadomot/listings/../secret"));
+    fn requires_the_owners_listing_folder() {
+        assert!(valid_cloudinary_public_id(PUBLIC_ID, USER));
+        assert!(!valid_cloudinary_public_id(
+            "unadomot/listings/11111111-1111-1111-1111-111111111111/photo-1",
+            USER
+        ));
+        assert!(!valid_cloudinary_public_id("unadomot/avatars/photo-1", USER));
+        assert!(!valid_cloudinary_public_id(
+            "unadomot/listings/00000000-0000-0000-0000-000000000000/../secret",
+            USER
+        ));
     }
 
     #[test]

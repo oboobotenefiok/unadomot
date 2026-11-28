@@ -193,6 +193,12 @@ pub async fn add_listing_media(
             "Cloudinary public ID and URL are required".into(),
         ));
     }
+    let prefix = format!("unadomot/listings/{owner_id}/");
+    if !media.cloudinary_public_id.starts_with(&prefix) {
+        return Err(ListingError::InvalidInput(
+            "Media must be uploaded to your own listing folder".into(),
+        ));
+    }
     repository.add_media(listing_id, owner_id, media).await
 }
 
