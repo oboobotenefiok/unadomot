@@ -9,6 +9,7 @@ use axum::{
 };
 use chrono::{Duration, Utc};
 use serde::{Deserialize, Serialize};
+use std::time::Duration as StdDuration;
 
 use super::{ApiError, AppState};
 
@@ -69,10 +70,38 @@ pub struct SessionResponse {
     pub expires_at: i64,
 }
 
+async fn allow_account(
+    state: &AppState,
+    scope: &str,
+    email: &str,
+    limit: u32,
+    window: StdDuration,
+) -> Result<(), ApiError> {
+    let key = format!("{scope}:{}", email.trim().to_lowercase());
+    if state.limiter.allow_with(&key, limit, window).await {
+        Ok(())
+    } else {
+        Err(ApiError::new(
+            StatusCode::TOO_MANY_REQUESTS,
+            "rate_limited",
+            "Too many attempts. Please try again shortly.",
+        ))
+    }
+}
+
 async fn register_handler(
     State(state): State<AppState>,
     Json(request): Json<RegisterRequest>,
 ) -> Result<Json<SessionResponse>, ApiError> {
+    allow_account(
+        &state,
+        "register-email",
+        &request.email,
+        5,
+        StdDuration::from_secs(3600),
+    )
+    .await?;
+
     let user = register(
         state.users.as_ref(),
         &request.email,
@@ -105,6 +134,15 @@ async fn login_handler(
     State(state): State<AppState>,
     Json(request): Json<LoginRequest>,
 ) -> Result<Json<SessionResponse>, ApiError> {
+    allow_account(
+        &state,
+        "login-email",
+        &request.email,
+        10,
+        StdDuration::from_secs(60),
+    )
+    .await?;
+
     let session = login(
         state.users.as_ref(),
         &request.email,
@@ -198,6 +236,15 @@ async fn password_reset_request_handler(
     State(state): State<AppState>,
     Json(request): Json<PasswordResetRequest>,
 ) -> Result<StatusCode, ApiError> {
+    allow_account(
+        &state,
+        "password-reset-email",
+        &request.email,
+        3,
+        StdDuration::from_secs(3600),
+    )
+    .await?;
+
     let token = new_refresh_token();
     let user_id = state
         .users
