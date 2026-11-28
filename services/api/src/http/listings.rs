@@ -1,7 +1,7 @@
 use crate::application::listings::{
-    add_listing_media, admin_remove_listing, admin_restore_listing, browse_listings,
-    create_listing, delete_listing, get_public_listing, list_my_listings, update_listing,
-    ListingError,
+    add_favorite, add_listing_media, admin_remove_listing, admin_restore_listing, browse_listings,
+    create_listing, delete_listing, get_public_listing, list_favorites, list_my_listings,
+    remove_favorite, update_listing, ListingError,
 };
 use crate::application::media::{MediaError, UploadPurpose, UploadRequest};
 use crate::domain::listing::{
@@ -11,7 +11,7 @@ use crate::extract::{AdminUser, AuthUser};
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
-    routing::{get, post},
+    routing::{delete, get, post},
     Json, Router,
 };
 use rust_decimal::Decimal;
@@ -29,6 +29,11 @@ pub fn router() -> Router<AppState> {
             get(list_listings).post(create_listing_handler),
         )
         .route("/api/me/listings", get(my_listings_handler))
+        .route("/api/favorites", get(favorites_handler))
+        .route(
+            "/api/favorites/{id}",
+            post(add_favorite_handler).delete(remove_favorite_handler),
+        )
         .route(
             "/api/listings/{id}",
             get(get_listing_handler)
@@ -225,6 +230,38 @@ async fn my_listings_handler(
     list_my_listings(state.listings.as_ref(), user.id)
         .await
         .map(|items| Json(items.into_iter().map(ListingResponse::from).collect()))
+        .map_err(listing_error)
+}
+
+async fn favorites_handler(
+    State(state): State<AppState>,
+    user: AuthUser,
+) -> Result<Json<Vec<ListingResponse>>, ApiError> {
+    list_favorites(state.listings.as_ref(), user.id)
+        .await
+        .map(|items| Json(items.into_iter().map(ListingResponse::from).collect()))
+        .map_err(listing_error)
+}
+
+async fn add_favorite_handler(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Path(id): Path<Uuid>,
+) -> Result<StatusCode, ApiError> {
+    add_favorite(state.listings.as_ref(), user.id, id)
+        .await
+        .map(|_| StatusCode::NO_CONTENT)
+        .map_err(listing_error)
+}
+
+async fn remove_favorite_handler(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Path(id): Path<Uuid>,
+) -> Result<StatusCode, ApiError> {
+    remove_favorite(state.listings.as_ref(), user.id, id)
+        .await
+        .map(|_| StatusCode::NO_CONTENT)
         .map_err(listing_error)
 }
 

@@ -412,6 +412,29 @@ class ApiClient {
         .toList();
   }
 
+  Future<List<Map<String, dynamic>>> favorites() async {
+    final result = await _request('GET', '/api/favorites', authenticated: true);
+    return (result as List)
+        .map((item) => Map<String, dynamic>.from(item as Map))
+        .toList();
+  }
+
+  Future<void> addFavorite(String listingId) async {
+    await _request(
+      'POST',
+      '/api/favorites/${Uri.encodeComponent(listingId)}',
+      authenticated: true,
+    );
+  }
+
+  Future<void> removeFavorite(String listingId) async {
+    await _request(
+      'DELETE',
+      '/api/favorites/${Uri.encodeComponent(listingId)}',
+      authenticated: true,
+    );
+  }
+
   Future<Map<String, dynamic>> publicProfile(String username) async {
     final result = await _request(
       'GET',

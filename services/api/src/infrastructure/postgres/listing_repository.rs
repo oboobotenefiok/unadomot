@@ -143,6 +143,52 @@ impl ListingRepository for PostgresListingRepository {
             .collect())
     }
 
+    async fn list_favorites(&self, user_id: Uuid) -> Result<Vec<Listing>, ListingError> {
+        let query = format!(
+            "SELECT {LISTING_COLUMNS} FROM listings l JOIN favorites f ON f.listing_id = l.id WHERE f.user_id = $1 AND l.deleted_at IS NULL ORDER BY f.created_at DESC"
+        );
+        let rows = sqlx::query_as::<_, ListingRow>(&query)
+            .bind(user_id)
+            .fetch_all(&self.pool)
+            .await
+            .map_err(|e| ListingError::Repository(e.to_string()))?;
+
+        let ids: Vec<Uuid> = rows.iter().map(|row| row.id).collect();
+        let media = self.load_media_for(&ids).await?;
+
+        Ok(rows
+            .into_iter()
+            .map(|row| {
+                let id = row.id;
+                let mut listing: Listing = row.into();
+                listing.media = media.get(&id).cloned().unwrap_or_default();
+                listing
+            })
+            .collect())
+    }
+
+    async fn add_favorite(&self, user_id: Uuid, listing_id: Uuid) -> Result<(), ListingError> {
+        sqlx::query(
+            "INSERT INTO favorites (user_id, listing_id) SELECT $1, $2 WHERE EXISTS (SELECT 1 FROM listings WHERE id = $2 AND deleted_at IS NULL) ON CONFLICT DO NOTHING",
+        )
+        .bind(user_id)
+        .bind(listing_id)
+        .execute(&self.pool)
+        .await
+        .map_err(|e| ListingError::Repository(e.to_string()))?;
+        Ok(())
+    }
+
+    async fn remove_favorite(&self, user_id: Uuid, listing_id: Uuid) -> Result<(), ListingError> {
+        sqlx::query("DELETE FROM favorites WHERE user_id = $1 AND listing_id = $2")
+            .bind(user_id)
+            .bind(listing_id)
+            .execute(&self.pool)
+            .await
+            .map_err(|e| ListingError::Repository(e.to_string()))?;
+        Ok(())
+    }
+
     async fn create(&self, input: &NewListing) -> Result<Listing, ListingError> {
         let id = sqlx::query_scalar::<_, Uuid>(
             "INSERT INTO listings (landlord_id, title, description, price, address, state, lga, is_agent_listing, bedrooms, bathrooms, property_type, furnishing, amenities) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id",
