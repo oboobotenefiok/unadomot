@@ -88,6 +88,18 @@ class _ListingsScreenState extends State<ListingsScreen> {
   Future<void> _loadFavorites() async {
     final ids = await widget.cache.readFavoriteIds();
     if (mounted) setState(() => _favoriteIds = ids);
+
+    if (!widget.appState.signedIn) return;
+    try {
+      final server = await widget.api.favorites();
+      final serverIds = server.map((item) => item['id'] as String).toSet();
+      for (final id in serverIds) {
+        await widget.cache.setFavorite(id, true);
+      }
+      if (mounted) setState(() => _favoriteIds = serverIds);
+    } catch (_) {
+      // Keep the cached favorites when the server is unreachable.
+    }
   }
 
   Future<void> _loadAffinity() async {
@@ -192,6 +204,17 @@ class _ListingsScreenState extends State<ListingsScreen> {
   Future<void> _toggleFavorite(Listing listing) async {
     if (!await requireAuth(context, widget.appState)) return;
     final next = !_favoriteIds.contains(listing.id);
+
+    try {
+      if (next) {
+        await widget.api.addFavorite(listing.id);
+      } else {
+        await widget.api.removeFavorite(listing.id);
+      }
+    } catch (_) {
+      // The local cache still updates so the action works offline.
+    }
+
     await widget.cache.setFavorite(listing.id, next);
     if (!mounted) return;
     setState(() {
@@ -890,9 +913,9 @@ class _SectionHeading extends StatelessWidget {
   Widget build(BuildContext context) => Text(
         title,
         style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
           color: UnaColors.text900,
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
         ),
       );
 }
