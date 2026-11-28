@@ -28,6 +28,7 @@ pub mod auth;
 pub mod calls;
 pub mod chat;
 pub mod comments;
+pub mod events;
 pub mod listings;
 pub mod messaging;
 pub mod profile;
@@ -212,6 +213,7 @@ pub fn app(state: AppState) -> Router {
         .merge(calls::router(state.clone()))
         .merge(profile::router(state.clone()))
         .merge(comments::router(state.clone()))
+        .merge(events::router(state.clone()))
 }
 
 async fn ready_handler(State(state): State<AppState>) -> Result<StatusCode, ApiError> {
