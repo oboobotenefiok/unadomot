@@ -520,9 +520,16 @@ class ApiClient {
       );
     }
 
-    final resourceType = signature['resource_type'] is String
-        ? signature['resource_type'] as String
-        : 'image';
+    final lowerName = filename.toLowerCase();
+    final isAudio = lowerName.endsWith('.m4a') ||
+        lowerName.endsWith('.mp3') ||
+        lowerName.endsWith('.aac') ||
+        lowerName.endsWith('.wav');
+    final resourceType = isAudio
+        ? 'video'
+        : signature['resource_type'] is String
+            ? signature['resource_type'] as String
+            : 'image';
     final request = http.MultipartRequest(
       'POST',
       Uri.parse('https://api.cloudinary.com/v1_1/$cloud/$resourceType/upload'),

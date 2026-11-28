@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 SliverGridDelegate responsiveGridDelegate(
   BuildContext context, {
-  double childAspectRatio = 0.58,
+  double childAspectRatio = 0.464,
   double crossAxisSpacing = 12,
   double mainAxisSpacing = 12,
 }) {

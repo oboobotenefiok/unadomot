@@ -52,7 +52,7 @@ class ListingCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              flex: 2,
+              flex: 5,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -124,7 +124,7 @@ class ListingCard extends StatelessWidget {
               ),
             ),
             Expanded(
-              flex: 1,
+              flex: 2,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(10, 6, 10, 4),
                 child: Column(
