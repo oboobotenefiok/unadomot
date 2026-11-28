@@ -55,6 +55,8 @@ pub struct CreateListingRequest {
     pub bathrooms: Option<i32>,
     pub property_type: Option<String>,
     pub furnishing: Option<String>,
+    #[serde(default)]
+    pub amenities: Vec<String>,
 }
 
 #[derive(Deserialize, Default)]
@@ -71,6 +73,7 @@ pub struct UpdateListingRequest {
     pub bathrooms: Option<Option<i32>>,
     pub property_type: Option<Option<String>>,
     pub furnishing: Option<Option<String>>,
+    pub amenities: Option<Vec<String>>,
 }
 
 #[derive(Deserialize)]
@@ -112,6 +115,7 @@ pub struct ListingResponse {
     pub bathrooms: Option<i32>,
     pub property_type: Option<String>,
     pub furnishing: Option<String>,
+    pub amenities: Vec<String>,
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub media: Vec<MediaResponse>,
 }
@@ -152,6 +156,7 @@ impl From<Listing> for ListingResponse {
             bathrooms: listing.bathrooms,
             property_type: listing.property_type,
             furnishing: listing.furnishing,
+            amenities: listing.amenities,
             created_at: listing.created_at,
             media: listing.media.into_iter().map(MediaResponse::from).collect(),
         }
@@ -241,6 +246,7 @@ async fn create_listing_handler(
         bathrooms: request.bathrooms,
         property_type: request.property_type,
         furnishing: request.furnishing,
+        amenities: clean_amenities(request.amenities),
     };
 
     create_listing(state.listings.as_ref(), user.id, &input)
@@ -280,6 +286,7 @@ async fn update_listing_handler(
         bathrooms: request.bathrooms,
         property_type: request.property_type,
         furnishing: request.furnishing,
+        amenities: request.amenities.map(clean_amenities),
     };
 
     update_listing(state.listings.as_ref(), id, user.id, &update)
@@ -414,6 +421,25 @@ async fn signature_handler(
         .map_err(media_error)
 }
 
+/// Trims each entry and drops blanks and repeats, so "Borehole" and " borehole"
+/// do not both survive into the stored array.
+fn clean_amenities(amenities: Vec<String>) -> Vec<String> {
+    let mut seen: Vec<String> = Vec::new();
+    for amenity in amenities {
+        let trimmed = amenity.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+        let already = seen
+            .iter()
+            .any(|existing| existing.eq_ignore_ascii_case(trimmed));
+        if !already {
+            seen.push(trimmed.to_string());
+        }
+    }
+    seen
+}
+
 fn valid_media_url(url: &str, cloud_name: Option<&str>, public_id: &str) -> bool {
     let Some(cloud) = cloud_name else {
         return false;
@@ -543,5 +569,16 @@ mod tests {
         assert!(valid_cloudinary_public_id("unadomot/listings/photo-1"));
         assert!(!valid_cloudinary_public_id("other/listings/photo-1"));
         assert!(!valid_cloudinary_public_id("unadomot/listings/../secret"));
+    }
+
+    #[test]
+    fn trims_and_dedupes_amenities() {
+        let cleaned = clean_amenities(vec![
+            " Borehole ".into(),
+            "borehole".into(),
+            "".into(),
+            "Prepaid meter".into(),
+        ]);
+        assert_eq!(cleaned, vec!["Borehole", "Prepaid meter"]);
     }
 }
