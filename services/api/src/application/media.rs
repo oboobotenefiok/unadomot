@@ -72,6 +72,12 @@ pub trait MediaSigner: Send + Sync {
     fn cloud_name(&self) -> Option<&str> {
         None
     }
+
+    /// Builds a short-lived signed delivery URL for an `authenticated` asset.
+    /// Used only for admin review of identity documents.
+    fn signed_delivery_url(&self, _public_id: &str) -> Result<String, MediaError> {
+        Err(MediaError::NotConfigured)
+    }
 }
 
 #[cfg(test)]

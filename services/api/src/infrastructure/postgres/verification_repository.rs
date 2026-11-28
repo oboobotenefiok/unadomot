@@ -19,14 +19,14 @@ impl VerificationRepository for PostgresVerificationRepository {
     async fn submit(
         &self,
         user_id: Uuid,
-        document_url: &str,
+        document_public_id: &str,
         notes: Option<&str>,
     ) -> Result<VerificationRequest, VerificationError> {
         let row = sqlx::query_as::<_, VerificationRow>(
-            "INSERT INTO verification_requests (user_id, document_url, notes) VALUES ($1, $2, $3) RETURNING id, user_id, document_url, notes, status, review_notes, reviewed_at, created_at",
+            "INSERT INTO verification_requests (user_id, document_public_id, notes) VALUES ($1, $2, $3) RETURNING id, user_id, document_public_id, notes, status, review_notes, reviewed_at, created_at",
         )
         .bind(user_id)
-        .bind(document_url)
+        .bind(document_public_id)
         .bind(notes)
         .fetch_one(&self.pool)
         .await
@@ -40,7 +40,7 @@ impl VerificationRepository for PostgresVerificationRepository {
         user_id: Uuid,
     ) -> Result<Option<VerificationRequest>, VerificationError> {
         let row = sqlx::query_as::<_, VerificationRow>(
-            "SELECT id, user_id, document_url, notes, status, review_notes, reviewed_at, created_at FROM verification_requests WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1",
+            "SELECT id, user_id, document_public_id, notes, status, review_notes, reviewed_at, created_at FROM verification_requests WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1",
         )
         .bind(user_id)
         .fetch_optional(&self.pool)
@@ -55,7 +55,7 @@ impl VerificationRepository for PostgresVerificationRepository {
         status: &str,
     ) -> Result<Vec<VerificationRequest>, VerificationError> {
         let rows = sqlx::query_as::<_, VerificationRow>(
-            "SELECT id, user_id, document_url, notes, status, review_notes, reviewed_at, created_at FROM verification_requests WHERE status = $1 ORDER BY created_at ASC",
+            "SELECT id, user_id, document_public_id, notes, status, review_notes, reviewed_at, created_at FROM verification_requests WHERE status = $1 ORDER BY created_at ASC",
         )
         .bind(status)
         .fetch_all(&self.pool)
@@ -78,7 +78,7 @@ impl VerificationRepository for PostgresVerificationRepository {
             .map_err(|e| VerificationError::Repository(e.to_string()))?;
 
         let row = sqlx::query_as::<_, VerificationRow>(
-            "UPDATE verification_requests SET status = $2, review_notes = $3, reviewed_at = now() WHERE id = $1 RETURNING id, user_id, document_url, notes, status, review_notes, reviewed_at, created_at",
+            "UPDATE verification_requests SET status = $2, review_notes = $3, reviewed_at = now() WHERE id = $1 RETURNING id, user_id, document_public_id, notes, status, review_notes, reviewed_at, created_at",
         )
         .bind(id)
         .bind(status)
@@ -131,7 +131,7 @@ impl VerificationRepository for PostgresVerificationRepository {
 struct VerificationRow {
     id: Uuid,
     user_id: Uuid,
-    document_url: String,
+    document_public_id: Option<String>,
     notes: Option<String>,
     status: String,
     review_notes: Option<String>,
@@ -144,7 +144,7 @@ impl From<VerificationRow> for VerificationRequest {
         Self {
             id: row.id,
             user_id: row.user_id,
-            document_url: row.document_url,
+            document_public_id: row.document_public_id,
             notes: row.notes,
             status: row.status,
             review_notes: row.review_notes,

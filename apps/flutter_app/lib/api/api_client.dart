@@ -443,14 +443,16 @@ class ApiClient {
     return Map<String, dynamic>.from(result as Map);
   }
 
+  /// Submits a verification document by Cloudinary public id. The document
+  /// must have been uploaded with `mediaSignature(purpose: 'verification')`.
   Future<Map<String, dynamic>> submitVerification({
-    required String documentUrl,
+    required String documentPublicId,
     String? notes,
   }) async {
     final result = await _request(
       'POST',
       '/api/verification',
-      body: {'document_url': documentUrl, 'notes': notes},
+      body: {'document_public_id': documentPublicId, 'notes': notes},
       authenticated: true,
     );
     return Map<String, dynamic>.from(result as Map);

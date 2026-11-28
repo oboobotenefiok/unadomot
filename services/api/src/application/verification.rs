@@ -15,7 +15,7 @@ pub trait VerificationRepository: Send + Sync {
     async fn submit(
         &self,
         user_id: Uuid,
-        document_url: &str,
+        document_public_id: &str,
         notes: Option<&str>,
     ) -> Result<VerificationRequest, VerificationError>;
     async fn find_for_user(
@@ -41,16 +41,28 @@ pub trait VerificationRepository: Send + Sync {
     ) -> Result<(), VerificationError>;
 }
 
+/// A verification document must live in the caller's own verification folder
+/// and look like a Cloudinary public id, never an arbitrary URL.
+fn valid_document_public_id(user_id: Uuid, value: &str) -> bool {
+    let prefix = format!("unadomot/verification/{user_id}/");
+    value.starts_with(&prefix)
+        && !value.contains("..")
+        && value.len() <= 255
+        && value
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '/' | '_' | '-' | '.'))
+}
+
 pub async fn submit_request(
     repository: &dyn VerificationRepository,
     user_id: Uuid,
-    document_url: &str,
+    document_public_id: &str,
     notes: Option<&str>,
 ) -> Result<VerificationRequest, VerificationError> {
-    let document_url = document_url.trim();
-    if document_url.is_empty() || document_url.len() > 2048 {
+    let public_id = document_public_id.trim();
+    if !valid_document_public_id(user_id, public_id) {
         return Err(VerificationError::InvalidInput(
-            "A document URL is required".into(),
+            "Upload your document to the verification folder before submitting".into(),
         ));
     }
 
@@ -62,7 +74,7 @@ pub async fn submit_request(
         }
     }
 
-    repository.submit(user_id, document_url, notes).await
+    repository.submit(user_id, public_id, notes).await
 }
 
 pub async fn my_request(
@@ -86,4 +98,27 @@ pub async fn review_request(
 ) -> Result<VerificationRequest, VerificationError> {
     let status = if approve { "approved" } else { "rejected" };
     repository.review(id, status, review_notes).await
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn accepts_only_the_users_verification_folder() {
+        let user = Uuid::nil();
+        assert!(valid_document_public_id(
+            user,
+            &format!("unadomot/verification/{user}/id-front")
+        ));
+        assert!(!valid_document_public_id(
+            user,
+            "unadomot/verification/other-user/id-front"
+        ));
+        assert!(!valid_document_public_id(user, "https://evil.example/id.jpg"));
+        assert!(!valid_document_public_id(
+            user,
+            &format!("unadomot/verification/{user}/../secret")
+        ));
+    }
 }

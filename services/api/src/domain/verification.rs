@@ -5,7 +5,7 @@ use uuid::Uuid;
 pub struct VerificationRequest {
     pub id: Uuid,
     pub user_id: Uuid,
-    pub document_url: String,
+    pub document_public_id: Option<String>,
     pub notes: Option<String>,
     pub status: String,
     pub review_notes: Option<String>,

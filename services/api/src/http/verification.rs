@@ -16,7 +16,7 @@ use uuid::Uuid;
 
 #[derive(Deserialize)]
 pub struct SubmitRequest {
-    pub document_url: String,
+    pub document_public_id: String,
     pub notes: Option<String>,
 }
 
@@ -30,7 +30,10 @@ pub struct ReviewRequest {
 pub struct VerificationResponse {
     pub id: Uuid,
     pub user_id: Uuid,
-    pub document_url: String,
+    pub document_public_id: Option<String>,
+    /// Short-lived signed URL. Only populated for admin review responses.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub document_url: Option<String>,
     pub notes: Option<String>,
     pub status: String,
     pub review_notes: Option<String>,
@@ -38,12 +41,13 @@ pub struct VerificationResponse {
     pub created_at: chrono::DateTime<chrono::Utc>,
 }
 
-impl From<VerificationRequest> for VerificationResponse {
-    fn from(request: VerificationRequest) -> Self {
+impl VerificationResponse {
+    fn from_request(request: VerificationRequest, document_url: Option<String>) -> Self {
         Self {
             id: request.id,
             user_id: request.user_id,
-            document_url: request.document_url,
+            document_public_id: request.document_public_id,
+            document_url,
             notes: request.notes,
             status: request.status,
             review_notes: request.review_notes,
@@ -70,11 +74,11 @@ async fn submit_handler(
     submit_request(
         state.audit.as_ref(),
         user.id,
-        &request.document_url,
+        &request.document_public_id,
         request.notes.as_deref(),
     )
     .await
-    .map(|request| Json(VerificationResponse::from(request)))
+    .map(|request| Json(VerificationResponse::from_request(request, None)))
     .map_err(verification_error)
 }
 
@@ -84,18 +88,47 @@ async fn my_handler(
 ) -> Result<Json<Option<VerificationResponse>>, ApiError> {
     my_request(state.audit.as_ref(), user.id)
         .await
-        .map(|request| Json(request.map(VerificationResponse::from)))
+        .map(|request| {
+            Json(request.map(|request| VerificationResponse::from_request(request, None)))
+        })
         .map_err(verification_error)
 }
 
 async fn admin_list_handler(
     State(state): State<AppState>,
-    _admin: AdminUser,
+    AdminUser { id: admin_id }: AdminUser,
 ) -> Result<Json<Vec<VerificationResponse>>, ApiError> {
-    pending_requests(state.audit.as_ref())
+    let requests = pending_requests(state.audit.as_ref())
         .await
-        .map(|requests| Json(requests.into_iter().map(VerificationResponse::from).collect()))
-        .map_err(verification_error)
+        .map_err(verification_error)?;
+
+    let mut responses = Vec::with_capacity(requests.len());
+    for request in requests {
+        let document_url = match request.document_public_id.as_deref() {
+            Some(public_id) => {
+                state
+                    .audit
+                    .record_audit(
+                        admin_id,
+                        "verification.document.view",
+                        request.id,
+                        json!({}),
+                    )
+                    .await
+                    .map_err(verification_error)?;
+                Some(
+                    state
+                        .media
+                        .signed_delivery_url(public_id)
+                        .map_err(media_error)?,
+                )
+            }
+            None => None,
+        };
+        responses.push(VerificationResponse::from_request(request, document_url));
+    }
+
+    Ok(Json(responses))
 }
 
 async fn admin_review_handler(
@@ -124,7 +157,22 @@ async fn admin_review_handler(
         .await
         .map_err(verification_error)?;
 
-    Ok(Json(VerificationResponse::from(reviewed)))
+    Ok(Json(VerificationResponse::from_request(reviewed, None)))
+}
+
+fn media_error(error: crate::application::media::MediaError) -> ApiError {
+    match error {
+        crate::application::media::MediaError::NotConfigured => ApiError::new(
+            StatusCode::SERVICE_UNAVAILABLE,
+            "media_not_configured",
+            "Media uploads are not configured",
+        ),
+        crate::application::media::MediaError::Signing(_) => ApiError::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "media_signing_failed",
+            "Could not sign the document URL",
+        ),
+    }
 }
 
 fn verification_error(error: VerificationError) -> ApiError {

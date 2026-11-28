@@ -1,4 +1,5 @@
 use crate::application::media::{MediaError, MediaSigner, UploadRequest, UploadSignature};
+use base64::Engine;
 use chrono::Utc;
 use sha1::{Digest, Sha1};
 
@@ -64,6 +65,20 @@ impl MediaSigner for CloudinarySigner {
     fn cloud_name(&self) -> Option<&str> {
         Some(&self.cloud_name)
     }
+
+    fn signed_delivery_url(&self, public_id: &str) -> Result<String, MediaError> {
+        let to_sign = format!("image/authenticated/{public_id}");
+        let mut hasher = Sha1::new();
+        hasher.update(format!("{to_sign}{}", self.api_secret).as_bytes());
+        let digest = hasher.finalize();
+        let encoded = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(digest);
+        let signature = &encoded[..8];
+
+        Ok(format!(
+            "https://res.cloudinary.com/{}/image/authenticated/s--{}--/{}",
+            self.cloud_name, signature, public_id
+        ))
+    }
 }
 
 #[cfg(test)]
@@ -107,5 +122,14 @@ mod tests {
     #[test]
     fn exposes_cloud_name_for_url_validation() {
         assert_eq!(signer().cloud_name(), Some("demo"));
+    }
+
+    #[test]
+    fn builds_signed_authenticated_delivery_urls() {
+        let url = signer()
+            .signed_delivery_url("unadomot/verification/abc/id-front")
+            .unwrap();
+        assert!(url.starts_with("https://res.cloudinary.com/demo/image/authenticated/s--"));
+        assert!(url.ends_with("/unadomot/verification/abc/id-front"));
     }
 }
