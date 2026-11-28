@@ -38,6 +38,25 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   }
 
   Future<void> _load() async {
+    if (widget.appState.signedIn) {
+      try {
+        final server = await widget.api.favorites();
+        final listings = server.map(Listing.fromJson).toList();
+        for (final listing in listings) {
+          await widget.cache.setFavorite(listing.id, true);
+        }
+        if (mounted) {
+          setState(() {
+            _favorites = listings;
+            _loading = false;
+          });
+        }
+        return;
+      } catch (_) {
+        // Fall back to the local cache when the server is unreachable.
+      }
+    }
+
     final ids = await widget.cache.readFavoriteIds();
     final cached = await widget.cache.readListings();
     final listings = (cached?.listings ?? [])
@@ -54,6 +73,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   Future<void> _removeFavorite(Listing listing) async {
     await widget.cache.setFavorite(listing.id, false);
+    if (widget.appState.signedIn) {
+      try {
+        await widget.api.removeFavorite(listing.id);
+      } catch (_) {
+        // The local removal still applies; the next load reconciles.
+      }
+    }
     if (mounted) {
       setState(() => _favorites = _favorites.where((item) => item.id != listing.id).toList());
     }
@@ -63,6 +89,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     final unavailable = _favorites.where((item) => item.status != 'available').toList();
     for (final listing in unavailable) {
       await widget.cache.setFavorite(listing.id, false);
+      if (widget.appState.signedIn) {
+        try {
+          await widget.api.removeFavorite(listing.id);
+        } catch (_) {
+          // Continue clearing the rest; the next load reconciles.
+        }
+      }
     }
     if (mounted) {
       setState(() => _favorites = _favorites.where((item) => item.status == 'available').toList());
