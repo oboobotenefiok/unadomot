@@ -42,6 +42,7 @@ fn sample_listing(owner: Uuid) -> NewListing {
         bathrooms: Some(1),
         property_type: Some("flat".into()),
         furnishing: Some("unfurnished".into()),
+        amenities: Vec::new(),
     }
 }
 

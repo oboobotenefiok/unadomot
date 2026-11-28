@@ -18,8 +18,12 @@ class EventStream {
 
   Stream<Map<String, dynamic>> get events => _controller.stream;
 
+  /// Starts polling only when there is a session. Signed-out callers get a
+  /// no-op, which also keeps widget tests free of pending timers; the shell
+  /// calls this again once the user signs in.
   void start() {
     if (_running) return;
+    if (api.token == null) return;
     _running = true;
     unawaited(_loop());
   }
@@ -28,8 +32,8 @@ class EventStream {
     while (_running) {
       final token = api.token;
       if (token == null) {
-        await Future<void>.delayed(const Duration(seconds: 5));
-        continue;
+        _running = false;
+        return;
       }
 
       try {

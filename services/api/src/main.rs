@@ -68,7 +68,7 @@ fn client_ip(request: &Request) -> String {
                 .headers()
                 .get("x-forwarded-for")
                 .and_then(|value| value.to_str().ok())
-                .and_then(|value| value.split(',').last())
+                .and_then(|value| value.split(',').next_back())
                 .map(|value| value.trim().to_string())
                 .filter(|value| !value.is_empty())
         })

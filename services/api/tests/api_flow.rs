@@ -56,6 +56,7 @@ async fn register_login_create_and_update_listing() {
             bathrooms: Some(2),
             property_type: Some("flat".into()),
             furnishing: Some("unfurnished".into()),
+            amenities: vec!["Borehole".into(), "Prepaid meter".into()],
         },
     )
     .await
@@ -66,6 +67,7 @@ async fn register_login_create_and_update_listing() {
         .expect("get listing")
         .expect("listing exists");
     assert_eq!(fetched.title, "Two bedroom flat");
+    assert_eq!(fetched.amenities.len(), 2);
 
     let updated = update_listing(
         &listings,
@@ -79,6 +81,7 @@ async fn register_login_create_and_update_listing() {
     .await
     .expect("update listing");
     assert_eq!(updated.price, Decimal::new(900_000, 0));
+    assert_eq!(updated.amenities.len(), 2);
 }
 
 #[tokio::test]
@@ -134,6 +137,7 @@ async fn messaging_flow() {
             bathrooms: Some(1),
             property_type: Some("flat".into()),
             furnishing: Some("furnished".into()),
+            amenities: Vec::new(),
         },
     )
     .await
