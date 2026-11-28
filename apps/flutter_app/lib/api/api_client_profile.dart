@@ -21,4 +21,28 @@ extension ApiClientProfile on ApiClient {
       throw ApiException(response.statusCode, 'Could not delete listing.');
     }
   }
+
+  Future<Map<String, dynamic>> exportAccount() async {
+    final response = await http.get(
+      baseUrl.resolve('/api/account/export'),
+      headers: _authHeaders,
+    ).timeout(const Duration(seconds: 30));
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw ApiException(response.statusCode, 'Could not export your data.');
+    }
+    return Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+  }
+
+  Future<void> deleteAccount() async {
+    final response = await http.delete(
+      baseUrl.resolve('/api/account'),
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    ).timeout(const Duration(seconds: 30));
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw ApiException(response.statusCode, 'Could not delete your account.');
+    }
+  }
 }

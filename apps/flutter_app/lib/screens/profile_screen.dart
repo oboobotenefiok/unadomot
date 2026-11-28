@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import '../api/api_client.dart';
 import '../api/api_client_profile.dart';
@@ -213,6 +215,83 @@ class _ProfileScreenState extends State<ProfileScreen> {
         photoUrl: photoUrl,
       );
       await _load();
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
+      }
+    }
+  }
+
+  Future<void> _exportData() async {
+    try {
+      final data = await widget.api.exportAccount();
+      final encoded = const JsonEncoder.withIndent('  ').convert(data);
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Your data'),
+          content: SingleChildScrollView(
+            child: SelectableText(
+              encoded,
+              style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                await Clipboard.setData(ClipboardData(text: encoded));
+                if (context.mounted) Navigator.pop(context);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Data copied to clipboard')),
+                  );
+                }
+              },
+              child: const Text('Copy'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
+      }
+    }
+  }
+
+  Future<void> _deleteAccount() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete account?'),
+        content: const Text(
+          'This permanently removes your profile, listings, favorites, messages and verification data. This cannot be undone.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete account'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await widget.api.deleteAccount();
+      await widget.appState.signOut();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Your account has been deleted')),
+        );
+      }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
@@ -617,6 +696,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
+          _settingsRow(Icons.download_outlined, 'Download my data', _exportData),
           _settingsRow(Icons.info_outline, 'About UnaDomot', () => showAboutDialog(
             context: context,
             applicationName: 'UnaDomot',
@@ -635,6 +715,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             context,
             MaterialPageRoute(builder: (_) => StaticPageScreen.checkoutNotice()),
           )),
+          _settingsRow(Icons.delete_forever_outlined, 'Delete account', _deleteAccount, danger: true),
           _settingsRow(Icons.logout, 'Logout', () async {
             await widget.appState.signOut();
             if (mounted) setState(() {});
