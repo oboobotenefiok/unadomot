@@ -36,6 +36,7 @@ class ListingCard extends StatelessWidget {
     final image = imageUrl ?? (listing.media.isEmpty ? null : listing.media.first.url);
     final location = listing.lga.isEmpty ? listing.state : listing.lga;
     final accountType = listing.isAgentListing ? 'Agent' : 'Landlord';
+    final ownerActions = isOwner && showOwnerActions;
 
     return Material(
       color: UnaColors.surface,
@@ -93,40 +94,32 @@ class ListingCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (showOwnerActions && onEdit != null) ...[
-                          _RoundAction(
-                            icon: Icons.edit_outlined,
-                            color: Colors.white,
-                            background: Colors.black45,
-                            onTap: onEdit!,
-                          ),
-                          const SizedBox(width: 6),
+                  if (ownerActions && (onEdit != null || onDelete != null))
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (onEdit != null) ...[
+                            _RoundAction(
+                              icon: Icons.edit_outlined,
+                              color: Colors.white,
+                              background: Colors.black45,
+                              onTap: onEdit!,
+                            ),
+                            const SizedBox(width: 6),
+                          ],
+                          if (onDelete != null)
+                            _RoundAction(
+                              icon: Icons.delete_outline,
+                              color: Colors.white,
+                              background: Colors.red.shade600,
+                              onTap: onDelete!,
+                            ),
                         ],
-                        if (showOwnerActions && onDelete != null) ...[
-                          _RoundAction(
-                            icon: Icons.delete_outline,
-                            color: Colors.white,
-                            background: Colors.red.shade600,
-                            onTap: onDelete!,
-                          ),
-                          const SizedBox(width: 6),
-                        ],
-                        if (onFavorite != null)
-                          _RoundAction(
-                            icon: isFavorite ? Icons.favorite : Icons.favorite_border,
-                            color: isFavorite ? Colors.red : Colors.white,
-                            background: Colors.black45,
-                            onTap: onFavorite!,
-                          ),
-                      ],
+                      ),
                     ),
-                  ),
                   if (isOwner)
                     Positioned(
                       bottom: 8,
@@ -200,10 +193,16 @@ class ListingCard extends StatelessWidget {
                           style: const TextStyle(color: UnaColors.text500, fontSize: 11),
                         ),
                       ),
-                      if (onMessage != null)
-                        _ActionIcon(icon: Icons.chat_bubble_outline, onTap: onMessage!),
+                      if (onFavorite != null)
+                        _ActionIcon(
+                          icon: isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite ? Colors.red : UnaColors.green700,
+                          onTap: onFavorite!,
+                        ),
                       if (onShare != null)
                         _ActionIcon(icon: Icons.share_outlined, onTap: onShare!),
+                      if (!isOwner && onMessage != null)
+                        _ActionIcon(icon: Icons.chat_bubble_outline, onTap: onMessage!),
                     ],
                   ),
                 ],
