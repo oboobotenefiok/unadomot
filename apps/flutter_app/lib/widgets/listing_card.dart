@@ -34,6 +34,9 @@ class ListingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final image = imageUrl ?? (listing.media.isEmpty ? null : listing.media.first.url);
+    final location = listing.lga.isEmpty ? listing.state : listing.lga;
+    final accountType = listing.isAgentListing ? 'Agent' : 'Landlord';
+
     return Material(
       color: UnaColors.surface,
       borderRadius: BorderRadius.circular(8),
@@ -45,9 +48,9 @@ class ListingCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 160,
-              width: double.infinity,
+            // The image takes whatever height the grid cell leaves over, so the
+            // action row below can never be pushed out of the viewport.
+            Expanded(
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -69,7 +72,7 @@ class ListingCard extends StatelessWidget {
                       ),
                       child: Text(
                         formatNaira(listing.price),
-                        style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700),
+                        style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),
@@ -79,26 +82,51 @@ class ListingCard extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: UnaColors.green900,
+                        color: UnaColors.green900.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        listing.lga.isEmpty ? listing.state : listing.lga,
-                        style: const TextStyle(color: Colors.white, fontSize: 12),
+                        location,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(color: Colors.white, fontSize: 11),
                       ),
                     ),
                   ),
-                  if (onFavorite != null)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: _RoundAction(
-                        icon: isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : Colors.white,
-                        background: Colors.black45,
-                        onTap: onFavorite!,
-                      ),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (showOwnerActions && onEdit != null) ...[
+                          _RoundAction(
+                            icon: Icons.edit_outlined,
+                            color: Colors.white,
+                            background: Colors.black45,
+                            onTap: onEdit!,
+                          ),
+                          const SizedBox(width: 6),
+                        ],
+                        if (showOwnerActions && onDelete != null) ...[
+                          _RoundAction(
+                            icon: Icons.delete_outline,
+                            color: Colors.white,
+                            background: Colors.red.shade600,
+                            onTap: onDelete!,
+                          ),
+                          const SizedBox(width: 6),
+                        ],
+                        if (onFavorite != null)
+                          _RoundAction(
+                            icon: isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: isFavorite ? Colors.red : Colors.white,
+                            background: Colors.black45,
+                            onTap: onFavorite!,
+                          ),
+                      ],
                     ),
+                  ),
                   if (isOwner)
                     Positioned(
                       bottom: 8,
@@ -119,37 +147,49 @@ class ListingCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     listing.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: UnaColors.text900, fontSize: 14, fontWeight: FontWeight.w600),
+                    style: const TextStyle(color: UnaColors.text900, fontSize: 13, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    listing.address.isEmpty ? '${listing.lga}, ${listing.state}' : listing.address,
+                    '${listing.lga.isEmpty ? listing.state : listing.lga}, ${listing.state}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: UnaColors.text500, fontSize: 12),
+                    style: const TextStyle(color: UnaColors.text500, fontSize: 11),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Row(
                     children: [
-                      if (!listing.isAgentListing)
-                        _badge('Agent-Free', UnaColors.green100, UnaColors.green700),
+                      Flexible(
+                        child: _badge(
+                          accountType,
+                          listing.isAgentListing ? Colors.orange.shade50 : UnaColors.green100,
+                          listing.isAgentListing ? Colors.orange.shade800 : UnaColors.green700,
+                        ),
+                      ),
                       if (listing.propertyType != null) ...[
                         const SizedBox(width: 4),
-                        _badge(listing.propertyType!, Colors.grey.shade100, Colors.grey.shade600),
+                        Flexible(
+                          child: _badge(
+                            listing.propertyType!,
+                            Colors.grey.shade100,
+                            Colors.grey.shade600,
+                          ),
+                        ),
                       ],
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Container(height: 1, color: Colors.grey.shade100),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
                       Expanded(
@@ -157,17 +197,13 @@ class ListingCard extends StatelessWidget {
                           listing.landlordName.isEmpty ? 'Landlord' : listing.landlordName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(color: UnaColors.text500, fontSize: 12),
+                          style: const TextStyle(color: UnaColors.text500, fontSize: 11),
                         ),
                       ),
                       if (onMessage != null)
                         _ActionIcon(icon: Icons.chat_bubble_outline, onTap: onMessage!),
                       if (onShare != null)
                         _ActionIcon(icon: Icons.share_outlined, onTap: onShare!),
-                      if (showOwnerActions && onEdit != null)
-                        _ActionIcon(icon: Icons.edit_outlined, onTap: onEdit!),
-                      if (showOwnerActions && onDelete != null)
-                        _ActionIcon(icon: Icons.delete_outline, onTap: onDelete!, color: Colors.red),
                     ],
                   ),
                 ],
@@ -187,6 +223,8 @@ class ListingCard extends StatelessWidget {
         ),
         child: Text(
           text,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(color: foreground, fontSize: 10, fontWeight: FontWeight.w600),
         ),
       );
@@ -210,9 +248,9 @@ class _RoundAction extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          padding: const EdgeInsets.all(6),
+          padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(color: background, shape: BoxShape.circle),
-          child: Icon(icon, size: 16, color: color),
+          child: Icon(icon, size: 15, color: color),
         ),
       );
 }
