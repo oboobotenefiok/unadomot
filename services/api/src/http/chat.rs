@@ -117,6 +117,7 @@ async fn conversations_presence_handler(
                         "counterpart_id": conversation.counterpart_id,
                         "counterpart_name": conversation.counterpart_name,
                         "counterpart_verified": conversation.counterpart_verified,
+                        "counterpart_photo_url": conversation.counterpart_photo_url,
                         "counterpart_last_active": conversation.counterpart_last_active,
                         "last_message_preview": conversation.last_message_preview,
                         "last_message_at": conversation.last_message_at,
