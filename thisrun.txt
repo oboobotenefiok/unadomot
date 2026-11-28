@@ -1,27 +1,29 @@
-# CI run 2026-11-28T16:33:58Z
+# CI run 2026-11-28T16:44:46Z
 Branch: rewrite/flutter-rust-postgres
 
 ## Trigger
-https://github.com/oboobotenefiok/unadomot/actions/runs/46165839580
+https://github.com/oboobotenefiok/unadomot/actions/runs/46166785308
 
 ## Recent runs
-pending		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46165839580	6s	2026-11-28T16:34:01Z
-in_progress		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46165295165	6m7s	2026-11-28T16:28:00Z
-completed	cancelled	fix: avoid moved method in router test	Rewrite CI	rewrite/flutter-rust-postgres	push	46165267380	38s	2026-11-28T16:27:39Z
-completed	cancelled	ci: record run unknown	Rewrite CI	rewrite/flutter-rust-postgres	push	46165007751	3m17s	2026-11-28T16:24:39Z
-completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46164294302	7m25s	2026-11-28T16:16:49Z
+pending		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46166785308	6s	2026-11-28T16:44:49Z
+in_progress		fix: repair verification documents migration	Rewrite CI	rewrite/flutter-rust-postgres	push	46166704635	1m3s	2026-11-28T16:43:52Z
+completed	cancelled	ci: record run unknown	Rewrite CI	rewrite/flutter-rust-postgres	push	46166476663	2m54s	2026-11-28T16:41:15Z
+completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46165839580	6m40s	2026-11-28T16:34:01Z
+completed	cancelled	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46165295165	6m12s	2026-11-28T16:28:00Z
 
-Run ID: 46165839580
-URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46165839580
+Run ID: 46166785308
+URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46166785308
 
 ## Watch
 
-X rewrite/flutter-rust-postgres Rewrite CI · 46165839580
+X rewrite/flutter-rust-postgres Rewrite CI · 46166785308
 Triggered via workflow_dispatch about 6 minutes ago
 
 JOBS
-✓ docker in 2m35s (ID 141043090545)
-X rust in 1m14s (ID 141043090672)
+✓ audit in 3m17s (ID 141046058181)
+✓ docker in 2m7s (ID 141046058422)
+✓ android in 6m12s (ID 141046058540)
+X rust in 1m17s (ID 141046058747)
   ✓ Set up job
   ✓ Initialize containers
   ✓ Run actions/checkout@v4
@@ -34,18 +36,13 @@ X rust in 1m14s (ID 141043090672)
   ✓ Post Run actions/checkout@v4
   ✓ Stop containers
   ✓ Complete job
-✓ android in 6m26s (ID 141043090695)
-✓ audit in 3m19s (ID 141043090790)
 
 ANNOTATIONS
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-docker: .github#2
+audit: .github#2
 
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-rust: .github#2
-
-X Process completed with exit code 101.
-rust: .github#211
+docker: .github#2
 
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, actions/setup-java@v4, actions/***-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 android: .github#5
@@ -54,224 +51,170 @@ android: .github#5
 android: .github#18
 
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-audit: .github#2
+rust: .github#2
+
+X Process completed with exit code 101.
+rust: .github#154
 
 
 ARTIFACTS
 unadomot-release-apk
 
-To see what failed, try: gh run view 46165839580 --log-failed
-View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46165839580
+To see what failed, try: gh run view 46166785308 --log-failed
+View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46166785308
 
 ## Failed logs
-rust	Tests	﻿2026-11-28T16:35:14.9944571Z ##[group]Run cargo test --all-targets
-rust	Tests	2026-11-28T16:35:14.9945088Z ^[[36;1mcargo test --all-targets^[[0m
-rust	Tests	2026-11-28T16:35:14.9987569Z shell: /usr/bin/bash -e {0}
-rust	Tests	2026-11-28T16:35:14.9987958Z env:
-rust	Tests	2026-11-28T16:35:14.9988350Z   CARGO_TERM_COLOR: never
-rust	Tests	2026-11-28T16:35:14.9988720Z   NO_COLOR: 1
-rust	Tests	2026-11-28T16:35:14.9989026Z   RUST_BACKTRACE: 1
-rust	Tests	2026-11-28T16:35:14.9989683Z   DATABASE_URL: ***localhost:5432/unadomot_test
-rust	Tests	2026-11-28T16:35:14.9990146Z   JWT_SECRET: test-secret-that-is-at-least-32-bytes-long
-rust	Tests	2026-11-28T16:35:14.9990584Z   REFRESH_TOKEN_SECRET: test-refresh-secret-that-is-at-least-32-bytes
-rust	Tests	2026-11-28T16:35:14.9990961Z   CARGO_HOME: /home/runner/.cargo
-rust	Tests	2026-11-28T16:35:14.9991257Z   CARGO_INCREMENTAL: 0
-rust	Tests	2026-11-28T16:35:14.9991489Z   CACHE_ON_FAILURE: false
-rust	Tests	2026-11-28T16:35:14.9991719Z ##[endgroup]
-rust	Tests	2026-11-28T16:35:15.1599508Z    Compiling unadomot-api v0.1.0 (/home/runner/work/unadomot/unadomot/services/api)
-rust	Tests	2026-11-28T16:35:23.8660259Z     Finished `test` profile [unoptimized + debuginfo] target(s) in 8.84s
-rust	Tests	2026-11-28T16:35:23.8833378Z      Running unittests src/lib.rs (target/debug/build/unadomot-api/d54258b5e97c22f0/out/unadomot_api-d54258b5e97c22f0)
-rust	Tests	2026-11-28T16:35:23.8846118Z 
-rust	Tests	2026-11-28T16:35:23.8846356Z running 36 tests
-rust	Tests	2026-11-28T16:35:23.8869177Z test application::auth::tests::bearer_token_requires_bearer_prefix ... ok
-rust	Tests	2026-11-28T16:35:23.8870185Z test application::auth::tests::refresh_tokens_are_32_random_bytes ... ok
-rust	Tests	2026-11-28T16:35:23.8870976Z test application::auth::tests::refresh_tokens_are_hashed_with_hmac ... ok
-rust	Tests	2026-11-28T16:35:23.8871637Z test application::listings::tests::accepts_a_normal_listing ... ok
-rust	Tests	2026-11-28T16:35:23.8872330Z test application::listings::tests::normalizes_listing_codes ... ok
-rust	Tests	2026-11-28T16:35:23.8873053Z test application::listings::tests::rejects_blank_amenity ... ok
-rust	Tests	2026-11-28T16:35:23.8873655Z test application::listings::tests::rejects_invalid_price ... ok
-rust	Tests	2026-11-28T16:35:23.8874273Z test application::listings::tests::rejects_too_many_amenities ... ok
-rust	Tests	2026-11-28T16:35:23.8874924Z test application::media::tests::chat_accepts_audio_and_video_while_listings_stay_images ... ok
-rust	Tests	2026-11-28T16:35:23.8875571Z test application::media::tests::folders_are_scoped_to_the_user ... ok
-rust	Tests	2026-11-28T16:35:23.8876070Z test application::email::tests::unconfigured_sender_fails_closed ... ok
-rust	Tests	2026-11-28T16:35:23.8876710Z test application::media::tests::only_verification_documents_are_authenticated ... ok
-rust	Tests	2026-11-28T16:35:23.8877283Z test application::media::tests::parses_known_purposes_only ... ok
-rust	Tests	2026-11-28T16:35:23.8877988Z test application::media::tests::request_derives_folder_and_type_from_purpose ... ok
-rust	Tests	2026-11-28T16:35:23.8878525Z test application::verification::tests::accepts_only_the_users_verification_folder ... ok
-rust	Tests	2026-11-28T16:35:23.8879039Z test config::tests::rejects_common_placeholder_secrets ... ok
-rust	Tests	2026-11-28T16:35:23.8879511Z test http::chat::tests::rejects_non_cloudinary_media_urls ... ok
-rust	Tests	2026-11-28T16:35:23.8879983Z test http::calls::tests::turn_credentials_are_deterministic_and_secret_bound ... ok
-rust	Tests	2026-11-28T16:35:23.8880511Z test http::listings::tests::accepts_media_from_our_cloud_with_matching_public_id ... ok
-rust	Tests	2026-11-28T16:35:23.8881017Z test http::listings::tests::rejects_non_cloudinary_or_http_media ... ok
-rust	Tests	2026-11-28T16:35:23.8881470Z test http::listings::tests::rejects_foreign_clouds ... ok
-rust	Tests	2026-11-28T16:35:23.8882041Z test http::listings::tests::rejects_media_when_cloudinary_is_not_configured ... ok
-rust	Tests	2026-11-28T16:35:23.8882559Z test http::listings::tests::rejects_urls_that_do_not_match_the_public_id ... ok
-rust	Tests	2026-11-28T16:35:23.8883257Z test http::listings::tests::requires_the_owners_listing_folder ... ok
-rust	Tests	2026-11-28T16:35:23.8883952Z test http::listings::tests::trims_and_dedupes_amenities ... ok
-rust	Tests	2026-11-28T16:35:23.8884382Z test http::profile::tests::rejects_non_cloudinary_photo_urls ... ok
-rust	Tests	2026-11-28T16:35:23.8884904Z test http::profile::tests::public_profile_never_serialises_email_or_phone ... ok
-rust	Tests	2026-11-28T16:35:23.8885351Z test http::tests::separate_budgets_do_not_share_counters ... ok
-rust	Tests	2026-11-28T16:35:23.8885881Z test http::tests::enforces_per_key_budgets ... ok
-rust	Tests	2026-11-28T16:35:23.8886419Z test infrastructure::cloudinary::tests::builds_signed_authenticated_delivery_urls ... ok
-rust	Tests	2026-11-28T16:35:23.8886975Z test infrastructure::cloudinary::tests::exposes_cloud_name_for_url_validation ... ok
-rust	Tests	2026-11-28T16:35:23.8887497Z test infrastructure::cloudinary::tests::chat_uploads_are_signed_for_audio_and_video ... ok
-rust	Tests	2026-11-28T16:35:23.8888054Z test infrastructure::cloudinary::tests::signs_sorted_params_and_restricts_formats ... ok
-rust	Tests	2026-11-28T16:35:23.8888585Z test infrastructure::cloudinary::tests::verification_uploads_are_authenticated ... ok
-rust	Tests	2026-11-28T16:35:23.8889117Z test infrastructure::postgres::profile_repository::tests::username_has_expected_shape ... ok
-rust	Tests	2026-11-28T16:35:24.5563678Z test application::auth::tests::password_hashing_and_verification_work ... ok
-rust	Tests	2026-11-28T16:35:24.5564087Z 
-rust	Tests	2026-11-28T16:35:24.5564566Z test result: ok. 36 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.67s
-rust	Tests	2026-11-28T16:35:24.5564902Z 
-rust	Tests	2026-11-28T16:35:24.5573594Z      Running unittests src/main.rs (target/debug/build/unadomot-api/fb4b8e5640dceb84/out/unadomot_api-fb4b8e5640dceb84)
-rust	Tests	2026-11-28T16:35:24.5585602Z 
-rust	Tests	2026-11-28T16:35:24.5586729Z running 0 tests
-rust	Tests	2026-11-28T16:35:24.5587428Z      Running tests/api_flow.rs (target/debug/build/unadomot-api/71048d3ba4ab7728/out/api_flow-71048d3ba4ab7728)
-rust	Tests	2026-11-28T16:35:24.5587813Z 
-rust	Tests	2026-11-28T16:35:24.5588037Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
-rust	Tests	2026-11-28T16:35:24.5588314Z 
-rust	Tests	2026-11-28T16:35:24.5598758Z 
-rust	Tests	2026-11-28T16:35:24.5598946Z running 2 tests
-rust	Tests	2026-11-28T16:35:24.6946886Z test messaging_flow ... FAILED
-rust	Tests	2026-11-28T16:35:24.6978607Z test register_login_create_and_update_listing ... FAILED
-rust	Tests	2026-11-28T16:35:24.6979107Z 
-rust	Tests	2026-11-28T16:35:24.6979220Z failures:
-rust	Tests	2026-11-28T16:35:24.6979384Z 
-rust	Tests	2026-11-28T16:35:24.6979562Z ---- messaging_flow stdout ----
-rust	Tests	2026-11-28T16:35:24.6979811Z 
-rust	Tests	2026-11-28T16:35:24.6980089Z thread 'messaging_flow' (3302) panicked at tests/api_flow.rs:101:10:
-rust	Tests	2026-11-28T16:35:24.6981653Z migrations: ExecuteMigration(Database(PgDatabaseError { severity: Error, code: "42703", message: "column \"document_url\" of relation \"verification_requests\" does not exist", detail: None, hint: None, position: None, where: None, schema: None, table: None, column: None, data_type: None, constraint: None, file: Some("tablecmds.c"), line: Some(8039), routine: Some("ATExecDropNotNull") }), 202611280001)
-rust	Tests	2026-11-28T16:35:24.6983394Z stack backtrace:
-rust	Tests	2026-11-28T16:35:24.6983766Z    0: __rustc::rust_begin_unwind
-rust	Tests	2026-11-28T16:35:24.6984327Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/std/src/panicking.rs:676:5
-rust	Tests	2026-11-28T16:35:24.6984903Z    1: core::panicking::panic_fmt
-rust	Tests	2026-11-28T16:35:24.6985437Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/panicking.rs:80:14
-rust	Tests	2026-11-28T16:35:24.6985952Z    2: core::result::unwrap_failed
-rust	Tests	2026-11-28T16:35:24.6986410Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/result.rs:1870:5
-rust	Tests	2026-11-28T16:35:24.6986999Z    3: <core::result::Result<(), sqlx_core::migrate::error::MigrateError>>::expect
-rust	Tests	2026-11-28T16:35:24.6987612Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/result.rs:1184:23
-rust	Tests	2026-11-28T16:35:24.6988122Z    4: api_flow::messaging_flow::{closure#0}
-rust	Tests	2026-11-28T16:35:24.6988488Z              at ./tests/api_flow.rs:101:10
-rust	Tests	2026-11-28T16:35:24.6988984Z    5: <core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>> as core::future::future::Future>::poll
-rust	Tests	2026-11-28T16:35:24.6989995Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/future/future.rs:133:9
-rust	Tests	2026-11-28T16:35:24.6990913Z    6: <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}::{closure#0}::{closure#0}
-rust	Tests	2026-11-28T16:35:24.6991998Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:830:70
-rust	Tests	2026-11-28T16:35:24.6993307Z    7: tokio::task::coop::with_budget::<core::task::poll::Poll<()>, <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}::{closure#0}::{closure#0}>
-rust	Tests	2026-11-28T16:35:24.6994437Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/task/coop/mod.rs:167:5
-rust	Tests	2026-11-28T16:35:24.6995470Z    8: tokio::task::coop::budget::<core::task::poll::Poll<()>, <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}::{closure#0}::{closure#0}>
-rust	Tests	2026-11-28T16:35:24.6996437Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/task/coop/mod.rs:133:5
-rust	Tests	2026-11-28T16:35:24.6997313Z    9: <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}::{closure#0}
-rust	Tests	2026-11-28T16:35:24.6998336Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:830:25
-rust	Tests	2026-11-28T16:35:24.6999740Z   10: <tokio::runtime::scheduler::current_thread::Context>::enter::<core::task::poll::Poll<()>, <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}::{closure#0}>
-rust	Tests	2026-11-28T16:35:24.7001116Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:486:19
-rust	Tests	2026-11-28T16:35:24.7002331Z   11: <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}
-rust	Tests	2026-11-28T16:35:24.7003363Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:829:44
-rust	Tests	2026-11-28T16:35:24.7004338Z   12: <tokio::runtime::scheduler::current_thread::CoreGuard>::enter::<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}
-rust	Tests	2026-11-28T16:35:24.7005285Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:906:68
-rust	Tests	2026-11-28T16:35:24.7005857Z error: test failed, to rerun pass `--test api_flow`
-rust	Tests	2026-11-28T16:35:24.7006949Z   13: <tokio::runtime::context::scoped::Scoped<tokio::runtime::scheduler::Context>>::set::<<tokio::runtime::scheduler::current_thread::CoreGuard>::enter<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}, (alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>)>
-rust	Tests	2026-11-28T16:35:24.7008198Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/context/scoped.rs:40:9
-rust	Tests	2026-11-28T16:35:24.7009395Z   14: tokio::runtime::context::set_scheduler::<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>), <tokio::runtime::scheduler::current_thread::CoreGuard>::enter<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}>::{closure#0}
-rust	Tests	2026-11-28T16:35:24.7010660Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/context.rs:186:38
-rust	Tests	2026-11-28T16:35:24.7012129Z   15: <std::thread::local::LocalKey<tokio::runtime::context::Context>>::try_with::<tokio::runtime::context::set_scheduler<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>), <tokio::runtime::scheduler::current_thread::CoreGuard>::enter<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}>::{closure#0}, (alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>)>
-rust	Tests	2026-11-28T16:35:24.7013873Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/std/src/thread/local.rs:463:12
-rust	Tests	2026-11-28T16:35:24.7015361Z   16: <std::thread::local::LocalKey<tokio::runtime::context::Context>>::with::<tokio::runtime::context::set_scheduler<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>), <tokio::runtime::scheduler::current_thread::CoreGuard>::enter<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}>::{closure#0}, (alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>)>
-rust	Tests	2026-11-28T16:35:24.7016770Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/std/src/thread/local.rs:427:20
-rust	Tests	2026-11-28T16:35:24.7017829Z   17: tokio::runtime::context::set_scheduler::<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>), <tokio::runtime::scheduler::current_thread::CoreGuard>::enter<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}>
-rust	Tests	2026-11-28T16:35:24.7018948Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/context.rs:186:17
-rust	Tests	2026-11-28T16:35:24.7019794Z   18: <tokio::runtime::scheduler::current_thread::CoreGuard>::enter::<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>
-rust	Tests	2026-11-28T16:35:24.7020671Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:906:27
-rust	Tests	2026-11-28T16:35:24.7021327Z   19: <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>
-rust	Tests	2026-11-28T16:35:24.7022018Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:819:24
-rust	Tests	2026-11-28T16:35:24.7022706Z   20: <tokio::runtime::scheduler::current_thread::CurrentThread>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}
-rust	Tests	2026-11-28T16:35:24.7023634Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:216:33
-rust	Tests	2026-11-28T16:35:24.7024490Z   21: tokio::runtime::context::runtime::enter_runtime::<<tokio::runtime::scheduler::current_thread::CurrentThread>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, ()>
-rust	Tests	2026-11-28T16:35:24.7025259Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/context/runtime.rs:65:16
-rust	Tests	2026-11-28T16:35:24.7025942Z   22: <tokio::runtime::scheduler::current_thread::CurrentThread>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>
-rust	Tests	2026-11-28T16:35:24.7026616Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:204:9
-rust	Tests	2026-11-28T16:35:24.7027279Z   23: <tokio::runtime::runtime::Runtime>::block_on_inner::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>
-rust	Tests	2026-11-28T16:35:24.7027896Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/runtime.rs:379:52
-rust	Tests	2026-11-28T16:35:24.7028493Z   24: <tokio::runtime::runtime::Runtime>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>
-rust	Tests	2026-11-28T16:35:24.7029057Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/runtime.rs:348:18
-rust	Tests	2026-11-28T16:35:24.7029526Z   25: api_flow::messaging_flow
-rust	Tests	2026-11-28T16:35:24.7029787Z              at ./tests/api_flow.rs:196:19
-rust	Tests	2026-11-28T16:35:24.7030091Z   26: api_flow::messaging_flow::{closure#0}
-rust	Tests	2026-11-28T16:35:24.7030362Z              at ./tests/api_flow.rs:88:26
-rust	Tests	2026-11-28T16:35:24.7030774Z   27: <api_flow::messaging_flow::{closure#0} as core::ops::function::FnOnce<()>>::call_once
-rust	Tests	2026-11-28T16:35:24.7031250Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/ops/function.rs:250:5
-rust	Tests	2026-11-28T16:35:24.7031790Z   28: <fn() -> core::result::Result<(), alloc::string::String> as core::ops::function::FnOnce<()>>::call_once
-rust	Tests	2026-11-28T16:35:24.7032288Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/ops/function.rs:250:5
-rust	Tests	2026-11-28T16:35:24.7032975Z note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
-rust	Tests	2026-11-28T16:35:24.7033299Z 
-rust	Tests	2026-11-28T16:35:24.7033530Z ---- register_login_create_and_update_listing stdout ----
-rust	Tests	2026-11-28T16:35:24.7033798Z 
-rust	Tests	2026-11-28T16:35:24.7034044Z thread 'register_login_create_and_update_listing' (3303) panicked at tests/api_flow.rs:30:10:
-rust	Tests	2026-11-28T16:35:24.7035707Z migrations: ExecuteMigration(Database(PgDatabaseError { severity: Error, code: "42703", message: "column \"document_url\" of relation \"verification_requests\" does not exist", detail: None, hint: None, position: None, where: None, schema: None, table: None, column: None, data_type: None, constraint: None, file: Some("tablecmds.c"), line: Some(8039), routine: Some("ATExecDropNotNull") }), 202611280001)
-rust	Tests	2026-11-28T16:35:24.7036871Z stack backtrace:
-rust	Tests	2026-11-28T16:35:24.7037129Z    0: __rustc::rust_begin_unwind
-rust	Tests	2026-11-28T16:35:24.7037532Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/std/src/panicking.rs:676:5
-rust	Tests	2026-11-28T16:35:24.7037942Z    1: core::panicking::panic_fmt
-rust	Tests	2026-11-28T16:35:24.7038301Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/panicking.rs:80:14
-rust	Tests	2026-11-28T16:35:24.7038714Z    2: core::result::unwrap_failed
-rust	Tests	2026-11-28T16:35:24.7039084Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/result.rs:1870:5
-rust	Tests	2026-11-28T16:35:24.7039514Z    3: <core::result::Result<(), sqlx_core::migrate::error::MigrateError>>::expect
-rust	Tests	2026-11-28T16:35:24.7039974Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/result.rs:1184:23
-rust	Tests	2026-11-28T16:35:24.7040421Z    4: api_flow::register_login_create_and_update_listing::{closure#0}
-rust	Tests	2026-11-28T16:35:24.7040753Z              at ./tests/api_flow.rs:30:10
-rust	Tests	2026-11-28T16:35:24.7041157Z    5: <core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>> as core::future::future::Future>::poll
-rust	Tests	2026-11-28T16:35:24.7041791Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/future/future.rs:133:9
-rust	Tests	2026-11-28T16:35:24.7042463Z    6: <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}::{closure#0}::{closure#0}
-rust	Tests	2026-11-28T16:35:24.7043334Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:830:70
-rust	Tests	2026-11-28T16:35:24.7044218Z    7: tokio::task::coop::with_budget::<core::task::poll::Poll<()>, <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}::{closure#0}::{closure#0}>
-rust	Tests	2026-11-28T16:35:24.7045177Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/task/coop/mod.rs:167:5
-rust	Tests	2026-11-28T16:35:24.7045941Z    8: tokio::task::coop::budget::<core::task::poll::Poll<()>, <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}::{closure#0}::{closure#0}>
-rust	Tests	2026-11-28T16:35:24.7046807Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/task/coop/mod.rs:133:5
-rust	Tests	2026-11-28T16:35:24.7047453Z    9: <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}::{closure#0}
-rust	Tests	2026-11-28T16:35:24.7048233Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:830:25
-rust	Tests	2026-11-28T16:35:24.7049117Z   10: <tokio::runtime::scheduler::current_thread::Context>::enter::<core::task::poll::Poll<()>, <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}::{closure#0}>
-rust	Tests	2026-11-28T16:35:24.7049990Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:486:19
-rust	Tests	2026-11-28T16:35:24.7050690Z   11: <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}
-rust	Tests	2026-11-28T16:35:24.7051863Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:829:44
-rust	Tests	2026-11-28T16:35:24.7161218Z   12: <tokio::runtime::scheduler::current_thread::CoreGuard>::enter::<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}
-rust	Tests	2026-11-28T16:35:24.7162314Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:906:68
-rust	Tests	2026-11-28T16:35:24.7163722Z   13: <tokio::runtime::context::scoped::Scoped<tokio::runtime::scheduler::Context>>::set::<<tokio::runtime::scheduler::current_thread::CoreGuard>::enter<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}, (alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>)>
-rust	Tests	2026-11-28T16:35:24.7164889Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/context/scoped.rs:40:9
-rust	Tests	2026-11-28T16:35:24.7165994Z   14: tokio::runtime::context::set_scheduler::<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>), <tokio::runtime::scheduler::current_thread::CoreGuard>::enter<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}>::{closure#0}
-rust	Tests	2026-11-28T16:35:24.7167094Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/context.rs:186:38
-rust	Tests	2026-11-28T16:35:24.7168531Z   15: <std::thread::local::LocalKey<tokio::runtime::context::Context>>::try_with::<tokio::runtime::context::set_scheduler<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>), <tokio::runtime::scheduler::current_thread::CoreGuard>::enter<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}>::{closure#0}, (alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>)>
-rust	Tests	2026-11-28T16:35:24.7170103Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/std/src/thread/local.rs:463:12
-rust	Tests	2026-11-28T16:35:24.7171423Z   16: <std::thread::local::LocalKey<tokio::runtime::context::Context>>::with::<tokio::runtime::context::set_scheduler<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>), <tokio::runtime::scheduler::current_thread::CoreGuard>::enter<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}>::{closure#0}, (alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>)>
-rust	Tests	2026-11-28T16:35:24.7172982Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/std/src/thread/local.rs:427:20
-rust	Tests	2026-11-28T16:35:24.7173992Z   17: tokio::runtime::context::set_scheduler::<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>), <tokio::runtime::scheduler::current_thread::CoreGuard>::enter<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}>
-rust	Tests	2026-11-28T16:35:24.7175054Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/context.rs:186:17
-rust	Tests	2026-11-28T16:35:24.7175804Z   18: <tokio::runtime::scheduler::current_thread::CoreGuard>::enter::<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>
-rust	Tests	2026-11-28T16:35:24.7176603Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:906:27
-rust	Tests	2026-11-28T16:35:24.7177207Z   19: <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>
-rust	Tests	2026-11-28T16:35:24.7177797Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:819:24
-rust	Tests	2026-11-28T16:35:24.7178417Z   20: <tokio::runtime::scheduler::current_thread::CurrentThread>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}
-rust	Tests	2026-11-28T16:35:24.7179040Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:216:33
-rust	Tests	2026-11-28T16:35:24.7179789Z   21: tokio::runtime::context::runtime::enter_runtime::<<tokio::runtime::scheduler::current_thread::CurrentThread>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, ()>
-rust	Tests	2026-11-28T16:35:24.7180503Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/context/runtime.rs:65:16
-rust	Tests	2026-11-28T16:35:24.7181123Z   22: <tokio::runtime::scheduler::current_thread::CurrentThread>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>
-rust	Tests	2026-11-28T16:35:24.7181723Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:204:9
-rust	Tests	2026-11-28T16:35:24.7182278Z   23: <tokio::runtime::runtime::Runtime>::block_on_inner::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>
-rust	Tests	2026-11-28T16:35:24.7182968Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/runtime.rs:379:52
-rust	Tests	2026-11-28T16:35:24.7183488Z   24: <tokio::runtime::runtime::Runtime>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>
-rust	Tests	2026-11-28T16:35:24.7183969Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/runtime.rs:348:18
-rust	Tests	2026-11-28T16:35:24.7184432Z   25: api_flow::register_login_create_and_update_listing
-rust	Tests	2026-11-28T16:35:24.7184663Z              at ./tests/api_flow.rs:84:43
-rust	Tests	2026-11-28T16:35:24.7184917Z   26: api_flow::register_login_create_and_update_listing::{closure#0}
-rust	Tests	2026-11-28T16:35:24.7185166Z              at ./tests/api_flow.rs:17:52
-rust	Tests	2026-11-28T16:35:24.7185512Z   27: <api_flow::register_login_create_and_update_listing::{closure#0} as core::ops::function::FnOnce<()>>::call_once
-rust	Tests	2026-11-28T16:35:24.7186014Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/ops/function.rs:250:5
-rust	Tests	2026-11-28T16:35:24.7186460Z   28: <fn() -> core::result::Result<(), alloc::string::String> as core::ops::function::FnOnce<()>>::call_once
-rust	Tests	2026-11-28T16:35:24.7186884Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/ops/function.rs:250:5
-rust	Tests	2026-11-28T16:35:24.7187286Z note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
-rust	Tests	2026-11-28T16:35:24.7187514Z 
-rust	Tests	2026-11-28T16:35:24.7187522Z 
-rust	Tests	2026-11-28T16:35:24.7187588Z failures:
-rust	Tests	2026-11-28T16:35:24.7187735Z     messaging_flow
-rust	Tests	2026-11-28T16:35:24.7187916Z     register_login_create_and_update_listing
-rust	Tests	2026-11-28T16:35:24.7188056Z 
-rust	Tests	2026-11-28T16:35:24.7188234Z test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
-rust	Tests	2026-11-28T16:35:24.7188471Z 
-rust	Tests	2026-11-28T16:35:24.7197313Z ##[error]Process completed with exit code 101.
+rust	Tests	﻿2026-11-28T16:46:05.3292532Z ##[group]Run cargo test --all-targets
+rust	Tests	2026-11-28T16:46:05.3293140Z ^[[36;1mcargo test --all-targets^[[0m
+rust	Tests	2026-11-28T16:46:05.3339633Z shell: /usr/bin/bash -e {0}
+rust	Tests	2026-11-28T16:46:05.3340099Z env:
+rust	Tests	2026-11-28T16:46:05.3340446Z   CARGO_TERM_COLOR: never
+rust	Tests	2026-11-28T16:46:05.3340879Z   NO_COLOR: 1
+rust	Tests	2026-11-28T16:46:05.3341246Z   RUST_BACKTRACE: 1
+rust	Tests	2026-11-28T16:46:05.3342031Z   DATABASE_URL: ***localhost:5432/unadomot_test
+rust	Tests	2026-11-28T16:46:05.3342719Z   JWT_SECRET: test-secret-that-is-at-least-32-bytes-long
+rust	Tests	2026-11-28T16:46:05.3343553Z   REFRESH_TOKEN_SECRET: test-refresh-secret-that-is-at-least-32-bytes
+rust	Tests	2026-11-28T16:46:05.3344289Z   CARGO_HOME: /home/runner/.cargo
+rust	Tests	2026-11-28T16:46:05.3344784Z   CARGO_INCREMENTAL: 0
+rust	Tests	2026-11-28T16:46:05.3345196Z   CACHE_ON_FAILURE: false
+rust	Tests	2026-11-28T16:46:05.3345645Z ##[endgroup]
+rust	Tests	2026-11-28T16:46:05.5540119Z    Compiling unadomot-api v0.1.0 (/home/runner/work/unadomot/unadomot/services/api)
+rust	Tests	2026-11-28T16:46:16.2697394Z     Finished `test` profile [unoptimized + debuginfo] target(s) in 10.90s
+rust	Tests	2026-11-28T16:46:16.2887261Z      Running unittests src/lib.rs (target/debug/build/unadomot-api/d54258b5e97c22f0/out/unadomot_api-d54258b5e97c22f0)
+rust	Tests	2026-11-28T16:46:16.2903391Z 
+rust	Tests	2026-11-28T16:46:16.2903570Z running 36 tests
+rust	Tests	2026-11-28T16:46:16.2924326Z test application::auth::tests::bearer_token_requires_bearer_prefix ... ok
+rust	Tests	2026-11-28T16:46:16.2925428Z test application::auth::tests::refresh_tokens_are_32_random_bytes ... ok
+rust	Tests	2026-11-28T16:46:16.2926734Z test application::auth::tests::refresh_tokens_are_hashed_with_hmac ... ok
+rust	Tests	2026-11-28T16:46:16.2928321Z test application::listings::tests::accepts_a_normal_listing ... ok
+rust	Tests	2026-11-28T16:46:16.2929527Z test application::listings::tests::normalizes_listing_codes ... ok
+rust	Tests	2026-11-28T16:46:16.2930666Z test application::listings::tests::rejects_blank_amenity ... ok
+rust	Tests	2026-11-28T16:46:16.2933737Z test application::email::tests::unconfigured_sender_fails_closed ... ok
+rust	Tests	2026-11-28T16:46:16.2934483Z test application::listings::tests::rejects_too_many_amenities ... ok
+rust	Tests	2026-11-28T16:46:16.2935120Z test application::listings::tests::rejects_invalid_price ... ok
+rust	Tests	2026-11-28T16:46:16.2935811Z test application::media::tests::chat_accepts_audio_and_video_while_listings_stay_images ... ok
+rust	Tests	2026-11-28T16:46:16.2936564Z test application::media::tests::only_verification_documents_are_authenticated ... ok
+rust	Tests	2026-11-28T16:46:16.2937215Z test application::media::tests::parses_known_purposes_only ... ok
+rust	Tests	2026-11-28T16:46:16.2938073Z test application::media::tests::folders_are_scoped_to_the_user ... ok
+rust	Tests	2026-11-28T16:46:16.2939188Z test application::media::tests::request_derives_folder_and_type_from_purpose ... ok
+rust	Tests	2026-11-28T16:46:16.2940137Z test application::verification::tests::accepts_only_the_users_verification_folder ... ok
+rust	Tests	2026-11-28T16:46:16.2940709Z test http::chat::tests::rejects_non_cloudinary_media_urls ... ok
+rust	Tests	2026-11-28T16:46:16.2941184Z test config::tests::rejects_common_placeholder_secrets ... ok
+rust	Tests	2026-11-28T16:46:16.2941687Z test http::calls::tests::turn_credentials_are_deterministic_and_secret_bound ... ok
+rust	Tests	2026-11-28T16:46:16.2942281Z test http::listings::tests::accepts_media_from_our_cloud_with_matching_public_id ... ok
+rust	Tests	2026-11-28T16:46:16.2942772Z test http::listings::tests::rejects_foreign_clouds ... ok
+rust	Tests	2026-11-28T16:46:16.2943219Z test http::listings::tests::rejects_non_cloudinary_or_http_media ... ok
+rust	Tests	2026-11-28T16:46:16.2943745Z test http::listings::tests::requires_the_owners_listing_folder ... ok
+rust	Tests	2026-11-28T16:46:16.2944642Z test http::listings::tests::trims_and_dedupes_amenities ... ok
+rust	Tests	2026-11-28T16:46:16.2945139Z test http::profile::tests::public_profile_never_serialises_email_or_phone ... ok
+rust	Tests	2026-11-28T16:46:16.2945653Z test http::profile::tests::rejects_non_cloudinary_photo_urls ... ok
+rust	Tests	2026-11-28T16:46:16.2946059Z test http::tests::enforces_per_key_budgets ... ok
+rust	Tests	2026-11-28T16:46:16.2946473Z test http::tests::separate_budgets_do_not_share_counters ... ok
+rust	Tests	2026-11-28T16:46:16.2946983Z test http::listings::tests::rejects_media_when_cloudinary_is_not_configured ... ok
+rust	Tests	2026-11-28T16:46:16.2947806Z test infrastructure::cloudinary::tests::builds_signed_authenticated_delivery_urls ... ok
+rust	Tests	2026-11-28T16:46:16.2948739Z test http::listings::tests::rejects_urls_that_do_not_match_the_public_id ... ok
+rust	Tests	2026-11-28T16:46:16.2949328Z test infrastructure::cloudinary::tests::chat_uploads_are_signed_for_audio_and_video ... ok
+rust	Tests	2026-11-28T16:46:16.2949950Z test infrastructure::cloudinary::tests::exposes_cloud_name_for_url_validation ... ok
+rust	Tests	2026-11-28T16:46:16.2950560Z test infrastructure::cloudinary::tests::signs_sorted_params_and_restricts_formats ... ok
+rust	Tests	2026-11-28T16:46:16.2951167Z test infrastructure::cloudinary::tests::verification_uploads_are_authenticated ... ok
+rust	Tests	2026-11-28T16:46:16.2951799Z test infrastructure::postgres::profile_repository::tests::username_has_expected_shape ... ok
+rust	Tests	2026-11-28T16:46:17.3130233Z test application::auth::tests::password_hashing_and_verification_work ... ok
+rust	Tests	2026-11-28T16:46:17.3130808Z 
+rust	Tests	2026-11-28T16:46:17.3131124Z test result: ok. 36 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.02s
+rust	Tests	2026-11-28T16:46:17.3131546Z 
+rust	Tests	2026-11-28T16:46:17.3149802Z      Running unittests src/main.rs (target/debug/build/unadomot-api/fb4b8e5640dceb84/out/unadomot_api-fb4b8e5640dceb84)
+rust	Tests	2026-11-28T16:46:17.3162239Z 
+rust	Tests	2026-11-28T16:46:17.3162401Z running 0 tests
+rust	Tests	2026-11-28T16:46:17.3164310Z 
+rust	Tests	2026-11-28T16:46:17.3165275Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+rust	Tests	2026-11-28T16:46:17.3165900Z 
+rust	Tests	2026-11-28T16:46:17.3166331Z      Running tests/api_flow.rs (target/debug/build/unadomot-api/71048d3ba4ab7728/out/api_flow-71048d3ba4ab7728)
+rust	Tests	2026-11-28T16:46:17.3180712Z 
+rust	Tests	2026-11-28T16:46:17.3180972Z running 2 tests
+rust	Tests	2026-11-28T16:46:18.5678478Z test register_login_create_and_update_listing ... ok
+rust	Tests	2026-11-28T16:46:19.1012847Z test messaging_flow ... ok
+rust	Tests	2026-11-28T16:46:19.1013733Z 
+rust	Tests	2026-11-28T16:46:19.1014895Z test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.78s
+rust	Tests	2026-11-28T16:46:19.1016141Z 
+rust	Tests	2026-11-28T16:46:19.1062756Z      Running tests/hardening.rs (target/debug/build/unadomot-api/a0874c451e39eaa4/out/hardening-a0874c451e39eaa4)
+rust	Tests	2026-11-28T16:46:19.1078302Z 
+rust	Tests	2026-11-28T16:46:19.1078476Z running 3 tests
+rust	Tests	2026-11-28T16:46:20.0880072Z test invalid_listing_inputs_are_rejected ... ok
+rust	Tests	2026-11-28T16:46:20.1573233Z test media_attachment_is_returned_with_listing ... FAILED
+rust	Tests	2026-11-28T16:46:20.2747601Z test ownership_and_soft_delete_are_enforced ... ok
+rust	Tests	2026-11-28T16:46:20.2748768Z 
+rust	Tests	2026-11-28T16:46:20.2749264Z failures:
+rust	Tests	2026-11-28T16:46:20.2749824Z 
+rust	Tests	2026-11-28T16:46:20.2750360Z ---- media_attachment_is_returned_with_listing stdout ----
+rust	Tests	2026-11-28T16:46:20.2751098Z 
+rust	Tests	2026-11-28T16:46:20.2751905Z thread 'media_attachment_is_returned_with_listing' (4206) panicked at tests/hardening.rs:126:6:
+rust	Tests	2026-11-28T16:46:20.2753263Z add media: InvalidInput("Media must be uploaded to your own listing folder")
+rust	Tests	2026-11-28T16:46:20.2754276Z stack backtrace:
+rust	Tests	2026-11-28T16:46:20.2754833Z    0: __rustc::rust_begin_unwind
+rust	Tests	2026-11-28T16:46:20.2755798Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/std/src/panicking.rs:676:5
+rust	Tests	2026-11-28T16:46:20.2756888Z    1: core::panicking::panic_fmt
+rust	Tests	2026-11-28T16:46:20.2757836Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/panicking.rs:80:14
+rust	Tests	2026-11-28T16:46:20.2759171Z    2: core::result::unwrap_failed
+rust	Tests	2026-11-28T16:46:20.2760722Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/result.rs:1870:5
+rust	Tests	2026-11-28T16:46:20.2762461Z    3: <core::result::Result<unadomot_api::domain::listing::ListingMedia, unadomot_api::application::listings::ListingError>>::expect
+rust	Tests	2026-11-28T16:46:20.2764013Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/result.rs:1184:23
+rust	Tests	2026-11-28T16:46:20.2765209Z    4: hardening::media_attachment_is_returned_with_listing::{closure#0}
+rust	Tests	2026-11-28T16:46:20.2766088Z              at ./tests/hardening.rs:126:6
+rust	Tests	2026-11-28T16:46:20.2767201Z    5: <core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>> as core::future::future::Future>::poll
+rust	Tests	2026-11-28T16:46:20.2770461Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/future/future.rs:133:9
+rust	Tests	2026-11-28T16:46:20.2772598Z    6: <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}::{closure#0}::{closure#0}
+rust	Tests	2026-11-28T16:46:20.2774720Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:830:70
+rust	Tests	2026-11-28T16:46:20.2777044Z    7: tokio::task::coop::with_budget::<core::task::poll::Poll<()>, <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}::{closure#0}::{closure#0}>
+rust	Tests	2026-11-28T16:46:20.2779385Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/task/coop/mod.rs:167:5
+rust	Tests	2026-11-28T16:46:20.2781435Z    8: tokio::task::coop::budget::<core::task::poll::Poll<()>, <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}::{closure#0}::{closure#0}>
+rust	Tests	2026-11-28T16:46:20.2783528Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/task/coop/mod.rs:133:5
+rust	Tests	2026-11-28T16:46:20.2785223Z    9: <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}::{closure#0}
+rust	Tests	2026-11-28T16:46:20.2787261Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:830:25
+rust	Tests	2026-11-28T16:46:20.2789855Z   10: <tokio::runtime::scheduler::current_thread::Context>::enter::<core::task::poll::Poll<()>, <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}::{closure#0}>
+rust	Tests	2026-11-28T16:46:20.2792356Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:486:19
+rust	Tests	2026-11-28T16:46:20.2794185Z   11: <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}
+rust	Tests	2026-11-28T16:46:20.2796120Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:829:44
+rust	Tests	2026-11-28T16:46:20.2798840Z   12: <tokio::runtime::scheduler::current_thread::CoreGuard>::enter::<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}
+rust	Tests	2026-11-28T16:46:20.2801511Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:906:68
+rust	Tests	2026-11-28T16:46:20.2805084Z   13: <tokio::runtime::context::scoped::Scoped<tokio::runtime::scheduler::Context>>::set::<<tokio::runtime::scheduler::current_thread::CoreGuard>::enter<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}, (alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>)>
+rust	Tests	2026-11-28T16:46:20.2808913Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/context/scoped.rs:40:9
+rust	Tests	2026-11-28T16:46:20.2812165Z   14: tokio::runtime::context::set_scheduler::<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>), <tokio::runtime::scheduler::current_thread::CoreGuard>::enter<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}>::{closure#0}
+rust	Tests	2026-11-28T16:46:20.2815543Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/context.rs:186:38
+rust	Tests	2026-11-28T16:46:20.2819796Z   15: <std::thread::local::LocalKey<tokio::runtime::context::Context>>::try_with::<tokio::runtime::context::set_scheduler<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>), <tokio::runtime::scheduler::current_thread::CoreGuard>::enter<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}>::{closure#0}, (alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>)>
+rust	Tests	2026-11-28T16:46:20.2823727Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/std/src/thread/local.rs:463:12
+rust	Tests	2026-11-28T16:46:20.2827806Z   16: <std::thread::local::LocalKey<tokio::runtime::context::Context>>::with::<tokio::runtime::context::set_scheduler<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>), <tokio::runtime::scheduler::current_thread::CoreGuard>::enter<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}>::{closure#0}, (alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>)>
+rust	Tests	2026-11-28T16:46:20.2830488Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/std/src/thread/local.rs:427:20
+rust	Tests	2026-11-28T16:46:20.2832159Z   17: tokio::runtime::context::set_scheduler::<(alloc::boxed::Box<tokio::runtime::scheduler::current_thread::Core>, core::option::Option<()>), <tokio::runtime::scheduler::current_thread::CoreGuard>::enter<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>::{closure#0}>
+rust	Tests	2026-11-28T16:46:20.2833871Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/context.rs:186:17
+rust	Tests	2026-11-28T16:46:20.2835427Z   18: <tokio::runtime::scheduler::current_thread::CoreGuard>::enter::<<tokio::runtime::scheduler::current_thread::CoreGuard>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, core::option::Option<()>>
+rust	Tests	2026-11-28T16:46:20.2836756Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:906:27
+rust	Tests	2026-11-28T16:46:20.2837744Z   19: <tokio::runtime::scheduler::current_thread::CoreGuard>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>
+rust	Tests	2026-11-28T16:46:20.2839103Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:819:24
+rust	Tests	2026-11-28T16:46:20.2840103Z   20: <tokio::runtime::scheduler::current_thread::CurrentThread>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}
+rust	Tests	2026-11-28T16:46:20.2841116Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:216:33
+rust	Tests	2026-11-28T16:46:20.2842321Z   21: tokio::runtime::context::runtime::enter_runtime::<<tokio::runtime::scheduler::current_thread::CurrentThread>::block_on<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>::{closure#0}, ()>
+rust	Tests	2026-11-28T16:46:20.2844640Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/context/runtime.rs:65:16
+rust	Tests	2026-11-28T16:46:20.2846228Z   22: <tokio::runtime::scheduler::current_thread::CurrentThread>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>
+rust	Tests	2026-11-28T16:46:20.2847401Z error: test failed, to rerun pass `--test hardening`
+rust	Tests	2026-11-28T16:46:20.2848719Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/scheduler/current_thread/mod.rs:204:9
+rust	Tests	2026-11-28T16:46:20.2850418Z   23: <tokio::runtime::runtime::Runtime>::block_on_inner::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>
+rust	Tests	2026-11-28T16:46:20.2851811Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/runtime.rs:379:52
+rust	Tests	2026-11-28T16:46:20.2853173Z   24: <tokio::runtime::runtime::Runtime>::block_on::<core::pin::Pin<&mut dyn core::future::future::Future<Output = ()>>>
+rust	Tests	2026-11-28T16:46:20.2854524Z              at /home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.54.1/src/runtime/runtime.rs:348:18
+rust	Tests	2026-11-28T16:46:20.2855598Z   25: hardening::media_attachment_is_returned_with_listing
+rust	Tests	2026-11-28T16:46:20.2856193Z              at ./tests/hardening.rs:133:70
+rust	Tests	2026-11-28T16:46:20.2856855Z   26: hardening::media_attachment_is_returned_with_listing::{closure#0}
+rust	Tests	2026-11-28T16:46:20.2857551Z              at ./tests/hardening.rs:98:53
+rust	Tests	2026-11-28T16:46:20.2858646Z   27: <hardening::media_attachment_is_returned_with_listing::{closure#0} as core::ops::function::FnOnce<()>>::call_once
+rust	Tests	2026-11-28T16:46:20.2859909Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/ops/function.rs:250:5
+rust	Tests	2026-11-28T16:46:20.2861284Z   28: <fn() -> core::result::Result<(), alloc::string::String> as core::ops::function::FnOnce<()>>::call_once
+rust	Tests	2026-11-28T16:46:20.2862460Z              at /rustc/0ef1bc386059596dada8fb65b50425aab2ea637a/library/core/src/ops/function.rs:250:5
+rust	Tests	2026-11-28T16:46:20.2863506Z note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+rust	Tests	2026-11-28T16:46:20.2864116Z 
+rust	Tests	2026-11-28T16:46:20.2864123Z 
+rust	Tests	2026-11-28T16:46:20.2864264Z failures:
+rust	Tests	2026-11-28T16:46:20.2864650Z     media_attachment_is_returned_with_listing
+rust	Tests	2026-11-28T16:46:20.2865039Z 
+rust	Tests	2026-11-28T16:46:20.2865492Z test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.17s
+rust	Tests	2026-11-28T16:46:20.2866189Z 
+rust	Tests	2026-11-28T16:46:20.2911453Z ##[error]Process completed with exit code 101.
