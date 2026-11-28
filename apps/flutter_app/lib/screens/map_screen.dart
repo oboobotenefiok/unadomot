@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import '../api/api_client.dart';
+import '../data/lga_coordinates.dart';
 import '../data/local_cache.dart';
 import '../data/nigeria_locations.dart';
 import '../models/listing.dart';
@@ -32,10 +33,27 @@ class MapScreen extends StatefulWidget {
   State<MapScreen> createState() => _MapScreenState();
 }
 
+class _LgaGroup {
+  final String state;
+  final String lga;
+  final LatLng point;
+  final List<Listing> listings;
+
+  const _LgaGroup({
+    required this.state,
+    required this.lga,
+    required this.point,
+    required this.listings,
+  });
+
+  String get key => '$state|$lga';
+}
+
 class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
-  String? _selectedState;
+  String? _selectedKey;
   List<Listing> _selectedListings = const [];
+  String? _selectedLabel;
   LatLng? _myLocation;
   LatLng? _pinnedLocation;
   bool _locating = false;
@@ -63,25 +81,28 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       _myLocation = null;
       _pinnedLocation = null;
-      _selectedState = null;
+      _selectedKey = null;
       _selectedListings = const [];
+      _selectedLabel = null;
       _locationError = null;
       _locating = false;
     });
     _mapController.move(const LatLng(9.0820, 8.6753), 6);
   }
 
-  void _selectState(String state, List<Listing> listings) {
+  void _selectGroup(_LgaGroup group) {
     setState(() {
-      _selectedState = state;
-      _selectedListings = listings;
+      _selectedKey = group.key;
+      _selectedListings = group.listings;
+      _selectedLabel = '${group.lga}, ${group.state}';
     });
   }
 
   void _closePopup() {
     setState(() {
-      _selectedState = null;
+      _selectedKey = null;
       _selectedListings = const [];
+      _selectedLabel = null;
     });
   }
 
@@ -119,10 +140,11 @@ class _MapScreenState extends State<MapScreen> {
       setState(() {
         _myLocation = point;
         _pinnedLocation = point;
-        _selectedState = null;
+        _selectedKey = null;
         _selectedListings = const [];
+        _selectedLabel = null;
       });
-      _mapController.move(point, 15);
+      _mapController.move(point, 14);
     } on TimeoutException {
       if (mounted && sessionEpoch == widget.appState.sessionEpoch) {
         setState(() => _locationError = 'Location timed out. Try again.');
@@ -145,8 +167,9 @@ class _MapScreenState extends State<MapScreen> {
   void _pinAt(LatLng point) {
     setState(() {
       _pinnedLocation = point;
-      _selectedState = null;
+      _selectedKey = null;
       _selectedListings = const [];
+      _selectedLabel = null;
     });
   }
 
@@ -191,24 +214,54 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
+  /// One marker per LGA that has listings. LGAs without a coordinate entry
+  /// fall back to their state centre so nothing drops off the map.
+  List<_LgaGroup> _groupByLga() {
+    final buckets = <String, List<Listing>>{};
+    final states = <String, String>{};
+    final lgas = <String, String>{};
+
+    for (final listing in widget.listings) {
+      final state = listing.state;
+      final lga = listing.lga.isEmpty ? NigeriaLocations.capitalFor(state) : listing.lga;
+      final key = '$state|$lga';
+      buckets.putIfAbsent(key, () => []).add(listing);
+      states[key] = state;
+      lgas[key] = lga;
+    }
+
+    final groups = <_LgaGroup>[];
+    for (final entry in buckets.entries) {
+      final state = states[entry.key]!;
+      final lga = lgas[entry.key]!;
+      final point = LgaCoordinates.forLga(state, lga) ??
+          NigeriaLocations.centers[state];
+      if (point == null) continue;
+      groups.add(_LgaGroup(
+        state: state,
+        lga: lga,
+        point: point,
+        listings: entry.value,
+      ));
+    }
+    groups.sort((a, b) => b.listings.length.compareTo(a.listings.length));
+    return groups;
+  }
+
   @override
   Widget build(BuildContext context) {
     final dark = Theme.of(context).brightness == Brightness.dark;
-    final byState = <String, List<Listing>>{};
-    for (final listing in widget.listings) {
-      if (!NigeriaLocations.centers.containsKey(listing.state)) continue;
-      byState.putIfAbsent(listing.state, () => []).add(listing);
-    }
+    final groups = _groupByLga();
 
-    final markers = byState.entries.map((entry) {
-      final count = entry.value.length;
-      final selected = _selectedState == entry.key;
+    final markers = groups.map((group) {
+      final count = group.listings.length;
+      final selected = _selectedKey == group.key;
       return Marker(
-        point: NigeriaLocations.centers[entry.key]!,
+        point: group.point,
         width: 52,
         height: 52,
         child: GestureDetector(
-          onTap: () => _selectState(entry.key, entry.value),
+          onTap: () => _selectGroup(group),
           child: Container(
             decoration: BoxDecoration(
               color: selected
@@ -278,7 +331,13 @@ class _MapScreenState extends State<MapScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Map view')),
+      appBar: AppBar(
+        title: Text(
+          groups.isEmpty
+              ? 'Map view'
+              : 'Map view · ${groups.length} area${groups.length == 1 ? '' : 's'}',
+        ),
+      ),
       body: Stack(
         children: [
           Positioned.fill(
@@ -353,13 +412,13 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ),
             ),
-          if (_selectedState != null)
+          if (_selectedKey != null)
             Positioned(
               left: 12,
               right: 12,
               bottom: 16,
               child: _MapPopup(
-                state: _selectedState!,
+                label: _selectedLabel ?? '',
                 listings: _selectedListings,
                 onClose: _closePopup,
                 onOpen: _openListing,
@@ -434,14 +493,14 @@ class _LocationFailure implements Exception {
 }
 
 class _MapPopup extends StatelessWidget {
-  final String state;
+  final String label;
   final List<Listing> listings;
   final VoidCallback onClose;
   final ValueChanged<Listing> onOpen;
   final ValueChanged<Listing> onChat;
 
   const _MapPopup({
-    required this.state,
+    required this.label,
     required this.listings,
     required this.onClose,
     required this.onOpen,
@@ -463,7 +522,7 @@ class _MapPopup extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      '$state • ${listings.length} listing${listings.length == 1 ? '' : 's'}',
+                      '$label • ${listings.length} listing${listings.length == 1 ? '' : 's'}',
                       style: const TextStyle(
                         color: UnaColors.text900,
                         fontWeight: FontWeight.w700,
