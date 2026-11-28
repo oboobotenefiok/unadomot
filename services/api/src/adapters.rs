@@ -37,6 +37,10 @@ impl ListingRepository for UnconfiguredRepository {
         Err(ListingError::Repository("Persistence not configured".into()))
     }
 
+    async fn get_by_code(&self, _code: &str) -> Result<Option<Listing>, ListingError> {
+        Err(ListingError::Repository("Persistence not configured".into()))
+    }
+
     async fn list_by_owner(&self, _owner_id: Uuid) -> Result<Vec<Listing>, ListingError> {
         Err(ListingError::Repository("Persistence not configured".into()))
     }

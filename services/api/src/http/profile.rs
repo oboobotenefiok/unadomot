@@ -327,8 +327,8 @@ async fn request_email_verification(
     }
 
     let verify_link = format!("{}/verify-email?token={}", state.public_web_url, token);
-    if let Err(error) = state.email.send_email_verification(&email, &verify_link).await {
-        tracing::error!(error = ?error, "email verification delivery failed");
+    if let Err(send_error) = state.email.send_email_verification(&email, &verify_link).await {
+        tracing::error!(error = ?send_error, "email verification delivery failed");
         return error(StatusCode::SERVICE_UNAVAILABLE, "Could not send the verification email");
     }
 

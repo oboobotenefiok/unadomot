@@ -11,7 +11,7 @@ use crate::extract::{AdminUser, AuthUser};
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
-    routing::{delete, get, post},
+    routing::{get, post},
     Json, Router,
 };
 use rust_decimal::Decimal;
