@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import '../api/api_client.dart';
+import '../api/event_stream.dart';
 import '../data/local_cache.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
@@ -56,6 +57,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final _player = AudioPlayer();
 
   List<Map<String, dynamic>> _messages = [];
+  final Set<String> _seenIds = {};
   Map<String, dynamic>? _replyTo;
   String? _myId;
   bool _loading = true;
@@ -81,6 +83,8 @@ class _ChatScreenState extends State<ChatScreen> {
   DateTime? _lastTypingPing;
   Timer? _incomingTimer;
   Timer? _typingTimer;
+  EventStream? _events;
+  StreamSubscription<Map<String, dynamic>>? _eventsSub;
 
   @override
   void initState() {
@@ -104,6 +108,7 @@ class _ChatScreenState extends State<ChatScreen> {
     });
     _load();
     _loadMe();
+    _listenForChanges();
     _incomingTimer = Timer.periodic(const Duration(seconds: 5), (_) => _checkIncoming());
     _typingTimer = Timer.periodic(const Duration(seconds: 2), (_) => _checkTyping());
   }
@@ -116,11 +121,45 @@ class _ChatScreenState extends State<ChatScreen> {
     _positionSub?.cancel();
     _durationSub?.cancel();
     _completeSub?.cancel();
+    _eventsSub?.cancel();
+    _events?.dispose();
     _recorder.dispose();
     _player.dispose();
     _controller.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  /// Appends messages written on another device as they arrive. The sender's
+  /// own device also receives the event, so anything already on screen is
+  /// skipped by id rather than duplicated.
+  void _listenForChanges() {
+    _events = EventStream(widget.api)..start();
+    _eventsSub = _events!.events.listen((event) {
+      if (event['type'] != 'message') return;
+      if (event['conversation_id'] != widget.conversationId) return;
+      final message = event['message'];
+      if (message is! Map) return;
+      _appendMessage(Map<String, dynamic>.from(message));
+    });
+  }
+
+  void _appendMessage(Map<String, dynamic> message) {
+    final id = message['id'] as String?;
+    if (id == null || _seenIds.contains(id)) return;
+
+    final wasNearBottom = !_scrollController.hasClients ||
+        _scrollController.position.maxScrollExtent - _scrollController.offset < 120;
+
+    setState(() {
+      _seenIds.add(id);
+      _messages = [..._messages, message];
+    });
+
+    if (wasNearBottom) {
+      _scrollToBottom();
+    }
+    widget.api.markRead(widget.conversationId).catchError((_) {});
   }
 
   Future<void> _loadMe() async {
@@ -223,7 +262,12 @@ class _ChatScreenState extends State<ChatScreen> {
     try {
       final messages = await widget.api.messages(widget.conversationId);
       if (mounted) {
-        setState(() => _messages = messages.reversed.toList());
+        setState(() {
+          _messages = messages.reversed.toList();
+          _seenIds
+            ..clear()
+            ..addAll(_messages.map((item) => item['id'] as String? ?? ''));
+        });
         _scrollToBottom();
       }
       await widget.api.markRead(widget.conversationId);
@@ -258,6 +302,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _controller.clear();
       if (mounted) {
         setState(() {
+          _seenIds.add(message['id'] as String? ?? '');
           _messages = [..._messages, message];
           _replyTo = null;
         });
@@ -296,6 +341,7 @@ class _ChatScreenState extends State<ChatScreen> {
       );
       if (mounted) {
         setState(() {
+          _seenIds.add(message['id'] as String? ?? '');
           _messages = [..._messages, message];
           _replyTo = null;
         });
@@ -575,6 +621,49 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  void _startReply(Map<String, dynamic> message) {
+    setState(() {
+      _replyTo = {
+        'id': message['id'],
+        'body': message['body'],
+        'media_type': message['media_type'],
+        'sender_name': message['sender_id'] == _myId
+            ? 'You'
+            : (widget.counterpartName ?? 'them'),
+      };
+    });
+  }
+
+  void _showMessageActions(Map<String, dynamic> message) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.reply),
+              title: const Text('Reply'),
+              onTap: () {
+                Navigator.pop(context);
+                _startReply(message);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.emoji_emotions_outlined),
+              title: const Text('React'),
+              onTap: () {
+                Navigator.pop(context);
+                _showReactions(message);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _messageBubble(Map<String, dynamic> message, bool mine) {
     final mediaUrl = message['media_url'] as String?;
     final mediaType = message['media_type'] as String?;
@@ -634,7 +723,7 @@ class _ChatScreenState extends State<ChatScreen> {
         crossAxisAlignment: mine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           GestureDetector(
-            onLongPress: () => _showReactions(message),
+            onLongPress: () => _showMessageActions(message),
             onDoubleTap: () => _react(message, '❤️'),
             child: Container(
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
@@ -878,24 +967,31 @@ class _ChatScreenState extends State<ChatScreen> {
             _clock(Duration(seconds: _recordSeconds)),
             style: const TextStyle(fontWeight: FontWeight.w700),
           ),
-          const SizedBox(width: 6),
+          const SizedBox(width: 8),
           Text(
-            '· ${_clock(Duration(seconds: remaining))} left',
+            _recordPaused ? 'Paused' : 'Recording',
             style: TextStyle(
               fontSize: 12,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const Spacer(),
-          IconButton(
-            tooltip: _recordPaused ? 'Continue' : 'Pause',
-            onPressed: _toggleRecordPause,
-            icon: Icon(_recordPaused ? Icons.play_arrow : Icons.pause),
+          Text(
+            '${remaining}s left',
+            style: TextStyle(
+              fontSize: 12,
+              color: remaining <= 15 ? Colors.red : Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
-          IconButton.filled(
-            tooltip: 'Send voice note',
+          IconButton(
+            tooltip: _recordPaused ? 'Resume' : 'Pause',
+            onPressed: _toggleRecordPause,
+            icon: Icon(_recordPaused ? Icons.mic : Icons.pause),
+          ),
+          IconButton(
+            tooltip: 'Send',
             onPressed: _finishRecording,
-            icon: const Icon(Icons.send),
+            icon: const Icon(Icons.send, color: UnaColors.green700),
           ),
         ],
       ),
@@ -904,197 +1000,170 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _composer() {
     final hasText = _controller.text.trim().isNotEmpty;
-    return SafeArea(
-      top: false,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          border: Border(
-            top: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.3)),
-          ),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        border: Border(
+          top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            IconButton(
-              tooltip: 'Attach',
-              onPressed: _sending ? null : _showAttachments,
-              icon: const Icon(Icons.add_circle_outline),
-            ),
-            Expanded(
-              child: TextField(
-                controller: _controller,
-                minLines: 1,
-                maxLines: 5,
-                textCapitalization: TextCapitalization.sentences,
-                onChanged: (_) {
-                  setState(() {});
-                  _notifyTyping();
-                },
-                decoration: InputDecoration(
-                  hintText: 'Message',
-                  isDense: true,
-                  filled: true,
-                  fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(22),
-                    borderSide: BorderSide.none,
-                  ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          IconButton(
+            tooltip: 'Attach',
+            onPressed: _sending ? null : _showAttachments,
+            icon: const Icon(Icons.add_circle_outline),
+          ),
+          Expanded(
+            child: TextField(
+              controller: _controller,
+              minLines: 1,
+              maxLines: 5,
+              textCapitalization: TextCapitalization.sentences,
+              onChanged: (_) {
+                setState(() {});
+                _notifyTyping();
+              },
+              decoration: InputDecoration(
+                hintText: 'Message',
+                isDense: true,
+                filled: true,
+                fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: BorderSide.none,
                 ),
               ),
             ),
-            const SizedBox(width: 4),
-            if (hasText)
-              IconButton.filled(
-                tooltip: 'Send',
-                onPressed: _sending ? null : _send,
-                icon: _sending
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Icon(Icons.send),
-              )
-            else
-              IconButton.filledTonal(
-                tooltip: 'Record voice note',
-                onPressed: _sending ? null : _startRecording,
-                icon: const Icon(Icons.mic_none),
-              ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 4),
+          if (hasText)
+            IconButton.filled(
+              tooltip: 'Send',
+              onPressed: _sending ? null : _send,
+              icon: _sending
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Icon(Icons.send),
+            )
+          else
+            IconButton(
+              tooltip: 'Record a voice note',
+              onPressed: _sending ? null : _startRecording,
+              icon: const Icon(Icons.mic_none),
+            ),
+        ],
       ),
     );
   }
 
-  /// The property this conversation belongs to. Tapping it opens the listing.
-  Widget _listingHeader() {
+  PreferredSizeWidget _appBar() {
     final title = widget.listingTitle ?? 'Conversation';
     final photo = widget.listingPhotoUrl;
-    final canOpen = widget.listingId != null &&
-        widget.cache != null &&
-        widget.appState != null;
+    final canOpen = widget.listingId != null && widget.cache != null && widget.appState != null;
 
-    return InkWell(
-      onTap: canOpen ? _openListing : null,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: SizedBox(
-                width: 38,
-                height: 38,
-                child: photo == null
-                    ? Container(
-                        color: UnaColors.green100,
-                        child: const Icon(
-                          Icons.home_work_outlined,
-                          size: 20,
-                          color: UnaColors.green900,
-                        ),
-                      )
-                    : Image.network(photo, fit: BoxFit.cover),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
+    return AppBar(
+      titleSpacing: 0,
+      title: InkWell(
+        onTap: canOpen
+            ? () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ListingDetailScreen(
+                      api: widget.api,
+                      cache: widget.cache!,
+                      appState: widget.appState!,
+                      listingId: widget.listingId!,
                     ),
                   ),
-                  if (widget.counterpartName != null)
+                )
+            : null,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: SizedBox(
+                  width: 38,
+                  height: 38,
+                  child: photo == null
+                      ? Container(
+                          color: UnaColors.green100,
+                          child: const Icon(
+                            Icons.home_work_outlined,
+                            size: 20,
+                            color: UnaColors.green900,
+                          ),
+                        )
+                      : Image.network(
+                          photo,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            color: UnaColors.green100,
+                            child: const Icon(
+                              Icons.home_work_outlined,
+                              size: 20,
+                              color: UnaColors.green900,
+                            ),
+                          ),
+                        ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     Text(
-                      widget.counterpartName!,
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                    ),
+                    Text(
+                      _isTyping
+                          ? 'typing...'
+                          : (widget.counterpartName ?? 'Tap to view the listing'),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 11,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w400,
+                        color: _isTyping
+                            ? UnaColors.green700
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            if (canOpen)
-              const Icon(Icons.chevron_right, size: 20),
-          ],
+            ],
+          ),
         ),
       ),
-    );
-  }
-
-  void _openListing() {
-    final listingId = widget.listingId;
-    final cache = widget.cache;
-    final appState = widget.appState;
-    if (listingId == null || cache == null || appState == null) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ListingDetailScreen(
-          api: widget.api,
-          cache: cache,
-          appState: appState,
-          listingId: listingId,
+      actions: [
+        IconButton(
+          tooltip: 'Refresh',
+          onPressed: _load,
+          icon: const Icon(Icons.refresh),
         ),
-      ),
+      ],
     );
-  }
-
-  Widget _senderAvatar() {
-    final photo = widget.counterpartPhotoUrl;
-    final name = widget.counterpartName ?? '';
-    return CircleAvatar(
-      radius: 14,
-      backgroundColor: UnaColors.green100,
-      backgroundImage: photo == null ? null : NetworkImage(photo),
-      child: photo == null
-          ? Text(
-              _initials(name),
-              style: const TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: UnaColors.green900,
-              ),
-            )
-          : null,
-    );
-  }
-
-  String _initials(String name) {
-    final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
-    if (parts.isEmpty) return '?';
-    if (parts.length == 1) return parts.first.characters.first.toUpperCase();
-    return (parts.first.characters.first + parts.last.characters.first).toUpperCase();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: _listingHeader(),
-        actions: [
-          IconButton(
-            tooltip: 'Refresh',
-            onPressed: _load,
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
-      ),
+      appBar: _appBar(),
       body: Column(
         children: [
           Expanded(
@@ -1104,30 +1173,24 @@ class _ChatScreenState extends State<ChatScreen> {
                     ? Center(
                         child: Padding(
                           padding: const EdgeInsets.all(24),
-                          child: Text(_error!, textAlign: TextAlign.center),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(_error!, textAlign: TextAlign.center),
+                              const SizedBox(height: 12),
+                              FilledButton(onPressed: _load, child: const Text('Try again')),
+                            ],
+                          ),
                         ),
                       )
                     : ListView.builder(
                         controller: _scrollController,
                         padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-                        itemCount: _messages.length + (_isTyping ? 1 : 0),
+                        itemCount: _messages.length,
                         itemBuilder: (context, index) {
-                          if (index >= _messages.length) {
-                            return const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Text(
-                                'typing…',
-                                style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12),
-                              ),
-                            );
-                          }
                           final message = _messages[index];
-                          final senderId = message['sender_id'] as String?;
-                          final mine = _myId != null && senderId == _myId;
-                          final bubble = GestureDetector(
-                            onLongPress: () => setState(() => _replyTo = message),
-                            child: _messageBubble(message, mine),
-                          );
+                          final mine = _myId != null && message['sender_id'] == _myId;
+                          final bubble = _messageBubble(message, mine);
                           if (mine) {
                             return Align(
                               alignment: Alignment.centerRight,
@@ -1137,16 +1200,12 @@ class _ChatScreenState extends State<ChatScreen> {
                           return Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 4, right: 6),
-                                child: _senderAvatar(),
+                              _SenderAvatar(
+                                photoUrl: widget.counterpartPhotoUrl,
+                                name: widget.counterpartName,
                               ),
-                              Flexible(
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: bubble,
-                                ),
-                              ),
+                              const SizedBox(width: 6),
+                              Flexible(child: bubble),
                             ],
                           );
                         },
@@ -1155,6 +1214,40 @@ class _ChatScreenState extends State<ChatScreen> {
           if (_recording) _recordingBar() else ...[_replyPreview(), _composer()],
         ],
       ),
+    );
+  }
+}
+
+class _SenderAvatar extends StatelessWidget {
+  final String? photoUrl;
+  final String? name;
+
+  const _SenderAvatar({required this.photoUrl, required this.name});
+
+  @override
+  Widget build(BuildContext context) {
+    final initials = (name ?? '')
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty)
+        .map((part) => part.characters.first.toUpperCase())
+        .take(2)
+        .join();
+
+    return CircleAvatar(
+      radius: 14,
+      backgroundColor: UnaColors.green100,
+      backgroundImage: photoUrl == null ? null : NetworkImage(photoUrl!),
+      child: photoUrl == null
+          ? Text(
+              initials.isEmpty ? '?' : initials,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: UnaColors.green900,
+              ),
+            )
+          : null,
     );
   }
 }
