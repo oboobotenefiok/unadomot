@@ -77,6 +77,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   Widget build(BuildContext context) {
     final available = _favorites.where((item) => item.status == 'available').toList();
     final unavailable = _favorites.where((item) => item.status != 'available').toList();
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: widget.showAppBar ? AppBar(title: const Text('Favorites')) : null,
@@ -93,15 +94,18 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               : ListView(
                   padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
                   children: [
-                    const Text(
+                    Text(
                       'Saved Listings',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+                      style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 20),
                     if (available.isNotEmpty) ...[
-                      const Text(
+                      Text(
                         'Available Listings',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF374151)),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onSurface,
+                        ),
                       ),
                       const SizedBox(height: 10),
                       _grid(available, unavailable: false),
@@ -110,15 +114,21 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                       const SizedBox(height: 24),
                       Row(
                         children: [
-                          const Expanded(
+                          Expanded(
                             child: Text(
                               'Unavailable Listings',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF6B7280)),
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
                             ),
                           ),
                           TextButton(
                             onPressed: _removeUnavailable,
-                            child: const Text('Remove all', style: TextStyle(color: Colors.red)),
+                            child: Text(
+                              'Remove all',
+                              style: TextStyle(color: theme.colorScheme.error),
+                            ),
                           ),
                         ],
                       ),
@@ -181,13 +191,17 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.red.shade600,
+                    color: Theme.of(context).colorScheme.error,
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Text(
+                  child: Text(
                     'This listing is no longer available',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onError,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
