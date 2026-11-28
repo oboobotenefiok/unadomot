@@ -31,6 +31,7 @@ pub trait ListingRepository: Send + Sync {
     ) -> Result<ListingPage, ListingError>;
     async fn get(&self, id: Uuid) -> Result<Option<Listing>, ListingError>;
     async fn get_public(&self, id: Uuid) -> Result<Option<Listing>, ListingError>;
+    async fn get_by_code(&self, code: &str) -> Result<Option<Listing>, ListingError>;
     async fn list_by_owner(&self, owner_id: Uuid) -> Result<Vec<Listing>, ListingError>;
     async fn list_favorites(&self, user_id: Uuid) -> Result<Vec<Listing>, ListingError>;
     async fn add_favorite(&self, user_id: Uuid, listing_id: Uuid) -> Result<(), ListingError>;
@@ -82,6 +83,32 @@ pub async fn get_public_listing(
     id: Uuid,
 ) -> Result<Option<Listing>, ListingError> {
     repository.get_public(id).await
+}
+
+pub async fn get_public_listing_by_code(
+    repository: &dyn ListingRepository,
+    code: &str,
+) -> Result<Option<Listing>, ListingError> {
+    let code = normalize_listing_code(code)?;
+    repository.get_by_code(&code).await
+}
+
+fn normalize_listing_code(code: &str) -> Result<String, ListingError> {
+    let code = code.trim().to_ascii_uppercase();
+    if code.is_empty() || code.len() > 32 {
+        return Err(ListingError::InvalidInput(
+            "Listing code must be between 1 and 32 characters".into(),
+        ));
+    }
+    if !code
+        .chars()
+        .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
+    {
+        return Err(ListingError::InvalidInput(
+            "Listing code contains invalid characters".into(),
+        ));
+    }
+    Ok(code)
 }
 
 pub async fn list_my_listings(
@@ -228,9 +255,6 @@ pub async fn add_listing_media(
     repository.add_media(listing_id, owner_id, media).await
 }
 
-/// Amenities are free text, so the only guardrails are count and length. The
-/// cap keeps a single listing from carrying an unbounded array into every
-/// browse response.
 fn validate_amenities(amenities: &[String]) -> Result<(), ListingError> {
     if amenities.len() > 30 {
         return Err(ListingError::InvalidInput(
@@ -342,5 +366,12 @@ mod tests {
             validate_new_listing(&input),
             Err(ListingError::InvalidInput(_))
         ));
+    }
+
+    #[test]
+    fn normalizes_listing_codes() {
+        assert_eq!(normalize_listing_code(" ab12cd ").unwrap(), "AB12CD");
+        assert!(normalize_listing_code("").is_err());
+        assert!(normalize_listing_code("bad code").is_err());
     }
 }

@@ -100,6 +100,20 @@ Future<void> showShareListingSheet(BuildContext context, Listing listing) async 
                     fontSize: 12,
                   ),
                 ),
+                if (listing.code != null) ...[
+                  const SizedBox(height: 8),
+                  TextButton.icon(
+                    onPressed: () async {
+                      await Clipboard.setData(ClipboardData(text: listing.code!));
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Code ${listing.code} copied')),
+                      );
+                    },
+                    icon: const Icon(Icons.copy, size: 16),
+                    label: const Text('Copy code'),
+                  ),
+                ],
               ],
             ),
           ),

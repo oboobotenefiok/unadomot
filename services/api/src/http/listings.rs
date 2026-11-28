@@ -1,7 +1,7 @@
 use crate::application::listings::{
     add_favorite, add_listing_media, admin_remove_listing, admin_restore_listing, browse_listings,
-    create_listing, delete_listing, get_public_listing, list_favorites, list_my_listings,
-    remove_favorite, update_listing, ListingError,
+    create_listing, delete_listing, get_public_listing, get_public_listing_by_code,
+    list_favorites, list_my_listings, remove_favorite, update_listing, ListingError,
 };
 use crate::application::media::{MediaError, UploadPurpose, UploadRequest};
 use crate::domain::listing::{
@@ -34,6 +34,7 @@ pub fn router() -> Router<AppState> {
             "/api/favorites/{id}",
             post(add_favorite_handler).delete(remove_favorite_handler),
         )
+        .route("/api/listings/code/{code}", get(get_listing_by_code_handler))
         .route(
             "/api/listings/{id}",
             get(get_listing_handler)
@@ -92,7 +93,6 @@ pub struct AddMediaRequest {
 
 #[derive(Deserialize, Default)]
 pub struct SignatureRequest {
-    /// One of `listing`, `avatar`, `chat`, `verification`. Defaults to listing.
     pub purpose: Option<String>,
 }
 
@@ -306,6 +306,18 @@ async fn get_listing_handler(
         .ok_or_else(|| ApiError::new(StatusCode::NOT_FOUND, "not_found", "Listing not found"))
 }
 
+async fn get_listing_by_code_handler(
+    State(state): State<AppState>,
+    Path(code): Path<String>,
+) -> Result<Json<ListingResponse>, ApiError> {
+    get_public_listing_by_code(state.listings.as_ref(), &code)
+        .await
+        .map_err(listing_error)?
+        .map(ListingResponse::from)
+        .map(Json)
+        .ok_or_else(|| ApiError::new(StatusCode::NOT_FOUND, "not_found", "Listing not found"))
+}
+
 async fn update_listing_handler(
     State(state): State<AppState>,
     user: AuthUser,
@@ -474,8 +486,6 @@ async fn signature_handler(
         .map_err(media_error)
 }
 
-/// Trims each entry and drops blanks and repeats, so "Borehole" and " borehole"
-/// do not both survive into the stored array.
 fn clean_amenities(amenities: Vec<String>) -> Vec<String> {
     let mut seen: Vec<String> = Vec::new();
     for amenity in amenities {

@@ -120,6 +120,30 @@ impl ListingRepository for PostgresListingRepository {
         Ok(Some(listing))
     }
 
+    async fn get_by_code(&self, code: &str) -> Result<Option<Listing>, ListingError> {
+        let query = format!(
+            "SELECT {LISTING_COLUMNS} FROM listings l WHERE l.code = $1 AND l.deleted_at IS NULL AND l.status = 'available'"
+        );
+        let row = sqlx::query_as::<_, ListingRow>(&query)
+            .bind(code)
+            .fetch_optional(&self.pool)
+            .await
+            .map_err(|e| ListingError::Repository(e.to_string()))?;
+
+        let Some(row) = row else {
+            return Ok(None);
+        };
+
+        let id = row.id;
+        let mut listing: Listing = row.into();
+        listing.media = self
+            .load_media_for(&[id])
+            .await?
+            .remove(&id)
+            .unwrap_or_default();
+        Ok(Some(listing))
+    }
+
     async fn list_by_owner(&self, owner_id: Uuid) -> Result<Vec<Listing>, ListingError> {
         let query = format!(
             "SELECT {LISTING_COLUMNS} FROM listings l WHERE l.landlord_id = $1 AND l.deleted_at IS NULL ORDER BY l.created_at DESC"
