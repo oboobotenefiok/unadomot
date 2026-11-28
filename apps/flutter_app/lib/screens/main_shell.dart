@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../api/api_client.dart';
-import '../api/event_stream.dart';
 import '../data/local_cache.dart';
 import '../models/listing.dart';
 import '../state/app_state.dart';
@@ -42,6 +41,11 @@ class _MainShellState extends State<MainShell> {
   bool _mapMode = false;
   bool _mapLoading = false;
   List<Listing> _mapListings = [];
+
+  /// Bumped every time the profile tab is opened. The profile screen lives in
+  /// an IndexedStack, so without this it keeps whatever listings it loaded the
+  /// first time and never shows a newly posted property.
+  int _profileEpoch = 0;
 
   EventStream? _events;
   StreamSubscription<Map<String, dynamic>>? _eventsSub;
@@ -153,7 +157,11 @@ class _MainShellState extends State<MainShell> {
   void _go(int index) {
     if (index == _index) return;
     _history.add(_index);
-    setState(() => _index = index);
+    setState(() {
+      _index = index;
+      // Rebuild the profile tab so it re-fetches the user's listings.
+      if (index == 4) _profileEpoch++;
+    });
     if (index == 4 && widget.appState.signedIn) _loadProfile();
     if (index == 3 && widget.appState.signedIn) _loadUnread();
   }
@@ -169,7 +177,10 @@ class _MainShellState extends State<MainShell> {
       return;
     }
     final previous = _history.removeLast();
-    setState(() => _index = previous);
+    setState(() {
+      _index = previous;
+      if (previous == 4) _profileEpoch++;
+    });
   }
 
   Future<void> _openProfile() async {
@@ -279,7 +290,7 @@ class _MainShellState extends State<MainShell> {
         ),
       ),
       KeyedSubtree(
-        key: ValueKey('profile-$authKey'),
+        key: ValueKey('profile-$authKey-$_profileEpoch'),
         child: ProfileScreen(
           api: widget.api,
           cache: widget.cache,
