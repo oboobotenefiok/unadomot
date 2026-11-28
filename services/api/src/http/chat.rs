@@ -12,6 +12,7 @@ use std::sync::{Mutex, OnceLock};
 use std::time::{Duration, Instant};
 use crate::application::messaging::MessagingError;
 use crate::extract::AuthUser;
+use crate::http::events;
 use crate::http::AppState;
 use uuid::Uuid;
 
@@ -213,7 +214,7 @@ async fn send_rich_message_handler(
     }
 
     if let Some(kind) = request.media_type.as_deref() {
-        if !matches!(kind, "image" | "video" | "audio" | "file") {
+        if !matches!(kind, "image" | "video" | "audio" | "document" | "file") {
             return error(StatusCode::BAD_REQUEST, "Unsupported attachment type");
         }
     }
@@ -237,7 +238,23 @@ async fn send_rich_message_handler(
         )
         .await
     {
-        Ok(message) => (StatusCode::CREATED, Json(message)).into_response(),
+        Ok(message) => {
+            if let Ok(Some(conversation)) = state
+                .messaging
+                .find_conversation(conversation_id, user.id)
+                .await
+            {
+                events::publish(
+                    &[conversation.participant_a, conversation.participant_b],
+                    json!({
+                        "type": "message",
+                        "conversation_id": conversation_id,
+                        "message": message.clone(),
+                    }),
+                );
+            }
+            (StatusCode::CREATED, Json(message)).into_response()
+        }
         Err(error_value) => messaging_error(error_value),
     }
 }
