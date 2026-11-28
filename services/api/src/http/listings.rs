@@ -106,6 +106,7 @@ pub struct ListingResponse {
     pub id: Uuid,
     pub landlord_id: Uuid,
     pub landlord_name: String,
+    pub landlord_username: Option<String>,
     pub landlord_verified: bool,
     pub landlord_photo_url: Option<String>,
     pub title: String,
@@ -147,6 +148,7 @@ impl From<Listing> for ListingResponse {
             id: listing.id,
             landlord_id: listing.landlord_id,
             landlord_name: listing.landlord_name,
+            landlord_username: listing.landlord_username,
             landlord_verified: listing.landlord_verified,
             landlord_photo_url: listing.landlord_photo_url,
             title: listing.title,
@@ -584,7 +586,7 @@ mod tests {
 
     #[test]
     fn rejects_urls_that_do_not_match_the_public_id() {
-        let url = "https://res.cloudinary.com/demo/image/upload/v1/unadomot/listings/other.jpg";
+        let url = "https://res.cloudinary.com/other/image/upload/v1/unadomot/listings/other.jpg";
         assert!(!valid_media_url(url, Some("demo"), PUBLIC_ID));
     }
 

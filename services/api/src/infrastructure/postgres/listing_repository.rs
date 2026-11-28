@@ -11,6 +11,7 @@ use uuid::Uuid;
 
 const LISTING_COLUMNS: &str = "l.id, l.landlord_id,
     COALESCE((SELECT name FROM user_profiles WHERE user_id = l.landlord_id), '') AS landlord_name,
+    (SELECT username FROM user_profiles WHERE user_id = l.landlord_id) AS landlord_username,
     COALESCE((SELECT verified FROM user_profiles WHERE user_id = l.landlord_id), false) AS landlord_verified,
     (SELECT photo_url FROM user_profiles WHERE user_id = l.landlord_id) AS landlord_photo_url,
     l.title, l.description, l.price, l.address, l.state, l.lga, l.is_agent_listing, l.status,
@@ -373,6 +374,7 @@ struct ListingRow {
     id: Uuid,
     landlord_id: Uuid,
     landlord_name: String,
+    landlord_username: Option<String>,
     landlord_verified: bool,
     landlord_photo_url: Option<String>,
     title: String,
@@ -398,6 +400,7 @@ impl From<ListingRow> for Listing {
             id: row.id,
             landlord_id: row.landlord_id,
             landlord_name: row.landlord_name,
+            landlord_username: row.landlord_username,
             landlord_verified: row.landlord_verified,
             landlord_photo_url: row.landlord_photo_url,
             title: row.title,

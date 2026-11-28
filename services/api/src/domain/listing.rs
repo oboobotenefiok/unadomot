@@ -8,6 +8,8 @@ pub struct Listing {
     pub id: Uuid,
     pub landlord_id: Uuid,
     pub landlord_name: String,
+    #[serde(default)]
+    pub landlord_username: Option<String>,
     pub landlord_verified: bool,
     pub landlord_photo_url: Option<String>,
     pub title: String,
