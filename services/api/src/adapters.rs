@@ -41,6 +41,18 @@ impl ListingRepository for UnconfiguredRepository {
         Err(ListingError::Repository("Persistence not configured".into()))
     }
 
+    async fn list_favorites(&self, _user_id: Uuid) -> Result<Vec<Listing>, ListingError> {
+        Err(ListingError::Repository("Persistence not configured".into()))
+    }
+
+    async fn add_favorite(&self, _user_id: Uuid, _listing_id: Uuid) -> Result<(), ListingError> {
+        Err(ListingError::Repository("Persistence not configured".into()))
+    }
+
+    async fn remove_favorite(&self, _user_id: Uuid, _listing_id: Uuid) -> Result<(), ListingError> {
+        Err(ListingError::Repository("Persistence not configured".into()))
+    }
+
     async fn create(&self, _listing: &NewListing) -> Result<Listing, ListingError> {
         Err(ListingError::Repository("Persistence not configured".into()))
     }

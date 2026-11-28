@@ -32,6 +32,9 @@ pub trait ListingRepository: Send + Sync {
     async fn get(&self, id: Uuid) -> Result<Option<Listing>, ListingError>;
     async fn get_public(&self, id: Uuid) -> Result<Option<Listing>, ListingError>;
     async fn list_by_owner(&self, owner_id: Uuid) -> Result<Vec<Listing>, ListingError>;
+    async fn list_favorites(&self, user_id: Uuid) -> Result<Vec<Listing>, ListingError>;
+    async fn add_favorite(&self, user_id: Uuid, listing_id: Uuid) -> Result<(), ListingError>;
+    async fn remove_favorite(&self, user_id: Uuid, listing_id: Uuid) -> Result<(), ListingError>;
     async fn create(&self, listing: &NewListing) -> Result<Listing, ListingError>;
     async fn update(
         &self,
@@ -86,6 +89,29 @@ pub async fn list_my_listings(
     owner_id: Uuid,
 ) -> Result<Vec<Listing>, ListingError> {
     repository.list_by_owner(owner_id).await
+}
+
+pub async fn list_favorites(
+    repository: &dyn ListingRepository,
+    user_id: Uuid,
+) -> Result<Vec<Listing>, ListingError> {
+    repository.list_favorites(user_id).await
+}
+
+pub async fn add_favorite(
+    repository: &dyn ListingRepository,
+    user_id: Uuid,
+    listing_id: Uuid,
+) -> Result<(), ListingError> {
+    repository.add_favorite(user_id, listing_id).await
+}
+
+pub async fn remove_favorite(
+    repository: &dyn ListingRepository,
+    user_id: Uuid,
+    listing_id: Uuid,
+) -> Result<(), ListingError> {
+    repository.remove_favorite(user_id, listing_id).await
 }
 
 pub async fn create_listing(
