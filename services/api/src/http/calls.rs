@@ -69,28 +69,26 @@ fn call_error(error_value: CallError) -> axum::response::Response {
 }
 
 async fn ice_servers_handler(
-    State(_state): State<AppState>,
+    State(state): State<AppState>,
     user: AuthUser,
 ) -> axum::response::Response {
     let mut servers = vec![json!({
         "urls": "stun:stun.l.google.com:19302"
     })];
 
-    if let (Ok(urls), Ok(secret)) = (
-        std::env::var("TURN_URLS"),
-        std::env::var("TURN_SECRET"),
+    if let (Some(urls), Some(secret)) = (
+        state.turn_urls.as_deref(),
+        state.turn_secret.as_deref(),
     ) {
-        if !urls.trim().is_empty() && !secret.trim().is_empty() {
-            let expiry = Utc::now().timestamp() + TURN_TTL_SECONDS;
-            let username = format!("{expiry}:{}", user.id);
-            let credential = turn_credential(&secret, &username);
+        let expiry = Utc::now().timestamp() + TURN_TTL_SECONDS;
+        let username = format!("{expiry}:{}", user.id);
+        let credential = turn_credential(secret, &username);
 
-            servers.push(json!({
-                "urls": urls,
-                "username": username,
-                "credential": credential,
-            }));
-        }
+        servers.push(json!({
+            "urls": urls,
+            "username": username,
+            "credential": credential,
+        }));
     }
 
     Json(json!({ "ice_servers": servers })).into_response()

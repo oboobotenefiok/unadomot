@@ -88,7 +88,7 @@ async fn register_handler(
         .users
         .store_refresh_token(
             user.id,
-            &hash_refresh_token(&refresh_token),
+            &hash_refresh_token(&refresh_token, &state.refresh_secret),
             Utc::now() + Duration::days(30),
         )
         .await
@@ -135,7 +135,7 @@ async fn login_handler(
         .users
         .store_refresh_token(
             user.id,
-            &hash_refresh_token(&refresh_token),
+            &hash_refresh_token(&refresh_token, &state.refresh_secret),
             Utc::now() + Duration::days(30),
         )
         .await
@@ -156,8 +156,8 @@ async fn refresh_handler(
     let user = state
         .users
         .rotate_refresh_token(
-            &hash_refresh_token(&request.refresh_token),
-            &hash_refresh_token(&new_token),
+            &hash_refresh_token(&request.refresh_token, &state.refresh_secret),
+            &hash_refresh_token(&new_token, &state.refresh_secret),
             Utc::now() + Duration::days(30),
         )
         .await
@@ -185,7 +185,10 @@ async fn logout_handler(
 ) -> Result<StatusCode, ApiError> {
     state
         .users
-        .revoke_refresh_token(&hash_refresh_token(&request.refresh_token))
+        .revoke_refresh_token(&hash_refresh_token(
+            &request.refresh_token,
+            &state.refresh_secret,
+        ))
         .await
         .map_err(auth_error)?;
     Ok(StatusCode::NO_CONTENT)
@@ -200,7 +203,7 @@ async fn password_reset_request_handler(
         .users
         .create_password_reset(
             request.email.trim(),
-            &hash_refresh_token(&token),
+            &hash_refresh_token(&token, &state.refresh_secret),
             Utc::now() + Duration::minutes(30),
         )
         .await
@@ -209,7 +212,7 @@ async fn password_reset_request_handler(
     if user_id.is_some() {
         let reset_link = format!(
             "{}/reset-password?token={}",
-            state.app_base_url,
+            state.public_web_url,
             token
         );
         if let Err(error) = state
@@ -231,7 +234,10 @@ async fn password_reset_confirm_handler(
     let password_hash = hash_password(&request.new_password).map_err(auth_error)?;
     let updated = state
         .users
-        .reset_password(&hash_refresh_token(&request.token), &password_hash)
+        .reset_password(
+            &hash_refresh_token(&request.token, &state.refresh_secret),
+            &password_hash,
+        )
         .await
         .map_err(auth_error)?;
 
