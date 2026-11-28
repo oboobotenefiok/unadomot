@@ -66,6 +66,12 @@ pub struct UploadSignature {
 
 pub trait MediaSigner: Send + Sync {
     fn sign_upload(&self, request: &UploadRequest) -> Result<UploadSignature, MediaError>;
+
+    /// The configured Cloudinary cloud name, used to validate that submitted
+    /// media URLs point at this application's cloud.
+    fn cloud_name(&self) -> Option<&str> {
+        None
+    }
 }
 
 #[cfg(test)]

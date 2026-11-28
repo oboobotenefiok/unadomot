@@ -364,11 +364,15 @@ async fn add_media_handler(
             "Media must be uploaded to the UnaDomot Cloudinary folder",
         ));
     }
-    if !valid_media_url(&request.url) {
+    if !valid_media_url(
+        &request.url,
+        state.media.cloud_name(),
+        &request.cloudinary_public_id,
+    ) {
         return Err(ApiError::new(
             StatusCode::BAD_REQUEST,
             "validation_error",
-            "Media URL must be a Cloudinary HTTPS upload URL",
+            "Media URL must point at this UnaDomot Cloudinary cloud and match the uploaded public id",
         ));
     }
 
@@ -413,9 +417,13 @@ async fn signature_handler(
         .map_err(media_error)
 }
 
-fn valid_media_url(url: &str) -> bool {
-    url.starts_with("https://res.cloudinary.com/")
-        && url.contains("/upload/")
+fn valid_media_url(url: &str, cloud_name: Option<&str>, public_id: &str) -> bool {
+    let Some(cloud) = cloud_name else {
+        return false;
+    };
+    let prefix = format!("https://res.cloudinary.com/{cloud}/image/upload/");
+    url.starts_with(&prefix)
+        && url.contains(public_id)
         && url.len() <= 2048
         && !url.contains(char::is_whitespace)
 }
@@ -483,19 +491,54 @@ fn media_error(error: MediaError) -> ApiError {
 mod tests {
     use super::*;
 
+    const PUBLIC_ID: &str = "unadomot/listings/photo-1";
+    const VALID_URL: &str =
+        "https://res.cloudinary.com/demo/image/upload/v1/unadomot/listings/photo-1.jpg";
+
     #[test]
-    fn accepts_cloudinary_https_media() {
-        assert!(valid_media_url(
-            "https://res.cloudinary.com/demo/image/upload/v1/sample.jpg"
-        ));
+    fn accepts_media_from_our_cloud_with_matching_public_id() {
+        assert!(valid_media_url(VALID_URL, Some("demo"), PUBLIC_ID));
+    }
+
+    #[test]
+    fn rejects_foreign_clouds() {
+        let url = "https://res.cloudinary.com/other/image/upload/v1/unadomot/listings/photo-1.jpg";
+        assert!(!valid_media_url(url, Some("demo"), PUBLIC_ID));
+    }
+
+    #[test]
+    fn rejects_urls_that_do_not_match_the_public_id() {
+        let url = "https://res.cloudinary.com/demo/image/upload/v1/unadomot/listings/other.jpg";
+        assert!(!valid_media_url(url, Some("demo"), PUBLIC_ID));
+    }
+
+    #[test]
+    fn rejects_media_when_cloudinary_is_not_configured() {
+        assert!(!valid_media_url(VALID_URL, None, PUBLIC_ID));
     }
 
     #[test]
     fn rejects_non_cloudinary_or_http_media() {
-        assert!(!valid_media_url("http://res.cloudinary.com/demo/image/upload/a.jpg"));
-        assert!(!valid_media_url("https://evil.example/image/upload/a.jpg"));
-        assert!(!valid_media_url("https://res.cloudinary.com/demo/image/a.jpg"));
-        assert!(!valid_media_url("https://res.cloudinary.com/demo/image/upload/a b.jpg"));
+        assert!(!valid_media_url(
+            "http://res.cloudinary.com/demo/image/upload/a.jpg",
+            Some("demo"),
+            "a"
+        ));
+        assert!(!valid_media_url(
+            "https://evil.example/image/upload/a.jpg",
+            Some("demo"),
+            "a"
+        ));
+        assert!(!valid_media_url(
+            "https://res.cloudinary.com/demo/image/a.jpg",
+            Some("demo"),
+            "a"
+        ));
+        assert!(!valid_media_url(
+            "https://res.cloudinary.com/demo/image/upload/a b.jpg",
+            Some("demo"),
+            "a b"
+        ));
     }
 
     #[test]

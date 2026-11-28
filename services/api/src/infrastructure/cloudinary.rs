@@ -60,6 +60,10 @@ impl MediaSigner for CloudinarySigner {
             resource_type: "image".to_string(),
         })
     }
+
+    fn cloud_name(&self) -> Option<&str> {
+        Some(&self.cloud_name)
+    }
 }
 
 #[cfg(test)]
@@ -98,5 +102,10 @@ mod tests {
         };
         let signature = signer().sign_upload(&request).unwrap();
         assert_eq!(signature.upload_type.as_deref(), Some("authenticated"));
+    }
+
+    #[test]
+    fn exposes_cloud_name_for_url_validation() {
+        assert_eq!(signer().cloud_name(), Some("demo"));
     }
 }
