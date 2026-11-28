@@ -9,9 +9,9 @@ import '../utils/currency.dart';
 import '../widgets/infinite_listing_gallery.dart';
 import '../widgets/share_listing_sheet.dart';
 import 'auth_sheet.dart';
+import 'chat_screen.dart';
 import 'listing_code_screen.dart';
 import 'map_screen.dart';
-import 'messages_screen.dart';
 import 'public_profile_screen.dart';
 import 'report_listing_screen.dart';
 
@@ -46,6 +46,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
   DateTime? _cachedAt;
   bool _favorite = false;
   bool _startingChat = false;
+  String? _myId;
 
   @override
   void initState() {
@@ -97,8 +98,16 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
     _loadComments();
   }
 
+  /// Resolves the reader's own id once, so comments can tell their author
+  /// apart from everyone else without a second lookup per tile.
   Future<void> _loadOwnership() async {
     if (!widget.appState.signedIn) return;
+    try {
+      final profile = await widget.api.myProfile();
+      if (mounted) setState(() => _myId = profile['id'] as String?);
+    } catch (_) {
+      // Comment ownership badges are optional.
+    }
     try {
       final mine = await widget.api.myListings();
       if (mounted) {
@@ -802,8 +811,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
             .map((item) => Map<String, dynamic>.from(item))
             .toList() ??
         const <Map<String, dynamic>>[];
-    final mine = comment['user_id'] != null &&
-        comment['user_id'] == widget.appState.userId;
+    final mine = _myId != null && comment['user_id'] == _myId;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
