@@ -22,6 +22,7 @@ pub struct ConversationSummary {
     pub counterpart_id: Uuid,
     pub counterpart_name: String,
     pub counterpart_verified: bool,
+    pub counterpart_photo_url: Option<String>,
     pub counterpart_last_active: Option<DateTime<Utc>>,
     pub last_message_preview: Option<String>,
     pub last_message_at: Option<DateTime<Utc>>,
