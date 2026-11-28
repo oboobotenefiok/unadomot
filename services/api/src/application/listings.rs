@@ -145,6 +145,9 @@ pub async fn update_listing(
             ));
         }
     }
+    if let Some(amenities) = &update.amenities {
+        validate_amenities(amenities)?;
+    }
     repository.update(id, owner_id, update).await
 }
 
@@ -193,6 +196,26 @@ pub async fn add_listing_media(
     repository.add_media(listing_id, owner_id, media).await
 }
 
+/// Amenities are free text, so the only guardrails are count and length. The
+/// cap keeps a single listing from carrying an unbounded array into every
+/// browse response.
+fn validate_amenities(amenities: &[String]) -> Result<(), ListingError> {
+    if amenities.len() > 30 {
+        return Err(ListingError::InvalidInput(
+            "A listing can have at most 30 amenities".into(),
+        ));
+    }
+    for amenity in amenities {
+        let trimmed = amenity.trim();
+        if trimmed.is_empty() || trimmed.len() > 60 {
+            return Err(ListingError::InvalidInput(
+                "Each amenity must be between 1 and 60 characters".into(),
+            ));
+        }
+    }
+    Ok(())
+}
+
 fn validate_new_listing(input: &NewListing) -> Result<(), ListingError> {
     if input.price <= Decimal::ZERO {
         return Err(ListingError::InvalidInput(
@@ -219,6 +242,7 @@ fn validate_new_listing(input: &NewListing) -> Result<(), ListingError> {
             "LGA must be between 1 and 80 characters".into(),
         ));
     }
+    validate_amenities(&input.amenities)?;
     Ok(())
 }
 
@@ -226,13 +250,12 @@ fn validate_new_listing(input: &NewListing) -> Result<(), ListingError> {
 mod tests {
     use super::*;
 
-    #[test]
-    fn rejects_invalid_price() {
-        let input = NewListing {
+    fn valid_input() -> NewListing {
+        NewListing {
             landlord_id: Uuid::new_v4(),
             title: "Flat".into(),
             description: "Nice".into(),
-            price: Decimal::ZERO,
+            price: Decimal::new(150_000, 0),
             address: "Port Harcourt".into(),
             state: "Rivers".into(),
             lga: "Obio/Akpor".into(),
@@ -241,6 +264,46 @@ mod tests {
             bathrooms: None,
             property_type: None,
             furnishing: None,
+            amenities: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn rejects_invalid_price() {
+        let input = NewListing {
+            price: Decimal::ZERO,
+            ..valid_input()
+        };
+
+        assert!(matches!(
+            validate_new_listing(&input),
+            Err(ListingError::InvalidInput(_))
+        ));
+    }
+
+    #[test]
+    fn accepts_a_normal_listing() {
+        assert!(validate_new_listing(&valid_input()).is_ok());
+    }
+
+    #[test]
+    fn rejects_too_many_amenities() {
+        let input = NewListing {
+            amenities: (0..31).map(|index| format!("Item {index}")).collect(),
+            ..valid_input()
+        };
+
+        assert!(matches!(
+            validate_new_listing(&input),
+            Err(ListingError::InvalidInput(_))
+        ));
+    }
+
+    #[test]
+    fn rejects_blank_amenity() {
+        let input = NewListing {
+            amenities: vec!["Borehole".into(), "   ".into()],
+            ..valid_input()
         };
 
         assert!(matches!(
