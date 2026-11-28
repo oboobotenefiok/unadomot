@@ -261,7 +261,8 @@ pub fn verify_session(token: &str, jwt_secret: &str) -> Result<AuthenticatedUser
 
 pub fn new_refresh_token() -> String {
     let mut bytes = [0u8; 32];
-    OsRng.fill_bytes(&mut bytes);
+    let mut rng = OsRng;
+    rng.fill_bytes(&mut bytes);
     URL_SAFE_NO_PAD.encode(bytes)
 }
 

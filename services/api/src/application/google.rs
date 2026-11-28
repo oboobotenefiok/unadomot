@@ -138,4 +138,6 @@ struct GoogleClaims {
     name: Option<String>,
     aud: String,
     azp: Option<String>,
+    iss: String,
+    exp: i64,
 }
