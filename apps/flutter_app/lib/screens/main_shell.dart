@@ -94,6 +94,9 @@ class _MainShellState extends State<MainShell> {
     if (signedIn == _wasSignedIn) return;
     _wasSignedIn = signedIn;
     if (signedIn) {
+      // The stream is a no-op while signed out, so it needs a nudge now that
+      // there is a token to poll with.
+      _events?.start();
       _loadProfile();
       _loadUnread();
     } else if (mounted) {
