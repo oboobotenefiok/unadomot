@@ -37,6 +37,9 @@ class _MainShellState extends State<MainShell> {
   String? _displayName;
   int _unreadCount = 0;
   bool _wasSignedIn = false;
+  bool _mapMode = false;
+  bool _mapLoading = false;
+  List<Listing> _mapListings = [];
 
   @override
   void initState() {
@@ -47,6 +50,7 @@ class _MainShellState extends State<MainShell> {
       _loadProfile();
       _loadUnread();
     }
+    _restoreHomeView();
   }
 
   @override
@@ -54,6 +58,13 @@ class _MainShellState extends State<MainShell> {
     widget.appState.removeListener(_onAuthChanged);
     _search.dispose();
     super.dispose();
+  }
+
+  Future<void> _restoreHomeView() async {
+    final saved = await widget.cache.getSetting('home_view');
+    if (!mounted || saved != 'map') return;
+    setState(() => _mapMode = true);
+    _loadMapListings();
   }
 
   void _onAuthChanged() {
@@ -98,6 +109,27 @@ class _MainShellState extends State<MainShell> {
     } catch (_) {
       // Keep the last known badge count.
     }
+  }
+
+  Future<void> _loadMapListings() async {
+    if (_mapLoading) return;
+    setState(() => _mapLoading = true);
+    try {
+      final page = await widget.api.browse(limit: 100);
+      if (!mounted) return;
+      setState(() => _mapListings = page.items.map(Listing.fromJson).toList());
+    } catch (_) {
+      // The map still renders with whatever was loaded before.
+    } finally {
+      if (mounted) setState(() => _mapLoading = false);
+    }
+  }
+
+  Future<void> _toggleMap() async {
+    final next = !_mapMode;
+    setState(() => _mapMode = next);
+    await widget.cache.setSetting('home_view', next ? 'map' : 'list');
+    if (next && _mapListings.isEmpty) _loadMapListings();
   }
 
   void _go(int index) {
@@ -152,60 +184,85 @@ class _MainShellState extends State<MainShell> {
     if (mounted) _loadUnread();
   }
 
-  Future<void> _openMap() async {
-    try {
-      final page = await widget.api.browse();
-      final listings = page.items.map(Listing.fromJson).toList();
-      if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => MapScreen(
-            api: widget.api,
-            cache: widget.cache,
-            appState: widget.appState,
-            listings: listings,
-          ),
-        ),
-      );
-    } catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.toString())),
-        );
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final pages = [
-      ListingsScreen(
+  Widget _homeView() {
+    if (!_mapMode) {
+      return ListingsScreen(
         api: widget.api,
         cache: widget.cache,
         appState: widget.appState,
         searchNotifier: _search,
         onNotifications: _openNotifications,
         unreadCount: _unreadCount,
+      );
+    }
+
+    return Stack(
+      children: [
+        if (_mapListings.isEmpty && _mapLoading)
+          const Center(child: CircularProgressIndicator())
+        else
+          MapScreen(
+            api: widget.api,
+            cache: widget.cache,
+            appState: widget.appState,
+            listings: _mapListings,
+          ),
+        Positioned(
+          top: 12,
+          right: 12,
+          child: SafeArea(
+            child: FloatingActionButton.small(
+              heroTag: 'home-view-toggle',
+              tooltip: 'List view',
+              onPressed: _toggleMap,
+              child: const Icon(Icons.view_list),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Rebuild every tab when the session changes so signed-out placeholders,
+    // favorites and ownership badges update without restarting the app.
+    final authKey = '${widget.appState.signedIn}-${widget.appState.sessionEpoch}';
+    final pages = [
+      KeyedSubtree(
+        key: ValueKey('home-$authKey'),
+        child: _homeView(),
       ),
-      FavoritesScreen(
-        api: widget.api,
-        cache: widget.cache,
-        appState: widget.appState,
-        showAppBar: false,
+      KeyedSubtree(
+        key: ValueKey('favorites-$authKey'),
+        child: FavoritesScreen(
+          api: widget.api,
+          cache: widget.cache,
+          appState: widget.appState,
+          showAppBar: false,
+        ),
       ),
-      CreateListingScreen(
-        api: widget.api,
-        cache: widget.cache,
-        showAppBar: false,
-        onExit: _goHome,
+      KeyedSubtree(
+        key: ValueKey('post-$authKey'),
+        child: CreateListingScreen(
+          api: widget.api,
+          cache: widget.cache,
+          showAppBar: false,
+          onExit: _goHome,
+        ),
       ),
-      MessagesScreen(api: widget.api, showAppBar: false),
-      ProfileScreen(
-        api: widget.api,
-        cache: widget.cache,
-        appState: widget.appState,
-        showAppBar: false,
+      KeyedSubtree(
+        key: ValueKey('messages-$authKey'),
+        child: MessagesScreen(api: widget.api, showAppBar: false),
+      ),
+      KeyedSubtree(
+        key: ValueKey('profile-$authKey'),
+        child: ProfileScreen(
+          api: widget.api,
+          cache: widget.cache,
+          appState: widget.appState,
+          showAppBar: false,
+        ),
       ),
     ];
     final isDesktop = MediaQuery.sizeOf(context).width >= 900;
@@ -253,7 +310,8 @@ class _MainShellState extends State<MainShell> {
                           search: _search,
                           onMessages: () => _go(3),
                           onNotifications: _openNotifications,
-                          onMap: _openMap,
+                          onMap: _toggleMap,
+                          mapMode: _mapMode,
                           unreadCount: _unreadCount,
                         ),
                         Expanded(child: content),
@@ -331,6 +389,7 @@ class _DesktopTopBar extends StatefulWidget {
   final VoidCallback onMessages;
   final VoidCallback onNotifications;
   final VoidCallback onMap;
+  final bool mapMode;
   final int unreadCount;
 
   const _DesktopTopBar({
@@ -338,6 +397,7 @@ class _DesktopTopBar extends StatefulWidget {
     required this.onMessages,
     required this.onNotifications,
     required this.onMap,
+    required this.mapMode,
     required this.unreadCount,
   });
 
@@ -414,9 +474,9 @@ class _DesktopTopBarState extends State<_DesktopTopBar> {
           ),
           const SizedBox(width: 8),
           IconButton(
-            tooltip: 'Map view',
+            tooltip: widget.mapMode ? 'List view' : 'Map view',
             onPressed: widget.onMap,
-            icon: const Icon(Icons.map_outlined),
+            icon: Icon(widget.mapMode ? Icons.view_list : Icons.map_outlined),
           ),
           const Spacer(),
           IconButton(
