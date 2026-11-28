@@ -33,6 +33,9 @@ pub mod verification;
 
 use self::listings::listing_error;
 
+/// Maximum number of in-memory buckets kept before expired entries are pruned.
+const MAX_BUCKETS: usize = 10_000;
+
 pub struct RateLimiter {
     redis: Option<redis::Client>,
     buckets: Mutex<HashMap<String, Bucket>>,
@@ -57,34 +60,59 @@ impl RateLimiter {
         }
     }
 
+    pub fn default_limit(&self) -> u32 {
+        self.limit
+    }
+
     pub async fn allow(&self, key: &str) -> bool {
+        self.allow_with(key, self.limit, StdDuration::from_secs(60))
+            .await
+    }
+
+    /// Counts a request against `key` with an explicit budget and window.
+    /// Redis expiry is set atomically on key creation so a crash between
+    /// `INCR` and `EXPIRE` can never leave a permanent block.
+    pub async fn allow_with(&self, key: &str, limit: u32, window: StdDuration) -> bool {
         if let Some(client) = &self.redis {
             if let Ok(mut connection) = client.get_multiplexed_async_connection().await {
                 let redis_key = format!("ratelimit:{key}");
+                let _: Result<bool, _> = redis::cmd("SET")
+                    .arg(&redis_key)
+                    .arg(0)
+                    .arg("EX")
+                    .arg(window.as_secs())
+                    .arg("NX")
+                    .query_async(&mut connection)
+                    .await;
                 let count: Result<i64, _> = connection.incr(&redis_key, 1).await;
                 if let Ok(count) = count {
-                    if count == 1 {
-                        let _: Result<(), _> = connection.expire(&redis_key, 60).await;
-                    }
-                    return count <= self.limit as i64;
+                    return count <= limit as i64;
                 }
             }
         }
 
-        let mut buckets = self.buckets.lock().expect("rate limiter lock");
+        let mut buckets = self
+            .buckets
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
         let now = Instant::now();
+
+        if buckets.len() >= MAX_BUCKETS {
+            buckets.retain(|_, bucket| now.duration_since(bucket.window_start) <= window);
+        }
+
         let bucket = buckets.entry(key.to_string()).or_insert(Bucket {
             window_start: now,
             count: 0,
         });
 
-        if now.duration_since(bucket.window_start) > StdDuration::from_secs(60) {
+        if now.duration_since(bucket.window_start) > window {
             bucket.window_start = now;
             bucket.count = 0;
         }
 
         bucket.count += 1;
-        bucket.count <= self.limit
+        bucket.count <= limit
     }
 }
 
@@ -210,4 +238,28 @@ async fn admin_suspend_user_handler(
         })?;
 
     Ok(StatusCode::NO_CONTENT)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn enforces_per_key_budgets() {
+        let limiter = RateLimiter::new(2);
+        let window = StdDuration::from_secs(60);
+        assert!(limiter.allow_with("a", 2, window).await);
+        assert!(limiter.allow_with("a", 2, window).await);
+        assert!(!limiter.allow_with("a", 2, window).await);
+        assert!(limiter.allow_with("b", 2, window).await);
+    }
+
+    #[tokio::test]
+    async fn separate_budgets_do_not_share_counters() {
+        let limiter = RateLimiter::new(10);
+        let window = StdDuration::from_secs(60);
+        assert!(limiter.allow_with("auth:1.2.3.4", 1, window).await);
+        assert!(!limiter.allow_with("auth:1.2.3.4", 1, window).await);
+        assert!(limiter.allow_with("global:1.2.3.4", 10, window).await);
+    }
 }

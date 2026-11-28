@@ -9,7 +9,7 @@ use axum::{
     extract::{DefaultBodyLimit, Request, State},
     http::{header, HeaderName, HeaderValue, Method, StatusCode},
     middleware::{self, Next},
-    response::Response,
+    response::{IntoResponse, Response},
 };
 use sqlx::postgres::PgPoolOptions;
 use std::sync::Arc;
@@ -36,7 +36,7 @@ use unadomot_api::application::profiles::ProfileRepository;
 use unadomot_api::application::reports::ReportRepository;
 use unadomot_api::application::verification::VerificationRepository;
 use unadomot_api::config::Config;
-use unadomot_api::http::{public_pages, router, verification, AppState, RateLimiter};
+use unadomot_api::http::{public_pages, router, verification, ApiError, AppState, RateLimiter};
 use unadomot_api::infrastructure::cloudinary::CloudinarySigner;
 use unadomot_api::infrastructure::postgres::{
     call_repository::PostgresCallRepository, comment_repository::PostgresCommentRepository,
@@ -58,24 +58,62 @@ type Repositories = (
     Arc<dyn CallRepository>,
 );
 
+/// Resolve the real client IP. Behind Fly's proxy the leftmost
+/// `X-Forwarded-For` value is attacker-controlled, so prefer `Fly-Client-IP`
+/// and fall back to the last (proxy-appended) hop.
+fn client_ip(request: &Request) -> String {
+    request
+        .headers()
+        .get("fly-client-ip")
+        .and_then(|value| value.to_str().ok())
+        .map(|value| value.trim().to_string())
+        .filter(|value| !value.is_empty())
+        .or_else(|| {
+            request
+                .headers()
+                .get("x-forwarded-for")
+                .and_then(|value| value.to_str().ok())
+                .and_then(|value| value.split(',').last())
+                .map(|value| value.trim().to_string())
+                .filter(|value| !value.is_empty())
+        })
+        .unwrap_or_else(|| "unknown".into())
+}
+
 async fn global_rate_limit(
     State(state): State<AppState>,
     request: Request,
     next: Next,
-) -> Result<Response, StatusCode> {
-    let key = request
-        .headers()
-        .get("x-forwarded-for")
-        .and_then(|value| value.to_str().ok())
-        .and_then(|value| value.split(',').next())
-        .map(|value| value.trim().to_string())
-        .unwrap_or_else(|| "unknown".into());
+) -> Response {
+    let (bucket, limit, window_secs) = match request.uri().path() {
+        "/api/auth/login" | "/api/auth/register" => ("auth", 10, 60),
+        "/api/auth/password-reset/request" => ("password-reset", 3, 3600),
+        "/api/media/signature" => ("media-signature", 30, 60),
+        "/api/verification" => ("verification", 10, 3600),
+        _ => ("global", state.limiter.default_limit(), 60),
+    };
 
-    if !state.limiter.allow(&key).await {
-        return Err(StatusCode::TOO_MANY_REQUESTS);
+    let key = format!("{bucket}:{}", client_ip(&request));
+    if !state
+        .limiter
+        .allow_with(&key, limit, std::time::Duration::from_secs(window_secs))
+        .await
+    {
+        let mut response = ApiError::new(
+            StatusCode::TOO_MANY_REQUESTS,
+            "rate_limited",
+            "Too many requests. Please try again shortly.",
+        )
+        .into_response();
+        response.headers_mut().insert(
+            header::RETRY_AFTER,
+            HeaderValue::from_str(&window_secs.to_string())
+                .unwrap_or_else(|_| HeaderValue::from_static("60")),
+        );
+        return response;
     }
 
-    Ok(next.run(request).await)
+    next.run(request).await
 }
 
 async fn request_log(request: Request, next: Next) -> Response {
