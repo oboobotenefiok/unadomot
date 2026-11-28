@@ -34,7 +34,6 @@ class ListingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final image = imageUrl ?? (listing.media.isEmpty ? null : listing.media.first.url);
-    final location = listing.lga.isEmpty ? listing.state : listing.lga;
     final accountType = listing.isAgentListing ? 'Agent' : 'Landlord';
     final ownerActions = isOwner && showOwnerActions;
 
@@ -49,9 +48,8 @@ class ListingCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // The image takes whatever height the grid cell leaves over, so the
-            // action row below can never be pushed out of the viewport.
             Expanded(
+              flex: 2,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -74,23 +72,6 @@ class ListingCard extends StatelessWidget {
                       child: Text(
                         formatNaira(listing.price),
                         style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: UnaColors.green900.withValues(alpha: 0.9),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        location,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: Colors.white, fontSize: 11),
                       ),
                     ),
                   ),
@@ -139,73 +120,64 @@ class ListingCard extends StatelessWidget {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    listing.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: UnaColors.text900, fontSize: 13, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${listing.lga.isEmpty ? listing.state : listing.lga}, ${listing.state}',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: UnaColors.text500, fontSize: 11),
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Flexible(
-                        child: _badge(
-                          accountType,
-                          listing.isAgentListing ? Colors.orange.shade50 : UnaColors.green100,
-                          listing.isAgentListing ? Colors.orange.shade800 : UnaColors.green700,
-                        ),
-                      ),
-                      if (listing.propertyType != null) ...[
-                        const SizedBox(width: 4),
+            Expanded(
+              flex: 1,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 6, 10, 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      listing.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: UnaColors.text900, fontSize: 13, fontWeight: FontWeight.w600),
+                    ),
+                    Text(
+                      listing.state,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: UnaColors.text500, fontSize: 11),
+                    ),
+                    Row(
+                      children: [
                         Flexible(
                           child: _badge(
-                            listing.propertyType!,
-                            Colors.grey.shade100,
-                            Colors.grey.shade600,
+                            accountType,
+                            listing.isAgentListing ? Colors.orange.shade50 : UnaColors.green100,
+                            listing.isAgentListing ? Colors.orange.shade800 : UnaColors.green700,
                           ),
                         ),
+                        if (listing.propertyType != null) ...[
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: _badge(
+                              listing.propertyType!,
+                              Colors.grey.shade100,
+                              Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Container(height: 1, color: Colors.grey.shade100),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          listing.landlordName.isEmpty ? 'Landlord' : listing.landlordName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(color: UnaColors.text500, fontSize: 11),
-                        ),
-                      ),
-                      if (onFavorite != null)
-                        _ActionIcon(
-                          icon: isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: isFavorite ? Colors.red : UnaColors.green700,
-                          onTap: onFavorite!,
-                        ),
-                      if (onShare != null)
-                        _ActionIcon(icon: Icons.share_outlined, onTap: onShare!),
-                      if (!isOwner && onMessage != null)
-                        _ActionIcon(icon: Icons.chat_bubble_outline, onTap: onMessage!),
-                    ],
-                  ),
-                ],
+                    ),
+                    Row(
+                      children: [
+                        const Spacer(),
+                        if (onFavorite != null)
+                          _ActionIcon(
+                            icon: isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: isFavorite ? Colors.red : UnaColors.green700,
+                            onTap: onFavorite!,
+                          ),
+                        if (onShare != null)
+                          _ActionIcon(icon: Icons.share_outlined, onTap: onShare!),
+                        if (!isOwner && onMessage != null)
+                          _ActionIcon(icon: Icons.chat_bubble_outline, onTap: onMessage!),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
