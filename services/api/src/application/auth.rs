@@ -86,6 +86,7 @@ pub trait UserRepository: Send + Sync {
     async fn is_admin(&self, user_id: Uuid) -> Result<bool, AuthError>;
     async fn is_active(&self, user_id: Uuid) -> Result<bool, AuthError>;
     async fn suspend_user(&self, user_id: Uuid) -> Result<bool, AuthError>;
+    async fn unsuspend_user(&self, user_id: Uuid) -> Result<bool, AuthError>;
     async fn link_google_user(&self, user_id: Uuid, had_password: bool) -> Result<(), AuthError>;
     async fn create_google_user(&self, email: &str) -> Result<Uuid, AuthError>;
     async fn set_profile_name_if_empty(&self, user_id: Uuid, name: &str) -> Result<(), AuthError>;

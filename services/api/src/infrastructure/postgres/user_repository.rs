@@ -300,6 +300,18 @@ impl UserRepository for PostgresUserRepository {
         Ok(result.rows_affected() > 0)
     }
 
+    async fn unsuspend_user(&self, user_id: Uuid) -> Result<bool, AuthError> {
+        let result = sqlx::query(
+            "UPDATE users SET status = 'active', updated_at = now() WHERE id = $1 AND status = 'suspended'",
+        )
+        .bind(user_id)
+        .execute(&self.pool)
+        .await
+        .map_err(|e| AuthError::Repository(e.to_string()))?;
+
+        Ok(result.rows_affected() > 0)
+    }
+
     async fn link_google_user(&self, user_id: Uuid, _had_password: bool) -> Result<(), AuthError> {
         sqlx::query("UPDATE users SET auth_provider = 'google' WHERE id = $1")
             .bind(user_id)

@@ -190,6 +190,7 @@ pub fn router(state: AppState) -> Router {
         .merge(messaging::router())
         .merge(reports::router())
         .route("/api/admin/users/{id}/suspend", post(admin_suspend_user_handler))
+        .route("/api/admin/users/{id}/unsuspend", post(admin_unsuspend_user_handler))
         .layer(SetResponseHeaderLayer::overriding(
             header::X_CONTENT_TYPE_OPTIONS,
             HeaderValue::from_static("nosniff"),
@@ -252,6 +253,41 @@ async fn admin_suspend_user_handler(
     state
         .audit
         .record_audit(user_id, "user.suspend", id, json!({}))
+        .await
+        .map_err(|_| {
+            ApiError::new(
+                StatusCode::SERVICE_UNAVAILABLE,
+                "service_unavailable",
+                "Could not record the moderation action",
+            )
+        })?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+async fn admin_unsuspend_user_handler(
+    State(state): State<AppState>,
+    AdminUser { id: user_id }: AdminUser,
+    Path(id): Path<Uuid>,
+) -> Result<StatusCode, ApiError> {
+    let unsuspended = state.users.unsuspend_user(id).await.map_err(|_| {
+        ApiError::new(
+            StatusCode::SERVICE_UNAVAILABLE,
+            "service_unavailable",
+            "The service is temporarily unavailable",
+        )
+    })?;
+    if !unsuspended {
+        return Err(ApiError::new(
+            StatusCode::NOT_FOUND,
+            "not_found",
+            "User not found or not suspended",
+        ));
+    }
+
+    state
+        .audit
+        .record_audit(user_id, "user.unsuspend", id, json!({}))
         .await
         .map_err(|_| {
             ApiError::new(

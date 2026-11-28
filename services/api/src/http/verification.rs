@@ -1,12 +1,13 @@
 use crate::application::verification::{
-    my_request, pending_requests, review_request, submit_request, VerificationError,
+    my_request, pending_requests, submit_request, VerificationError,
 };
 use crate::domain::verification::VerificationRequest;
 use crate::extract::{AdminUser, AuthUser};
 use crate::http::{ApiError, AppState};
 use axum::{
     extract::{Path, State},
-    http::StatusCode,
+    http::{header, HeaderValue, StatusCode},
+    response::{IntoResponse, Response},
     routing::{get, post},
     Json, Router,
 };
@@ -31,7 +32,7 @@ pub struct VerificationResponse {
     pub id: Uuid,
     pub user_id: Uuid,
     pub document_public_id: Option<String>,
-    /// Short-lived signed URL. Only populated for admin review responses.
+    /// Signed URL. Only populated by the dedicated document endpoint.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub document_url: Option<String>,
     pub notes: Option<String>,
@@ -62,6 +63,10 @@ pub fn router(state: AppState) -> Router {
         .route("/api/verification", post(submit_handler))
         .route("/api/verification/me", get(my_handler))
         .route("/api/admin/verification", get(admin_list_handler))
+        .route(
+            "/api/admin/verification/{id}/document",
+            get(admin_document_handler),
+        )
         .route("/api/admin/verification/{id}/review", post(admin_review_handler))
         .with_state(state)
 }
@@ -96,39 +101,67 @@ async fn my_handler(
 
 async fn admin_list_handler(
     State(state): State<AppState>,
-    AdminUser { id: admin_id }: AdminUser,
+    _admin: AdminUser,
 ) -> Result<Json<Vec<VerificationResponse>>, ApiError> {
     let requests = pending_requests(state.audit.as_ref())
         .await
         .map_err(verification_error)?;
 
-    let mut responses = Vec::with_capacity(requests.len());
-    for request in requests {
-        let document_url = match request.document_public_id.as_deref() {
-            Some(public_id) => {
-                state
-                    .audit
-                    .record_audit(
-                        admin_id,
-                        "verification.document.view",
-                        request.id,
-                        json!({}),
-                    )
-                    .await
-                    .map_err(verification_error)?;
-                Some(
-                    state
-                        .media
-                        .signed_delivery_url(public_id)
-                        .map_err(media_error)?,
-                )
-            }
-            None => None,
-        };
-        responses.push(VerificationResponse::from_request(request, document_url));
-    }
+    Ok(Json(
+        requests
+            .into_iter()
+            .map(|request| VerificationResponse::from_request(request, None))
+            .collect(),
+    ))
+}
 
-    Ok(Json(responses))
+async fn admin_document_handler(
+    State(state): State<AppState>,
+    AdminUser { id: admin_id }: AdminUser,
+    Path(id): Path<Uuid>,
+) -> Result<Response, ApiError> {
+    let request = state
+        .audit
+        .find_by_id(id)
+        .await
+        .map_err(verification_error)?
+        .ok_or_else(|| {
+            ApiError::new(
+                StatusCode::NOT_FOUND,
+                "not_found",
+                "Verification request not found",
+            )
+        })?;
+
+    let public_id = request.document_public_id.ok_or_else(|| {
+        ApiError::new(
+            StatusCode::NOT_FOUND,
+            "not_found",
+            "No document is attached to this request",
+        )
+    })?;
+
+    state
+        .audit
+        .record_audit(
+            admin_id,
+            "verification.document.view",
+            id,
+            json!({}),
+        )
+        .await
+        .map_err(verification_error)?;
+
+    let url = state
+        .media
+        .signed_delivery_url(&public_id)
+        .map_err(media_error)?;
+
+    let mut response = Json(json!({ "document_url": url })).into_response();
+    response
+        .headers_mut()
+        .insert(header::CACHE_CONTROL, HeaderValue::from_static("no-store"));
+    Ok(response)
 }
 
 async fn admin_review_handler(
@@ -137,22 +170,19 @@ async fn admin_review_handler(
     Path(id): Path<Uuid>,
     Json(request): Json<ReviewRequest>,
 ) -> Result<Json<VerificationResponse>, ApiError> {
-    let reviewed = review_request(
-        state.audit.as_ref(),
-        id,
-        request.approve,
-        request.review_notes.as_deref(),
-    )
-    .await
-    .map_err(verification_error)?;
-
-    state
+    let status = if request.approve {
+        "approved"
+    } else {
+        "rejected"
+    };
+    let reviewed = state
         .audit
-        .record_audit(
-            admin_id,
-            "verification.review",
+        .review_with_audit(
             id,
-            json!({"approve": request.approve, "status": reviewed.status}),
+            status,
+            request.review_notes.as_deref(),
+            admin_id,
+            json!({"approve": request.approve, "status": status}),
         )
         .await
         .map_err(verification_error)?;

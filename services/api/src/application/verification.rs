@@ -22,6 +22,10 @@ pub trait VerificationRepository: Send + Sync {
         &self,
         user_id: Uuid,
     ) -> Result<Option<VerificationRequest>, VerificationError>;
+    async fn find_by_id(
+        &self,
+        id: Uuid,
+    ) -> Result<Option<VerificationRequest>, VerificationError>;
     async fn list_by_status(
         &self,
         status: &str,
@@ -31,6 +35,14 @@ pub trait VerificationRepository: Send + Sync {
         id: Uuid,
         status: &str,
         review_notes: Option<&str>,
+    ) -> Result<VerificationRequest, VerificationError>;
+    async fn review_with_audit(
+        &self,
+        id: Uuid,
+        status: &str,
+        review_notes: Option<&str>,
+        admin_id: Uuid,
+        metadata: serde_json::Value,
     ) -> Result<VerificationRequest, VerificationError>;
     async fn record_audit(
         &self,

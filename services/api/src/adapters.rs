@@ -149,6 +149,10 @@ impl UserRepository for UnconfiguredUserRepository {
         Err(AuthError::Repository("Persistence not configured".into()))
     }
 
+    async fn unsuspend_user(&self, _user_id: Uuid) -> Result<bool, AuthError> {
+        Err(AuthError::Repository("Persistence not configured".into()))
+    }
+
     async fn link_google_user(&self, _user_id: Uuid, _had_password: bool) -> Result<(), AuthError> {
         Err(AuthError::Repository("Persistence not configured".into()))
     }
@@ -293,6 +297,13 @@ impl VerificationRepository for UnconfiguredVerificationRepository {
         Err(VerificationError::Repository("Persistence not configured".into()))
     }
 
+    async fn find_by_id(
+        &self,
+        _id: Uuid,
+    ) -> Result<Option<VerificationRequest>, VerificationError> {
+        Err(VerificationError::Repository("Persistence not configured".into()))
+    }
+
     async fn list_by_status(
         &self,
         _status: &str,
@@ -305,6 +316,17 @@ impl VerificationRepository for UnconfiguredVerificationRepository {
         _id: Uuid,
         _status: &str,
         _review_notes: Option<&str>,
+    ) -> Result<VerificationRequest, VerificationError> {
+        Err(VerificationError::Repository("Persistence not configured".into()))
+    }
+
+    async fn review_with_audit(
+        &self,
+        _id: Uuid,
+        _status: &str,
+        _review_notes: Option<&str>,
+        _admin_id: Uuid,
+        _metadata: serde_json::Value,
     ) -> Result<VerificationRequest, VerificationError> {
         Err(VerificationError::Repository("Persistence not configured".into()))
     }
