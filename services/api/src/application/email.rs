@@ -10,6 +10,7 @@ pub enum EmailError {
 #[async_trait]
 pub trait EmailSender: Send + Sync {
     async fn send_password_reset(&self, to: &str, reset_link: &str) -> Result<(), EmailError>;
+    async fn send_email_verification(&self, to: &str, verify_link: &str) -> Result<(), EmailError>;
 }
 
 pub struct ResendEmailSender {
@@ -26,11 +27,8 @@ impl ResendEmailSender {
             client: reqwest::Client::new(),
         }
     }
-}
 
-#[async_trait]
-impl EmailSender for ResendEmailSender {
-    async fn send_password_reset(&self, to: &str, reset_link: &str) -> Result<(), EmailError> {
+    async fn send(&self, to: &str, subject: &str, html: String) -> Result<(), EmailError> {
         let response = self
             .client
             .post("https://api.resend.com/emails")
@@ -38,10 +36,8 @@ impl EmailSender for ResendEmailSender {
             .json(&json!({
                 "from": self.from,
                 "to": [to],
-                "subject": "Reset your UnaDomot password",
-                "html": format!(
-                    "<p>Use the link below to reset your UnaDomot password. It expires in 30 minutes.</p><p><a href=\"{reset_link}\">Reset password</a></p>"
-                ),
+                "subject": subject,
+                "html": html,
             }))
             .send()
             .await
@@ -58,11 +54,40 @@ impl EmailSender for ResendEmailSender {
     }
 }
 
+#[async_trait]
+impl EmailSender for ResendEmailSender {
+    async fn send_password_reset(&self, to: &str, reset_link: &str) -> Result<(), EmailError> {
+        self.send(
+            to,
+            "Reset your UnaDomot password",
+            format!(
+                "<p>Use the link below to reset your UnaDomot password. It expires in 30 minutes.</p><p><a href=\"{reset_link}\">Reset password</a></p>"
+            ),
+        )
+        .await
+    }
+
+    async fn send_email_verification(&self, to: &str, verify_link: &str) -> Result<(), EmailError> {
+        self.send(
+            to,
+            "Verify your UnaDomot email",
+            format!(
+                "<p>Confirm your email address to secure your UnaDomot account. This link expires in 24 hours.</p><p><a href=\"{verify_link}\">Verify email</a></p>"
+            ),
+        )
+        .await
+    }
+}
+
 pub struct UnconfiguredEmailSender;
 
 #[async_trait]
 impl EmailSender for UnconfiguredEmailSender {
     async fn send_password_reset(&self, _to: &str, _reset_link: &str) -> Result<(), EmailError> {
+        Err(EmailError::NotConfigured)
+    }
+
+    async fn send_email_verification(&self, _to: &str, _verify_link: &str) -> Result<(), EmailError> {
         Err(EmailError::NotConfigured)
     }
 }
@@ -88,6 +113,10 @@ mod tests {
         let sender = UnconfiguredEmailSender;
         assert!(matches!(
             sender.send_password_reset("user@example.com", "https://example.com").await,
+            Err(EmailError::NotConfigured)
+        ));
+        assert!(matches!(
+            sender.send_email_verification("user@example.com", "https://example.com").await,
             Err(EmailError::NotConfigured)
         ));
     }
