@@ -15,6 +15,16 @@ env:
   NO_COLOR: "1"
   RUST_BACKTRACE: "1"
 jobs:
+  migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check migration integrity
+        env:
+          BASE_REF: origin/${{ github.base_ref || 'rewrite/flutter-rust-postgres' }}
+        run: bash scripts/check_migrations.sh
   rust:
     runs-on: ubuntu-latest
     services:

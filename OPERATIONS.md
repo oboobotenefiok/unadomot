@@ -12,6 +12,17 @@
 - Take a manual backup before every migration that drops a column or rewrites data.
 - Restore into a staging database and run the API test suite before promoting a restore.
 
+## Migrations
+
+The migration history is consolidated into `services/api/migrations/0001_initial_schema.sql`. This baseline is treated as immutable after it has been applied to a shared database.
+
+- New migrations must use a 14-digit `YYYYMMDDHHMMSS_description.sql` filename.
+- The version must be greater than every existing 14-digit migration version.
+- Never edit, rename, or delete an applied migration. sqlx stores a checksum and will refuse to run a changed file.
+- CI runs `scripts/check_migrations.sh` to enforce both rules.
+- Existing databases created before the consolidation must be recreated or manually baselined; they are not compatible with the consolidated checksum.
+- The previous `0014`-`0017` files were removed by the consolidation. Do not recreate them.
+
 ## Verification document retention
 
 Run daily after backups:
@@ -25,8 +36,7 @@ The function clears `document_public_id` for requests reviewed more than 90 days
 ## Migration rollback
 
 - Every migration is forward-only. Roll back by restoring the pre-migration backup, not by editing an applied file.
-- `0014_drop_legacy_verification_document_url.sql` removes the legacy URL column. The backup is the only source of that data after it runs.
-- `0015_verification_retention.sql` adds a function and an index; it is safe to re-run.
+- The consolidated baseline replaces the old migration history. Restoring an old database requires a backup taken before the consolidation.
 
 ## Event replay
 
