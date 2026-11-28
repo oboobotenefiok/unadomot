@@ -1,29 +1,29 @@
-# CI run 2026-11-28T16:00:17Z
+# CI run 2026-11-28T16:16:46Z
 Branch: rewrite/flutter-rust-postgres
 
 ## Trigger
-https://github.com/oboobotenefiok/unadomot/actions/runs/46162801777
+https://github.com/oboobotenefiok/unadomot/actions/runs/46164294302
 
 ## Recent runs
-pending		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46162801777	6s	2026-11-28T16:00:20Z
-in_progress		fix: clear rust clippy errors	Rewrite CI	rewrite/flutter-rust-postgres	push	46162765162	27s	2026-11-28T15:59:59Z
-completed	cancelled	ci: record run unknown	Rewrite CI	rewrite/flutter-rust-postgres	push	46162469149	3m56s	2026-11-28T15:56:19Z
-completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46161816277	7m15s	2026-11-28T15:48:40Z
-completed	cancelled	fix: restore listing detail screen and nullable sdp	Rewrite CI	rewrite/flutter-rust-postgres	push	46161761996	56s	2026-11-28T15:48:03Z
+pending		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46164294302	6s	2026-11-28T16:16:49Z
+in_progress		fix: validate google issuer and expiry	Rewrite CI	rewrite/flutter-rust-postgres	push	46164260831	29s	2026-11-28T16:16:26Z
+completed	failure	ci: record run unknown	Rewrite CI	rewrite/flutter-rust-postgres	push	46163540384	6m50s	2026-11-28T16:08:29Z
+completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46162801777	7m45s	2026-11-28T16:00:20Z
+completed	cancelled	fix: clear rust clippy errors	Rewrite CI	rewrite/flutter-rust-postgres	push	46162765162	31s	2026-11-28T15:59:59Z
 
-Run ID: 46162801777
-URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46162801777
+Run ID: 46164294302
+URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46164294302
 
 ## Watch
 
-X rewrite/flutter-rust-postgres Rewrite CI · 46162801777
+X rewrite/flutter-rust-postgres Rewrite CI · 46164294302
 Triggered via workflow_dispatch about 7 minutes ago
 
 JOBS
-✓ audit in 2m22s (ID 141033724099)
-✓ docker in 2m43s (ID 141033724441)
-✓ android in 7m32s (ID 141033724567)
-X rust in 1m7s (ID 141033724584)
+✓ docker in 1m55s (ID 141038371344)
+✓ audit in 2m52s (ID 141038371595)
+✓ android in 7m6s (ID 141038371638)
+X rust in 58s (ID 141038371651)
   ✓ Set up job
   ✓ Initialize containers
   ✓ Run actions/checkout@v4
@@ -39,10 +39,10 @@ X rust in 1m7s (ID 141033724584)
 
 ANNOTATIONS
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-audit: .github#2
+docker: .github#2
 
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-docker: .github#2
+audit: .github#2
 
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, actions/setup-java@v4, actions/***-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 android: .github#5
@@ -54,115 +54,123 @@ android: .github#18
 rust: .github#2
 
 X Process completed with exit code 101.
-rust: .github#102
+rust: .github#110
 
 
 ARTIFACTS
 unadomot-release-apk
 
-To see what failed, try: gh run view 46162801777 --log-failed
-View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46162801777
+To see what failed, try: gh run view 46164294302 --log-failed
+View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46164294302
 
 ## Failed logs
-rust	Clippy	﻿2026-11-28T16:01:28.8810888Z ##[group]Run cargo clippy --all-targets -- -D warnings
-rust	Clippy	2026-11-28T16:01:28.8811488Z ^[[36;1mcargo clippy --all-targets -- -D warnings^[[0m
-rust	Clippy	2026-11-28T16:01:28.8844856Z shell: /usr/bin/bash -e {0}
-rust	Clippy	2026-11-28T16:01:28.8845154Z env:
-rust	Clippy	2026-11-28T16:01:28.8845433Z   CARGO_TERM_COLOR: never
-rust	Clippy	2026-11-28T16:01:28.8845723Z   NO_COLOR: 1
-rust	Clippy	2026-11-28T16:01:28.8845940Z   RUST_BACKTRACE: 1
-rust	Clippy	2026-11-28T16:01:28.8846513Z   DATABASE_URL: ***localhost:5432/unadomot_test
-rust	Clippy	2026-11-28T16:01:28.8846927Z   JWT_SECRET: test-secret-that-is-at-least-32-bytes-long
-rust	Clippy	2026-11-28T16:01:28.8847390Z   REFRESH_TOKEN_SECRET: test-refresh-secret-that-is-at-least-32-bytes
-rust	Clippy	2026-11-28T16:01:28.8847755Z   CARGO_HOME: /home/runner/.cargo
-rust	Clippy	2026-11-28T16:01:28.8848047Z   CARGO_INCREMENTAL: 0
-rust	Clippy	2026-11-28T16:01:28.8848421Z   CACHE_ON_FAILURE: false
-rust	Clippy	2026-11-28T16:01:28.8848642Z ##[endgroup]
-rust	Clippy	2026-11-28T16:01:28.9440274Z     Updating crates.io index
-rust	Clippy	2026-11-28T16:01:29.7628330Z      Locking 67 packages to highest compatible versions
-rust	Clippy	2026-11-28T16:01:29.7628882Z       Adding base16ct v1.0.0
-rust	Clippy	2026-11-28T16:01:29.7631738Z       Adding base64 v0.23.1
-rust	Clippy	2026-11-28T16:01:29.7634524Z       Adding block-buffer v0.12.1
-rust	Clippy	2026-11-28T16:01:29.7641900Z       Adding chacha20 v0.10.2
-rust	Clippy	2026-11-28T16:01:29.7643239Z       Adding cmov v0.5.4
-rust	Clippy	2026-11-28T16:01:29.7644967Z       Adding const-oid v0.10.3
-rust	Clippy	2026-11-28T16:01:29.7645292Z       Adding cpubits v0.1.1
-rust	Clippy	2026-11-28T16:01:29.7646478Z       Adding cpufeatures v0.3.1
-rust	Clippy	2026-11-28T16:01:29.7672663Z       Adding crypto-bigint v0.7.11
-rust	Clippy	2026-11-28T16:01:29.7678018Z       Adding crypto-common v0.2.2
-rust	Clippy	2026-11-28T16:01:29.7683545Z       Adding crypto-primes v0.7.2
-rust	Clippy	2026-11-28T16:01:29.7685163Z       Adding ctutils v0.4.8
-rust	Clippy	2026-11-28T16:01:29.7704111Z       Adding curve25519-dalek v5.0.0
-rust	Clippy	2026-11-28T16:01:29.7706450Z       Adding curve25519-dalek-derive v0.1.1
-rust	Clippy	2026-11-28T16:01:29.7711914Z       Adding der v0.8.3
-rust	Clippy	2026-11-28T16:01:29.7716188Z       Adding digest v0.11.3
-rust	Clippy	2026-11-28T16:01:29.7735939Z       Adding ecdsa v0.17.0
-rust	Clippy	2026-11-28T16:01:29.7741076Z       Adding ed25519 v3.0.0
-rust	Clippy	2026-11-28T16:01:29.7750039Z       Adding ed25519-dalek v3.0.0
-rust	Clippy	2026-11-28T16:01:29.7783318Z       Adding elliptic-curve v0.14.3
-rust	Clippy	2026-11-28T16:01:29.7788343Z       Adding ff v0.14.0
-rust	Clippy	2026-11-28T16:01:29.7788703Z       Adding fiat-crypto v0.3.0
-rust	Clippy	2026-11-28T16:01:29.7789184Z       Adding group v0.14.0
-rust	Clippy	2026-11-28T16:01:29.7792853Z       Adding hmac v0.13.0
-rust	Clippy	2026-11-28T16:01:29.7793618Z       Adding hybrid-array v0.4.15
-rust	Clippy	2026-11-28T16:01:29.7797587Z       Adding hyper-rustls v0.27.10
-rust	Clippy	2026-11-28T16:01:29.7799337Z       Adding ipnet v2.12.2
-rust	Clippy	2026-11-28T16:01:29.7805885Z     Updating jsonwebtoken v9.3.1 -> v12.0.0
-rust	Clippy	2026-11-28T16:01:29.7806504Z       Adding lru-slab v0.1.3
-rust	Clippy	2026-11-28T16:01:29.7820253Z       Adding p256 v0.14.0
-rust	Clippy	2026-11-28T16:01:29.7831510Z       Adding p384 v0.14.0
-rust	Clippy	2026-11-28T16:01:29.7832931Z       Adding pem-rfc7468 v1.0.0
-rust	Clippy	2026-11-28T16:01:29.7835016Z       Adding pkcs1 v0.8.0
-rust	Clippy	2026-11-28T16:01:29.7840171Z       Adding pkcs8 v0.11.0
-rust	Clippy	2026-11-28T16:01:29.7841915Z       Adding primefield v0.14.0
-rust	Clippy	2026-11-28T16:01:29.7844395Z       Adding primeorder v0.14.0
-rust	Clippy	2026-11-28T16:01:29.7852329Z       Adding quinn v0.11.12
-rust	Clippy	2026-11-28T16:01:29.7862979Z       Adding quinn-proto v0.11.19
-rust	Clippy	2026-11-28T16:01:29.7865879Z       Adding quinn-udp v0.5.16
-rust	Clippy	2026-11-28T16:01:29.7875501Z       Adding rand v0.10.4
-rust	Clippy	2026-11-28T16:01:29.7877751Z       Adding rand_core v0.10.1
-rust	Clippy	2026-11-28T16:01:29.7878912Z       Adding rand_pcg v0.10.3
-rust	Clippy	2026-11-28T16:01:29.7930881Z       Adding reqwest v0.12.28 (available: v0.13.5)
-rust	Clippy	2026-11-28T16:01:29.7941683Z       Adding rfc6979 v0.6.0
-rust	Clippy	2026-11-28T16:01:29.7957654Z       Adding rsa v0.10.0
-rust	Clippy	2026-11-28T16:01:29.7959527Z       Adding rustc-hash v2.1.3
-rust	Clippy	2026-11-28T16:01:29.7960196Z       Adding rustc_version v0.4.1
-rust	Clippy	2026-11-28T16:01:29.7971004Z       Adding rustls v0.23.46
-rust	Clippy	2026-11-28T16:01:29.7973502Z       Adding rustls-pki-types v1.16.0
-rust	Clippy	2026-11-28T16:01:29.7979422Z       Adding rustls-webpki v0.103.17
-rust	Clippy	2026-11-28T16:01:29.7983231Z       Adding sec1 v0.8.1
-rust	Clippy	2026-11-28T16:01:29.7984716Z       Adding semver v1.0.28
-rust	Clippy	2026-11-28T16:01:29.7985628Z       Adding serdect v0.4.3
-rust	Clippy	2026-11-28T16:01:29.7989186Z       Adding sha2 v0.11.2
-rust	Clippy	2026-11-28T16:01:29.7992082Z       Adding signature v3.0.0
-rust	Clippy	2026-11-28T16:01:29.7994172Z       Adding spki v0.8.1
-rust	Clippy	2026-11-28T16:01:29.8000389Z       Adding tokio-rustls v0.26.6
-rust	Clippy	2026-11-28T16:01:29.8001040Z       Adding tracing-serde v0.2.0
-rust	Clippy	2026-11-28T16:01:29.8001477Z       Adding try-lock v0.2.5
-rust	Clippy	2026-11-28T16:01:29.8001961Z       Adding want v0.3.2
-rust	Clippy	2026-11-28T16:01:29.8006750Z       Adding wasm-bindgen-futures v0.4.80
-rust	Clippy	2026-11-28T16:01:29.8097550Z       Adding web-sys v0.3.107
-rust	Clippy	2026-11-28T16:01:29.8100275Z       Adding web-time v1.1.0
-rust	Clippy	2026-11-28T16:01:29.8103328Z       Adding webpki-roots v0.26.11
-rust	Clippy	2026-11-28T16:01:29.8104101Z       Adding webpki-roots v1.0.12
-rust	Clippy	2026-11-28T16:01:29.8104513Z       Adding wnaf v0.14.1
-rust	Clippy	2026-11-28T16:01:29.8105407Z       Adding zeroize_derive v1.5.0
-rust	Clippy	2026-11-28T16:01:30.5345307Z     Checking unadomot-api v0.1.0 (/home/runner/work/unadomot/unadomot/services/api)
-rust	Clippy	2026-11-28T16:01:32.7569473Z error: fields `iss` and `exp` are never read
-rust	Clippy	2026-11-28T16:01:32.7570075Z    --> src/application/google.rs:141:5
-rust	Clippy	2026-11-28T16:01:32.7570726Z     |
-rust	Clippy	2026-11-28T16:01:32.7571064Z 135 | struct GoogleClaims {
-rust	Clippy	2026-11-28T16:01:32.7571445Z     |        ------------ fields in this struct
-rust	Clippy	2026-11-28T16:01:32.7571873Z ...
-rust	Clippy	2026-11-28T16:01:32.7572150Z 141 |     iss: String,
-rust	Clippy	2026-11-28T16:01:32.7572458Z     |     ^^^
-rust	Clippy	2026-11-28T16:01:32.7573000Z 142 |     exp: i64,
-rust	Clippy	2026-11-28T16:01:32.7573304Z     |     ^^^
-rust	Clippy	2026-11-28T16:01:32.7573631Z     |
-rust	Clippy	2026-11-28T16:01:32.7573973Z     = note: `-D dead-code` implied by `-D warnings`
-rust	Clippy	2026-11-28T16:01:32.7574551Z     = help: to override `-D warnings` add `#[expect(dead_code)]` or `#[allow(dead_code)]`
-rust	Clippy	2026-11-28T16:01:32.7575068Z 
-rust	Clippy	2026-11-28T16:01:32.8597539Z error: could not compile `unadomot-api` (lib) due to 1 previous error
-rust	Clippy	2026-11-28T16:01:32.8598270Z warning: build failed, waiting for other jobs to finish...
-rust	Clippy	2026-11-28T16:01:32.9088378Z error: could not compile `unadomot-api` (lib test) due to 1 previous error
-rust	Clippy	2026-11-28T16:01:32.9615049Z ##[error]Process completed with exit code 101.
+rust	Clippy	﻿2026-11-28T16:17:56.6563247Z ##[group]Run cargo clippy --all-targets -- -D warnings
+rust	Clippy	2026-11-28T16:17:56.6563729Z ^[[36;1mcargo clippy --all-targets -- -D warnings^[[0m
+rust	Clippy	2026-11-28T16:17:56.6604899Z shell: /usr/bin/bash -e {0}
+rust	Clippy	2026-11-28T16:17:56.6605168Z env:
+rust	Clippy	2026-11-28T16:17:56.6605360Z   CARGO_TERM_COLOR: never
+rust	Clippy	2026-11-28T16:17:56.6605596Z   NO_COLOR: 1
+rust	Clippy	2026-11-28T16:17:56.6605906Z   RUST_BACKTRACE: 1
+rust	Clippy	2026-11-28T16:17:56.6606519Z   DATABASE_URL: ***localhost:5432/unadomot_test
+rust	Clippy	2026-11-28T16:17:56.6606899Z   JWT_SECRET: test-secret-that-is-at-least-32-bytes-long
+rust	Clippy	2026-11-28T16:17:56.6607339Z   REFRESH_TOKEN_SECRET: test-refresh-secret-that-is-at-least-32-bytes
+rust	Clippy	2026-11-28T16:17:56.6607906Z   CARGO_HOME: /home/runner/.cargo
+rust	Clippy	2026-11-28T16:17:56.6608340Z   CARGO_INCREMENTAL: 0
+rust	Clippy	2026-11-28T16:17:56.6608949Z   CACHE_ON_FAILURE: false
+rust	Clippy	2026-11-28T16:17:56.6609492Z ##[endgroup]
+rust	Clippy	2026-11-28T16:17:56.7685008Z     Updating crates.io index
+rust	Clippy	2026-11-28T16:17:57.2735241Z      Locking 67 packages to highest compatible versions
+rust	Clippy	2026-11-28T16:17:57.2735666Z       Adding base16ct v1.0.0
+rust	Clippy	2026-11-28T16:17:57.2738137Z       Adding base64 v0.23.1
+rust	Clippy	2026-11-28T16:17:57.2740657Z       Adding block-buffer v0.12.1
+rust	Clippy	2026-11-28T16:17:57.2747129Z       Adding chacha20 v0.10.2
+rust	Clippy	2026-11-28T16:17:57.2748518Z       Adding cmov v0.5.4
+rust	Clippy	2026-11-28T16:17:57.2750554Z       Adding const-oid v0.10.3
+rust	Clippy	2026-11-28T16:17:57.2750962Z       Adding cpubits v0.1.1
+rust	Clippy	2026-11-28T16:17:57.2752296Z       Adding cpufeatures v0.3.1
+rust	Clippy	2026-11-28T16:17:57.2777911Z       Adding crypto-bigint v0.7.11
+rust	Clippy	2026-11-28T16:17:57.2782699Z       Adding crypto-common v0.2.2
+rust	Clippy	2026-11-28T16:17:57.2788426Z       Adding crypto-primes v0.7.2
+rust	Clippy	2026-11-28T16:17:57.2790607Z       Adding ctutils v0.4.8
+rust	Clippy	2026-11-28T16:17:57.2810437Z       Adding curve25519-dalek v5.0.0
+rust	Clippy	2026-11-28T16:17:57.2812408Z       Adding curve25519-dalek-derive v0.1.1
+rust	Clippy	2026-11-28T16:17:57.2818917Z       Adding der v0.8.3
+rust	Clippy	2026-11-28T16:17:57.2824187Z       Adding digest v0.11.3
+rust	Clippy	2026-11-28T16:17:57.2845314Z       Adding ecdsa v0.17.0
+rust	Clippy	2026-11-28T16:17:57.2851252Z       Adding ed25519 v3.0.0
+rust	Clippy	2026-11-28T16:17:57.2861819Z       Adding ed25519-dalek v3.0.0
+rust	Clippy	2026-11-28T16:17:57.2896364Z       Adding elliptic-curve v0.14.3
+rust	Clippy	2026-11-28T16:17:57.2900474Z       Adding ff v0.14.0
+rust	Clippy	2026-11-28T16:17:57.2901241Z       Adding fiat-crypto v0.3.0
+rust	Clippy	2026-11-28T16:17:57.2903048Z       Adding group v0.14.0
+rust	Clippy	2026-11-28T16:17:57.2905976Z       Adding hmac v0.13.0
+rust	Clippy	2026-11-28T16:17:57.2908414Z       Adding hybrid-array v0.4.15
+rust	Clippy	2026-11-28T16:17:57.2916264Z       Adding hyper-rustls v0.27.10
+rust	Clippy	2026-11-28T16:17:57.2918914Z       Adding ipnet v2.12.2
+rust	Clippy	2026-11-28T16:17:57.2926665Z     Updating jsonwebtoken v9.3.1 -> v12.0.0
+rust	Clippy	2026-11-28T16:17:57.2927249Z       Adding lru-slab v0.1.3
+rust	Clippy	2026-11-28T16:17:57.2943151Z       Adding p256 v0.14.0
+rust	Clippy	2026-11-28T16:17:57.2955746Z       Adding p384 v0.14.0
+rust	Clippy	2026-11-28T16:17:57.2957070Z       Adding pem-rfc7468 v1.0.0
+rust	Clippy	2026-11-28T16:17:57.2960496Z       Adding pkcs1 v0.8.0
+rust	Clippy	2026-11-28T16:17:57.2966512Z       Adding pkcs8 v0.11.0
+rust	Clippy	2026-11-28T16:17:57.2968797Z       Adding primefield v0.14.0
+rust	Clippy	2026-11-28T16:17:57.2972120Z       Adding primeorder v0.14.0
+rust	Clippy	2026-11-28T16:17:57.2981352Z       Adding quinn v0.11.12
+rust	Clippy	2026-11-28T16:17:57.2993277Z       Adding quinn-proto v0.11.19
+rust	Clippy	2026-11-28T16:17:57.2996435Z       Adding quinn-udp v0.5.16
+rust	Clippy	2026-11-28T16:17:57.3007052Z       Adding rand v0.10.4
+rust	Clippy	2026-11-28T16:17:57.3010045Z       Adding rand_core v0.10.1
+rust	Clippy	2026-11-28T16:17:57.3011360Z       Adding rand_pcg v0.10.3
+rust	Clippy	2026-11-28T16:17:57.3067160Z       Adding reqwest v0.12.28 (available: v0.13.5)
+rust	Clippy	2026-11-28T16:17:57.3074913Z       Adding rfc6979 v0.6.0
+rust	Clippy	2026-11-28T16:17:57.3091249Z       Adding rsa v0.10.0
+rust	Clippy	2026-11-28T16:17:57.3093268Z       Adding rustc-hash v2.1.3
+rust	Clippy	2026-11-28T16:17:57.3093882Z       Adding rustc_version v0.4.1
+rust	Clippy	2026-11-28T16:17:57.3105595Z       Adding rustls v0.23.46
+rust	Clippy	2026-11-28T16:17:57.3108127Z       Adding rustls-pki-types v1.16.0
+rust	Clippy	2026-11-28T16:17:57.3115497Z       Adding rustls-webpki v0.103.17
+rust	Clippy	2026-11-28T16:17:57.3119777Z       Adding sec1 v0.8.1
+rust	Clippy	2026-11-28T16:17:57.3121480Z       Adding semver v1.0.28
+rust	Clippy	2026-11-28T16:17:57.3122565Z       Adding serdect v0.4.3
+rust	Clippy	2026-11-28T16:17:57.3126571Z       Adding sha2 v0.11.2
+rust	Clippy	2026-11-28T16:17:57.3130577Z       Adding signature v3.0.0
+rust	Clippy	2026-11-28T16:17:57.3132718Z       Adding spki v0.8.1
+rust	Clippy	2026-11-28T16:17:57.3139576Z       Adding tokio-rustls v0.26.6
+rust	Clippy	2026-11-28T16:17:57.3140197Z       Adding tracing-serde v0.2.0
+rust	Clippy	2026-11-28T16:17:57.3140655Z       Adding try-lock v0.2.5
+rust	Clippy	2026-11-28T16:17:57.3141061Z       Adding want v0.3.2
+rust	Clippy	2026-11-28T16:17:57.3145962Z       Adding wasm-bindgen-futures v0.4.80
+rust	Clippy	2026-11-28T16:17:57.3282482Z       Adding web-sys v0.3.107
+rust	Clippy	2026-11-28T16:17:57.3284626Z       Adding web-time v1.1.0
+rust	Clippy	2026-11-28T16:17:57.3287472Z       Adding webpki-roots v0.26.11
+rust	Clippy	2026-11-28T16:17:57.3288513Z       Adding webpki-roots v1.0.12
+rust	Clippy	2026-11-28T16:17:57.3289392Z       Adding wnaf v0.14.1
+rust	Clippy	2026-11-28T16:17:57.3290567Z       Adding zeroize_derive v1.5.0
+rust	Clippy	2026-11-28T16:17:58.4052002Z     Checking unadomot-api v0.1.0 (/home/runner/work/unadomot/unadomot/services/api)
+rust	Clippy	2026-11-28T16:18:01.7460055Z error[E0382]: borrow of moved value: `method`
+rust	Clippy	2026-11-28T16:18:01.7469747Z   --> tests/router.rs:71:59
+rust	Clippy	2026-11-28T16:18:01.7489514Z    |
+rust	Clippy	2026-11-28T16:18:01.7489937Z 69 | async fn assert_unauthorized(method: Method, uri: &str) {
+rust	Clippy	2026-11-28T16:18:01.7496930Z    |                              ------ move occurs because `method` has type `reqwest::Method`, which does not implement the `Copy` trait
+rust	Clippy	2026-11-28T16:18:01.7497938Z 70 |     let (status, body) = response_for(method, uri).await;
+rust	Clippy	2026-11-28T16:18:01.7498526Z    |                                       ------ value moved here
+rust	Clippy	2026-11-28T16:18:01.7499503Z 71 |     assert_eq!(status, StatusCode::UNAUTHORIZED, "{} {}", method.as_str(), uri);
+rust	Clippy	2026-11-28T16:18:01.7500374Z    |                                                           ^^^^^^ value borrowed here after move
+rust	Clippy	2026-11-28T16:18:01.7500970Z    |
+rust	Clippy	2026-11-28T16:18:01.7501775Z note: consider changing this parameter type in function `response_for` to borrow instead if owning the value isn't necessary
+rust	Clippy	2026-11-28T16:18:01.7502751Z   --> tests/router.rs:42:31
+rust	Clippy	2026-11-28T16:18:01.7503118Z    |
+rust	Clippy	2026-11-28T16:18:01.7503604Z 42 | async fn response_for(method: Method, uri: &str) -> (StatusCode, Value) {
+rust	Clippy	2026-11-28T16:18:01.7504365Z    |          ------------         ^^^^^^ this parameter takes ownership of the value
+rust	Clippy	2026-11-28T16:18:01.7504925Z    |          |
+rust	Clippy	2026-11-28T16:18:01.7505244Z    |          in this function
+rust	Clippy	2026-11-28T16:18:01.7505812Z help: consider cloning the value if the performance cost is acceptable
+rust	Clippy	2026-11-28T16:18:01.7506405Z    |
+rust	Clippy	2026-11-28T16:18:01.7506844Z 70 |     let (status, body) = response_for(method.clone(), uri).await;
+rust	Clippy	2026-11-28T16:18:01.7507460Z    |                                             ++++++++
+rust	Clippy	2026-11-28T16:18:01.7507818Z 
+rust	Clippy	2026-11-28T16:18:01.7895206Z For more information about this error, try `rustc --explain E0382`.
+rust	Clippy	2026-11-28T16:18:01.7940474Z error: could not compile `unadomot-api` (test "router") due to 1 previous error
+rust	Clippy	2026-11-28T16:18:01.7941635Z warning: build failed, waiting for other jobs to finish...
+rust	Clippy	2026-11-28T16:18:02.0172268Z ##[error]Process completed with exit code 101.
