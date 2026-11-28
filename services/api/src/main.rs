@@ -1,10 +1,5 @@
 #![allow(clippy::result_large_err)]
 
-mod call_handlers;
-mod comment_handlers;
-mod messaging_handlers;
-mod profile_handlers;
-
 use axum::{
     extract::{DefaultBodyLimit, Request, State},
     http::{header, HeaderName, HeaderValue, Method, StatusCode},
@@ -36,7 +31,7 @@ use unadomot_api::application::profiles::ProfileRepository;
 use unadomot_api::application::reports::ReportRepository;
 use unadomot_api::application::verification::VerificationRepository;
 use unadomot_api::config::Config;
-use unadomot_api::http::{public_pages, router, verification, ApiError, AppState, RateLimiter};
+use unadomot_api::http::{app, ApiError, AppState, RateLimiter};
 use unadomot_api::infrastructure::cloudinary::CloudinarySigner;
 use unadomot_api::infrastructure::postgres::{
     call_repository::PostgresCallRepository, comment_repository::PostgresCommentRepository,
@@ -260,19 +255,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE])
     };
 
-    let mut app = router(state.clone())
-        .merge(public_pages::router(state.clone()))
-        .merge(verification::router(state.clone()))
-        .merge(messaging_handlers::router(state.clone()))
-        .merge(call_handlers::router(state.clone()));
-
-    if profile_pool.is_some() {
-        app = app
-            .merge(profile_handlers::router(state.clone()))
-            .merge(comment_handlers::router(state.clone()));
-    }
-
-    let app = app
+    let app = app(state.clone())
         .layer(DefaultBodyLimit::max(2 * 1024 * 1024))
         .layer(cors)
         .layer(TraceLayer::new_for_http())

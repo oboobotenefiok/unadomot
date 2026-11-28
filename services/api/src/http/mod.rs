@@ -25,8 +25,12 @@ use tower_http::set_header::SetResponseHeaderLayer;
 use uuid::Uuid;
 
 pub mod auth;
+pub mod calls;
+pub mod chat;
+pub mod comments;
 pub mod listings;
 pub mod messaging;
+pub mod profile;
 pub mod public_pages;
 pub mod reports;
 pub mod verification;
@@ -194,6 +198,25 @@ pub fn router(state: AppState) -> Router {
             HeaderValue::from_static("strict-origin-when-cross-origin"),
         ))
         .with_state(state)
+}
+
+/// Builds the complete application router, including the handlers that used to
+/// live as binary-private modules. Exposed from the library so integration
+/// tests can exercise every route without binding a socket.
+pub fn app(state: AppState) -> Router {
+    let mut app = router(state.clone())
+        .merge(public_pages::router(state.clone()))
+        .merge(verification::router(state.clone()))
+        .merge(chat::router(state.clone()))
+        .merge(calls::router(state.clone()));
+
+    if state.profiles.is_some() {
+        app = app
+            .merge(profile::router(state.clone()))
+            .merge(comments::router(state.clone()));
+    }
+
+    app
 }
 
 async fn ready_handler(State(state): State<AppState>) -> Result<StatusCode, ApiError> {
