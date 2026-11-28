@@ -108,8 +108,11 @@ class _ChatScreenState extends State<ChatScreen> {
         _position = Duration.zero;
       });
     });
-    _load();
-    _loadMe();
+    // The reader's own id is needed to tell their messages apart from the
+    // other person's, so it is resolved before the thread is positioned.
+    _loadMe().then((_) {
+      if (mounted) _load();
+    });
     _listenForChanges();
     _incomingTimer = Timer.periodic(const Duration(seconds: 5), (_) => _checkIncoming());
     _typingTimer = Timer.periodic(const Duration(seconds: 2), (_) => _checkTyping());
