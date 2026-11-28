@@ -24,6 +24,7 @@ use unadomot_api::application::calls::CallRepository;
 use unadomot_api::application::email::{
     EmailSender, ResendEmailSender, UnconfiguredEmailSender,
 };
+use unadomot_api::application::google::GoogleAuth;
 use unadomot_api::application::listings::ListingRepository;
 use unadomot_api::application::media::MediaSigner;
 use unadomot_api::application::messaging::MessagingRepository;
@@ -159,6 +160,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let jwt_secret = config.jwt_secret.clone();
     let database_url = config.database_url.clone();
 
+    let http_client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(10))
+        .build()?;
+
     let mut profile_pool: Option<sqlx::PgPool> = None;
 
     let (users, listings, messaging, reports, verification_repo, calls): Repositories =
@@ -223,6 +228,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .as_ref()
         .map(|pool| Arc::new(PostgresProfileRepository::new(pool.clone())) as Arc<dyn ProfileRepository>);
 
+    let google = config
+        .google_client_id
+        .clone()
+        .map(|client_id| Arc::new(GoogleAuth::new(client_id, http_client.clone())));
+
     let state = AppState {
         users: users.clone(),
         listings,
@@ -236,9 +246,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         comments,
         profiles,
         jwt_secret: jwt_secret.clone(),
-        limiter: Arc::new(RateLimiter::new(config.rate_limit_per_minute)),
+        refresh_secret: config.refresh_secret.clone(),
+        http_client: http_client.clone(),
+        google,
+        turn_urls: config.turn.as_ref().map(|turn| turn.urls.clone()),
+        turn_secret: config.turn.as_ref().map(|turn| turn.secret.clone()),
+        limiter: Arc::new(RateLimiter::new(
+            config.rate_limit_per_minute,
+            config.redis_url.clone(),
+        )),
         allowed_origins: config.allowed_origins.clone(),
-        app_base_url: Arc::new(config.app_base_url.clone()),
+        public_web_url: Arc::new(config.public_web_url.clone()),
     };
 
     let cors = if state.allowed_origins.is_empty() {

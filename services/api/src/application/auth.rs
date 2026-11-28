@@ -1,9 +1,10 @@
 use argon2::{
-    password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+    password_hash::{rand_core::{OsRng, RngCore}, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
 };
 use async_trait::async_trait;
 use axum::http::{header, HeaderMap};
+use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use chrono::{DateTime, Duration, Utc};
 use hmac::{Hmac, Mac};
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
@@ -259,7 +260,10 @@ pub fn verify_session(token: &str, jwt_secret: &str) -> Result<AuthenticatedUser
 }
 
 pub fn new_refresh_token() -> String {
-    format!("{}{}", Uuid::new_v4().simple(), Uuid::new_v4().simple())
+    let mut bytes = [0u8; 32];
+    let mut rng = OsRng;
+    rng.fill_bytes(&mut bytes);
+    URL_SAFE_NO_PAD.encode(bytes)
 }
 
 fn hash_refresh_token_with_secret(token: &str, secret: &str) -> String {
@@ -269,10 +273,8 @@ fn hash_refresh_token_with_secret(token: &str, secret: &str) -> String {
     hex::encode(mac.finalize().into_bytes())
 }
 
-pub fn hash_refresh_token(token: &str) -> String {
-    let secret = std::env::var("REFRESH_TOKEN_SECRET")
-        .expect("REFRESH_TOKEN_SECRET must be set before hashing refresh tokens");
-    hash_refresh_token_with_secret(token, &secret)
+pub fn hash_refresh_token(token: &str, secret: &str) -> String {
+    hash_refresh_token_with_secret(token, secret)
 }
 
 #[cfg(test)]
@@ -301,6 +303,14 @@ mod tests {
         );
         assert_eq!(hash.len(), 64);
         assert_ne!(hash, "token-value");
+    }
+
+    #[test]
+    fn refresh_tokens_are_32_random_bytes() {
+        let first = new_refresh_token();
+        let second = new_refresh_token();
+        assert_eq!(first.len(), 43);
+        assert_ne!(first, second);
     }
 
     #[test]

@@ -28,9 +28,14 @@ fn test_state() -> AppState {
         email: Arc::new(UnconfiguredEmailSender),
         pool: None,
         jwt_secret: Arc::new("test-secret-that-is-long-enough-for-hs256".into()),
-        limiter: Arc::new(RateLimiter::new(10_000)),
+        refresh_secret: Arc::new("test-refresh-secret-that-is-at-least-32-bytes".into()),
+        http_client: reqwest::Client::new(),
+        google: None,
+        turn_urls: None,
+        turn_secret: None,
+        limiter: Arc::new(RateLimiter::new(10_000, None)),
         allowed_origins: Arc::new(Vec::new()),
-        app_base_url: Arc::new("https://unadomot.test".into()),
+        public_web_url: Arc::new("https://unadomot.test".into()),
     }
 }
 

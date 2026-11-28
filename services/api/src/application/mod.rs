@@ -2,6 +2,7 @@ pub mod auth;
 pub mod calls;
 pub mod comments;
 pub mod email;
+pub mod google;
 pub mod listings;
 pub mod media;
 pub mod messaging;

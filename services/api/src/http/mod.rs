@@ -2,6 +2,7 @@ use crate::application::auth::UserRepository;
 use crate::application::calls::CallRepository;
 use crate::application::comments::CommentRepository;
 use crate::application::email::EmailSender;
+use crate::application::google::GoogleAuth;
 use crate::application::listings::ListingRepository;
 use crate::application::media::MediaSigner;
 use crate::application::messaging::MessagingRepository;
@@ -53,10 +54,8 @@ struct Bucket {
 }
 
 impl RateLimiter {
-    pub fn new(limit: u32) -> Self {
-        let redis = std::env::var("REDIS_URL")
-            .ok()
-            .and_then(|url| redis::Client::open(url).ok());
+    pub fn new(limit: u32, redis_url: Option<String>) -> Self {
+        let redis = redis_url.and_then(|url| redis::Client::open(url).ok());
 
         Self {
             redis,
@@ -123,7 +122,7 @@ impl RateLimiter {
 
 impl Default for RateLimiter {
     fn default() -> Self {
-        Self::new(120)
+        Self::new(120, None)
     }
 }
 
@@ -141,9 +140,14 @@ pub struct AppState {
     pub email: Arc<dyn EmailSender>,
     pub pool: Option<sqlx::PgPool>,
     pub jwt_secret: Arc<String>,
+    pub refresh_secret: Arc<String>,
+    pub http_client: reqwest::Client,
+    pub google: Option<Arc<GoogleAuth>>,
+    pub turn_urls: Option<String>,
+    pub turn_secret: Option<String>,
     pub limiter: Arc<RateLimiter>,
     pub allowed_origins: Arc<Vec<String>>,
-    pub app_base_url: Arc<String>,
+    pub public_web_url: Arc<String>,
 }
 
 pub struct ApiError {
@@ -266,7 +270,7 @@ mod tests {
 
     #[tokio::test]
     async fn enforces_per_key_budgets() {
-        let limiter = RateLimiter::new(2);
+        let limiter = RateLimiter::new(2, None);
         let window = StdDuration::from_secs(60);
         assert!(limiter.allow_with("a", 2, window).await);
         assert!(limiter.allow_with("a", 2, window).await);
@@ -276,7 +280,7 @@ mod tests {
 
     #[tokio::test]
     async fn separate_budgets_do_not_share_counters() {
-        let limiter = RateLimiter::new(10);
+        let limiter = RateLimiter::new(10, None);
         let window = StdDuration::from_secs(60);
         assert!(limiter.allow_with("auth:1.2.3.4", 1, window).await);
         assert!(!limiter.allow_with("auth:1.2.3.4", 1, window).await);

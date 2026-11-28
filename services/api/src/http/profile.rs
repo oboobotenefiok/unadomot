@@ -9,6 +9,7 @@ use chrono::{Duration, Utc};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use crate::application::auth::{hash_refresh_token, issue_session, new_refresh_token};
+use crate::application::google::GoogleAuthError;
 use crate::application::profiles::{Profile, ProfileListing};
 use crate::extract::{AdminUser, AuthUser};
 use crate::http::AppState;
@@ -277,63 +278,33 @@ struct GoogleAuthRequest {
     id_token: String,
 }
 
-#[derive(Deserialize)]
-struct GoogleTokenInfo {
-    aud: String,
-    email: String,
-    email_verified: Option<String>,
-    name: Option<String>,
-}
-
 async fn google_auth(
     State(state): State<AppState>,
     Json(request): Json<GoogleAuthRequest>,
 ) -> axum::response::Response {
-    let client_id = match std::env::var("GOOGLE_CLIENT_ID") {
-        Ok(value) if !value.trim().is_empty() => value,
-        _ => return error(StatusCode::SERVICE_UNAVAILABLE, "Google sign-in is not configured"),
+    let google = match state.google.as_ref() {
+        Some(google) => google,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Google sign-in is not configured"),
     };
 
     if request.id_token.trim().is_empty() {
         return error(StatusCode::BAD_REQUEST, "Google token is required");
     }
 
-    let client = match reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(10))
-        .build()
-    {
-        Ok(client) => client,
-        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Google verification unavailable"),
-    };
-
-    let response = match client
-        .get("https://oauth2.googleapis.com/tokeninfo")
-        .query(&[("id_token", request.id_token.trim())])
-        .send()
-        .await
-    {
-        Ok(response) => response,
-        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Google verification unavailable"),
-    };
-
-    if !response.status().is_success() {
-        return error(StatusCode::UNAUTHORIZED, "Google sign-in failed");
-    }
-
-    let info: GoogleTokenInfo = match response.json().await {
+    let info = match google.verify(request.id_token.trim()).await {
         Ok(info) => info,
-        Err(_) => return error(StatusCode::UNAUTHORIZED, "Google sign-in failed"),
+        Err(GoogleAuthError::InvalidToken) => {
+            return error(StatusCode::UNAUTHORIZED, "Google sign-in failed")
+        }
+        Err(GoogleAuthError::Unavailable) => {
+            return error(StatusCode::SERVICE_UNAVAILABLE, "Google verification unavailable")
+        }
     };
 
-    if info.aud != client_id {
-        return error(StatusCode::UNAUTHORIZED, "Google token audience mismatch");
-    }
-    if info.email_verified.as_deref() != Some("true") {
-        return error(StatusCode::UNAUTHORIZED, "Google email is not verified");
-    }
-
-    let email = info.email.trim().to_lowercase();
-    let name = info.name.unwrap_or_else(|| email.split('@').next().unwrap_or("User").to_string());
+    let email = info.email;
+    let name = info
+        .name
+        .unwrap_or_else(|| email.split('@').next().unwrap_or("User").to_string());
 
     let existing = match state.users.find_by_email(&email).await {
         Ok(user) => user,
@@ -379,7 +350,7 @@ async fn google_auth(
     }
 
     let refresh_token = new_refresh_token();
-    let refresh_hash = hash_refresh_token(&refresh_token);
+    let refresh_hash = hash_refresh_token(&refresh_token, &state.refresh_secret);
     if state
         .users
         .store_refresh_token(user_id, &refresh_hash, Utc::now() + Duration::days(30))

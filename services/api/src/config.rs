@@ -14,17 +14,26 @@ pub struct ResendConfig {
 }
 
 #[derive(Clone)]
+pub struct TurnConfig {
+    pub urls: String,
+    pub secret: String,
+}
+
+#[derive(Clone)]
 pub struct Config {
     pub is_production: bool,
     pub database_url: Option<String>,
     pub jwt_secret: Arc<String>,
     pub refresh_secret: Arc<String>,
+    pub google_client_id: Option<String>,
+    pub turn: Option<TurnConfig>,
+    pub redis_url: Option<String>,
     pub allowed_origins: Arc<Vec<String>>,
     pub rate_limit_per_minute: u32,
     pub cloudinary: Option<CloudinaryConfig>,
     pub resend: Option<ResendConfig>,
     pub password_reset_debug: bool,
-    pub app_base_url: String,
+    pub public_web_url: String,
 }
 
 impl Config {
@@ -57,6 +66,31 @@ impl Config {
         if database_url.is_none() && is_production {
             return Err("DATABASE_URL is required in production".into());
         }
+
+        let google_client_id = std::env::var("GOOGLE_CLIENT_ID")
+            .ok()
+            .map(|value| value.trim().to_string())
+            .filter(|value| !value.is_empty());
+
+        let turn = match (
+            std::env::var("TURN_URLS"),
+            std::env::var("TURN_SECRET"),
+        ) {
+            (Ok(urls), Ok(secret))
+                if !urls.trim().is_empty() && !secret.trim().is_empty() =>
+            {
+                Some(TurnConfig {
+                    urls: urls.trim().to_string(),
+                    secret: secret.trim().to_string(),
+                })
+            }
+            _ => None,
+        };
+
+        let redis_url = std::env::var("REDIS_URL")
+            .ok()
+            .map(|value| value.trim().to_string())
+            .filter(|value| !value.is_empty());
 
         let allowed_origins = Arc::new(
             std::env::var("ALLOWED_ORIGINS")
@@ -118,7 +152,8 @@ impl Config {
             return Err("PASSWORD_RESET_DEBUG must not be enabled in production".into());
         }
 
-        let app_base_url = std::env::var("APP_BASE_URL")
+        let public_web_url = std::env::var("PUBLIC_WEB_URL")
+            .or_else(|_| std::env::var("APP_BASE_URL"))
             .or_else(|_| std::env::var("PUBLIC_APP_URL"))
             .unwrap_or_else(|_| "https://unadomot.com".into())
             .trim_end_matches('/')
@@ -129,12 +164,15 @@ impl Config {
             database_url,
             jwt_secret: Arc::new(jwt_secret),
             refresh_secret: Arc::new(refresh_secret),
+            google_client_id,
+            turn,
+            redis_url,
             allowed_origins,
             rate_limit_per_minute,
             cloudinary,
             resend,
             password_reset_debug,
-            app_base_url,
+            public_web_url,
         })
     }
 }
