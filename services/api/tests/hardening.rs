@@ -111,13 +111,18 @@ async fn media_attachment_is_returned_with_listing() {
         .await
         .expect("create listing");
 
+    let public_id = format!("unadomot/listings/{}/photo-1", owner.id);
+    let url = format!(
+        "https://res.cloudinary.com/demo/image/upload/v1/{public_id}.jpg"
+    );
+
     add_listing_media(
         &listings,
         listing.id,
         owner.id,
         &NewListingMedia {
-            cloudinary_public_id: "unadomot/test".into(),
-            url: "https://example.com/photo.jpg".into(),
+            cloudinary_public_id: public_id,
+            url: url.clone(),
             alt_text: Some("Front view".into()),
             position: 0,
         },
@@ -130,7 +135,7 @@ async fn media_attachment_is_returned_with_listing() {
         .expect("get listing")
         .expect("listing exists");
     assert_eq!(fetched.media.len(), 1);
-    assert_eq!(fetched.media[0].url, "https://example.com/photo.jpg");
+    assert_eq!(fetched.media[0].url, url);
 }
 
 #[tokio::test]
