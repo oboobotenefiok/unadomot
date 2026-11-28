@@ -45,4 +45,25 @@ extension ApiClientProfile on ApiClient {
       throw ApiException(response.statusCode, 'Could not delete your account.');
     }
   }
+
+  Future<void> requestEmailVerification() async {
+    final response = await http.post(
+      baseUrl.resolve('/api/account/email-verification/request'),
+      headers: _authHeaders,
+    ).timeout(const Duration(seconds: 30));
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw ApiException(response.statusCode, 'Could not send the verification email.');
+    }
+  }
+
+  Future<void> confirmEmailVerification(String token) async {
+    final response = await http.post(
+      baseUrl.resolve('/api/account/email-verification/confirm'),
+      headers: _authHeaders,
+      body: jsonEncode({'token': token.trim()}),
+    ).timeout(const Duration(seconds: 30));
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw ApiException(response.statusCode, 'Verification link is invalid or expired.');
+    }
+  }
 }

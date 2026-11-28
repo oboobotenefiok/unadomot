@@ -264,6 +264,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _verifyEmail() async {
+    try {
+      await widget.api.requestEmailVerification();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Verification link sent. Check your inbox.')),
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
+      }
+    }
+  }
+
   Future<void> _deleteAccount() async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -661,6 +676,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             context,
             MaterialPageRoute(builder: (_) => VerificationScreen(api: widget.api)),
           )),
+          _settingsRow(Icons.mark_email_read_outlined, 'Verify email', _verifyEmail),
           if (isAdmin)
             _settingsRow(Icons.admin_panel_settings_outlined, 'Admin', () => Navigator.push(
               context,
