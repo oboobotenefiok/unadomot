@@ -19,7 +19,6 @@ pub fn router(state: AppState) -> Router {
         )
         .route("/api/comments/{id}/reactions", post(toggle_reaction))
         .route("/api/comments/{id}", delete(delete_comment))
-        .route("/api/listings/code/{code}", get(find_by_code))
         .with_state(state)
 }
 
@@ -41,27 +40,6 @@ struct ReactionRequest {
 struct CommentQuery {
     limit: Option<i64>,
     offset: Option<i64>,
-}
-
-async fn find_by_code(
-    State(state): State<AppState>,
-    Path(code): Path<String>,
-) -> axum::response::Response {
-    let comments = match state.comments.as_ref() {
-        Some(comments) => comments,
-        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Listing lookup unavailable"),
-    };
-
-    let code = code.trim().to_uppercase();
-    if code.len() < 4 || code.len() > 32 {
-        return error(StatusCode::BAD_REQUEST, "Enter a valid listing code");
-    }
-
-    match comments.find_listing_by_code(&code).await {
-        Ok(Some(id)) => Json(json!({ "id": id, "code": code })).into_response(),
-        Ok(None) => error(StatusCode::NOT_FOUND, "No listing matches that code"),
-        Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Listing lookup unavailable"),
-    }
 }
 
 async fn delete_comment(
