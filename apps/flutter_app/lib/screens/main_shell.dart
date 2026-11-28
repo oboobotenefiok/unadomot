@@ -253,7 +253,12 @@ class _MainShellState extends State<MainShell> {
       ),
       KeyedSubtree(
         key: ValueKey('messages-$authKey'),
-        child: MessagesScreen(api: widget.api, showAppBar: false),
+        child: MessagesScreen(
+          api: widget.api,
+          cache: widget.cache,
+          appState: widget.appState,
+          showAppBar: false,
+        ),
       ),
       KeyedSubtree(
         key: ValueKey('profile-$authKey'),
