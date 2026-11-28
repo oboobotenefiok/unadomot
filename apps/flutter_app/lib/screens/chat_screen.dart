@@ -10,8 +10,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import '../api/api_client.dart';
+import '../data/local_cache.dart';
+import '../state/app_state.dart';
 import '../theme.dart';
 import 'call_screen.dart';
+import 'listing_detail_screen.dart';
 
 const _maxVoiceSeconds = 120;
 const _reactionEmojis = ['👍', '❤️', '😂', '😮', '😢'];
@@ -20,12 +23,26 @@ class ChatScreen extends StatefulWidget {
   final ApiClient api;
   final String conversationId;
   final String? initialMessage;
+  final String? listingId;
+  final String? listingTitle;
+  final String? listingPhotoUrl;
+  final String? counterpartName;
+  final String? counterpartPhotoUrl;
+  final LocalCache? cache;
+  final AppState? appState;
 
   const ChatScreen({
     super.key,
     required this.api,
     required this.conversationId,
     this.initialMessage,
+    this.listingId,
+    this.listingTitle,
+    this.listingPhotoUrl,
+    this.counterpartName,
+    this.counterpartPhotoUrl,
+    this.cache,
+    this.appState,
   });
 
   @override
@@ -47,14 +64,12 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isTyping = false;
   String? _error;
 
-  // Recording state.
   bool _recording = false;
   bool _recordPaused = false;
   int _recordSeconds = 0;
   String? _recordPath;
   Timer? _recordTimer;
 
-  // Playback state, shared so only one voice note plays at a time.
   String? _playingId;
   bool _playing = false;
   Duration _position = Duration.zero;
@@ -955,11 +970,123 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  /// The property this conversation belongs to. Tapping it opens the listing.
+  Widget _listingHeader() {
+    final title = widget.listingTitle ?? 'Conversation';
+    final photo = widget.listingPhotoUrl;
+    final canOpen = widget.listingId != null &&
+        widget.cache != null &&
+        widget.appState != null;
+
+    return InkWell(
+      onTap: canOpen ? _openListing : null,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                width: 38,
+                height: 38,
+                child: photo == null
+                    ? Container(
+                        color: UnaColors.green100,
+                        child: const Icon(
+                          Icons.home_work_outlined,
+                          size: 20,
+                          color: UnaColors.green900,
+                        ),
+                      )
+                    : Image.network(photo, fit: BoxFit.cover),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (widget.counterpartName != null)
+                    Text(
+                      widget.counterpartName!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            if (canOpen)
+              const Icon(Icons.chevron_right, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openListing() {
+    final listingId = widget.listingId;
+    final cache = widget.cache;
+    final appState = widget.appState;
+    if (listingId == null || cache == null || appState == null) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ListingDetailScreen(
+          api: widget.api,
+          cache: cache,
+          appState: appState,
+          listingId: listingId,
+        ),
+      ),
+    );
+  }
+
+  Widget _senderAvatar() {
+    final photo = widget.counterpartPhotoUrl;
+    final name = widget.counterpartName ?? '';
+    return CircleAvatar(
+      radius: 14,
+      backgroundColor: UnaColors.green100,
+      backgroundImage: photo == null ? null : NetworkImage(photo),
+      child: photo == null
+          ? Text(
+              _initials(name),
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: UnaColors.green900,
+              ),
+            )
+          : null,
+    );
+  }
+
+  String _initials(String name) {
+    final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    if (parts.isEmpty) return '?';
+    if (parts.length == 1) return parts.first.characters.first.toUpperCase();
+    return (parts.first.characters.first + parts.last.characters.first).toUpperCase();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chat'),
+        title: _listingHeader(),
         actions: [
           IconButton(
             tooltip: 'Refresh',
@@ -997,12 +1124,30 @@ class _ChatScreenState extends State<ChatScreen> {
                           final message = _messages[index];
                           final senderId = message['sender_id'] as String?;
                           final mine = _myId != null && senderId == _myId;
-                          return Align(
-                            alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
-                            child: GestureDetector(
-                              onLongPress: () => setState(() => _replyTo = message),
-                              child: _messageBubble(message, mine),
-                            ),
+                          final bubble = GestureDetector(
+                            onLongPress: () => setState(() => _replyTo = message),
+                            child: _messageBubble(message, mine),
+                          );
+                          if (mine) {
+                            return Align(
+                              alignment: Alignment.centerRight,
+                              child: bubble,
+                            );
+                          }
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 4, right: 6),
+                                child: _senderAvatar(),
+                              ),
+                              Flexible(
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: bubble,
+                                ),
+                              ),
+                            ],
                           );
                         },
                       ),
