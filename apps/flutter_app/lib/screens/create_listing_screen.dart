@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../api/api_client.dart';
@@ -28,9 +27,8 @@ class CreateListingScreen extends StatefulWidget {
 class _MediaItem {
   final Uint8List bytes;
   final String name;
-  final String type;
 
-  const _MediaItem({required this.bytes, required this.name, required this.type});
+  const _MediaItem({required this.bytes, required this.name});
 }
 
 class _CreateListingScreenState extends State<CreateListingScreen> {
@@ -141,35 +139,9 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     if (picked.isEmpty) return;
     for (final file in picked) {
       final bytes = await file.readAsBytes();
-      _media.add(_MediaItem(bytes: bytes, name: file.name, type: 'image'));
+      _media.add(_MediaItem(bytes: bytes, name: file.name));
     }
     if (mounted) setState(() {});
-  }
-
-  Future<void> _pickVideo() async {
-    final picked = await ImagePicker().pickVideo(source: ImageSource.gallery);
-    if (picked == null) return;
-    final bytes = await picked.readAsBytes();
-    if (mounted) {
-      setState(() {
-        _media.add(_MediaItem(bytes: bytes, name: picked.name, type: 'video'));
-      });
-    }
-  }
-
-  Future<void> _pickDocument() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx'],
-      withData: true,
-    );
-    final file = result?.files.single;
-    if (file == null || file.bytes == null) return;
-    if (mounted) {
-      setState(() {
-        _media.add(_MediaItem(bytes: file.bytes!, name: file.name, type: 'document'));
-      });
-    }
   }
 
   void _removeMedia(int index) {
@@ -236,8 +208,6 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     });
 
     try {
-      await widget.api.mediaSignature();
-
       final listing = await widget.api.createListing({
         'title': _title.text.trim(),
         'description': _description.text.trim(),
@@ -256,23 +226,18 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       final listingId = listing['id'] as String;
       for (var index = 0; index < _media.length; index++) {
         final item = _media[index];
-        final signature = await widget.api.mediaSignature();
+        final signature = await widget.api.mediaSignature(purpose: 'listing');
         final uploaded = await widget.api.uploadToCloudinary(
           bytes: item.bytes,
           filename: item.name,
           signature: signature,
-          resourceType: item.type == 'image'
-              ? 'image'
-              : item.type == 'video'
-                  ? 'video'
-                  : 'raw',
         );
         await widget.api.attachMedia(
           listingId,
           publicId: uploaded['public_id'] as String,
           url: uploaded['secure_url'] as String,
           altText: _title.text.trim(),
-          mediaType: item.type,
+          mediaType: 'image',
           position: index,
         );
       }
@@ -561,7 +526,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Photos, video, and documents',
+            'Photos',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 4),
@@ -570,32 +535,10 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
             style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _busy ? null : _pickImages,
-                  icon: const Icon(Icons.photo_library_outlined),
-                  label: const Text('Photos'),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _busy ? null : _pickVideo,
-                  icon: const Icon(Icons.videocam_outlined),
-                  label: const Text('Video'),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _busy ? null : _pickDocument,
-                  icon: const Icon(Icons.description_outlined),
-                  label: const Text('Docs'),
-                ),
-              ),
-            ],
+          OutlinedButton.icon(
+            onPressed: _busy ? null : _pickImages,
+            icon: const Icon(Icons.photo_library_outlined),
+            label: const Text('Add photos'),
           ),
           const SizedBox(height: 16),
           if (_media.isEmpty)
@@ -605,7 +548,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Center(child: Text('No media added yet')),
+              child: const Center(child: Text('No photos added yet')),
             )
           else
             ReorderableListView.builder(
@@ -631,17 +574,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                         child: SizedBox(
                           width: 64,
                           height: 64,
-                          child: item.type == 'image'
-                              ? Image.memory(item.bytes, fit: BoxFit.cover)
-                              : Container(
-                                  color: Theme.of(context).colorScheme.surface,
-                                  child: Icon(
-                                    item.type == 'video'
-                                        ? Icons.play_circle_outline
-                                        : Icons.description_outlined,
-                                    size: 28,
-                                  ),
-                                ),
+                          child: Image.memory(item.bytes, fit: BoxFit.cover),
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -716,8 +649,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
           ],
           const SizedBox(height: 12),
           _reviewCard(
-            title: 'Media',
-            subtitle: '${_media.length} item${_media.length == 1 ? '' : 's'}',
+            title: 'Photos',
+            subtitle: '${_media.length} photo${_media.length == 1 ? '' : 's'}',
             lines: [
               if (_media.isNotEmpty) 'Cover: ${_media.first.name}',
               'At least one photo is required.',

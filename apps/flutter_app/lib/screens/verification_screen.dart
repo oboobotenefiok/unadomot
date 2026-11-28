@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../api/api_client.dart';
 import '../theme.dart';
 
@@ -12,10 +13,12 @@ class VerificationScreen extends StatefulWidget {
 }
 
 class _VerificationScreenState extends State<VerificationScreen> {
-  final _urlController = TextEditingController();
   final _notesController = TextEditingController();
   Map<String, dynamic>? _request;
+  String? _documentPublicId;
+  String? _documentName;
   bool _loading = true;
+  bool _uploading = false;
   bool _submitting = false;
   String? _error;
 
@@ -27,7 +30,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   @override
   void dispose() {
-    _urlController.dispose();
     _notesController.dispose();
     super.dispose();
   }
@@ -43,20 +45,63 @@ class _VerificationScreenState extends State<VerificationScreen> {
     }
   }
 
+  Future<void> _pickDocument() async {
+    if (_uploading) return;
+    final picked = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 90,
+      maxWidth: 2000,
+    );
+    if (picked == null) return;
+
+    setState(() {
+      _uploading = true;
+      _error = null;
+    });
+
+    try {
+      final bytes = await picked.readAsBytes();
+      final signature = await widget.api.mediaSignature(purpose: 'verification');
+      final uploaded = await widget.api.uploadToCloudinary(
+        bytes: bytes,
+        filename: picked.name,
+        signature: signature,
+      );
+      final publicId = uploaded['public_id'] as String?;
+      if (publicId == null || publicId.isEmpty) {
+        throw const ApiException(0, 'The upload did not return a document id.');
+      }
+      if (mounted) {
+        setState(() {
+          _documentPublicId = publicId;
+          _documentName = picked.name;
+        });
+      }
+    } catch (error) {
+      if (mounted) setState(() => _error = error.toString());
+    } finally {
+      if (mounted) setState(() => _uploading = false);
+    }
+  }
+
   Future<void> _submit() async {
-    final url = _urlController.text.trim();
-    if (url.isEmpty || _submitting) return;
+    final publicId = _documentPublicId;
+    if (publicId == null || _submitting) return;
     setState(() {
       _submitting = true;
       _error = null;
     });
     try {
       final request = await widget.api.submitVerification(
-        documentUrl: url,
+        documentPublicId: publicId,
         notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
       );
       if (mounted) {
-        setState(() => _request = request);
+        setState(() {
+          _request = request;
+          _documentPublicId = null;
+          _documentName = null;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Verification request submitted.')),
         );
@@ -97,17 +142,32 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           ),
                           const SizedBox(height: 4),
                           const Text(
-                            'Add a link to a government ID, business registration, or proof of address.',
+                            'Upload a clear photo of a government ID, business registration, or proof of address. Documents are stored privately and only reviewed by our team.',
                             style: TextStyle(color: UnaColors.text500, fontSize: 13, height: 1.4),
                           ),
                           const SizedBox(height: 16),
-                          TextField(
-                            controller: _urlController,
-                            decoration: const InputDecoration(
-                              labelText: 'Document URL',
-                              hintText: 'https://...',
+                          OutlinedButton.icon(
+                            onPressed: _uploading ? null : _pickDocument,
+                            icon: _uploading
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  )
+                                : const Icon(Icons.upload_file_outlined),
+                            label: Text(
+                              _uploading
+                                  ? 'Uploading...'
+                                  : _documentName ?? 'Choose document',
                             ),
                           ),
+                          if (_documentPublicId != null) ...[
+                            const SizedBox(height: 6),
+                            const Text(
+                              'Document uploaded. Submit when you are ready.',
+                              style: TextStyle(fontSize: 12, color: UnaColors.green700),
+                            ),
+                          ],
                           const SizedBox(height: 12),
                           TextField(
                             controller: _notesController,
@@ -118,7 +178,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
                           ),
                           const SizedBox(height: 16),
                           FilledButton(
-                            onPressed: _submitting ? null : _submit,
+                            onPressed: _submitting || _documentPublicId == null
+                                ? null
+                                : _submit,
                             child: Text(_submitting ? 'Submitting...' : 'Submit for verification'),
                           ),
                         ],
