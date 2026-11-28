@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
+use chrono::Utc;
 use jsonwebtoken::{
     decode, decode_header, jwk::JwkSet, Algorithm, DecodingKey, Validation,
 };
@@ -68,6 +69,12 @@ impl GoogleAuth {
         let claims = data.claims;
 
         if claims.aud != self.client_id {
+            return Err(GoogleAuthError::InvalidToken);
+        }
+        if claims.iss != "https://accounts.google.com" && claims.iss != "accounts.google.com" {
+            return Err(GoogleAuthError::InvalidToken);
+        }
+        if claims.exp <= Utc::now().timestamp() {
             return Err(GoogleAuthError::InvalidToken);
         }
         if let Some(azp) = claims.azp.as_deref() {
