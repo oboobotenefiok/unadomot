@@ -22,11 +22,6 @@ part 'chat_composer.dart';
 part 'chat_app_bar.dart';
 part 'chat_attachments.dart';
 
-part 'chat_message_bubble.dart';
-part 'chat_composer.dart';
-part 'chat_app_bar.dart';
-part 'chat_attachments.dart';
-
 const _maxVoiceSeconds = 120;
 const _reactionEmojis = ['👍', '❤️', '😂', '😮', '😢'];
 
@@ -100,9 +95,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addObserver(this);
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     if (widget.initialMessage != null) {
       _controller.text = widget.initialMessage!;
     }
@@ -120,8 +114,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         _position = Duration.zero;
       });
     });
-    // The reader's own id is needed to tell their messages apart from the
-    // other person's, so it is resolved before the thread is positioned.
     _loadMe().then((_) {
       if (mounted) _load();
     });
@@ -132,7 +124,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     WidgetsBinding.instance.removeObserver(this);
     _recordTimer?.cancel();
     _incomingTimer?.cancel();
@@ -149,9 +140,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  /// Appends messages written on another device as they arrive. The sender's
-  /// own device also receives the event, so anything already on screen is
-  /// skipped by id rather than duplicated.
   void _listenForChanges() {
     _events = EventStream(widget.api)..start();
     _eventsSub = _events!.events.listen((event) {
@@ -185,9 +173,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     try {
       final profile = await widget.api.myProfile();
       if (mounted) setState(() => _myId = profile['id'] as String?);
-    } catch (_) {
-      // Messages still render, aligned to the left.
-    }
+    } catch (_) {}
   }
 
   Future<void> _checkTyping() async {
@@ -204,9 +190,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       final data = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
       final typing = data['typing'] == true;
       if (typing != _isTyping) setState(() => _isTyping = typing);
-    } catch (_) {
-      // Ignore transient typing failures.
-    }
+    } catch (_) {}
   }
 
   Future<void> _notifyTyping() async {
@@ -225,9 +209,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           'Authorization': 'Bearer ${widget.api.token}',
         },
       ).timeout(const Duration(seconds: 5));
-    } catch (_) {
-      // Typing is best-effort.
-    }
+    } catch (_) {}
   }
 
   Future<void> _checkIncoming() async {
@@ -279,9 +261,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
   }
 
-  /// Opens the conversation at the first message the reader has not seen yet,
-  /// keeping one earlier message for context. Anything older is behind the
-  /// "Earlier messages" control rather than forcing a scroll through history.
   Future<void> _load() async {
     try {
       final messages = await widget.api.messages(widget.conversationId);
@@ -345,12 +324,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         );
       }
     }
-  }
-
-  @override
-  void didChangeMetrics() {
-    final bottom = View.of(context).viewInsets.bottom;
-    if (bottom > 0) _scrollToBottom();
   }
 
   @override
@@ -523,17 +496,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     _recordTimer?.cancel();
     try {
       await _recorder.cancel();
-    } catch (_) {
-      // Nothing to cancel.
-    }
+    } catch (_) {}
     final path = _recordPath;
     if (path != null) {
       try {
         final file = File(path);
         if (await file.exists()) await file.delete();
-      } catch (_) {
-        // Temp file cleanup is best-effort.
-      }
+      } catch (_) {}
     }
     if (!mounted) return;
     setState(() {
@@ -598,8 +567,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     if (mounted) setState(() => _position = target);
   }
 
-  /// One reaction per person per message: picking a new emoji replaces the
-  /// previous one instead of stacking another.
   Future<void> _react(Map<String, dynamic> message, String emoji) async {
     final previous = List<Map<String, dynamic>>.from(
       (message['reactions'] as List?) ?? const [],
@@ -721,7 +688,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     final showEarlier = _hasEarlier && _messages.isNotEmpty;
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      resizeToAvoidBottomInset: true,
       appBar: _appBar(),
       body: Column(
         children: [
@@ -829,4 +795,3 @@ class _SenderAvatar extends StatelessWidget {
     );
   }
 }
-
