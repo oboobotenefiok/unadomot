@@ -1,0 +1,276 @@
+    });
+    if (path == null || seconds < 1) return;
+    final file = File(path);
+    await _uploadAndSend(
+      bytes: await file.readAsBytes(),
+      filename: 'voice-note.m4a',
+      mediaType: 'audio',
+      durationSeconds: seconds,
+    );
+  }
+
+  Future<void> _togglePlayback(Map<String, dynamic> message) async {
+    final id = message['id'] as String;
+    final url = message['media_url'] as String?;
+    if (url == null) return;
+
+    if (_playingId == id) {
+      if (_playing) {
+        await _player.pause();
+        if (mounted) setState(() => _playing = false);
+      } else {
+        await _player.resume();
+        if (mounted) setState(() => _playing = true);
+      }
+      return;
+    }
+
+    await _player.stop();
+    if (mounted) {
+      setState(() {
+        _playingId = id;
+        _playing = true;
+        _position = Duration.zero;
+        _duration = Duration.zero;
+      });
+    }
+    await _player.play(UrlSource(url));
+  }
+
+  Future<void> _seekTo(Duration target) async {
+    await _player.seek(target);
+    if (mounted) setState(() => _position = target);
+  }
+
+  /// One reaction per person per message: picking a new emoji replaces the
+  /// previous one instead of stacking another.
+  Future<void> _react(Map<String, dynamic> message, String emoji) async {
+    final previous = List<Map<String, dynamic>>.from(
+      (message['reactions'] as List?) ?? const [],
+    );
+    final mine = previous.firstWhere(
+      (item) => item['reacted_by_me'] == true,
+      orElse: () => const {},
+    );
+    final previousEmoji = mine['emoji'] as String?;
+
+    setState(() {
+      final next = previous
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList();
+      if (previousEmoji != null) {
+        final index = next.indexWhere((item) => item['emoji'] == previousEmoji);
+        if (index >= 0) {
+          final count = (next[index]['count'] as num?)?.toInt() ?? 1;
+          if (count <= 1) {
+            next.removeAt(index);
+          } else {
+            next[index]['count'] = count - 1;
+          }
+        }
+      }
+      if (previousEmoji != emoji) {
+        final index = next.indexWhere((item) => item['emoji'] == emoji);
+        if (index >= 0) {
+          next[index]['count'] = ((next[index]['count'] as num?)?.toInt() ?? 0) + 1;
+          next[index]['reacted_by_me'] = true;
+        } else {
+          next.add({'emoji': emoji, 'count': 1, 'reacted_by_me': true});
+        }
+      }
+      message['reactions'] = next;
+    });
+
+    try {
+      await widget.api.reactToMessage(message['id'] as String, emoji);
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error.toString())),
+        );
+      }
+    }
+  }
+
+  void _showReactions(Map<String, dynamic> message) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: _reactionEmojis
+                .map((emoji) => IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _react(message, emoji);
+                      },
+                      icon: Text(emoji, style: const TextStyle(fontSize: 28)),
+                    ))
+                .toList(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _startReply(Map<String, dynamic> message) {
+    setState(() {
+      _replyTo = {
+        'id': message['id'],
+        'body': message['body'],
+        'media_type': message['media_type'],
+        'media_url': message['media_url'],
+        'sender_name': message['sender_id'] == _myId
+            ? 'You'
+            : (widget.counterpartName ?? 'them'),
+      };
+    });
+  }
+
+  void _showMessageActions(Map<String, dynamic> message) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.reply),
+              title: const Text('Reply'),
+              onTap: () {
+                Navigator.pop(context);
+                _startReply(message);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.emoji_emotions_outlined),
+              title: const Text('React'),
+              onTap: () {
+                Navigator.pop(context);
+                _showReactions(message);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final showEarlier = _hasEarlier && _messages.isNotEmpty;
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: true,
+      appBar: _appBar(),
+      body: Column(
+        children: [
+          Expanded(
+            child: _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _error != null
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(_error!, textAlign: TextAlign.center),
+                              const SizedBox(height: 12),
+                              FilledButton(onPressed: _load, child: const Text('Try again')),
+                            ],
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+                        itemCount: _messages.length + (showEarlier ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (showEarlier && index == 0) {
+                            return Center(
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: TextButton.icon(
+                                  onPressed: _loadingEarlier ? null : _loadEarlier,
+                                  icon: _loadingEarlier
+                                      ? const SizedBox(
+                                          width: 14,
+                                          height: 14,
+                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                        )
+                                      : const Icon(Icons.history, size: 16),
+                                  label: const Text('Earlier messages'),
+                                ),
+                              ),
+                            );
+                          }
+
+                          final message = _messages[index - (showEarlier ? 1 : 0)];
+                          final mine = _myId != null && message['sender_id'] == _myId;
+                          final bubble = _messageBubble(message, mine);
+                          if (mine) {
+                            return Align(
+                              alignment: Alignment.centerRight,
+                              child: bubble,
+                            );
+                          }
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              _SenderAvatar(
+                                photoUrl: widget.counterpartPhotoUrl,
+                                name: widget.counterpartName,
+                              ),
+                              const SizedBox(width: 6),
+                              Flexible(child: bubble),
+                            ],
+                          );
+                        },
+                      ),
+          ),
+          if (_recording) _recordingBar() else ...[_replyPreview(), _composer()],
+        ],
+      ),
+    );
+  }
+}
+
+class _SenderAvatar extends StatelessWidget {
+  final String? photoUrl;
+  final String? name;
+
+  const _SenderAvatar({required this.photoUrl, required this.name});
+
+  @override
+  Widget build(BuildContext context) {
+    final initials = (name ?? '')
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty)
+        .map((part) => part.characters.first.toUpperCase())
+        .take(2)
+        .join();
+
+    return CircleAvatar(
+      radius: 14,
+      backgroundColor: UnaColors.green100,
+      backgroundImage: photoUrl == null ? null : NetworkImage(photoUrl!),
+      child: photoUrl == null
+          ? Text(
+              initials.isEmpty ? '?' : initials,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: UnaColors.green900,
+              ),
+            )
+          : null,
+    );
+  }
+}
+
