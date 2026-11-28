@@ -54,6 +54,7 @@ class _CallScreenState extends State<CallScreen> {
   bool _muted = false;
   bool _speaker = false;
   bool _connected = false;
+  bool _remoteSet = false;
   bool _ending = false;
   bool _minimized = false;
   Duration _elapsed = Duration.zero;
@@ -119,8 +120,10 @@ class _CallScreenState extends State<CallScreen> {
       await _peer!.setLocalDescription(offer);
       await _waitForIce(_peer!);
 
-      final sdp = (await _peer!.getLocalDescription())?.sdp;
-      if (sdp == null) throw StateError('Could not prepare the call');
+      final sdp = (await _peer!.getLocalDescription())?.sdp.trim();
+      if (sdp == null || sdp.isEmpty) {
+        throw StateError('Could not prepare the call');
+      }
 
       final call = await widget.api.startCall(
         widget.conversationId,
@@ -140,8 +143,12 @@ class _CallScreenState extends State<CallScreen> {
     try {
       final call = await widget.api.getCall(id);
       final status = call['status'] as String?;
-      final answer = call['answer_sdp'] as String?;
-      if (status == 'accepted' && answer != null && !_connected) {
+      final answer = (call['answer_sdp'] as String?)?.trim();
+      if (status == 'accepted' &&
+          answer != null &&
+          answer.isNotEmpty &&
+          !_remoteSet) {
+        _remoteSet = true;
         await _peer!.setRemoteDescription(RTCSessionDescription(answer, 'answer'));
       } else if (status == 'declined' || status == 'ended') {
         await _hangUp(notify: false);
@@ -447,6 +454,11 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
       }
     });
     try {
+      final offerSdp = widget.offerSdp.trim();
+      if (offerSdp.isEmpty) {
+        throw StateError('This call has no connection details. Ask the caller to try again.');
+      }
+
       await _localRenderer.initialize();
       await _remoteRenderer.initialize();
 
@@ -477,14 +489,16 @@ class _IncomingCallScreenState extends State<IncomingCallScreen> {
       }
 
       await _peer!.setRemoteDescription(
-        RTCSessionDescription(widget.offerSdp, 'offer'),
+        RTCSessionDescription(offerSdp, 'offer'),
       );
       final answer = await _peer!.createAnswer();
       await _peer!.setLocalDescription(answer);
       await _waitForIce(_peer!);
 
-      final sdp = (await _peer!.getLocalDescription())?.sdp;
-      if (sdp == null) throw StateError('Could not answer the call');
+      final sdp = (await _peer!.getLocalDescription())?.sdp.trim();
+      if (sdp == null || sdp.isEmpty) {
+        throw StateError('Could not answer the call');
+      }
       await widget.api.answerCall(widget.callId, answerSdp: sdp);
       _poll = Timer.periodic(const Duration(seconds: 2), (_) => _checkCall());
     } catch (error) {
