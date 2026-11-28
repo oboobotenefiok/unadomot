@@ -8,8 +8,10 @@ import '../data/local_cache.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/skeletons.dart';
+import 'chat_screen.dart';
 
 export 'chat_screen.dart';
+export '../api/event_stream.dart';
 
 class MessagesScreen extends StatefulWidget {
   final ApiClient api;
@@ -344,7 +346,7 @@ class _ConversationAvatar extends StatelessWidget {
                     personPhotoUrl == null ? null : NetworkImage(personPhotoUrl!),
                 child: personPhotoUrl == null
                     ? Text(
-                        _initials(personName),
+                        _initials(personName ?? ''),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 9,
