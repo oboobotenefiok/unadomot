@@ -2,7 +2,7 @@ use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
     response::IntoResponse,
-    routing::{get, post},
+    routing::{delete, get, post},
     Json, Router,
 };
 use chrono::{Duration, Utc};
@@ -19,6 +19,8 @@ pub fn router(state: AppState) -> Router {
         .route("/api/profile/me", get(me).patch(update_me))
         .route("/api/profile/me/listings", get(my_listings))
         .route("/api/profile/{username}", get(public_profile))
+        .route("/api/account/export", get(export_account))
+        .route("/api/account", delete(delete_account))
         .route("/api/auth/google", post(google_auth))
         .route("/api/admin/users/search", get(admin_user_search))
         .route("/api/admin/audit", get(admin_audit))
@@ -175,6 +177,108 @@ async fn my_listings(
     match profiles.listings_for_user(user.id, false).await {
         Ok(rows) => Json(rows.iter().map(listing_json).collect::<Vec<_>>()).into_response(),
         Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Listings unavailable"),
+    }
+}
+
+async fn export_account(
+    State(state): State<AppState>,
+    user: AuthUser,
+) -> axum::response::Response {
+    let profiles = match state.profiles.as_ref() {
+        Some(profiles) => profiles,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Profile unavailable"),
+    };
+
+    let profile = match profiles.find_profile(user.id).await {
+        Ok(Some(profile)) => profile,
+        Ok(None) => return error(StatusCode::NOT_FOUND, "Account not found"),
+        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Profile unavailable"),
+    };
+
+    let listings = profiles
+        .listings_for_user(user.id, false)
+        .await
+        .unwrap_or_default();
+    let favorites = state
+        .listings
+        .list_favorites(user.id)
+        .await
+        .unwrap_or_default();
+
+    let mut conversations = Vec::new();
+    if let Ok(rows) = state.messaging.list_conversations(user.id).await {
+        for row in rows {
+            let messages = state
+                .messaging
+                .list_messages(row.id, None, 500)
+                .await
+                .unwrap_or_default();
+            conversations.push(json!({
+                "id": row.id,
+                "listing_id": row.listing_id,
+                "messages": messages.iter().map(|message| json!({
+                    "id": message.id,
+                    "sender_id": message.sender_id,
+                    "body": message.body,
+                    "created_at": message.created_at,
+                })).collect::<Vec<_>>(),
+            }));
+        }
+    }
+
+    Json(json!({
+        "exported_at": Utc::now(),
+        "profile": profile_json(&profile, false),
+        "listings": listings.iter().map(listing_json).collect::<Vec<_>>(),
+        "favorites": favorites.iter().map(|listing| json!({
+            "id": listing.id,
+            "title": listing.title,
+            "price": listing.price.to_string(),
+            "state": listing.state,
+            "lga": listing.lga,
+        })).collect::<Vec<_>>(),
+        "conversations": conversations,
+    }))
+    .into_response()
+}
+
+async fn delete_account(
+    State(state): State<AppState>,
+    user: AuthUser,
+) -> axum::response::Response {
+    let pool = match state.pool.as_ref() {
+        Some(pool) => pool,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Account deletion unavailable"),
+    };
+
+    let mut transaction = match pool.begin().await {
+        Ok(transaction) => transaction,
+        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Account deletion unavailable"),
+    };
+
+    if sqlx::query("DELETE FROM refresh_tokens WHERE user_id = $1")
+        .bind(user.id)
+        .execute(&mut *transaction)
+        .await
+        .is_err()
+    {
+        return error(StatusCode::SERVICE_UNAVAILABLE, "Account deletion unavailable");
+    }
+
+    let deleted = sqlx::query("DELETE FROM users WHERE id = $1")
+        .bind(user.id)
+        .execute(&mut *transaction)
+        .await;
+
+    match deleted {
+        Ok(result) if result.rows_affected() > 0 => {
+            if transaction.commit().await.is_err() {
+                return error(StatusCode::SERVICE_UNAVAILABLE, "Account deletion unavailable");
+            }
+            StatusCode::NO_CONTENT.into_response()
+        }
+        Ok(_) => error(StatusCode::NOT_FOUND, "Account not found"),
+        Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Account deletion unavailable"),
     }
 }
 
