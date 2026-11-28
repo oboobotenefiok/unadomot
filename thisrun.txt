@@ -1,51 +1,262 @@
-# CI run 2026-11-27T22:58:34Z
+# CI run 2026-11-28T10:28:45Z
 Branch: rewrite/flutter-rust-postgres
 
 ## Trigger
-https://github.com/oboobotenefiok/unadomot/actions/runs/46079800079
+https://github.com/oboobotenefiok/unadomot/actions/runs/46135364757
 
 ## Recent runs
-pending		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46079800079	6s	2026-11-27T22:58:36Z
-in_progress		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46079774146	23s	2026-11-27T22:58:19Z
-completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46078933590	5m30s	2026-11-27T22:49:23Z
-completed	cancelled	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46078918062	28s	2026-11-27T22:49:12Z
-completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46076036117	4m46s	2026-11-27T22:20:28Z
+pending		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46135364757	6s	2026-11-28T10:28:48Z
+in_progress		Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46135206946	2m17s	2026-11-28T10:26:37Z
+completed	cancelled	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46135146498	1m4s	2026-11-28T10:25:50Z
+completed	failure	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46134540100	3m47s	2026-11-28T10:18:23Z
+completed	cancelled	Rewrite CI	Rewrite CI	rewrite/flutter-rust-postgres	workflow_dispatch	46134499302	51s	2026-11-28T10:17:51Z
 
-Run ID: 46079800079
-URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46079800079
+Run ID: 46135364757
+URL: https://github.com/oboobotenefiok/unadomot/actions/runs/46135364757
 
 ## Watch
 
-✓ rewrite/flutter-rust-postgres Rewrite CI · 46079800079
-Triggered via workflow_dispatch about 7 minutes ago
+X rewrite/flutter-rust-postgres Rewrite CI · 46135364757
+Triggered via workflow_dispatch about 3 minutes ago
 
 JOBS
-✓ rust in 1m32s (ID 140775987923)
-✓ docker in 2m31s (ID 140775988205)
-✓ android in 6m34s (ID 140775988219)
-✓ audit in 2m42s (ID 140775988307)
+✓ docker in 2m37s (ID 140949417811)
+X android in 1m14s (ID 140949417973)
+  ✓ Set up job
+  ✓ Run actions/checkout@v4
+  ✓ Run actions/setup-java@v4
+  ✓ Run subosito/flutter-action@v2
+  ✓ Cache Gradle
+  ✓ Ensure Android platform files
+  ✓ Configure release signing
+  ✓ Apply Android permissions and deep links
+  ✓ Install dependencies
+  X Analyze
+  - Flutter tests with coverage
+  - Build release APK
+  - Verify required Android permissions
+  - Run actions/***-artifact@v4
+  ✓ Publish release failure
+  - Post Cache Gradle
+  ✓ Post Run subosito/flutter-action@v2
+  ✓ Post Run actions/setup-java@v4
+  ✓ Post Run actions/checkout@v4
+  ✓ Complete job
+X rust in 1m7s (ID 140949418027)
+  ✓ Set up job
+  ✓ Initialize containers
+  ✓ Run actions/checkout@v4
+  ✓ Run dtolnay/rust-toolchain@stable
+  ✓ Run Swatinem/rust-cache@v2
+  X Clippy
+  - Tests
+  - Release build
+  - Post Run Swatinem/rust-cache@v2
+  ✓ Post Run actions/checkout@v4
+  ✓ Stop containers
+  ✓ Complete job
+✓ audit in 2m11s (ID 140949418071)
 
 ANNOTATIONS
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-rust: .github#2
-
-! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 docker: .github#2
 
-! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, actions/setup-java@v4, actions/***-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
-android: .github#5
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, actions/setup-java@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+android: .github#2
+
+X Process completed with exit code 1.
+android: .github#77
 
 ! setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
 android: .github#18
 
 ! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+rust: .github#2
+
+X Process completed with exit code 101.
+rust: .github#99
+
+! Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 audit: .github#2
 
 
-ARTIFACTS
-unadomot-release-apk
-
-For more information about a job, try: gh run view --job=<job-id>
-View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46079800079
+To see what failed, try: gh run view 46135364757 --log-failed
+View this run on GitHub: https://github.com/oboobotenefiok/unadomot/actions/runs/46135364757
 
 ## Failed logs
+android	Analyze	﻿2026-11-28T10:30:07.2928660Z ##[group]Run flutter analyze --no-fatal-infos --no-fatal-warnings
+android	Analyze	2026-11-28T10:30:07.2929224Z ^[[36;1mflutter analyze --no-fatal-infos --no-fatal-warnings^[[0m
+android	Analyze	2026-11-28T10:30:07.2963404Z shell: /usr/bin/bash -e {0}
+android	Analyze	2026-11-28T10:30:07.2963694Z env:
+android	Analyze	2026-11-28T10:30:07.2963928Z   CARGO_TERM_COLOR: never
+android	Analyze	2026-11-28T10:30:07.2964190Z   NO_COLOR: 1
+android	Analyze	2026-11-28T10:30:07.2964417Z   RUST_BACKTRACE: 1
+android	Analyze	2026-11-28T10:30:07.2964769Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-2/x64
+android	Analyze	2026-11-28T10:30:07.2965324Z   JAVA_HOME_21_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.13-2/x64
+android	Analyze	2026-11-28T10:30:07.2965840Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.50.1-x64/flutter
+android	Analyze	2026-11-28T10:30:07.2966258Z   PUB_CACHE: /home/runner/.pub-cache
+android	Analyze	2026-11-28T10:30:07.2966563Z ##[endgroup]
+android	Analyze	2026-11-28T10:30:16.7493869Z Analyzing flutter_app...                                        
+android	Analyze	2026-11-28T10:30:16.7503463Z 
+android	Analyze	2026-11-28T10:30:16.7531748Z warning • Unused import: 'dart:convert'. Try removing the import directive • lib/api/api_client_profile.dart:1:8 • unused_import
+android	Analyze	2026-11-28T10:30:16.7535720Z warning • The declaration '_authHeaders' isn't referenced. Try removing the declaration of '_authHeaders' • lib/api/api_client_profile.dart:6:27 • unused_element
+android	Analyze	2026-11-28T10:30:16.7538840Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/app_settings.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7542085Z   error • Undefined name 'NigeriaLocations'. Try correcting the name to one that is defined, or defining the name • lib/data/lga_coordinates.dart:199:21 • undefined_identifier
+android	Analyze	2026-11-28T10:30:16.7544645Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/main.dart:3:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7546824Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/admin_audit_screen.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7548381Z warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_audit_screen.dart:5:8 • unused_import
+android	Analyze	2026-11-28T10:30:16.7558345Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/admin_screen.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7571780Z warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_screen.dart:5:8 • unused_import
+android	Analyze	2026-11-28T10:30:16.7583441Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/admin_users_screen.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7589668Z warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_users_screen.dart:5:8 • unused_import
+android	Analyze	2026-11-28T10:30:16.7593079Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/admin_verification_screen.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7596595Z warning • Unused import: '../theme.dart'. Try removing the import directive • lib/screens/admin_verification_screen.dart:5:8 • unused_import
+android	Analyze	2026-11-28T10:30:16.7600791Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/auth_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7604940Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/auth_sheet.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7609063Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/call_screen.dart:3:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7613481Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/chat_screen.dart:7:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7616590Z    info • Unnecessary use of 'toList' in a spread. Try removing the invocation of 'toList' • lib/screens/chat_screen.dart:321:40 • unnecessary_to_list_in_spreads
+android	Analyze	2026-11-28T10:30:16.7619922Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/create_listing_screen.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7625312Z    info • 'onReorder' is deprecated and shouldn't be used. Use the onReorderItem callback instead. The onReorderItem callback adjusts the newIndex parameter for a removed item at the oldIndex. This feature was deprecated after v3.41.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/create_listing_screen.dart:563:15 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7629977Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/edit_listing_screen.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7634441Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/favorites_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7638695Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/listing_code_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7645346Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/listing_detail_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7649154Z    info • Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check • lib/screens/listing_detail_screen.dart:158:16 • use_build_context_synchronously
+android	Analyze	2026-11-28T10:30:16.7653600Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/listings_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7657157Z warning • The declaration '_openMessages' isn't referenced. Try removing the declaration of '_openMessages' • lib/screens/listings_screen.dart:251:16 • unused_element
+android	Analyze	2026-11-28T10:30:16.7659542Z warning • The declaration '_openFavorites' isn't referenced. Try removing the declaration of '_openFavorites' • lib/screens/listings_screen.dart:266:16 • unused_element
+android	Analyze	2026-11-28T10:30:16.7662145Z warning • The declaration '_openProfile' isn't referenced. Try removing the declaration of '_openProfile' • lib/screens/listings_screen.dart:281:16 • unused_element
+android	Analyze	2026-11-28T10:30:16.7664492Z warning • The declaration '_openPost' isn't referenced. Try removing the declaration of '_openPost' • lib/screens/listings_screen.dart:295:16 • unused_element
+android	Analyze	2026-11-28T10:30:16.7667774Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/main_shell.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7671258Z   error • Undefined class 'EventStream'. Try changing the name to the name of an existing class, or creating a class with the name 'EventStream' • lib/screens/main_shell.dart:50:3 • undefined_class
+android	Analyze	2026-11-28T10:30:16.7674170Z   error • The method 'EventStream' isn't defined for the type '_MainShellState'. Try correcting the name to the name of an existing method, or defining a method named 'EventStream' • lib/screens/main_shell.dart:77:15 • undefined_method
+android	Analyze	2026-11-28T10:30:16.7677985Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/map_screen.dart:3:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7682322Z    info • 'desiredAccuracy' is deprecated and shouldn't be used. use settings parameter with AndroidSettings, AppleSettings, WebSettings, or LocationSettings. Try replacing the use of the deprecated member with the replacement • lib/screens/map_screen.dart:136:9 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7686480Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/messages_screen.dart:3:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7690456Z   error • The method 'ChatScreen' isn't defined for the type '_MessagesScreenState'. Try correcting the name to the name of an existing method, or defining a method named 'ChatScreen' • lib/screens/messages_screen.dart:123:53 • undefined_method
+android	Analyze	2026-11-28T10:30:16.7693193Z   error • The argument type 'String?' can't be assigned to the parameter type 'String'.  • lib/screens/messages_screen.dart:347:35 • argument_type_not_assignable
+android	Analyze	2026-11-28T10:30:16.7696495Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/notifications_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7701093Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/onboarding_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7705651Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/profile_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7710612Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/public_profile_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7714910Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/report_listing_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7719068Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/reset_password_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7723361Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/splash_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7725945Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/static_page_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7728246Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/screens/verification_screen.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7730995Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/state/app_state.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7732468Z 60 issues found. (ran in 8.6s)
+android	Analyze	2026-11-28T10:30:16.7733796Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/theme.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7735916Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/empty_state.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7738094Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/home_carousel.dart:2:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7740533Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/infinite_listing_gallery.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7743067Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/listing_card.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7744871Z warning • A value for optional parameter 'color' isn't ever given. Try removing the unused parameter • lib/widgets/listing_card.dart:266:10 • unused_element_parameter
+android	Analyze	2026-11-28T10:30:16.7746621Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/responsive_grid.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7748818Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/share_listing_sheet.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7751216Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • lib/widgets/skeletons.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7752711Z warning • Unused import: '../theme.dart'. Try removing the import directive • lib/widgets/skeletons.dart:3:8 • unused_import
+android	Analyze	2026-11-28T10:30:16.7754368Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • test/infinite_listing_gallery_test.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7756577Z    info • 'package:flutter/material.dart' is deprecated and shouldn't be used. Use package:material_ui/material_ui.dart instead. This feature was deprecated after v3.47.0-0.0.pre. Try replacing the use of the deprecated member with the replacement • test/public_home_test.dart:1:1 • deprecated_member_use
+android	Analyze	2026-11-28T10:30:16.7757665Z 
+android	Analyze	2026-11-28T10:30:16.7820890Z ##[error]Process completed with exit code 1.
+rust	Clippy	﻿2026-11-28T10:30:00.9445977Z ##[group]Run cargo clippy --all-targets -- -D warnings
+rust	Clippy	2026-11-28T10:30:00.9446355Z ^[[36;1mcargo clippy --all-targets -- -D warnings^[[0m
+rust	Clippy	2026-11-28T10:30:00.9477273Z shell: /usr/bin/bash -e {0}
+rust	Clippy	2026-11-28T10:30:00.9477430Z env:
+rust	Clippy	2026-11-28T10:30:00.9477544Z   CARGO_TERM_COLOR: never
+rust	Clippy	2026-11-28T10:30:00.9477673Z   NO_COLOR: 1
+rust	Clippy	2026-11-28T10:30:00.9477783Z   RUST_BACKTRACE: 1
+rust	Clippy	2026-11-28T10:30:00.9478246Z   DATABASE_URL: ***localhost:5432/unadomot_test
+rust	Clippy	2026-11-28T10:30:00.9478447Z   JWT_SECRET: test-secret-that-is-at-least-32-bytes-long
+rust	Clippy	2026-11-28T10:30:00.9478689Z   REFRESH_TOKEN_SECRET: test-refresh-secret-that-is-at-least-32-bytes
+rust	Clippy	2026-11-28T10:30:00.9479086Z   CARGO_HOME: /home/runner/.cargo
+rust	Clippy	2026-11-28T10:30:00.9479232Z   CARGO_INCREMENTAL: 0
+rust	Clippy	2026-11-28T10:30:00.9479357Z   CACHE_ON_FAILURE: false
+rust	Clippy	2026-11-28T10:30:00.9479484Z ##[endgroup]
+rust	Clippy	2026-11-28T10:30:01.0376550Z     Updating crates.io index
+rust	Clippy	2026-11-28T10:30:02.0255156Z      Locking 67 packages to highest compatible versions
+rust	Clippy	2026-11-28T10:30:02.0255604Z       Adding base16ct v1.0.0
+rust	Clippy	2026-11-28T10:30:02.0258610Z       Adding base64 v0.23.1
+rust	Clippy	2026-11-28T10:30:02.0261328Z       Adding block-buffer v0.12.1
+rust	Clippy	2026-11-28T10:30:02.0268697Z       Adding chacha20 v0.10.2
+rust	Clippy	2026-11-28T10:30:02.0269756Z       Adding cmov v0.5.4
+rust	Clippy	2026-11-28T10:30:02.0271131Z       Adding const-oid v0.10.3
+rust	Clippy	2026-11-28T10:30:02.0271425Z       Adding cpubits v0.1.1
+rust	Clippy	2026-11-28T10:30:02.0273044Z       Adding cpufeatures v0.3.1
+rust	Clippy	2026-11-28T10:30:02.0298709Z       Adding crypto-bigint v0.7.11
+rust	Clippy	2026-11-28T10:30:02.0302624Z       Adding crypto-common v0.2.2
+rust	Clippy	2026-11-28T10:30:02.0307748Z       Adding crypto-primes v0.7.2
+rust	Clippy	2026-11-28T10:30:02.0309002Z       Adding ctutils v0.4.8
+rust	Clippy	2026-11-28T10:30:02.0325435Z       Adding curve25519-dalek v5.0.0
+rust	Clippy	2026-11-28T10:30:02.0326671Z       Adding curve25519-dalek-derive v0.1.1
+rust	Clippy	2026-11-28T10:30:02.0330916Z       Adding der v0.8.3
+rust	Clippy	2026-11-28T10:30:02.0334359Z       Adding digest v0.11.3
+rust	Clippy	2026-11-28T10:30:02.0350336Z       Adding ecdsa v0.17.0
+rust	Clippy	2026-11-28T10:30:02.0354103Z       Adding ed25519 v3.0.0
+rust	Clippy	2026-11-28T10:30:02.0361439Z       Adding ed25519-dalek v3.0.0
+rust	Clippy	2026-11-28T10:30:02.0389000Z       Adding elliptic-curve v0.14.3
+rust	Clippy	2026-11-28T10:30:02.0391393Z       Adding ff v0.14.0
+rust	Clippy	2026-11-28T10:30:02.0391896Z       Adding fiat-crypto v0.3.0
+rust	Clippy	2026-11-28T10:30:02.0392676Z       Adding group v0.14.0
+rust	Clippy	2026-11-28T10:30:02.0394359Z       Adding hmac v0.13.0
+rust	Clippy	2026-11-28T10:30:02.0395783Z       Adding hybrid-array v0.4.15
+rust	Clippy	2026-11-28T10:30:02.0399673Z       Adding hyper-rustls v0.27.10
+rust	Clippy	2026-11-28T10:30:02.0401153Z       Adding ipnet v2.12.2
+rust	Clippy	2026-11-28T10:30:02.0406435Z     Updating jsonwebtoken v9.3.1 -> v12.0.0
+rust	Clippy	2026-11-28T10:30:02.0406844Z       Adding lru-slab v0.1.3
+rust	Clippy	2026-11-28T10:30:02.0416888Z       Adding p256 v0.14.0
+rust	Clippy	2026-11-28T10:30:02.0424668Z       Adding p384 v0.14.0
+rust	Clippy	2026-11-28T10:30:02.0425477Z       Adding pem-rfc7468 v1.0.0
+rust	Clippy	2026-11-28T10:30:02.0427221Z       Adding pkcs1 v0.8.0
+rust	Clippy	2026-11-28T10:30:02.0431356Z       Adding pkcs8 v0.11.0
+rust	Clippy	2026-11-28T10:30:02.0432713Z       Adding primefield v0.14.0
+rust	Clippy	2026-11-28T10:30:02.0434416Z       Adding primeorder v0.14.0
+rust	Clippy	2026-11-28T10:30:02.0440702Z       Adding quinn v0.11.12
+rust	Clippy	2026-11-28T10:30:02.0448708Z       Adding quinn-proto v0.11.19
+rust	Clippy	2026-11-28T10:30:02.0450643Z       Adding quinn-udp v0.5.16
+rust	Clippy	2026-11-28T10:30:02.0457809Z       Adding rand v0.10.4
+rust	Clippy	2026-11-28T10:30:02.0459338Z       Adding rand_core v0.10.1
+rust	Clippy	2026-11-28T10:30:02.0460021Z       Adding rand_pcg v0.10.3
+rust	Clippy	2026-11-28T10:30:02.0499662Z       Adding reqwest v0.12.28 (available: v0.13.5)
+rust	Clippy	2026-11-28T10:30:02.0506093Z       Adding rfc6979 v0.6.0
+rust	Clippy	2026-11-28T10:30:02.0516651Z       Adding rsa v0.10.0
+rust	Clippy	2026-11-28T10:30:02.0517827Z       Adding rustc-hash v2.1.3
+rust	Clippy	2026-11-28T10:30:02.0518099Z       Adding rustc_version v0.4.1
+rust	Clippy	2026-11-28T10:30:02.0526283Z       Adding rustls v0.23.46
+rust	Clippy	2026-11-28T10:30:02.0528250Z       Adding rustls-pki-types v1.16.0
+rust	Clippy	2026-11-28T10:30:02.0533696Z       Adding rustls-webpki v0.103.17
+rust	Clippy	2026-11-28T10:30:02.0537039Z       Adding sec1 v0.8.1
+rust	Clippy	2026-11-28T10:30:02.0538297Z       Adding semver v1.0.28
+rust	Clippy	2026-11-28T10:30:02.0539084Z       Adding serdect v0.4.3
+rust	Clippy	2026-11-28T10:30:02.0542985Z       Adding sha2 v0.11.2
+rust	Clippy	2026-11-28T10:30:02.0545827Z       Adding signature v3.0.0
+rust	Clippy	2026-11-28T10:30:02.0547058Z       Adding spki v0.8.1
+rust	Clippy	2026-11-28T10:30:02.0552233Z       Adding tokio-rustls v0.26.6
+rust	Clippy	2026-11-28T10:30:02.0552515Z       Adding tracing-serde v0.2.0
+rust	Clippy	2026-11-28T10:30:02.0552821Z       Adding try-lock v0.2.5
+rust	Clippy	2026-11-28T10:30:02.0553063Z       Adding want v0.3.2
+rust	Clippy	2026-11-28T10:30:02.0572312Z       Adding wasm-bindgen-futures v0.4.80
+rust	Clippy	2026-11-28T10:30:02.0628399Z       Adding web-sys v0.3.107
+rust	Clippy	2026-11-28T10:30:02.0629799Z       Adding web-time v1.1.0
+rust	Clippy	2026-11-28T10:30:02.0631926Z       Adding webpki-roots v0.26.11
+rust	Clippy	2026-11-28T10:30:02.0632495Z       Adding webpki-roots v1.0.12
+rust	Clippy	2026-11-28T10:30:02.0632957Z       Adding wnaf v0.14.1
+rust	Clippy	2026-11-28T10:30:02.0633721Z       Adding zeroize_derive v1.5.0
+rust	Clippy	2026-11-28T10:30:03.1269908Z     Checking unadomot-api v0.1.0 (/home/runner/work/unadomot/unadomot/services/api)
+rust	Clippy	2026-11-28T10:30:04.8587145Z error: the `Err`-variant returned from this function is very large
+rust	Clippy	2026-11-28T10:30:04.8587633Z   --> src/http/chat.rs:95:6
+rust	Clippy	2026-11-28T10:30:04.8587855Z    |
+rust	Clippy	2026-11-28T10:30:04.8593925Z 95 | ) -> Result<(), axum::response::Response> {
+rust	Clippy	2026-11-28T10:30:04.8594346Z    |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the `Err`-variant is at least 128 bytes
+rust	Clippy	2026-11-28T10:30:04.8594663Z    |
+rust	Clippy	2026-11-28T10:30:04.8595260Z    = help: try reducing the size of `axum::http::Response<axum::body::Body>`, for example by boxing large elements or replacing it with `Box<axum::http::Response<axum::body::Body>>`
+rust	Clippy	2026-11-28T10:30:04.8596211Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.100.0/index.html#result_large_err
+rust	Clippy	2026-11-28T10:30:04.8596778Z    = note: `-D clippy::result-large-err` implied by `-D warnings`
+rust	Clippy	2026-11-28T10:30:04.8597189Z    = help: to override `-D warnings` add `#[allow(clippy::result_large_err)]`
+rust	Clippy	2026-11-28T10:30:04.8597462Z 
+rust	Clippy	2026-11-28T10:30:04.9331101Z error: could not compile `unadomot-api` (lib) due to 1 previous error
+rust	Clippy	2026-11-28T10:30:04.9331667Z warning: build failed, waiting for other jobs to finish...
+rust	Clippy	2026-11-28T10:30:05.0439073Z error: could not compile `unadomot-api` (lib test) due to 1 previous error
+rust	Clippy	2026-11-28T10:30:05.1221369Z ##[error]Process completed with exit code 101.
