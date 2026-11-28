@@ -21,6 +21,14 @@ pub fn router(state: AppState) -> Router {
         .route("/api/profile/{username}", get(public_profile))
         .route("/api/account/export", get(export_account))
         .route("/api/account", delete(delete_account))
+        .route(
+            "/api/account/email-verification/request",
+            post(request_email_verification),
+        )
+        .route(
+            "/api/account/email-verification/confirm",
+            post(confirm_email_verification),
+        )
         .route("/api/auth/google", post(google_auth))
         .route("/api/admin/users/search", get(admin_user_search))
         .route("/api/admin/audit", get(admin_audit))
@@ -279,6 +287,99 @@ async fn delete_account(
         }
         Ok(_) => error(StatusCode::NOT_FOUND, "Account not found"),
         Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Account deletion unavailable"),
+    }
+}
+
+async fn request_email_verification(
+    State(state): State<AppState>,
+    user: AuthUser,
+) -> axum::response::Response {
+    let pool = match state.pool.as_ref() {
+        Some(pool) => pool,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Verification unavailable"),
+    };
+    let profiles = match state.profiles.as_ref() {
+        Some(profiles) => profiles,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Verification unavailable"),
+    };
+
+    let email = match profiles.email_for_user(user.id).await {
+        Ok(Some(email)) => email,
+        Ok(None) => return error(StatusCode::NOT_FOUND, "Account not found"),
+        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Verification unavailable"),
+    };
+
+    let token = new_refresh_token();
+    let token_hash = hash_refresh_token(&token, &state.refresh_secret);
+
+    if sqlx::query(
+        "INSERT INTO email_verifications (user_id, token_hash, expires_at) VALUES ($1, $2, $3)",
+    )
+    .bind(user.id)
+    .bind(&token_hash)
+    .bind(Utc::now() + Duration::hours(24))
+    .execute(pool)
+    .await
+    .is_err()
+    {
+        return error(StatusCode::SERVICE_UNAVAILABLE, "Verification unavailable");
+    }
+
+    let verify_link = format!("{}/verify-email?token={}", state.public_web_url, token);
+    if let Err(error) = state.email.send_email_verification(&email, &verify_link).await {
+        tracing::error!(error = ?error, "email verification delivery failed");
+        return error(StatusCode::SERVICE_UNAVAILABLE, "Could not send the verification email");
+    }
+
+    StatusCode::NO_CONTENT.into_response()
+}
+
+#[derive(Deserialize)]
+struct VerifyEmailRequest {
+    token: String,
+}
+
+async fn confirm_email_verification(
+    State(state): State<AppState>,
+    user: AuthUser,
+    Json(request): Json<VerifyEmailRequest>,
+) -> axum::response::Response {
+    let pool = match state.pool.as_ref() {
+        Some(pool) => pool,
+        None => return error(StatusCode::SERVICE_UNAVAILABLE, "Verification unavailable"),
+    };
+
+    let token_hash = hash_refresh_token(request.token.trim(), &state.refresh_secret);
+    let mut transaction = match pool.begin().await {
+        Ok(transaction) => transaction,
+        Err(_) => return error(StatusCode::SERVICE_UNAVAILABLE, "Verification unavailable"),
+    };
+
+    let valid = sqlx::query_scalar::<_, Uuid>(
+        "UPDATE email_verifications SET used_at = now() WHERE user_id = $1 AND token_hash = $2 AND used_at IS NULL AND expires_at > now() RETURNING user_id",
+    )
+    .bind(user.id)
+    .bind(&token_hash)
+    .fetch_optional(&mut *transaction)
+    .await;
+
+    match valid {
+        Ok(Some(_)) => {
+            if sqlx::query("UPDATE users SET email_verified = true WHERE id = $1")
+                .bind(user.id)
+                .execute(&mut *transaction)
+                .await
+                .is_err()
+            {
+                return error(StatusCode::SERVICE_UNAVAILABLE, "Verification unavailable");
+            }
+            if transaction.commit().await.is_err() {
+                return error(StatusCode::SERVICE_UNAVAILABLE, "Verification unavailable");
+            }
+            (StatusCode::OK, Json(json!({ "verified": true }))).into_response()
+        }
+        Ok(None) => error(StatusCode::BAD_REQUEST, "Verification link is invalid or expired"),
+        Err(_) => error(StatusCode::SERVICE_UNAVAILABLE, "Verification unavailable"),
     }
 }
 
