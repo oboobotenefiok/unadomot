@@ -102,7 +102,11 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
       _price.text = draft['price'] as String? ?? '';
       _address.text = draft['address'] as String? ?? '';
       _stateValue = draft['state'] as String? ?? 'Rivers';
-      _lgaValue = draft['lga'] as String? ?? NigeriaLocations.capitalFor(_stateValue!);
+      final savedLga = draft['lga'] as String?;
+      final options = NigeriaLocations.lgasFor(_stateValue);
+      _lgaValue = savedLga != null && options.contains(savedLga)
+          ? savedLga
+          : NigeriaLocations.defaultLgaFor(_stateValue);
       _bedrooms.text = draft['bedrooms'] as String? ?? '';
       _bathrooms.text = draft['bathrooms'] as String? ?? '';
       _propertyType = draft['property_type'] as String?;
@@ -499,24 +503,24 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
               onChanged: (value) {
                 setState(() {
                   _stateValue = value;
-                  _lgaValue = NigeriaLocations.capitalFor(value ?? '');
+                  _lgaValue = NigeriaLocations.defaultLgaFor(value);
                 });
                 _saveDraft();
               },
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
+              key: ValueKey('lga-$_stateValue'),
               initialValue: _lgaValue,
-              decoration: const InputDecoration(labelText: 'Capital / LGA'),
-              items: [
-                if (_stateValue != null)
-                  DropdownMenuItem(
-                    value: NigeriaLocations.capitalFor(_stateValue!),
-                    child: Text(NigeriaLocations.capitalFor(_stateValue!)),
-                  ),
-              ],
-              validator: (value) => value == null ? 'Select an area' : null,
-              onChanged: (value) => setState(() => _lgaValue = value),
+              decoration: const InputDecoration(labelText: 'Local government area'),
+              items: NigeriaLocations.lgasFor(_stateValue)
+                  .map((lga) => DropdownMenuItem(value: lga, child: Text(lga)))
+                  .toList(),
+              validator: (value) => value == null ? 'Select an LGA' : null,
+              onChanged: (value) {
+                setState(() => _lgaValue = value);
+                _saveDraft();
+              },
             ),
           ],
         ),
