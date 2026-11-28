@@ -36,6 +36,9 @@ class ListingCard extends StatelessWidget {
     final image = imageUrl ?? (listing.media.isEmpty ? null : listing.media.first.url);
     final accountType = listing.isAgentListing ? 'Agent' : 'Landlord';
     final ownerActions = isOwner && showOwnerActions;
+    final location = listing.lga.isEmpty
+        ? listing.state
+        : '${listing.lga}, ${listing.state}';
 
     return Material(
       color: UnaColors.surface,
@@ -135,7 +138,7 @@ class ListingCard extends StatelessWidget {
                       style: const TextStyle(color: UnaColors.text900, fontSize: 13, fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      listing.state,
+                      location,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(color: UnaColors.text500, fontSize: 11),
