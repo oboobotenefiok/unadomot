@@ -21,6 +21,7 @@ import 'listing_detail_screen.dart';
 import 'map_screen.dart';
 import 'messages_screen.dart';
 import 'profile_screen.dart';
+import 'qr_scanner_screen.dart';
 
 class ListingsScreen extends StatefulWidget {
   final ApiClient api;
@@ -351,9 +352,14 @@ class _ListingsScreenState extends State<ListingsScreen> {
         content: TextField(
           controller: controller,
           textCapitalization: TextCapitalization.characters,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             labelText: 'Listing code',
             hintText: 'e.g. A1B2C3D4',
+            suffixIcon: IconButton(
+              tooltip: 'Scan QR code',
+              icon: const Icon(Icons.qr_code_scanner),
+              onPressed: () => Navigator.pop(context, '__scan__'),
+            ),
           ),
         ),
         actions: [
@@ -365,8 +371,21 @@ class _ListingsScreenState extends State<ListingsScreen> {
         ],
       ),
     );
+    if (code == '__scan__') {
+      if (!mounted) return;
+      final scanned = await Navigator.push<String>(
+        context,
+        MaterialPageRoute(builder: (_) => const QrScannerScreen()),
+      );
+      if (scanned == null || scanned.isEmpty || !mounted) return;
+      await _lookupCode(scanned);
+      return;
+    }
     if (code == null || code.isEmpty || !mounted) return;
+    await _lookupCode(code);
+  }
 
+  Future<void> _lookupCode(String code) async {
     try {
       final data = await widget.api.listingByCode(code);
       final id = data['id'] as String?;
@@ -880,23 +899,8 @@ class _FilterSheetState extends State<_FilterSheet> {
               ],
             ),
             const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _clear,
-                    child: const Text('Clear'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: _apply,
-                    child: const Text('Apply filters'),
-                  ),
-                ),
-              ],
-            ),
+            FilledButton(onPressed: _apply, child: const Text('Apply filters')),
+            TextButton(onPressed: _clear, child: const Text('Clear filters')),
           ],
         ),
       ),
